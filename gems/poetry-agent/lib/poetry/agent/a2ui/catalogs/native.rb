@@ -152,7 +152,7 @@ module Poetry
 
             call = action["functionCall"]
             if renderer.surface.dialect.call_name(call) == "openUrl"
-              url = renderer.call_function("openUrl", call["args"], scope)
+              url = renderer.link_target(call, scope)
               return { href: url } if url
             else
               renderer.warn("#{component["component"]} #{component["id"].inspect}: unsupported local action")

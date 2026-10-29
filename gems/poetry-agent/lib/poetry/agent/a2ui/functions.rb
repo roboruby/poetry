@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require "json"
+require "date"
 require "time"
 require "active_support"
 require "active_support/number_helper"
 require_relative "protocol"
+require_relative "dialect"
 
 module Poetry
   module Agent
@@ -31,8 +33,15 @@ module Poetry
         # The spec's execution boundaries: who may invoke a function.
         CALLERS = %w[rendererOnly agentOnly rendererOrAgent].freeze
 
-        # The email shape the basic catalog names.
-        EMAIL = /\A[^\s@]+@[^\s@]+\.[^\s@]+\z/
+        # The email shape the basic catalog names: an ASCII local part, a
+        # domain, and a top-level domain of two letters or more.
+        EMAIL = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/
+        # What v1.0's `email` says of an address it refuses.
+        EMAIL_FAILURE = { "valid" => false, "code" => "INVALID_EMAIL",
+                          "message" => "Please enter a valid email address (e.g. user@example.com).",
+                          "severity" => "error" }.freeze
+        # The schemes `openUrl` opens.
+        URL_SCHEMES = %w[http https mailto tel].freeze
         # Currency symbols (and fraction digits) by ISO 4217 code; other
         # codes render as a code prefix.
         CURRENCIES = { "USD" => ["$", 2], "EUR" => ["€", 2], "GBP" => ["£", 2], "JPY" => ["¥", 0],
@@ -55,18 +64,30 @@ module Poetry
           @basic ||= new.tap { |registry| Basic.install(registry) }
         end
 
-        # The boolean reading of a value: a ValidationResult by its
-        # `valid`, strings by content, nil and false as false.
+        # The boolean reading of a value: strings by content, nil and false
+        # as false. In v1.0 a ValidationResult reads as its `valid`; in v0.9
+        # an object is simply present, so it reads as true.
         #
         # @param value [Object]
+        # @param dialect [Dialect] the surface's protocol version
         # @return [Boolean]
-        def self.truthy?(value)
+        def self.truthy?(value, dialect = Dialect::V1_0)
           case value
-          when Hash then value["valid"] == true
+          when Hash then dialect.v1? && [true, false].include?(value["valid"]) ? value["valid"] : true
           when String then !value.empty? && !%w[false 0].include?(value.downcase)
           when nil, false then false
           else true
           end
+        end
+
+        # A URL `openUrl` would open: a non-empty string whose scheme is one
+        # it allows (http, https, mailto, tel).
+        # @param url [Object]
+        # @return [Boolean]
+        def self.openable?(url)
+          text = url.is_a?(String) ? url.strip : ""
+          scheme = text[/\A([a-zA-Z][a-zA-Z0-9+.-]*):/, 1]
+          !scheme.nil? && URL_SCHEMES.include?(scheme.downcase) && text.match?(/\A\S+\z/)
         end
 
         # A value as a number: numerics as they are, numeric strings parsed, anything else nil.
@@ -213,29 +234,31 @@ module Poetry
           # Defines the validation functions: required, regex and the numeric bounds.
           def validators(registry)
             registry.define("required", description: "Checks that the value is not null, undefined, or empty.",
-                                        returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
-              result(present?(args["value"]))
+                                        returns: "validationResult", required: %w[value],
+                                        params: CHECKED) do |args, evaluator|
+              result(present?(args["value"]), evaluator)
             end
             pattern = { "pattern" => { "type" => "string", "description" => "The regular expression." } }
             registry.define("regex", description: "Checks that the value matches a regular expression string.",
                                      returns: "validationResult", required: %w[value pattern],
-                                     params: CHECKED.merge(pattern)) do |args, _|
-              regex(args["value"], args["pattern"])
+                                     params: CHECKED.merge(pattern)) do |args, evaluator|
+              regex(args["value"], args["pattern"], evaluator)
             end
             bounds = { "min" => { "type" => "number", "description" => "The minimum." },
                        "max" => { "type" => "number", "description" => "The maximum." } }
             registry.define("length", description: "Checks string length constraints.", returns: "validationResult",
-                                      required: %w[value], params: CHECKED.merge(bounds)) do |args, _|
-              result(within?(args["value"].to_s.length, args["min"], args["max"]))
+                                      required: %w[value], params: CHECKED.merge(bounds)) do |args, evaluator|
+              result(within?(length_of(args["value"], evaluator), args["min"], args["max"]), evaluator)
             end
             registry.define("numeric", description: "Checks numeric range constraints.", returns: "validationResult",
-                                       required: %w[value], params: CHECKED.merge(bounds)) do |args, _|
+                                       required: %w[value], params: CHECKED.merge(bounds)) do |args, evaluator|
               number = Functions.number(args["value"])
-              result(!number.nil? && within?(number, args["min"], args["max"]))
+              result(!number.nil? && within?(number, args["min"], args["max"]), evaluator)
             end
             registry.define("email", description: "Checks that the value is a valid email address.",
-                                     returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
-              result(args["value"].to_s.match?(EMAIL))
+                                     returns: "validationResult", required: %w[value],
+                                     params: CHECKED) do |args, evaluator|
+              email(args["value"], evaluator)
             end
           end
 
@@ -253,14 +276,14 @@ module Poetry
             amount = { "value" => DYNAMIC.call("Number", "The number.") }
             registry.define("formatNumber", description: "Formats a number with grouping and decimal precision.",
                                             returns: "string", required: %w[value],
-                                            params: amount.merge(grouping)) do |args, _|
-              format_number(args)
+                                            params: amount.merge(grouping)) do |args, evaluator|
+              format_number(args, evaluator)
             end
             money = amount.merge("currency" => DYNAMIC.call("String", "The ISO 4217 code."))
             registry.define("formatCurrency", description: "Formats a number as a currency string.", returns: "string",
                                               required: %w[value currency],
-                                              params: money.merge(grouping)) do |args, _|
-              format_currency(args)
+                                              params: money.merge(grouping)) do |args, evaluator|
+              format_currency(args, evaluator)
             end
             registry.define("formatDate", description: "Formats a timestamp with a Unicode TR35 pattern " \
                                                        "(yyyy-MM-dd, MMM d, HH:mm).",
@@ -276,9 +299,11 @@ module Poetry
                                          returns: "string", required: %w[value other], params: forms) do |args, _|
               pluralize(args)
             end
-            registry.define("openUrl", description: "Opens an http(s) URL; the renderer links to it.", returns: "void",
-                                       activation: true, required: %w[url],
-                                       params: { "url" => { "description" => "The URL to open." } }) do |args, _|
+            registry.define("openUrl",
+                            description: "Opens a URL (http, https, mailto or tel); the renderer links to it.",
+                            returns: "void",
+                            activation: true, required: %w[url],
+                            params: { "url" => { "description" => "The URL to open." } }) do |args, _|
               open_url(args["url"])
             end
           end
@@ -286,33 +311,72 @@ module Poetry
           # Defines the logical functions: and, or and not.
           def combinators(registry)
             registry.define("and", description: "Logical AND of a list of values.", returns: "boolean",
-                                   required: %w[values], params: list) do |args, _|
-              Array(args["values"]).all? { |value| Functions.truthy?(value) }
+                                   required: %w[values], params: list) do |args, evaluator|
+              operands("and", args["values"]).all? { |value| Functions.truthy?(value, dialect_of(evaluator)) }
             end
             registry.define("or", description: "Logical OR of a list of values.", returns: "boolean",
-                                  required: %w[values], params: list) do |args, _|
-              Array(args["values"]).any? { |value| Functions.truthy?(value) }
+                                  required: %w[values], params: list) do |args, evaluator|
+              operands("or", args["values"]).any? { |value| Functions.truthy?(value, dialect_of(evaluator)) }
             end
             registry.define("not", description: "Logical NOT of a value.", returns: "boolean", required: %w[value],
-                                   params: { "value" => DYNAMIC.call("Boolean", "The value.") }) do |args, _|
-              !Functions.truthy?(args["value"])
+                                   params: { "value" => DYNAMIC.call("Boolean", "The value.") }) do |args, evaluator|
+              !Functions.truthy?(args["value"], dialect_of(evaluator))
             end
           end
 
-          # A validation result, with its code when it fails.
+          # A validator's answer in the surface's version: v1.0's
+          # ValidationResult (with its code when it fails), v0.9's boolean.
           # @api private
-          def result(valid, code: nil)
+          def result(valid, evaluator, code: nil)
+            return valid unless dialect_of(evaluator).v1?
+
             code ? { "valid" => valid, "code" => code } : { "valid" => valid }
           end
 
-          # Whether a value is present: not nil, not blank, not empty.
+          # The protocol version a call runs in: its surface's, v1.0's without one.
+          # @api private
+          def dialect_of(evaluator)
+            evaluator.respond_to?(:surface) && evaluator.surface ? evaluator.surface.dialect : Dialect::V1_0
+          end
+
+          # Whether a value is present: not nil, not a blank string, not an
+          # empty list (an object, even an empty one, is present).
           # @api private
           def present?(value)
             return false if value.nil?
             return !value.strip.empty? if value.is_a?(String)
-            return !value.empty? if value.respond_to?(:empty?)
+            return !value.empty? if value.is_a?(Array)
 
             true
+          end
+
+          # The length `length` checks: a list's items, nothing's zero, any
+          # other value's characters as it displays.
+          def length_of(value, evaluator)
+            return value.size if value.is_a?(Array)
+            return 0 if value.nil?
+
+            evaluator.respond_to?(:stringify) ? evaluator.stringify(value).length : value.to_s.length
+          end
+
+          # v1.0's email answer carries its code and message; v0.9's is a boolean.
+          def email(value, evaluator)
+            valid = value.is_a?(String) && value.match?(EMAIL)
+            return valid unless dialect_of(evaluator).v1?
+
+            valid ? { "valid" => true } : EMAIL_FAILURE.dup
+          end
+
+          # A combinator's operands: a list of two or more.
+          def operands(name, values)
+            raise Error, "#{name} requires at least 2 values" unless values.is_a?(Array) && values.size >= 2
+
+            values
+          end
+
+          # A boolean argument with a default: v1.0 reads a ValidationResult as its verdict.
+          def flag(value, evaluator, default:)
+            value.nil? ? default : Functions.truthy?(value, dialect_of(evaluator))
           end
 
           # Whether a number sits inside the optional min and max bounds.
@@ -322,20 +386,20 @@ module Poetry
 
           # A regex validation with a match timeout; a bad pattern raises.
           # @api private
-          def regex(value, pattern)
+          def regex(value, pattern, evaluator)
             expression = Regexp.new(pattern.to_s, timeout: 0.05)
-            result(expression.match?(value.to_s))
+            result(expression.match?(value.to_s), evaluator)
           rescue Regexp::TimeoutError
-            result(false, code: "REGEX_TIMEOUT")
+            result(false, evaluator, code: "REGEX_TIMEOUT")
           rescue RegexpError => e
             raise Error, "regex: #{e.message}"
           end
 
           # A number with thousands separators and the requested fraction digits; an empty string for no number.
-          def format_number(args)
+          def format_number(args, evaluator)
             number = Functions.number(args["value"]) or return ""
             decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)
-            delimiter = args["grouping"] == false ? "" : ","
+            delimiter = flag(args["grouping"], evaluator, default: true) ? "," : ""
             if decimals
               ActiveSupport::NumberHelper.number_to_rounded(number, precision: decimals.to_i, delimiter: delimiter,
                                                                     separator: ".")
@@ -346,19 +410,24 @@ module Poetry
           end
 
           # A number as currency: the code's unit and digits, grouping and decimals from the arguments.
-          def format_currency(args)
+          def format_currency(args, evaluator)
             number = Functions.number(args["value"]) or return ""
             code = args["currency"].to_s.upcase
             unit, digits = CURRENCIES.fetch(code, ["#{code} ", 2])
             decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)&.to_i || digits
+            delimiter = flag(args["grouping"], evaluator, default: true) ? "," : ""
             ActiveSupport::NumberHelper.number_to_currency(number, unit: unit, precision: decimals, separator: ".",
-                                                                   delimiter: args["grouping"] == false ? "" : ",",
-                                                                   format: "%u%n", negative_format: "-%u%n")
+                                                                   delimiter: delimiter, format: "%u%n",
+                                                                   negative_format: "-%u%n")
           end
 
-          # A time value rendered through a date pattern; an empty string when the value is not a time.
+          # A time value rendered through a date pattern, or as an ISO 8601
+          # UTC instant for the pattern "ISO"; an empty string when the value
+          # is not a time.
           def format_date(value, pattern)
             time = parse_time(value) or return ""
+            return time.utc.iso8601(3) if pattern.to_s == "ISO"
+
             time.strftime(strftime_pattern(pattern.to_s))
           end
 
@@ -375,6 +444,9 @@ module Poetry
           # Time.parse reads; nil when neither does.
           def parse_time_string(text)
             return if text.empty?
+
+            date = text.match(/\A(\d{4})-(\d{2})-(\d{2})/)
+            return if date && !Date.valid_date?(*date.captures.map(&:to_i))
             return Time.utc(*text.split("-").map(&:to_i)) if text.match?(/\A\d{4}-\d{2}-\d{2}\z/)
 
             Time.iso8601(text)
@@ -416,15 +488,17 @@ module Poetry
             "other"
           end
 
-          # The URL to open, which must be http or https.
+          # Opening is the renderer's to do (it links to the URL), so the
+          # call answers nothing; a URL it would not open is an error.
           def open_url(url)
-            text = url.to_s.strip
-            raise Error, "openUrl: only http and https URLs open" unless text.match?(%r{\Ahttps?://\S+\z})
+            return if url.nil? || (url.is_a?(String) && url.strip.empty?)
+            raise Error, "openUrl: only http, https, mailto and tel URLs open" unless Functions.openable?(url)
 
-            text
+            nil
           end
 
-          private_class_method :validators, :formatters, :combinators, :within?, :format_number, :format_currency
+          private_class_method :validators, :formatters, :combinators, :within?, :format_number, :format_currency,
+                               :length_of, :email, :operands, :flag
           private_class_method :format_date, :parse_time, :parse_time_string, :strftime_pattern, :plural_category
           private_class_method :open_url
         end

@@ -43,8 +43,8 @@ module Poetry
         # The components by id.
         # @return [Hash{String => Hash}] components by id
         attr_reader :components
-        # The data model.
-        # @return [Hash] the data model
+        # The data model: an object, or the primitive the agent set at its root.
+        # @return [Hash, Object] the data model
         attr_reader :data
         # A counter that bumps on every applied change.
         # @return [Integer] bumps on every applied change
@@ -100,14 +100,16 @@ module Poetry
         end
 
         # Applies an `updateDataModel` (upsert; nil removes; the root
-        # pointer replaces the whole model).
+        # pointer replaces the whole model, nil with an empty one). A
+        # primitive root is kept, and a write through it is refused.
         #
         # @param path [String, nil]
         # @param value [Object, nil]
         # @return [void]
+        # @raise [Pointer::Error] for a write the data model refuses
         def update_data(path, value)
           @data = Pointer.upsert(@data, path || "/", deep_copy(value))
-          @data = {} unless @data.is_a?(Hash)
+          @data = {} if @data.nil?
           bump!
         end
 

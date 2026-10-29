@@ -319,7 +319,7 @@ class RendererTest < Minitest::Test
 
     assert_match(%r{<a[^>]* href="https://example.com/docs"[^>]*>.*?Docs.*?</a>}m, html)
     assert_match(%r{<button[^>]* disabled[^>]*>.*?Nope.*?</button>}m, html)
-    assert_equal ['function "openUrl": openUrl: only http and https URLs open'], renderer.warnings
+    assert_equal ['function "openUrl": openUrl: only http, https, mailto and tel URLs open'], renderer.warnings
   end
 
   def test_unknown_components_and_dangling_references_warn_and_render_nothing

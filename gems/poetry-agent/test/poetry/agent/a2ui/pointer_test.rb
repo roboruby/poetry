@@ -16,6 +16,37 @@ class PointerTest < Minitest::Test
     assert_equal "/", Pointer.build([])
   end
 
+  def test_absolute_takes_dot_empty_and_a_trailing_slash
+    assert_equal "/bar/foo", Pointer.absolute("foo", "/bar/")
+    assert_equal "/user", Pointer.absolute(".", "/user")
+    assert_equal "/user", Pointer.absolute("", "/user/")
+    assert_equal "/", Pointer.absolute(".", "/")
+  end
+
+  def test_a_missing_step_becomes_a_list_before_an_index
+    document = {}
+    Pointer.upsert(document, "/a/1/b", "x")
+
+    assert_equal({ "a" => [nil, { "b" => "x" }] }, document)
+    assert_nil Pointer.get({ "items" => %w[a b] }, "/items/01"), "an index has no leading zero"
+  end
+
+  def test_writes_the_spec_refuses
+    document = { "user" => { "name" => "Ada" }, "items" => [1] }
+
+    error = assert_raises(Pointer::Error) { Pointer.upsert(document, "/user/name/first", "x") }
+    assert_match(/Cannot set path .*: segment 'name' is a primitive value/, error.message)
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/items/0/x", "y") }
+    assert_match(/non-numeric segment '01'/, assert_raises(Pointer::Error) do
+      Pointer.upsert(document, "/items/01", 2)
+    end.message)
+    assert_match(/Forbidden path segment '__proto__'/,
+                 assert_raises(Pointer::Error) { Pointer.upsert(document, "/__proto__/x", 1) }.message)
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/fresh/10001", 1) }
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/fresh/deep/10001", 1) }
+    assert_equal({ "user" => { "name" => "Ada" }, "items" => [1] }, document, "a refused write changes nothing")
+  end
+
   def test_absolute_resolves_relative_paths_against_the_scope
     assert_equal "/users/1/name", Pointer.absolute("name", "/users/1")
     assert_equal "/company", Pointer.absolute("/company", "/users/1")
@@ -57,7 +88,7 @@ class PointerTest < Minitest::Test
 
     Pointer.upsert(document, "/list/1", nil)
 
-    assert_equal [9, 3], document["list"]
+    assert_equal [9, nil, 3], document["list"], "a removed element leaves its slot, so later indices hold"
   end
 
   def test_an_array_takes_an_index_up_to_the_cap

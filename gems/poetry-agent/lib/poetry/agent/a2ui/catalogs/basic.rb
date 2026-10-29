@@ -297,7 +297,7 @@ module Poetry
 
             name = renderer.surface.dialect.call_name(call)
             if name == "openUrl"
-              url = renderer.call_function("openUrl", call["args"], scope)
+              url = renderer.link_target(call, scope)
               return { href: url } if url
             else
               renderer.warn("Button #{component["id"].inspect}: local action #{name.inspect} is not supported")

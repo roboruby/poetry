@@ -66,7 +66,7 @@ describe("poetry--agent--a2ui-surface", () => {
     expect(document.querySelector('[data-a2ui-error-for="submit"]').hidden).toBe(false)
     expect(document.querySelector('[data-a2ui-error-for="submit"]').textContent).toBe("Accept the terms and give an email or phone")
     expect(document.getElementById("email").getAttribute("aria-invalid")).toBe("true")
-    expect(document.querySelector('[data-a2ui-error-for="email"]').textContent).toBe("Enter a valid email")
+    expect(document.querySelector('[data-a2ui-error-for="email"]').textContent).toBe("Please enter a valid email address (e.g. user@example.com).")
     expect(document.querySelector('[data-a2ui-error-for="size"]').hidden).toBe(false)
     expect(document.getElementById("seats").getAttribute("aria-invalid")).toBe("false")
     expect(document.getElementById("exotic").disabled).toBe(false)

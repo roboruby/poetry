@@ -184,6 +184,21 @@ module Poetry
           Evaluator.new(surface, scope, on_error: method(:warn)).call(name, args)
         end
 
+        # The address an `openUrl` action links to: its `url` argument
+        # resolved, when it is one the function opens. The call itself runs,
+        # so a URL it refuses warns and the action links nowhere.
+        #
+        # @param call [Hash] the action's function call
+        # @param scope [String, nil]
+        # @return [String, nil]
+        def link_target(call, scope = nil)
+          args = call["args"].is_a?(Hash) ? call["args"] : {}
+          evaluator = Evaluator.new(surface, scope, on_error: method(:warn))
+          url = evaluator.argument(args["url"])
+          evaluator.call("openUrl", { "url" => url }, resolved: true)
+          Functions.openable?(url) ? url.strip : nil
+        end
+
         # The first check failure's message for a component, or nil.
         # @param component [Hash]
         # @param scope [String, nil]

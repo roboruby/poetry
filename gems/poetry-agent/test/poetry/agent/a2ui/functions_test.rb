@@ -29,7 +29,43 @@ class FunctionsTest < Minitest::Test
     assert_equal({ "valid" => true }, ev.call("numeric", { "value" => "7.5", "min" => 1, "max" => 10 }))
     assert_equal({ "valid" => false }, ev.call("numeric", { "value" => "seven" }))
     assert_equal({ "valid" => true }, ev.call("email", { "value" => "ada@example.com" }))
-    assert_equal({ "valid" => false }, ev.call("email", { "value" => "ada@example" }))
+    assert_equal A2UI::Functions::EMAIL_FAILURE, ev.call("email", { "value" => "ada@example" })
+  end
+
+  def test_v0_9_validators_answer_booleans_and_v1_0_ones_results
+    v09 = A2UI::Evaluator.new(A2UI::Surface.new(id: "s", catalog: A2UI::Catalogs::Basic.new, dialect: A2UI::Dialect::V0_9))
+
+    assert(v09.call("required", { "value" => "x" }))
+    refute(v09.call("email", { "value" => "ada@example.c" }))
+    refute(v09.call("not", { "value" => { "valid" => false } }), "an object is present in v0.9")
+    assert(evaluator.call("not", { "value" => { "valid" => false } }), "v1.0 reads a result as its verdict")
+  end
+
+  def test_the_spec_semantics_of_required_length_and_the_combinators
+    errors = []
+    ev = evaluator(errors: errors)
+
+    assert_equal({ "valid" => true }, ev.call("required", { "value" => {} }), "an object is present")
+    assert_equal({ "valid" => true }, ev.call("length", { "value" => %w[a b], "min" => 2 }), "a list counts items")
+    assert_equal({ "valid" => false }, ev.call("length", { "value" => %w[a], "min" => 2 }))
+    assert_nil ev.call("and", { "values" => [true] })
+    assert_match(/and requires at least 2 values/, errors.last)
+  end
+
+  def test_dates_must_exist_and_iso_normalizes
+    ev = evaluator
+
+    assert_equal "", ev.call("formatDate", { "value" => "2026-02-30", "format" => "yyyy-MM-dd" })
+    assert_equal "", ev.call("formatDate", { "value" => "2026-13-01", "format" => "yyyy-MM-dd" })
+    assert_equal "2026-08-26T12:00:00.000Z",
+                 ev.call("formatDate", { "value" => "2026-08-26T14:00:00+02:00", "format" => "ISO" })
+  end
+
+  def test_a_validation_result_reads_as_its_verdict_in_a_boolean_argument
+    ev = evaluator
+
+    assert_equal "1234", ev.call("formatNumber", { "value" => 1234, "grouping" => { "valid" => false } })
+    assert_equal "1,234", ev.call("formatNumber", { "value" => 1234 })
   end
 
   def test_an_invalid_pattern_is_a_function_error
@@ -103,13 +139,15 @@ class FunctionsTest < Minitest::Test
     assert_equal "items", ev.call("pluralize", forms.merge("value" => "many"))
   end
 
-  def test_open_url_allows_http_only
+  def test_open_url_answers_nothing_and_refuses_other_schemes
     errors = []
     ev = evaluator(errors: errors)
 
-    assert_equal "https://example.com/docs", ev.call("openUrl", { "url" => "https://example.com/docs" })
+    assert_nil ev.call("openUrl", { "url" => "https://example.com/docs" })
+    assert_nil ev.call("openUrl", { "url" => "mailto:ada@example.com" })
+    assert_empty errors
     assert_nil ev.call("openUrl", { "url" => "javascript:alert(1)" })
-    assert_match(/only http and https/, errors.last)
+    assert_match(/only http, https, mailto and tel/, errors.last)
   end
 
   def test_combinators_read_validation_results_and_booleans
@@ -193,8 +231,9 @@ class FunctionsTest < Minitest::Test
     s.update_data("/result",
                   { "valid" => false, "code" => "SOFT", "message" => "Just a note", "severity" => "warning" })
 
-    assert_equal [{ valid: false, code: nil, message: "Invalid email format", severity: "error" },
-                  { valid: false, code: nil, message: "Check failed", severity: "error" }],
+    assert_equal [{ valid: false, code: "INVALID_EMAIL", severity: "error",
+                    message: "Please enter a valid email address (e.g. user@example.com)." },
+                  { valid: false, code: nil, message: "Check failed", severity: nil }],
                  A2UI::Checks.failures(component, ev)
   end
 

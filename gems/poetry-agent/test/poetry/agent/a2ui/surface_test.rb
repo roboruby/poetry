@@ -65,7 +65,11 @@ class SurfaceTest < Minitest::Test
 
     s.update_data("/", "not an object")
 
-    assert_empty s.data
+    assert_equal "not an object", s.data, "a primitive root is kept, as the spec says"
+    assert_raises(Poetry::Agent::A2UI::Pointer::Error) { s.update_data("/a", 1) }
+    s.update_data("/", nil)
+
+    assert_empty s.data, "a null root is an empty model"
   end
 
   def test_resolve_and_text_follow_the_conversion_rules

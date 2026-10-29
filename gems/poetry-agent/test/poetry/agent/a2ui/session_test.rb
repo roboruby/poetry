@@ -76,7 +76,7 @@ class SessionTest < Minitest::Test
 
     assert_equal "DATA_ERROR", error["code"]
     assert_equal "s", error["surfaceId"]
-    assert_match(/exceeds the maximum \(10000\)/, error["message"])
+    assert_match(/exceeds maximum supported index \(10000\)/, error["message"])
     assert_equal({ "items" => %w[a] }, session.surface("s").data)
     assert_equal 0, session.surface("s").version, "a refused write changes nothing"
   end
@@ -281,7 +281,8 @@ class SessionTest < Minitest::Test
     assert_nil rejected.to_h
     assert_empty rejected.forwarded_props
     assert_equal %w[email submit], rejected.errors.keys
-    assert_equal "Invalid email format", rejected.errors["email"].first[:message]
+    assert_equal A2UI::Functions::EMAIL_FAILURE["message"], rejected.errors["email"].first[:message],
+                 "the result's message wins; the rule's is the fallback"
     assert_equal "You must accept terms AND provide either email or phone", rejected.errors["submit"].first[:message]
     assert_equal "nope", session.surface("f").data.dig("formData", "email")
 

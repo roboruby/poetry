@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
+// What v1.0's email says of an address it refuses.
+const EMAIL_FAILURE = { valid: false, code: "INVALID_EMAIL", message: "Please enter a valid email address (e.g. user@example.com).", severity: "error" }
 
 /**
  * The client side of an A2UI surface's checks: the server renders the
@@ -104,7 +107,7 @@ export default class extends Controller {
     if (!fn) return null
     const args = {}
     for (const [key, raw] of Object.entries(rawArgs)) args[key] = this.resolve(raw)
-    return fn(args)
+    return fn(args, !String(this.programValue?.version ?? "1.0").startsWith("v0."))
   }
 
   /**
@@ -152,8 +155,10 @@ const pointer = (document, path) => {
   }, document)
 }
 
-const truthy = (value) => {
-  if (value && typeof value === "object" && !Array.isArray(value)) return value.valid === true
+// A value's boolean reading: in v1.0 a ValidationResult reads as its verdict,
+// in v0.9 an object is simply present.
+const truthy = (value, v1 = true) => {
+  if (value && typeof value === "object" && !Array.isArray(value)) return v1 && typeof value.valid === "boolean" ? value.valid : true
   if (typeof value === "string") return value !== "" && !["false", "0"].includes(value.toLowerCase())
   return value !== null && value !== undefined && value !== false
 }
@@ -165,6 +170,19 @@ const present = (value) => {
   return true
 }
 
+// A validator's answer: v1.0's ValidationResult, v0.9's boolean.
+const result = (valid, v1) => (v1 ? { valid } : valid)
+
+// The length length checks: a list's items, nothing's zero, any other value's characters.
+const lengthOf = (value) => {
+  if (Array.isArray(value)) return value.length
+  if (value === null || value === undefined) return 0
+  return typeof value === "object" ? JSON.stringify(value).length : String(value).length
+}
+
+// A combinator's operands, or null when there are fewer than two (the server decides).
+const operands = (values) => (Array.isArray(values) && values.length >= 2 ? values : null)
+
 const within = (n, min, max) => (min === undefined || min === null || n >= min) && (max === undefined || max === null || n <= max)
 
 const number = (value) => {
@@ -175,17 +193,20 @@ const number = (value) => {
 }
 
 const FUNCTIONS = {
-  required: ({ value }) => ({ valid: present(value) }),
-  regex: ({ value, pattern }) => {
-    try { return { valid: new RegExp(pattern).test(String(value ?? "")) } } catch { return null }
+  required: ({ value }, v1) => result(present(value), v1),
+  regex: ({ value, pattern }, v1) => {
+    try { return result(new RegExp(pattern).test(String(value ?? "")), v1) } catch { return null }
   },
-  length: ({ value, min, max }) => ({ valid: within(String(value ?? "").length, min, max) }),
-  numeric: ({ value, min, max }) => {
+  length: ({ value, min, max }, v1) => result(within(lengthOf(value), min, max), v1),
+  numeric: ({ value, min, max }, v1) => {
     const n = number(value)
-    return { valid: n !== null && within(n, min, max) }
+    return result(n !== null && within(n, min, max), v1)
   },
-  email: ({ value }) => ({ valid: EMAIL.test(String(value ?? "")) }),
-  and: ({ values }) => (Array.isArray(values) ? values : []).every(truthy),
-  or: ({ values }) => (Array.isArray(values) ? values : []).some(truthy),
-  not: ({ value }) => !truthy(value)
+  email: ({ value }, v1) => {
+    const valid = typeof value === "string" && EMAIL.test(value)
+    return v1 && !valid ? { ...EMAIL_FAILURE } : result(valid, v1)
+  },
+  and: ({ values }, v1) => operands(values)?.every((value) => truthy(value, v1)) ?? null,
+  or: ({ values }, v1) => operands(values)?.some((value) => truthy(value, v1)) ?? null,
+  not: ({ value }, v1) => !truthy(value, v1)
 }
