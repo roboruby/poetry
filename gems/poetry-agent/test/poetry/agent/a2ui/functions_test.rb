@@ -204,7 +204,7 @@ class FunctionsTest < Minitest::Test
     errors = []
 
     assert_equal "", evaluator(errors: errors).interpolate("${oops")
-    assert_match(/formatString: expected "}"/, errors.first)
+    assert_match(/formatString: Unclosed interpolation/, errors.first)
   end
 
   def test_stringify_follows_the_conversion_rules

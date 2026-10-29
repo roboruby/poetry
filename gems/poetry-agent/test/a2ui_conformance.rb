@@ -163,14 +163,12 @@ module A2UIConformance
 
   # ---- parse_expression_template
 
-  def node_to_part(node, in_args: false)
+  def node_to_part(node)
     case node[0]
-    when :text then node[1]
-    when :literal then node[1].nil? && in_args ? "" : node[1]
+    when :text, :literal then node[1]
     when :path then { "path" => node[1] }
     when :call
-      { "call" => node[1], "args" => node[2].transform_values { |item| node_to_part(item, in_args: true) },
-        "returnType" => "any" }
+      { "call" => node[1], "args" => node[2].transform_values { |item| node_to_part(item) }, "returnType" => "any" }
     when :template then node[1].map { |item| node_to_part(item) }
     end
   end
