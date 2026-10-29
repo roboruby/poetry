@@ -25,11 +25,23 @@ module Poetry
         #   result named one
         def failures(component, evaluator)
           Array(component["checks"]).filter_map do |rule|
-            next unless rule.is_a?(Hash) && rule["condition"]
+            condition = rule.is_a?(Hash) && condition(rule, evaluator.surface.dialect)
+            next unless condition
 
-            outcome = interpret(evaluator.resolve(rule["condition"]), rule, evaluator)
+            outcome = interpret(evaluator.resolve(condition), rule, evaluator)
             outcome unless outcome[:valid] || (outcome[:severity] || "error") != "error"
           end
+        end
+
+        # A rule's condition: its `condition`, or in v0.9 a flat rule's own
+        # call (`{ "call", "args", "message" }`, as the v0.9 docs write rules).
+        # @param rule [Hash]
+        # @param dialect [Dialect]
+        # @return [Object, nil]
+        def condition(rule, dialect)
+          return rule["condition"] if rule.key?("condition")
+
+          rule.slice(dialect.call_key, "args") if !dialect.v1? && dialect.call?(rule)
         end
 
         # A check's result as a validation: a hash carries its own verdict and message, anything else is read as a

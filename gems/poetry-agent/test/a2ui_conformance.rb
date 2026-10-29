@@ -75,7 +75,7 @@ module A2UIConformance
   def at_least_v1?(version) = version.to_s.delete_prefix("v").split(".").first.to_i >= 1
 
   # The case's version as a message's `version` field.
-  def wire(version) = at_least_v1?(version) ? "1.0" : version
+  def wire(version) = at_least_v1?(version) ? "1.0" : version.to_s.sub(/\A(?=0)/, "v")
 
   def messages_of(node)
     case node
@@ -603,12 +603,28 @@ module A2UIConformance
 
   # ---- APIs Poetry does not have yet
 
-  def run_get_renderer_data_model(_)
-    fail!("no renderer data model API ({version, surfaces})")
+  def run_get_renderer_data_model(test_case)
+    session = session_for(test_case)
+    steps = test_case["steps"].is_a?(Array) ? test_case["steps"] : [test_case]
+    steps.each { |step| apply_step(session, step["messages"]) if step["messages"] }
+    got = session.renderer_data_model(version: wire(test_case.dig("args", "version")))
+    fail!("renderer data model #{JSON.generate(got)}, expected #{JSON.generate(test_case["expect"])}") unless deep_eq(
+      got, test_case["expect"]
+    )
   end
 
-  def run_get_renderer_capabilities(_)
-    fail!("no renderer capabilities (supportedCatalogIds)")
+  # The case's catalogs, each in its own version (the case's when it names none).
+  def run_get_renderer_capabilities(test_case)
+    fail!("inline catalogs from the suite's catalog definitions") if test_case.dig("args", "includeInlineCatalogs")
+
+    version = wire(test_case.dig("args", "version"))
+    catalogs = Array(test_case["catalogs"]).to_h do |entry|
+      dialect = A::Dialect.for(wire(entry["protocolVersion"] || version))
+      [entry["catalogId"], A::Catalogs::Basic.new(dialect: dialect)]
+    end
+    got = A::Session.new(catalogs: catalogs).capabilities(versions: [version])
+    want = test_case["expect"]
+    fail!("capabilities #{JSON.generate(got)}, expected #{JSON.generate(want)}") unless deep_eq(got, want)
   end
 
   def run_select_catalog(_)

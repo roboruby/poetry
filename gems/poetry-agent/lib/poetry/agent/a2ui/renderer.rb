@@ -193,7 +193,7 @@ module Poetry
         # @return [String, nil]
         def link_target(call, scope = nil)
           args = call["args"].is_a?(Hash) ? call["args"] : {}
-          evaluator = Evaluator.new(surface, scope, on_error: method(:warn))
+          evaluator = Evaluator.new(surface, scope, on_error: method(:warn), gesture: true)
           url = evaluator.argument(args["url"])
           evaluator.call("openUrl", { "url" => url }, resolved: true)
           Functions.openable?(url) ? url.strip : nil
@@ -246,6 +246,22 @@ module Poetry
 
           label = text(accessibility["label"], scope)
           label.empty? ? nil : label
+        end
+
+        # A component's accessibility attributes for a Poetry component's
+        # `aria:`: its label and description, a live region's politeness,
+        # and hidden when it is hidden from assistive technology.
+        # @param component [Hash]
+        # @param scope [String, nil]
+        # @return [Hash{Symbol => String}]
+        def aria(component, scope = nil)
+          accessibility = component["accessibility"]
+          return {} unless accessibility.is_a?(Hash)
+
+          description = text(accessibility["description"], scope)
+          { label: aria_label(component, scope), description: description.empty? ? nil : description,
+            live: %w[polite assertive].include?(accessibility["live"]) ? accessibility["live"] : nil,
+            hidden: resolve(accessibility["hidden"], scope) == true ? "true" : nil }.compact
         end
 
         # Markdown text as HTML-safe markup.

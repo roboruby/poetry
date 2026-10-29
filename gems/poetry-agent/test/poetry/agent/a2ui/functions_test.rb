@@ -141,13 +141,20 @@ class FunctionsTest < Minitest::Test
 
   def test_open_url_answers_nothing_and_refuses_other_schemes
     errors = []
-    ev = evaluator(errors: errors)
+    ev = A2UI::Evaluator.new(surface, on_error: ->(message) { errors << message }, gesture: true)
 
     assert_nil ev.call("openUrl", { "url" => "https://example.com/docs" })
     assert_nil ev.call("openUrl", { "url" => "mailto:ada@example.com" })
     assert_empty errors
     assert_nil ev.call("openUrl", { "url" => "javascript:alert(1)" })
     assert_match(/only http, https, mailto and tel/, errors.last)
+  end
+
+  def test_a_function_that_needs_a_gesture_is_refused_without_one
+    errors = []
+
+    assert_nil evaluator(errors: errors).call("openUrl", { "url" => "https://example.com" })
+    assert_equal ["Function 'openUrl' requires user activation context to execute."], errors
   end
 
   def test_combinators_read_validation_results_and_booleans

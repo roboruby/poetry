@@ -35,10 +35,13 @@ module Poetry
         # @param surface [Surface]
         # @param scope [String, nil]
         # @param on_error [#call, nil] receives each problem's message
-        def initialize(surface, scope = nil, on_error: nil)
+        # @param gesture [Boolean] whether a user's gesture runs the evaluation
+        #   (a button's action), so a function that needs one (`openUrl`) may run
+        def initialize(surface, scope = nil, on_error: nil, gesture: false)
           @surface = surface
           @scope = scope
           @on_error = on_error
+          @gesture = gesture
         end
 
         # Resolves a component property: bindings and calls resolve, a list
@@ -86,6 +89,9 @@ module Poetry
           return index_of(args) if name == "@index"
           return fail!("function #{name.inspect}: #{SYSTEM_FUNCTIONS}") if name.to_s.start_with?("@")
           return fail!("function #{name.inspect}: a function name is an identifier") if name.to_s.empty?
+          if !@gesture && surface.catalog.functions.activation?(name.to_s)
+            return fail!("Function '#{name}' requires user activation context to execute.")
+          end
 
           surface.catalog.functions.call(name.to_s, args, self)
         rescue Functions::Error, Expression::SyntaxError => e

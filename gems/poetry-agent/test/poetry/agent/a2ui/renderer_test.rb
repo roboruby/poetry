@@ -322,6 +322,41 @@ class RendererTest < Minitest::Test
     assert_equal ['function "openUrl": openUrl: only http, https, mailto and tel URLs open'], renderer.warnings
   end
 
+  def test_v0_9_leniencies_render_with_a_warning
+    session = A2UI::Session.new
+    flat = { "call" => "required", "args" => { "value" => { "path" => "/name" } }, "message" => "Name?" }
+    create = { "surfaceId" => "old", "catalogId" => A2UI::Catalogs::Basic::V0_9_IDS.first }
+    session.apply_all([{ "version" => "v0.9", "createSurface" => create },
+                       { "version" => "v0.9", "updateComponents" => { "surfaceId" => "old", "components" => [
+                         { "id" => "root", "component" => "Column", "children" => %w[name go] },
+                         { "id" => "name", "component" => "TextField", "label" => "Name",
+                           "value" => { "path" => "/name" }, "checks" => [flat] },
+                         { "id" => "go", "component" => "Button", "child" => "go_label",
+                           "action" => { "name" => "go", "context" => {} } },
+                         { "id" => "go_label", "component" => "Text", "text" => "Go" }
+                       ] } }])
+    html, renderer = render(session.surface("old"), action_url: "/a2ui")
+
+    assert_includes html, 'required="required"'
+    assert_match(/name="a2ui\[action\]"/, html)
+    assert_includes html, 'type="submit"'
+    assert_equal ["TextField \"name\": a check rule without `condition` (the v0.9 docs' flat form) is read as one",
+                  "Button \"go\": an action without `event` (the v0.9 docs' shorthand) is read as one"],
+                 renderer.warnings
+  end
+
+  def test_accessibility_attributes_reach_the_element
+    surface = basic_surface([{ "id" => "root", "component" => "Row", "children" => [],
+                               "accessibility" => { "label" => "Totals", "description" => "Updated live",
+                                                    "live" => "polite", "hidden" => false } }])
+    html, = render(surface)
+
+    assert_includes html, 'aria-label="Totals"'
+    assert_includes html, 'aria-description="Updated live"'
+    assert_includes html, 'aria-live="polite"'
+    refute_includes html, "aria-hidden"
+  end
+
   def test_unknown_components_and_dangling_references_warn_and_render_nothing
     surface = basic_surface([{ "id" => "root", "component" => "Column", "children" => %w[ghost mystery text] },
                              { "id" => "mystery", "component" => "Hologram" },

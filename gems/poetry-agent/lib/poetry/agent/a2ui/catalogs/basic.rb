@@ -204,7 +204,7 @@ module Poetry
             classes = ["flex", direction, "gap-4", JUSTIFY.fetch(component["justify"], "justify-start"),
                        ALIGN.fetch(component["align"], "items-stretch")]
             renderer.view.tag.div(weighted_children(component["children"], scope, renderer),
-                                  class: classes.join(" "), "aria-label": renderer.aria_label(component, scope))
+                                  class: classes.join(" "), aria: renderer.aria(component, scope))
           end
 
           # A child's `weight` is its flex-grow share of the container.
@@ -275,8 +275,8 @@ module Poetry
           # Renders a Button component with its variant, label, action attributes and content.
           def render_button(component, scope, renderer)
             attributes = { variant: BUTTON_VARIANTS.fetch(component["variant"], :outline) }
-            label = renderer.aria_label(component, scope)
-            attributes[:aria] = { label: label } if label
+            aria = renderer.aria(component, scope)
+            attributes[:aria] = aria if aria.any?
             attributes.merge!(action_attributes(component, scope, renderer))
             keyed(component, scope, renderer, attributes)
             button = renderer.component(Poetry::Ui::Button::Component, attributes) do
@@ -290,7 +290,14 @@ module Poetry
           def action_attributes(component, scope, renderer)
             action = component["action"]
             return { type: :button } unless action.is_a?(Hash)
-            return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
+
+            if renderer.surface.event_of(component)
+              if renderer.surface.shorthand?(action)
+                renderer.warn("#{component["component"]} #{component["id"].inspect}: an action without `event` " \
+                              "(the v0.9 docs' shorthand) is read as one")
+              end
+              return renderer.submit_attributes(component, scope)
+            end
 
             call = action["functionCall"]
             return { type: :button } unless call.is_a?(Hash)
@@ -322,11 +329,24 @@ module Poetry
           # and read its error slot.
           def keyed(component, scope, renderer, attributes)
             attributes[:data] = (attributes[:data] || {}).merge(a2ui_key: renderer.current_key)
+            warn_flat_rules(component, renderer)
             if component["checks"].is_a?(Array)
               described = "#{renderer.control_id(component, scope)}-error"
               attributes[:aria] = (attributes[:aria] || {}).merge(describedby: described)
             end
             attributes
+          end
+
+          # The v0.9 docs write a check rule flat (`{ "call", "args", "message" }`);
+          # it is read as its condition, with a warning.
+          def warn_flat_rules(component, renderer)
+            flat = Array(component["checks"]).grep(Hash).any? do |rule|
+              !rule.key?("condition") && Checks.condition(rule, renderer.surface.dialect)
+            end
+            return unless flat
+
+            renderer.warn("#{component["component"]} #{component["id"].inspect}: a check rule without `condition` " \
+                          "(the v0.9 docs' flat form) is read as one")
           end
 
           # A Text child becomes the button's label (plain, no block markup).
@@ -493,7 +513,7 @@ module Poetry
           def check_attributes(component, dialect)
             attributes = {}
             Array(component["checks"]).each do |check|
-              condition = check.is_a?(Hash) ? check["condition"] : nil
+              condition = check.is_a?(Hash) ? Checks.condition(check, dialect) : nil
               name = dialect.call_name(condition) or next
 
               args = condition["args"].is_a?(Hash) ? condition["args"] : {}

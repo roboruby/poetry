@@ -187,18 +187,38 @@ module Poetry
         def program
           checks = {}
           walk do |component, scope|
-            rules = Array(component["checks"]).grep(Hash).select { |rule| rule["condition"] }
+            rules = Array(component["checks"]).grep(Hash).select { |rule| Checks.condition(rule, dialect) }
             next if rules.empty?
 
             checks[source_key(component, scope)] = {
               "kind" => component["action"].is_a?(Hash) ? "button" : "input",
               "rules" => rules.map do |rule|
-                { "condition" => program_value(rule["condition"], scope), "message" => rule["message"] }
+                { "condition" => program_value(Checks.condition(rule, dialect), scope), "message" => rule["message"] }
               end
             }
           end
           { "version" => dialect.version, "checks" => checks,
             "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
+        end
+
+        # A component's agent event: its action's `event`, or on a v0.9
+        # surface the `{ "name", "context" }` shorthand the v0.9 docs write
+        # (the action itself, with no `functionCall`).
+        # @param component [Hash]
+        # @return [Hash, nil]
+        def event_of(component)
+          action = component["action"]
+          return unless action.is_a?(Hash)
+          return action["event"] if action["event"].is_a?(Hash)
+
+          action if shorthand?(action)
+        end
+
+        # Whether an action is v0.9's `{ "name", "context" }` shorthand for an event.
+        # @param action [Hash]
+        # @return [Boolean]
+        def shorthand?(action)
+          !dialect.v1? && action["name"].is_a?(String) && !action.key?("event") && !action.key?("functionCall")
         end
 
         # Whether a value is a data binding in the surface's version.
@@ -349,7 +369,9 @@ module Poetry
           return error(path, "Component at #{path} is missing an 'id'") unless id.is_a?(String) && !id.empty?
           return error("#{path}/component", "Cannot create component #{id} without a type") unless name.is_a?(String)
           return error("#{path}/component", "#{name.inspect} is not an identifier") unless name.match?(NAME_PATTERN)
-          return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved") if name == RESERVED_COMPONENT
+          if name == RESERVED_COMPONENT && dialect.v1?
+            return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved")
+          end
 
           nil
         end

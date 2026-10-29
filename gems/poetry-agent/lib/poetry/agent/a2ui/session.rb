@@ -73,6 +73,10 @@ module Poetry
         # The catalog bindings by catalog id.
         # @return [Hash{String => Object}] catalog bindings by catalog id
         attr_reader :catalogs
+        # The last lifecycle status an AG-UI activity carried while no surface
+        # was ready yet (`{ "status" => "building", "progressTokens" => 20 }`), or nil.
+        # @return [Hash, nil]
+        attr_reader :status
 
         # A session over catalog bindings, with a default for unknown catalog ids.
         # @param catalogs [Hash{String => Object}] catalog bindings by id
@@ -85,6 +89,7 @@ module Poetry
           @errors = []
           @deleted = []
           @responses = []
+          @creations = {}
         end
 
         # Applies one envelope message. Returns the ids of the surfaces
@@ -122,18 +127,30 @@ module Poetry
 
         # Applies the A2UI messages an AG-UI `a2ui-surface` activity
         # carries (an `a2ui_operations`, `messages`, or `operations` list,
-        # or one bare message).
+        # or one bare message). An activity that carries only a lifecycle
+        # status (`{ "status", "progressTokens" }`, while the agent builds the
+        # surface) is recorded as {#status}, not an error. A replacing snapshot
+        # carries every operation so far, so the `createSurface` that made a
+        # surface is skipped when it comes again unchanged.
         #
         # @param content [Hash, Array]
         # @return [Array<String>] the changed surface ids
         def apply_activity(content)
+          if lifecycle?(content)
+            @status = content.slice("status", "progressTokens")
+            return []
+          end
+
           list = case content
                  when Array then content
                  when Hash
                    content["a2ui_operations"] || content["messages"] || content["operations"] || [content]
                  else []
                  end
+          @replaying = true
           apply_all(list.grep(Hash))
+        ensure
+          @replaying = false
         end
 
         # A surface by id, or nil.
@@ -163,7 +180,7 @@ module Poetry
           write_inputs(surface, values)
           component_id, scope = source.to_s.split("@", 2)
           component = surface.component(component_id)
-          event = component&.dig("action", "event")
+          event = component && surface.event_of(component)
           return unless event.is_a?(Hash) && event["name"].is_a?(String)
 
           failures = surface.failures
@@ -178,6 +195,35 @@ module Poetry
                      errors: {})
         end
 
+        # What the renderer tells an agent it supports, by protocol version:
+        # the ids of the catalogs it holds for each (A2UI's renderer
+        # capabilities; an agent resolves its catalogs against them).
+        #
+        # @param versions [Array<String>] wire versions to answer for
+        # @return [Hash{String => Hash}] `{ "1.0" => { "supportedCatalogIds" => [...] }, "v0.9" => ... }`
+        def capabilities(versions: [Dialect::V1_0.version, Dialect::V0_9.version])
+          versions.filter_map do |version|
+            dialect = Dialect.for(version) or next
+            ids = @catalogs.select { |_, catalog| catalog_dialect(catalog).compatible?(dialect) }.keys
+            [dialect.version, { "supportedCatalogIds" => ids }]
+          end.to_h
+        end
+
+        # The data models of the surfaces that send theirs (`sendDataModel`),
+        # speaking one version, as A2UI's renderer data model; nil when none does.
+        #
+        # @param version [String] the wire version asked for
+        # @return [Hash, nil] `{ "version", "surfaces" => { id => data } }`
+        def renderer_data_model(version:)
+          dialect = Dialect.for(version) or return
+          surfaces = @surfaces.values.select do |surface|
+            surface.send_data_model && surface.dialect.compatible?(dialect)
+          end
+          return if surfaces.empty?
+
+          { "version" => dialect.version, "surfaces" => surfaces.to_h { |surface| [surface.id, surface.data] } }
+        end
+
         # The binding for a catalog id, or the default.
         # @param catalog_id [String, nil]
         # @return [Object] the catalog binding for an id (the default when unknown)
@@ -186,6 +232,12 @@ module Poetry
         end
 
         private
+
+        # Whether an activity's content is only a lifecycle status, with no message in it.
+        def lifecycle?(content)
+          content.is_a?(Hash) && content.key?("status") &&
+            !content.keys.intersect?(MESSAGE_KEYS + %w[a2ui_operations messages operations version])
+        end
 
         # The dialect of a message's version, or nil after rejecting a missing or unknown one.
         def message_dialect(message)
@@ -220,6 +272,7 @@ module Poetry
             return reject("INVALID_MESSAGE", "surfaceId must be a string",
                           dialect: dialect)
           end
+          return [] if @replaying && @creations[surface_id] == body
           if @surfaces[surface_id]
             return reject("DUPLICATE_SURFACE", "Surface #{surface_id} already exists.",
                           surface_id)
@@ -235,6 +288,7 @@ module Poetry
                                 send_data_model: body["sendDataModel"] == true, dialect: dialect,
                                 data: dialect.v1? ? body["dataModel"] : nil, theme: dialect.v1? ? nil : body["theme"])
           @surfaces[surface_id] = surface
+          @creations[surface_id] = JSON.parse(JSON.generate(body))
           if dialect.v1? && body["components"].is_a?(Array)
             record(surface_id, surface.update_components(body["components"]))
           end

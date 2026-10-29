@@ -136,8 +136,8 @@ module Poetry
             if bound && option_names.include?("name") && !component.key?("name")
               attributes[:name] = renderer.input_name(renderer.surface.binding_path(component[bound]), scope)
             end
-            label = renderer.aria_label(component, scope)
-            attributes[:aria] = { label: label } if label
+            aria = renderer.aria(component, scope)
+            attributes[:aria] = aria if aria.any?
             attributes.merge!(action_attributes(component, scope, renderer)) if component["action"].is_a?(Hash)
             if bound || component["action"]
               attributes[:data] = (attributes[:data] || {}).merge(a2ui_key: renderer.current_key)
@@ -148,7 +148,13 @@ module Poetry
           # The attributes for a component's action: a submit, a link for openUrl, or nothing.
           def action_attributes(component, scope, renderer)
             action = component["action"]
-            return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
+            if renderer.surface.event_of(component)
+              if renderer.surface.shorthand?(action)
+                renderer.warn("#{component["component"]} #{component["id"].inspect}: an action without `event` " \
+                              "(the v0.9 docs' shorthand) is read as one")
+              end
+              return renderer.submit_attributes(component, scope)
+            end
 
             call = action["functionCall"]
             if renderer.surface.dialect.call_name(call) == "openUrl"

@@ -187,6 +187,47 @@ class SessionTest < Minitest::Test
     assert_empty session.errors
   end
 
+  def test_capabilities_and_the_renderer_data_model_by_version
+    session = A2UI::Session.new
+    v09 = A2UI::Catalogs::Basic::V0_9_IDS.first
+    session.apply_all([{ "version" => "1.0", "createSurface" => { "surfaceId" => "a", "sendDataModel" => true,
+                                                                  "dataModel" => { "n" => 1 } } },
+                       { "version" => "v0.9", "createSurface" => { "surfaceId" => "b", "catalogId" => v09,
+                                                                   "sendDataModel" => true } },
+                       { "version" => "1.0", "createSurface" => { "surfaceId" => "c" } }])
+
+    assert_includes session.capabilities["1.0"]["supportedCatalogIds"], A2UI::Catalogs::Basic::ID
+    assert_includes session.capabilities["v0.9"]["supportedCatalogIds"], v09
+    refute_includes session.capabilities["v0.9"]["supportedCatalogIds"], A2UI::Catalogs::Basic::ID
+    assert_equal({ "version" => "1.0", "surfaces" => { "a" => { "n" => 1 } } },
+                 session.renderer_data_model(version: "1.0"))
+    assert_equal({ "version" => "v0.9", "surfaces" => { "b" => {} } }, session.renderer_data_model(version: "v0.9"))
+    assert_nil A2UI::Session.new.renderer_data_model(version: "1.0")
+  end
+
+  def test_middleware_activities_build_then_replay_whole
+    session = A2UI::Session.new
+    create = { "version" => "v0.9",
+               "createSurface" => { "surfaceId" => "signup", "catalogId" => A2UI::Catalogs::Basic::V0_9_IDS.last } }
+    components = { "version" => "v0.9", "updateComponents" => { "surfaceId" => "signup", "components" => [
+      { "id" => "root", "component" => "Text", "text" => { "path" => "/greeting" } }
+    ] } }
+    data = { "version" => "v0.9",
+             "updateDataModel" => { "surfaceId" => "signup", "value" => { "greeting" => "Hi" } } }
+
+    assert_empty session.apply_activity({ "status" => "building", "progressTokens" => 20 })
+    assert_equal({ "status" => "building", "progressTokens" => 20 }, session.status)
+    assert_equal ["signup"], session.apply_activity({ "a2ui_operations" => [create, components] })
+    assert_equal ["signup"], session.apply_activity({ "a2ui_operations" => [create, components, data] })
+    assert_empty session.errors, "a replacing snapshot repeats its createSurface"
+    assert_equal "Hi", session.surface("signup").resolve({ "path" => "/greeting" })
+
+    session.apply(create)
+
+    assert_equal "DUPLICATE_SURFACE", session.errors.last.dig("error", "code"),
+                 "outside an activity a repeat is a duplicate"
+  end
+
   def test_delete_surface
     session = A2UI::Session.new
     session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
