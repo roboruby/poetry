@@ -1,10 +1,10 @@
 # Changelog
 
-## [0.1.14]
+## [0.2.0]
 
 ### Changed
 
-- The committed component registry carries each component's `content` fact (poetry-core 0.1.14): whether it renders its content block.
+- The committed component registry carries each component's `content` fact (poetry-core 0.2.0): whether it renders its content block.
 - The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file. The vendored d3 kernel ships as it was built.
 - The animated chart families use the `entrance_animation` behavior for their frame's motion controller, from poetry-charts' own behavior namespace. The rendered HTML is unchanged.
 

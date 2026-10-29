@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.14]
+## [0.2.0]
 
 - The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file. The vendored kernels ship as they were built.
 
@@ -18,7 +18,7 @@
 
 ### Changed
 
-- The committed component registry carries each component's `content` fact (poetry-core 0.1.14): whether it renders its content block.
+- The committed component registry carries each component's `content` fact (poetry-core 0.2.0): whether it renders its content block.
 - The effect controllers register eagerly, as poetry-core's do: `registerPoetryMotionControllers` imports all nineteen (about 6 KB gzipped together) and registers them at once. A lazily imported controller lost the presses that dispatched while its module was in flight (five of eight first clicks on the marquee's pause and the confetti over a slow connection, measured on the docs host); the engine and the kernels still load on demand.
 - An animation that finishes on its own now leaves the element its own style, as a teardown does; springs keep their value until teardown.
 - Reduced motion stills page and layout view transitions too.
