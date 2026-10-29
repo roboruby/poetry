@@ -221,6 +221,8 @@ module Poetry
 
           surface.update_data(body["path"], body["value"])
           [surface.id]
+        rescue Pointer::Error => e
+          reject("DATA_ERROR", "updateDataModel #{body["path"].inspect}: #{e.message}", surface.id)
         end
 
         # Deletes a surface from a deleteSurface body.
@@ -250,11 +252,15 @@ module Poetry
           []
         rescue Functions::Error, Expression::SyntaxError => e
           refuse_call(body, e.message)
+        rescue StandardError => e
+          # A host function's own failure: the agent learns only that it failed.
+          refuse_call(body, "#{name}: an error occurred during function execution (#{e.class})",
+                      code: "EXECUTION_ERROR")
         end
 
-        # Records an invalid function call error and changes nothing.
-        def refuse_call(body, message)
-          error = { "code" => "INVALID_FUNCTION_CALL", "message" => message }
+        # Records a function call error and changes nothing.
+        def refuse_call(body, message, code: "INVALID_FUNCTION_CALL")
+          error = { "code" => code, "message" => message }
           error["functionCallId"] = body["functionCallId"] if body["functionCallId"]
           @errors << { "version" => "v#{PROTOCOL_VERSION}", "error" => error }
           []
@@ -290,7 +296,8 @@ module Poetry
           []
         end
 
-        # Only bound paths are writable, each coerced to its input's kind.
+        # Only bound paths are writable, each coerced to its input's kind;
+        # a path the data model refuses is reported and skipped.
         def write_inputs(surface, values)
           return unless values.respond_to?(:each_pair)
 
@@ -298,7 +305,11 @@ module Poetry
           values.each_pair do |path, value|
             kind = kinds[path.to_s] or next
 
-            surface.update_data(path.to_s, coerce(value, kind))
+            begin
+              surface.update_data(path.to_s, coerce(value, kind))
+            rescue Pointer::Error => e
+              reject("DATA_ERROR", "input #{path.to_s.inspect}: #{e.message}", surface.id)
+            end
           end
         end
 

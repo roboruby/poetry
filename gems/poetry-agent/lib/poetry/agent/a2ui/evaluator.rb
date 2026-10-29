@@ -78,6 +78,10 @@ module Poetry
           surface.catalog.functions.call(name.to_s, args, self)
         rescue Functions::Error, Expression::SyntaxError => e
           fail!("function #{name.inspect}: #{e.message}")
+        rescue StandardError => e
+          # A function that raises on its arguments (a host's, or a
+          # built-in handed a value it cannot use) fails the call, not the render.
+          fail!("function #{name.inspect} raised #{e.class}: #{e.message}")
         end
 
         # Interpolates a `formatString` template.

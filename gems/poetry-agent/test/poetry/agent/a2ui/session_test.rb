@@ -58,6 +58,21 @@ class SessionTest < Minitest::Test
     assert_equal 3, session.surface("s").version
   end
 
+  def test_update_data_model_refuses_an_index_past_the_cap
+    session = A2UI::Session.new
+    session.apply({ "createSurface" => { "surfaceId" => "s", "dataModel" => { "items" => %w[a] } } })
+
+    assert_empty session.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/items/999999999",
+                                                        "value" => "x" } })
+    error = session.errors.last["error"]
+
+    assert_equal "DATA_ERROR", error["code"]
+    assert_equal "s", error["surfaceId"]
+    assert_match(/exceeds the maximum \(10000\)/, error["message"])
+    assert_equal({ "items" => %w[a] }, session.surface("s").data)
+    assert_equal 0, session.surface("s").version, "a refused write changes nothing"
+  end
+
   def test_rejections_become_renderer_to_agent_errors
     session = A2UI::Session.new
     session.apply({ "createSurface" => { "surfaceId" => "s" } })
@@ -136,6 +151,25 @@ class SessionTest < Minitest::Test
                  session.responses
     assert_equal "f2", session.errors.last.dig("error", "functionCallId")
     assert_match(/missing value/, session.errors.last.dig("error", "message"))
+  end
+
+  def test_a_function_that_raises_answers_an_execution_error
+    functions = A2UI::Functions.new
+    functions.define("lookup", description: "Looks up a record.", returns: "string",
+                               callers: "rendererOrAgent") { |_, _| raise "connection refused to 10.0.0.5" }
+    catalog = A2UI::Catalogs::Basic.new
+    catalog.define_singleton_method(:functions) { functions }
+    session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
+    call = { "call" => "lookup", "catalogId" => "https://example.com/cat.json" }
+
+    assert_empty session.apply({ "callRendererFunction" => { "functionCallId" => "f1", "callFunction" => call } })
+    error = session.errors.last["error"]
+
+    assert_equal "EXECUTION_ERROR", error["code"]
+    assert_equal "f1", error["functionCallId"]
+    assert_equal "lookup: an error occurred during function execution (RuntimeError)", error["message"],
+                 "the exception's own message stays with the host"
+    assert_empty session.responses
   end
 
   def test_delete_surface

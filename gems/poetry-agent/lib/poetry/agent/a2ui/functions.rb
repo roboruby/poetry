@@ -38,6 +38,9 @@ module Poetry
         CURRENCIES = { "USD" => ["$", 2], "EUR" => ["€", 2], "GBP" => ["£", 2], "JPY" => ["¥", 0],
                        "CNY" => ["CN¥", 2], "INR" => ["₹", 2], "KRW" => ["₩", 0], "BRL" => ["R$", 2],
                        "CAD" => ["CA$", 2], "AUD" => ["A$", 2], "MXN" => ["MX$", 2], "CHF" => ["CHF ", 2] }.freeze
+        # The most fraction digits a formatter shows (a browser's own
+        # limit), so a `decimals` argument cannot ask for a string of any length.
+        MAX_DECIMALS = 100
         # Unicode TR35 date-pattern fields to strftime.
         DATE_FIELDS = { "yyyy" => "%Y", "yy" => "%y", "y" => "%Y", "MMMM" => "%B", "MMM" => "%b", "MM" => "%m",
                         "M" => "%-m", "dd" => "%d", "d" => "%-d", "EEEE" => "%A", "EEE" => "%a", "EE" => "%a",
@@ -331,7 +334,7 @@ module Poetry
           # A number with thousands separators and the requested fraction digits; an empty string for no number.
           def format_number(args)
             number = Functions.number(args["value"]) or return ""
-            decimals = Functions.number(args["decimals"])
+            decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)
             delimiter = args["grouping"] == false ? "" : ","
             if decimals
               ActiveSupport::NumberHelper.number_to_rounded(number, precision: decimals.to_i, delimiter: delimiter,
@@ -347,7 +350,7 @@ module Poetry
             number = Functions.number(args["value"]) or return ""
             code = args["currency"].to_s.upcase
             unit, digits = CURRENCIES.fetch(code, ["#{code} ", 2])
-            decimals = Functions.number(args["decimals"])&.to_i || digits
+            decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)&.to_i || digits
             ActiveSupport::NumberHelper.number_to_currency(number, unit: unit, precision: decimals, separator: ".",
                                                                    delimiter: args["grouping"] == false ? "" : ",",
                                                                    format: "%u%n", negative_format: "-%u%n")

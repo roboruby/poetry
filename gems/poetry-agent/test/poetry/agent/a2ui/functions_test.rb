@@ -48,6 +48,26 @@ class FunctionsTest < Minitest::Test
     assert_equal "", ev.call("formatNumber", { "value" => "n/a" })
   end
 
+  def test_decimals_hold_to_the_formatters_limit
+    ev = evaluator
+
+    assert_equal 102, ev.call("formatNumber", { "value" => 1.5, "decimals" => 1_000_000_000 }).length
+    assert_equal "2", ev.call("formatNumber", { "value" => 1.5, "decimals" => -3 })
+    assert_equal 103, ev.call("formatCurrency", { "value" => 1.5, "currency" => "USD", "decimals" => 10**30 }).length
+  end
+
+  def test_a_function_that_raises_fails_the_call_not_the_render
+    functions = A2UI::Functions.new
+    functions.define("lookup", description: "Looks up a record.", returns: "string") { |_, _| raise TypeError, "no" }
+    catalog = A2UI::Catalogs::Basic.new
+    catalog.define_singleton_method(:functions) { functions }
+    errors = []
+    ev = A2UI::Evaluator.new(A2UI::Surface.new(id: "s", catalog: catalog), on_error: ->(message) { errors << message })
+
+    assert_nil ev.call("lookup", {})
+    assert_equal ['function "lookup" raised TypeError: no'], errors
+  end
+
   def test_currency_formatting
     ev = evaluator
 

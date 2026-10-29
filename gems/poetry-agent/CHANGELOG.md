@@ -44,6 +44,9 @@
 
 ### Fixed
 
+- An A2UI agent can no longer make the data model allocate an array of any size: a write names an array index up to 10,000 (A2UI's bound) or `-` to append, and anything else on an array (`/items/999999999`, `-5`, a name) is refused with a `DATA_ERROR` message on the surface instead of growing the array or raising `IndexError`. An input bound to such a path is skipped on submit with the same error.
+- An A2UI function that raises no longer escapes: from `callRendererFunction` it answers `EXECUTION_ERROR` with the function's name and the exception's class (not its message), and during a render the call fails with a warning while the surface still renders.
+- `formatNumber` and `formatCurrency` hold `decimals` to 0 through 100, so an argument can no longer ask for a string of any length; a negative count no longer raises.
 - An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` no longer raises `NoMethodError`: a snapshot carrying no activity keeps the activities, so the delta applies; one naming an activity no message holds is skipped with a warning.
 - A frontend tool called through `TOOL_CALL_CHUNK` events waits on the browser once the run ends; it used to stay loading and never reach the bridge.
 - A snapshot's multimodal user content is kept as parts instead of becoming a Ruby `inspect` string.

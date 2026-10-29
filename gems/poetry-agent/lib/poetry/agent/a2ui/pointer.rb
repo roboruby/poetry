@@ -11,6 +11,13 @@ module Poetry
       #   Pointer.get({ "user" => { "name" => "Ada" } }, "/user/name") # => "Ada"
       #   Pointer.absolute("name", "/users/1")                       # => "/users/1/name"
       module Pointer
+        # The largest array index a write may name, the spec's bound, so a
+        # path cannot make the data model allocate an array of any size.
+        MAX_INDEX = 10_000
+
+        # A write the data model refuses (the spec's DataError).
+        class Error < StandardError; end
+
         module_function
 
         # Splits a pointer into unescaped reference tokens; `""` and `"/"`
@@ -65,12 +72,14 @@ module Poetry
 
         # Writes a value at a pointer (A2UI upsert semantics): missing
         # objects are created along the way, a nil value removes the key,
-        # and the whole-document pointer replaces the document.
+        # and the whole-document pointer replaces the document. An array
+        # takes an index up to {MAX_INDEX}, or `-` to append.
         #
         # @param document [Hash, Array, nil]
         # @param path [String]
         # @param value [Object, nil]
         # @return [Object] the updated document
+        # @raise [Error] for an array token that is not an index, or one past {MAX_INDEX}
         def upsert(document, path, value)
           parts = tokens(path)
           return value if parts.empty?
@@ -97,19 +106,30 @@ module Poetry
         # Writes a value at a pointer token: an array appends on the dash token, else sets the index or key.
         def store(node, token, value)
           if node.is_a?(Array)
-            token == "-" ? node.push(value) : node[token.to_i] = value
+            token == "-" ? node.push(value) : node[index(token)] = value
           else
             node[token] = value
           end
         end
 
-        # Removes a token's child from a node, by index for an array.
+        # Removes a token's child from a node, by index for an array (where
+        # a token that is not an index names nothing).
         # @api private
         def delete(node, token)
-          node.is_a?(Array) ? node.delete_at(token.to_i) : node.delete(token)
+          return node.delete(token) unless node.is_a?(Array)
+
+          node.delete_at(token.to_i) if token.match?(/\A\d+\z/)
         end
 
-        private_class_method :child_of, :store
+        # An array token as an index: digits, at most {MAX_INDEX}.
+        def index(token)
+          raise Error, "#{token.inspect} is not an array index" unless token.match?(/\A\d+\z/)
+          raise Error, "array index #{token} exceeds the maximum (#{MAX_INDEX})" if token.to_i > MAX_INDEX
+
+          token.to_i
+        end
+
+        private_class_method :child_of, :store, :index
       end
     end
   end

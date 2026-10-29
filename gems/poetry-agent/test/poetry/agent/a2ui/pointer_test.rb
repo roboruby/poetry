@@ -59,4 +59,25 @@ class PointerTest < Minitest::Test
 
     assert_equal [9, 3], document["list"]
   end
+
+  def test_an_array_takes_an_index_up_to_the_cap
+    document = { "items" => %w[a b c] }
+    Pointer.upsert(document, "/items/10000", "max")
+
+    assert_equal 10_001, document["items"].size
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/items/10001", "x") }
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/items/999999999", "x") }
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/items/10001/name", "x") }
+    assert_equal 10_001, document["items"].size, "a refused write allocates nothing"
+  end
+
+  def test_an_array_token_that_is_not_an_index_is_refused
+    document = { "list" => [1, 2] }
+
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/list/-5", 9) }
+    assert_raises(Pointer::Error) { Pointer.upsert(document, "/list/name", 9) }
+    Pointer.upsert(document, "/list/name", nil)
+
+    assert_equal [1, 2], document["list"], "removing what no index names removes nothing"
+  end
 end
