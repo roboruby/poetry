@@ -1,0 +1,46 @@
+<%# The host simulator: a page that plays the host's half of the MCP Apps
+    bridge over this site's own MCP server. It reads the app document at
+    /mcp (resources/read), loads it into a frame, answers the page's
+    ui/initialize with this page's theme and tokens as the host context,
+    calls show_plans and hands the page the result, and relays the page's
+    own tool calls, messages and size reports. The sandbox a real host
+    builds (a second origin, a CSP from the resource's lists) is not
+    simulated here; the document the frame loads is the one Claude loads. %>
+<div class="grid w-full gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+     data-controller="mcp-app-host"
+     data-mcp-app-host-endpoint-value="/mcp"
+     data-mcp-app-host-resource-value="ui://poetry-docs/plans"
+     data-mcp-app-host-tool-value="show_plans">
+  <div class="flex flex-col gap-4">
+    <form class="flex flex-wrap items-end gap-3" data-action="submit->mcp-app-host#call">
+      <%= poetry_field(id: "mcp-app-team-size", label_text: "Team size", class: "w-32") do |field| %>
+        <%= poetry_input(type: "number", name: "team_size", value: 8, min: 1, data: { mcp_app_host_target: "teamSize" },
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_button(type: :submit) { "Call show_plans" } %>
+      <%= poetry_button(variant: :outline, data: { action: "click->mcp-app-host#toggleTheme" }) { "Flip the host theme" } %>
+      <%= poetry_button(variant: :ghost, data: { action: "click->mcp-app-host#reload" }) { "Reload the app" } %>
+    </form>
+    <div class="overflow-hidden rounded-xl border bg-card">
+      <iframe title="The plans MCP App" class="block w-full border-0" style="height: 240px"
+              sandbox="allow-scripts allow-same-origin allow-forms"
+              data-mcp-app-host-target="frame"></iframe>
+    </div>
+    <p class="text-sm text-muted-foreground" data-mcp-app-host-target="status">Loading the app document from /mcp.</p>
+  </div>
+  <div class="flex flex-col gap-3">
+    <h3 class="text-sm font-medium">Messages the app sent to the chat</h3>
+    <ul class="flex min-h-10 flex-col gap-1 text-sm" data-mcp-app-host-target="messages"></ul>
+    <h3 class="text-sm font-medium">The bridge, both ways</h3>
+    <ol class="max-h-80 overflow-auto rounded-lg border bg-muted/40 p-2 font-mono text-xs leading-5"
+        data-mcp-app-host-target="log"></ol>
+    <p class="text-sm text-muted-foreground">
+      Everything in the frame is Poetry rendered on the server: the shell came from
+      <code>resources/read</code>, the table from <code>show_plans</code>, the confirmation from
+      <code>choose_plan</code>, a tool only the page can call. Flip the host theme and the page follows;
+      the host's tokens (this page's) map onto the app's structural tokens. In Claude Desktop the same
+      document renders in Claude's sandbox: add this site's <code>/mcp</code> through
+      <code>mcp-remote</code> and ask for the plans.
+    </p>
+  </div>
+</div>

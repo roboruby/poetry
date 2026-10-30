@@ -1,0 +1,16 @@
+<%# The MCP App document: a complete page for the host's sandbox. The head
+    carries the assets the document's strategy chose and the bridge; the
+    body is the template, rendered once as the shell the fragments fill. %>
+<!DOCTYPE html>
+<%= tag.html(**{ lang: I18n.locale, data: { host_styles: @poetry_app.host_styles } }.merge(@poetry_app.html_attributes)) do %>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= @poetry_app.name %></title>
+    <%= @poetry_app.head(self, importmap: (Rails.application.importmap.to_json(resolver: self) if Rails.application.respond_to?(:importmap))) %>
+    <%= yield :head %>
+  </head>
+  <body class="bg-background text-foreground font-sans">
+    <%= yield %>
+  </body>
+<% end %>

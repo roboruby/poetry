@@ -39,9 +39,10 @@ module Poetry
         # @param env [Hash] the Rack environment
         # @return [Array(Integer, Hash, Array<String>)] status, headers, body
         def call(env)
-          return forbidden unless origin_allowed?(Rack::Request.new(env))
+          request = Rack::Request.new(env)
+          return forbidden unless origin_allowed?(request)
 
-          transport.call(env)
+          Apps.with_request_origin(request.base_url) { transport.call(env) }
         end
 
         private

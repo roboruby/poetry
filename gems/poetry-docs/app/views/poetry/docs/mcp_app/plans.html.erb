@@ -1,0 +1,16 @@
+<%# The plans app's template: rendered once, before any call, as the shell
+    the fragments fill. The region waits with a skeleton until the host
+    delivers the tool result. %>
+<main class="p-4">
+  <div data-mcp-region="plans">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Plans" } %>
+      <% card.with_description { "Waiting for the plans" } %>
+      <div class="flex flex-col gap-2">
+        <%= poetry_skeleton(class: "h-4 w-2/3") %>
+        <%= poetry_skeleton(class: "h-4 w-1/2") %>
+        <%= poetry_skeleton(class: "h-4 w-3/5") %>
+      </div>
+    <% end %>
+  </div>
+</main>

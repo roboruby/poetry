@@ -75,6 +75,58 @@
       ]
     },
     {
+      "path": "@poetry/agent/mcp_app",
+      "type": "module",
+      "superclass": null,
+      "docstring": "@poetry/agent/mcp_app - the page's half of the MCP Apps bridge: the\nspec's JSON-RPC 2.0 over postMessage between a Poetry-rendered document\nin a host's sandbox and the host. It initializes, takes the tool's input\nand result, applies the fragments a result carries to the regions of the\npage (the way Turbo Streams apply), calls the server's tools from marked\nbuttons and forms, posts a message to the chat, reports the page's size,\nfollows the host's theme, and maps the host's style variables onto\nPoetry's tokens. No SDK, no imports: the same file runs from the app's\norigin or inlined in the document.\n\nMarkup it reads:\n  data-mcp-region=\"plans\"          a region a fragment targets\n  data-mcp-tool=\"choose_plan\"      a button (or form) that calls a tool\n  data-mcp-args='{\"plan\":\"pro\"}'   the button's arguments (a form sends its fields)\n  data-mcp-message=\"...\"           a button that posts a user message\n  data-mcp-link=\"https://...\"      a button that opens a link\n  <html data-host-styles=\"structural|all|none\">  the token mapping\n\nEvents it dispatches on document (detail carries the payload):\n  poetry:mcp-app:connect, :input, :result, :fragments, :context, :error",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/mcp_app.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "class",
+          "group": null,
+          "signature": "connect(options = {})",
+          "docstring": "Connects a bridge to the host when the page runs in a frame, and keeps\nit at `window.poetryMcpApp`.",
+          "params": [
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": "the bridge's options"
+            }
+          ],
+          "return": {
+            "types": [
+              "Bridge|null"
+            ],
+            "text": "the bridge, or null outside a frame"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 431
+        }
+      ],
+      "constants": [
+        {
+          "name": "PROTOCOL_VERSION",
+          "value": "\"2026-01-26\"",
+          "docstring": "The protocol version the bridge speaks."
+        },
+        {
+          "name": "STRUCTURAL_TOKENS",
+          "value": "{",
+          "docstring": "Poetry's tokens that take the host's structural variables (backgrounds, text, borders, fonts)."
+        },
+        {
+          "name": "ACCENT_TOKENS",
+          "value": "{",
+          "docstring": "The accent tokens `all` maps on top of the structural ones."
+        }
+      ]
+    },
+    {
       "path": "@poetry/agent/stream_actions",
       "type": "module",
       "superclass": null,
@@ -99,6 +151,587 @@
           "docstring": "Installs the before-morph-attribute guard once per document, so a streamed\nre-render morphs without clobbering local state."
         }
       ]
+    },
+    {
+      "path": "Bridge",
+      "type": "class",
+      "superclass": null,
+      "docstring": "The bridge over one host window.\n\nExported from `@poetry/agent/mcp_app`.",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/mcp_app.js",
+      "methods": [
+        {
+          "name": "constructor",
+          "scope": "instance",
+          "group": null,
+          "signature": "constructor({ target = window.parent, document: page = document, appInfo = { name: \"poetry-app\", version: \"1\" } } = {})",
+          "docstring": "",
+          "params": [
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[options.target]",
+              "types": [
+                "Window"
+              ],
+              "text": "the host window (the parent by default)"
+            },
+            {
+              "name": "[options.document]",
+              "types": [
+                "Document"
+              ],
+              "text": "the page (the global document by default)"
+            },
+            {
+              "name": "[options.appInfo]",
+              "types": [
+                "Object"
+              ],
+              "text": "the app's name and version"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 65
+        },
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts listening, initializes with the host and reports the first size.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the host's initialize result"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 85
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops listening and observing.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 105
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(name, args = {})",
+          "docstring": "Calls a server tool through the host and applies the result's fragments.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the tool"
+            },
+            {
+              "name": "[args]",
+              "types": [
+                "Object"
+              ],
+              "text": "the arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the tool result"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 120
+        },
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message(text)",
+          "docstring": "Posts a user message into the host's chat.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "string"
+              ],
+              "text": "the message"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the host's answer"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 132
+        },
+        {
+          "name": "openLink",
+          "scope": "instance",
+          "group": null,
+          "signature": "openLink(url)",
+          "docstring": "Asks the host to open a link.",
+          "params": [
+            {
+              "name": "url",
+              "types": [
+                "string"
+              ],
+              "text": "the URL"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the host's answer"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 142
+        },
+        {
+          "name": "updateModelContext",
+          "scope": "instance",
+          "group": null,
+          "signature": "updateModelContext(params)",
+          "docstring": "Replaces the context the model sees on its next turn.",
+          "params": [
+            {
+              "name": "params",
+              "types": [
+                "Object"
+              ],
+              "text": "`content` blocks and/or `structuredContent`"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the host's answer"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 152
+        },
+        {
+          "name": "requestDisplayMode",
+          "scope": "instance",
+          "group": null,
+          "signature": "requestDisplayMode(mode)",
+          "docstring": "Asks for a display mode.",
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "string"
+              ],
+              "text": "inline, fullscreen or pip"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the mode the host set"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 162
+        },
+        {
+          "name": "applyResult",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyResult(result)",
+          "docstring": "Applies a result's fragments to the page's regions.",
+          "params": [
+            {
+              "name": "result",
+              "types": [
+                "Object"
+              ],
+              "text": "a tool result"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Object>"
+            ],
+            "text": "the fragments applied"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 172
+        },
+        {
+          "name": "applyFragment",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyFragment({ target, action = \"replace\", html = \"\" })",
+          "docstring": "Applies one fragment to its region.",
+          "params": [
+            {
+              "name": "fragment",
+              "types": [
+                "Object"
+              ],
+              "text": "the fragment"
+            },
+            {
+              "name": "fragment.target",
+              "types": [
+                "string"
+              ],
+              "text": "the region"
+            },
+            {
+              "name": "[fragment.action]",
+              "types": [
+                "string"
+              ],
+              "text": "replace (the default), append, prepend or remove"
+            },
+            {
+              "name": "[fragment.html]",
+              "types": [
+                "string"
+              ],
+              "text": "the HTML"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 189
+        },
+        {
+          "name": "applyContext",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyContext(context)",
+          "docstring": "Follows the host's theme and style variables.",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the host context"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 205
+        },
+        {
+          "name": "applyStyles",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyStyles(variables)",
+          "docstring": "Maps the host's variables onto Poetry's tokens, per the document's mode.",
+          "params": [
+            {
+              "name": "variables",
+              "types": [
+                "Object"
+              ],
+              "text": "the host's style variables"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 228
+        },
+        {
+          "name": "applyFonts",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyFonts(css)",
+          "docstring": "Adds the host's font-face rules to the page.",
+          "params": [
+            {
+              "name": "css",
+              "types": [
+                "string"
+              ],
+              "text": "the host's font CSS"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 245
+        },
+        {
+          "name": "observe",
+          "scope": "instance",
+          "group": null,
+          "signature": "observe()",
+          "docstring": "Watches the page's size and reports changes to the host.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 256
+        },
+        {
+          "name": "reportSize",
+          "scope": "instance",
+          "group": null,
+          "signature": "reportSize()",
+          "docstring": "Reports the page's size to the host when it changed.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 263
+        },
+        {
+          "name": "request",
+          "scope": "instance",
+          "group": null,
+          "signature": "request(method, params)",
+          "docstring": "Sends a request and waits for its reply.",
+          "params": [
+            {
+              "name": "method",
+              "types": [
+                "string"
+              ],
+              "text": "the method"
+            },
+            {
+              "name": "params",
+              "types": [
+                "Object"
+              ],
+              "text": "the params"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the result"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 278
+        },
+        {
+          "name": "notify",
+          "scope": "instance",
+          "group": null,
+          "signature": "notify(method, params)",
+          "docstring": "Sends a notification.",
+          "params": [
+            {
+              "name": "method",
+              "types": [
+                "string"
+              ],
+              "text": "the method"
+            },
+            {
+              "name": "params",
+              "types": [
+                "Object"
+              ],
+              "text": "the params"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 292
+        },
+        {
+          "name": "post",
+          "scope": "instance",
+          "group": null,
+          "signature": "post(message)",
+          "docstring": "Posts a message to the host.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "Object"
+              ],
+              "text": "a JSON-RPC message"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 301
+        },
+        {
+          "name": "receive",
+          "scope": "instance",
+          "group": null,
+          "signature": "receive(event)",
+          "docstring": "Handles a message from the host: a reply to a request, a notification,\nor a request the page answers.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MessageEvent"
+              ],
+              "text": "the message"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 311
+        },
+        {
+          "name": "settle",
+          "scope": "instance",
+          "group": null,
+          "signature": "settle(message)",
+          "docstring": "Resolves or rejects the request a reply answers.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "Object"
+              ],
+              "text": "the reply"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 351
+        },
+        {
+          "name": "click",
+          "scope": "instance",
+          "group": null,
+          "signature": "click(event)",
+          "docstring": "A click on a marked button: a tool call, a message or a link.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Event"
+              ],
+              "text": "the click"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 367
+        },
+        {
+          "name": "submit",
+          "scope": "instance",
+          "group": null,
+          "signature": "submit(event)",
+          "docstring": "A marked form's submission: its fields become the tool's arguments.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Event"
+              ],
+              "text": "the submit"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 385
+        },
+        {
+          "name": "busy",
+          "scope": "instance",
+          "group": null,
+          "signature": "busy(element, work)",
+          "docstring": "Marks an element busy while a call runs.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": "the button or form"
+            },
+            {
+              "name": "work",
+              "types": [
+                "Function"
+              ],
+              "text": "the call"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the call's result"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 408
+        },
+        {
+          "name": "emit",
+          "scope": "instance",
+          "group": null,
+          "signature": "emit(name, detail)",
+          "docstring": "Dispatches a bridge event on the document.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the event's short name"
+            },
+            {
+              "name": "detail",
+              "types": [
+                "*"
+              ],
+              "text": "the payload"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 419
+        }
+      ],
+      "constants": []
     },
     {
       "path": "poetry--agent--a2ui-surface",

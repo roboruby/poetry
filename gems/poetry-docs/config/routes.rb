@@ -41,10 +41,12 @@ Poetry::Docs::Engine.routes.draw do
   get "webmcp" => "docs#webmcp", as: :webmcp
   get "ag-ui" => "docs#agui", as: :agui
   get "a2ui" => "docs#a2ui", as: :a2ui
+  get "mcp-apps" => "docs#mcp_apps", as: :mcp_apps
   # The site's own MCP server over HTTP at the conventional same-origin
   # path - what in-page WebMCP bridges (site MCP server packs)
-  # proxy, read-only by construction.
-  mount Poetry::Agent::MCP::HTTP.new(-> { Poetry::Agent::MCP::Bundled.server(app_root: Poetry::Docs.root.to_s) }) => "/mcp"
+  # proxy, read-only by construction - with the MCP App demo served
+  # beside the roster (the plans document and its two tools).
+  mount Poetry::Agent::MCP::HTTP.new(-> { Poetry::Docs::McpAppShowcase.server(app_root: Poetry::Docs.root.to_s) }) => "/mcp"
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes

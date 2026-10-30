@@ -1,0 +1,41 @@
+<%# The plans table, a fragment for the "plans" region: Poetry's card, tabs
+    and table, with a Choose button per row that calls the app-only tool. %>
+<%= poetry_card do |card| %>
+  <% card.with_title { "Plans" } %>
+  <% card.with_description { team_size ? "For a team of #{team_size}" : "Pick a plan" } %>
+  <%= poetry_tabs(label: "Billing") do |tabs| %>
+    <% %w[monthly yearly].each do |period| %>
+      <% tabs.with_tab(period.capitalize, value: period) do %>
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Plan" } %>
+              <%= poetry_table_head { "Price" } %>
+              <%= poetry_table_head { "Seats" } %>
+              <%= poetry_table_head { "" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% plans.each do |plan| %>
+              <%= poetry_table_row(data: ({ selected: true } if plan == recommended)) do %>
+                <%= poetry_table_cell do %>
+                  <span class="font-medium"><%= plan["name"] %></span>
+                  <% if plan == recommended %>
+                    <%= poetry_badge(variant: :success) { "Recommended" } %>
+                  <% end %>
+                  <div class="text-xs text-muted-foreground"><%= plan["note"] %></div>
+                <% end %>
+                <%= poetry_table_cell { "$#{plan[period]} / #{period == "monthly" ? "month" : "year"}" } %>
+                <%= poetry_table_cell { "up to #{plan["seats"]}" } %>
+                <%= poetry_table_cell(class: "text-right") do %>
+                  <%= poetry_button(size: :sm, variant: (plan == recommended ? :default : :outline),
+                                    data: { mcp_tool: "choose_plan", mcp_args: { plan: plan["id"], billing: period }.to_json }) { "Choose" } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

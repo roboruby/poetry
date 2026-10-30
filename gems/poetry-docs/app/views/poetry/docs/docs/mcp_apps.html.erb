@@ -1,0 +1,240 @@
+<% content_for :title, "MCP Apps" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("MCP Apps") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  server_source = <<~CODE
+    # config/initializers/plans_app.rb
+    PLANS = Poetry::Agent::Apps::Document.new(
+      uri: "ui://shop/plans", name: "plans", title: "Plans",
+      template: "apps/plans",            # app/views/apps/plans.html.erb, the page's body
+      origin: "https://shop.example",     # where the sandbox loads your stylesheet and importmap from
+      stylesheets: ["application"], entrypoint: "application"
+    )
+
+    server = MCP::Server.new(name: "shop", version: "1.0",
+                             capabilities: Poetry::Agent::Apps.capabilities,
+                             resources: [PLANS.resource])
+    server.resources_read_handler(&Poetry::Agent::Apps.reader(PLANS))
+
+    server.define_tool(name: "show_plans", meta: PLANS.tool_meta,
+                       input_schema: { type: "object", properties: { team_size: { type: "integer" } } }) do |team_size: nil|
+      Poetry::Agent::Apps.result(
+        text: "Three plans; Pro fits a team of \#{team_size}.",
+        data: { "recommended" => "pro" },
+        fragments: [Poetry::Agent::Apps.fragment("plans", partial: "apps/plans/table", locals: { team_size: team_size })]
+      ).to_response
+    end
+
+    server.define_tool(name: "choose_plan", meta: PLANS.tool_meta(visibility: ["app"]),
+                       input_schema: { type: "object", required: ["plan"], properties: { plan: { type: "string" } } }) do |plan:|
+      Poetry::Agent::Apps.result(text: "The user chose \#{plan}.", data: { "chosen" => plan },
+                                 fragments: [Poetry::Agent::Apps.fragment("plans", partial: "apps/plans/chosen", locals: { plan: plan })]).to_response
+    end
+
+    # config/routes.rb - the gem's Streamable HTTP transport, stateless, at the conventional path
+    mount MCP::Server::Transports::StreamableHTTPTransport.new(server, stateless: true) => "/mcp"
+  CODE
+  template_source = <<~CODE
+    #{o}# app/views/apps/plans.html.erb - the page's body, rendered once as the shell #{e}
+    <main class="p-4">
+      <div data-mcp-region="plans">
+        #{o}= poetry_card do |card| #{e}
+          #{o} card.with_title { "Plans" } #{e}
+          #{o}= poetry_skeleton(class: "h-4 w-2/3") #{e}
+        #{o} end #{e}
+      </div>
+    </main>
+
+    #{o}# app/views/apps/plans/_table.html.erb - a fragment for the region #{e}
+    #{o}= poetry_card do |card| #{e}
+      #{o} card.with_title { "Plans" } #{e}
+      #{o}= poetry_button(data: { mcp_tool: "choose_plan", mcp_args: { plan: "pro" }.to_json }) { "Choose Pro" } #{e}
+      #{o}= poetry_button(variant: :outline, data: { mcp_message: "Tell me more about Pro" }) { "Ask" } #{e}
+    #{o} end #{e}
+  CODE
+  roster_source = <<~CODE
+    # Beside poetry-agent's own coding-agent roster (this site does this at /mcp)
+    server = Poetry::Agent::MCP::Bundled.server(app_root: Rails.root.to_s).apps(PLANS)
+    server.mcp.define_tool(name: "show_plans", meta: PLANS.tool_meta) { |team_size: nil| ... }
+    mount Poetry::Agent::MCP::HTTP.new(server) => "/mcp"
+  CODE
+  inline_source = <<~CODE
+    Poetry::Agent::Apps::Document.new(uri: "ui://shop/plans", name: "plans", template: "apps/plans",
+                                      assets: :inline, stylesheets: ["application"])
+  CODE
+  claude_source = <<~CODE
+    // claude_desktop_config.json - a local server through mcp-remote; a deployed one is a remote connector
+    { "mcpServers": { "shop": { "command": "npx", "args": ["-y", "mcp-remote", "http://localhost:3000/mcp"] } } }
+  CODE
+  events_source = <<~CODE
+    // Your own script in the page, beside the bridge
+    document.addEventListener("poetry:mcp-app:result", (event) => console.log(event.detail.structuredContent))
+    await window.poetryMcpApp.call("choose_plan", { plan: "pro" })   // applies the result's fragments
+    await window.poetryMcpApp.message("I chose Pro")                  // a user message in the chat
+    await window.poetryMcpApp.requestDisplayMode("fullscreen")
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">MCP Apps</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Your screens inside Claude's chat. MCP Apps is the MCP extension through
+      which a tool ships its own page, and a host shows it in a sandboxed frame
+      beside the conversation. Poetry ships the author's side: your Rails app's
+      MCP server serves Poetry-rendered documents, and every tool result carries
+      server-rendered fragments the page applies by region.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what">What an app is</h2>
+      <p>
+        An MCP App is a tool with a page. The tool's <code>_meta.ui.resourceUri</code>
+        names a <code>ui://</code> resource on the same server; the host reads that
+        resource (a complete HTML document), loads it into a sandboxed frame inside
+        the chat, and the two talk JSON-RPC over <code>postMessage</code>: the host
+        hands the page the tool's input and result, the page calls the server's
+        tools through the host, posts messages into the chat and reports its size.
+        Claude (web and desktop), ChatGPT, VS Code, Cursor, Goose and others render
+        apps; the host owns the sandbox, the consent and the model.
+      </p>
+      <p>
+        The extension's model is a static template fed data afterwards. Poetry
+        renders on the server, with the data. The two meet like Hotwire does:
+        the document is the shell, rendered once, and each tool result carries
+        the HTML for the regions it changes, which the bridge applies the way
+        Turbo Streams apply. Your components, your theme, your partials, with
+        <code>tools/call</code> as the transport.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="serve">Serve a document</h2>
+      <p>
+        A <code>Poetry::Agent::Apps::Document</code> is one resource: the template
+        rendered as the page's body through your application controller's renderer
+        (your helpers and Poetry's apply), inside the engine's layout, which writes
+        the head. The server is the official <code>mcp</code> gem's;
+        <code>Apps.capabilities</code> declares tools, resources and the extension,
+        <code>Apps.reader</code> answers <code>resources/read</code> for each document,
+        and <code>document.tool_meta</code> links a tool to its page. A tool with
+        <code>visibility: ["app"]</code> is hidden from the model and callable only from the page.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: server_source, language: "ruby", label: "The server") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A result's text is what every host shows its model; <code>data</code> travels as
+        <code>structuredContent</code>, which Claude's model reads in place of the text;
+        the fragments travel in <code>_meta</code>, which reaches the page and stays out of
+        the model's context. Keep the text and the data model-sized, and let the HTML ride
+        in the fragments.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: roster_source, language: "ruby", label: "Beside poetry-agent's roster") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="page">The page</h2>
+      <p>
+        The template is a shell: regions marked <code>data-mcp-region</code>, each with
+        a skeleton until a fragment arrives. A fragment names its region and an
+        action (replace, the default; append; prepend; remove). The bridge reads a
+        few attributes: <code>data-mcp-tool</code> with <code>data-mcp-args</code> on
+        a button calls a tool (on a form, its fields are the arguments),
+        <code>data-mcp-message</code> posts a user message into the chat,
+        <code>data-mcp-link</code> asks the host to open a link. Stimulus connects
+        Poetry's controllers in swapped-in fragments as it does anywhere else.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: template_source, language: "erb", label: "The template and a fragment") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>window.poetryMcpApp</code> is the bridge for a script of your own, and
+        the document hears <code>poetry:mcp-app:connect</code>, <code>:input</code>,
+        <code>:result</code>, <code>:fragments</code>, <code>:context</code> and
+        <code>:error</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: events_source, language: "javascript", label: "From your own script") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="assets">Assets and the sandbox</h2>
+      <p>
+        By default (<code>assets: :absolute</code>) the document links your stylesheets
+        and your importmap with absolute URLs on <code>origin</code>, and declares that
+        origin in the resource's <code>resourceDomains</code> and
+        <code>connectDomains</code>. The host's sandbox then loads the Rails asset
+        pipeline as it is, digests and importmap included, and Poetry's controllers run
+        inside the frame; the app's assets answer with CORS headers for the sandbox's
+        origin (<code>rack-cors</code> on <code>/assets/*</code>). Claude honors those
+        lists, and refuses a <code>&lt;base&gt;</code> element, which is why the URLs
+        are absolute. <code>origin: :request</code> reads the origin of the request
+        being served, which <code>Poetry::Agent::MCP::HTTP</code> sets around each
+        request.
+      </p>
+      <p>
+        <code>assets: :inline</code> writes the compiled stylesheets and the bridge into
+        the document instead: a self-contained page with no JavaScript runtime beyond the
+        bridge, the fallback for a host that loads nothing external. Poetry's built
+        stylesheet is a few hundred kilobytes, so prefer the absolute strategy where the
+        host allows it.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: inline_source, language: "ruby", label: "Inline") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="theme">Theme and the host's styles</h2>
+      <p>
+        The host's theme becomes <code>.dark</code> on the page, live, as the user
+        switches. The host also sends its style variables (its backgrounds, text,
+        borders, fonts, radii), and the bridge maps them onto Poetry's tokens so the
+        app feels native: <code>host_styles: :structural</code> (the default) takes the
+        structural ones and keeps Poetry's accents, <code>:all</code> takes the primary
+        and destructive accents too, <code>:none</code> keeps your theme whole. The
+        host's safe-area insets arrive as <code>--poetry-app-safe-top</code> and its
+        siblings for padding that stays clear of the host's bars.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="try">Try it</h2>
+      <p>
+        The <%= link_to "MCP App demo", "/demos/mcp-app" %> shows a plan picker this site's
+        own MCP server serves beside its roster, through a host simulator that speaks the
+        bridge's protocol over <code>/mcp</code> and logs it both ways. The same document
+        renders in Claude Desktop: add the server and ask for the plans. A deployed app is
+        a remote connector; Claude asks the user before it shows an app.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: claude_source, language: "json", label: "Claude Desktop") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The vendored specification and wire schema sit under the gem's fixtures with a
+        manifest (<code>rake mcp_apps:verify</code>), and the tests hold a document's
+        <code>_meta.ui</code>, a tool's <code>_meta</code> and a result to the schema.
+        Per-user authorization, where the MCP server is an OAuth resource server and
+        the host signs the user in once, is the gem's resource-server stack, outside this page.
+      </p>
+    <% end %>
+  </section>
+</div>

@@ -35,7 +35,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 49
+          "line": 50
         },
         {
           "name": "configure",
@@ -57,7 +57,7 @@
             }
           ],
           "file": "lib/poetry/agent.rb",
-          "line": 61
+          "line": 62
         },
         {
           "name": "root",
@@ -74,7 +74,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 42
+          "line": 43
         }
       ],
       "constants": [
@@ -10647,6 +10647,1186 @@
       ]
     },
     {
+      "path": "Poetry::Agent::Apps",
+      "type": "module",
+      "superclass": null,
+      "docstring": "MCP Apps, the author's side: a Rails app's own MCP server (on the\nofficial `mcp` gem) serves Poetry-rendered screens as the interactive\nUI a host such as Claude shows inside its chat. A {Document} is one\n`ui://` resource, a complete HTML page rendered through the app's own\nviews and layout-free of the host page: Poetry's stylesheet and\ncontrollers reach it from the app's origin (or inlined), and the\nbridge (`@poetry/agent/mcp_app`) speaks the spec's JSON-RPC over\npostMessage to the host. A tool answers with a {Result}: text for the\nmodel, data in `structuredContent`, and {Fragment}s of server-rendered\nHTML in `_meta`, which the bridge applies by region the way Turbo\nStreams apply, so the page stays a template and the data stays with\nthe call.\n\nThe server, the transport, consent, the sandbox and the iframe are the\ngem's and the host's; what Poetry adds is the document, the fragments\nand the bridge.",
+      "examples": [
+        {
+          "title": "A plans app",
+          "text": "PLANS = Poetry::Agent::Apps::Document.new(uri: \"ui://shop/plans\", name: \"plans\",\n                                          template: \"apps/plans\", origin: \"https://shop.example\")\nserver = MCP::Server.new(name: \"shop\", capabilities: Poetry::Agent::Apps.capabilities,\n                         resources: [PLANS.resource])\nserver.resources_read_handler(&Poetry::Agent::Apps.reader(PLANS))\nserver.define_tool(name: \"show_plans\", meta: PLANS.tool_meta) do |team_size: nil|\n  Poetry::Agent::Apps.result(text: \"Three plans; Pro fits #{team_size}.\",\n                             data: { \"recommended\" => \"pro\" },\n                             fragments: [Poetry::Agent::Apps.fragment(\"plans\", partial: \"apps/plans/table\",\n                                                                      locals: { team_size: team_size })])\nend"
+        }
+      ],
+      "file": "lib/poetry/agent/apps.rb",
+      "methods": [
+        {
+          "name": "capabilities",
+          "scope": "class",
+          "group": null,
+          "signature": "capabilities",
+          "docstring": "Server capabilities declaring tools, resources and the Apps extension.",
+          "params": [],
+          "return": {
+            "types": [
+              "::MCP::Server::Capabilities"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 48
+        },
+        {
+          "name": "fragment",
+          "scope": "class",
+          "group": null,
+          "signature": "fragment(target, html = nil, partial: nil, locals: {}, action: :replace, renderer: nil)",
+          "docstring": "A fragment for one region: the HTML given, or a partial rendered\nthrough the renderer.",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": "the region (`data-mcp-region`) the fragment applies to"
+            },
+            {
+              "name": "html",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the HTML, when already rendered"
+            },
+            {
+              "name": "partial",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the partial to render instead"
+            },
+            {
+              "name": "locals",
+              "types": [
+                "Hash"
+              ],
+              "text": "the partial's locals"
+            },
+            {
+              "name": "action",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "replace (the default), append, prepend or remove"
+            },
+            {
+              "name": "renderer",
+              "types": [
+                "#render",
+                "nil"
+              ],
+              "text": "what renders the partial (see {.renderer})"
+            }
+          ],
+          "return": {
+            "types": [
+              "Fragment"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 79
+        },
+        {
+          "name": "reader",
+          "scope": "class",
+          "group": null,
+          "signature": "reader(*documents)",
+          "docstring": "A `resources_read_handler` block answering each document at its URI\n(an unknown URI answers nothing, as the gem expects).",
+          "params": [
+            {
+              "name": "documents",
+              "types": [
+                "Array<Document>"
+              ],
+              "text": "the documents the server serves"
+            }
+          ],
+          "return": {
+            "types": [
+              "Proc"
+            ],
+            "text": "`(params) -> [contents]`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 61
+        },
+        {
+          "name": "renderer",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer",
+          "docstring": "What renders documents and partials when a call names nothing: the\napplication controller's renderer, so the app's helpers and layouts\napply, or Action Controller's base one.",
+          "params": [],
+          "return": {
+            "types": [
+              "#render"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 120
+        },
+        {
+          "name": "renderer=",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer=(value)",
+          "docstring": "Sets the default renderer (anything answering `render(**options)`).",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "#render",
+                "nil"
+              ],
+              "text": "the renderer, or nil for the default"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 127
+        },
+        {
+          "name": "request_origin",
+          "scope": "class",
+          "group": null,
+          "signature": "request_origin",
+          "docstring": "The origin of the request being served, for a document whose\n`origin:` is `:request` (set by {MCP::HTTP} around each request).",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 100
+        },
+        {
+          "name": "result",
+          "scope": "class",
+          "group": null,
+          "signature": "result(text:, data: nil, fragments: [], error: false, meta: {})",
+          "docstring": "A tool result: text for the model, data for the host and the model,\nfragments for the page.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the text content block"
+            },
+            {
+              "name": "data",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "`structuredContent`"
+            },
+            {
+              "name": "fragments",
+              "types": [
+                "Array<Fragment>"
+              ],
+              "text": "the fragments the bridge applies"
+            },
+            {
+              "name": "error",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the result is an error"
+            },
+            {
+              "name": "meta",
+              "types": [
+                "Hash"
+              ],
+              "text": "more `_meta` entries"
+            }
+          ],
+          "return": {
+            "types": [
+              "Result"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 93
+        },
+        {
+          "name": "with_request_origin",
+          "scope": "class",
+          "group": null,
+          "signature": "with_request_origin(origin)",
+          "docstring": "Serves a block with the request's origin set.",
+          "params": [
+            {
+              "name": "origin",
+              "types": [
+                "String"
+              ],
+              "text": "the request's base URL"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the block's value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps.rb",
+          "line": 107
+        }
+      ],
+      "constants": [
+        {
+          "name": "META_KEY",
+          "value": "\"poetry\"",
+          "docstring": "The key under a result's `_meta` that carries the fragments."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Assets",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The compiled assets a document inlines.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/document.rb",
+      "methods": [
+        {
+          "name": "bridge",
+          "scope": "class",
+          "group": null,
+          "signature": "bridge",
+          "docstring": "The bridge module's source.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 226
+        },
+        {
+          "name": "stylesheet",
+          "scope": "class",
+          "group": null,
+          "signature": "stylesheet(name, pipeline: Rails.application.assets, builds: Rails.root.join(\"app/assets/builds\"))",
+          "docstring": "A compiled stylesheet's source, from the asset pipeline (propshaft\nor sprockets) or the builds directory.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the stylesheet name, without the extension"
+            },
+            {
+              "name": "pipeline",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "the app's assets (`Rails.application.assets` by default)"
+            },
+            {
+              "name": "builds",
+              "types": [
+                "Pathname",
+                "nil"
+              ],
+              "text": "the builds directory (`app/assets/builds` by default)"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 213
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Document",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One `ui://` resource: the complete HTML document a host loads into\nits sandbox, rendered through the app's own views, and the metadata\n(`_meta.ui`) the host reads beside it.\n\nAssets reach the sandbox two ways. `assets: :absolute` (the default)\nlinks the app's stylesheets and importmap from `origin`, which the\ndocument declares in the resource's CSP lists, so the Rails asset\npipeline and Poetry's controllers run inside the sandbox as they\nare. `assets: :inline` writes the compiled stylesheets into the\ndocument and leaves the page without a JavaScript runtime beyond\nthe bridge: the fallback for a host that loads nothing external.\n\nThe page is a template: it renders once, before any call, and the\nbridge fills its regions from the fragments each tool result\ncarries.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/document.rb",
+      "methods": [
+        {
+          "name": "assets",
+          "scope": "instance",
+          "group": null,
+          "signature": "assets",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "the asset strategy"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 39
+        },
+        {
+          "name": "contents",
+          "scope": "instance",
+          "group": null,
+          "signature": "contents",
+          "docstring": "The `resources/read` contents item: the document and its `_meta.ui`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 132
+        },
+        {
+          "name": "csp",
+          "scope": "instance",
+          "group": null,
+          "signature": "csp",
+          "docstring": "The resource's CSP lists.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 150
+        },
+        {
+          "name": "entrypoint",
+          "scope": "instance",
+          "group": null,
+          "signature": "entrypoint",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the importmap entry the page imports (absolute assets)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 43
+        },
+        {
+          "name": "head",
+          "scope": "instance",
+          "group": null,
+          "signature": "head(view, importmap: nil)",
+          "docstring": "The head's asset tags for a view: the stylesheets linked from the\norigin or inlined, the importmap with every path absolute and the\nentry import, and the bridge, from the origin or inlined.",
+          "params": [
+            {
+              "name": "view",
+              "types": [
+                "ActionView::Base"
+              ],
+              "text": "the layout's view context"
+            },
+            {
+              "name": "importmap",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the app's importmap JSON (absolute assets)"
+            }
+          ],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 171
+        },
+        {
+          "name": "host_styles",
+          "scope": "instance",
+          "group": null,
+          "signature": "host_styles",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "the host-style mapping"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 45
+        },
+        {
+          "name": "html",
+          "scope": "instance",
+          "group": null,
+          "signature": "html",
+          "docstring": "The document, rendered through the renderer: the template as the\nbody, inside the engine's layout, which writes the head.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 159
+        },
+        {
+          "name": "html_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "html_attributes",
+          "docstring": "The attributes of the document's `<html>` element.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 108
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(uri:, name:, template:, origin: nil, assets: :absolute, stylesheets: [\"application\"], entrypoint: \"application\", host_styles: :structural, title: nil, description: nil, connect: [], resources: [], frames: [], permissions: [], prefers_border: nil, domain: nil, locals: {}, html: {}, renderer: nil)",
+          "docstring": "rubocop:disable Metrics/ParameterLists",
+          "params": [
+            {
+              "name": "uri",
+              "types": [
+                "String"
+              ],
+              "text": "the `ui://` URI"
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the resource name"
+            },
+            {
+              "name": "template",
+              "types": [
+                "String"
+              ],
+              "text": "the template rendered as the page's body (`\"apps/plans\"`)"
+            },
+            {
+              "name": "origin",
+              "types": [
+                "String",
+                "Symbol",
+                "nil"
+              ],
+              "text": "the app's origin (`\"https://shop.example\"`), required for absolute\nassets; `:request` reads the origin of the request being served (see {Apps.with_request_origin})"
+            },
+            {
+              "name": "assets",
+              "types": [
+                "Symbol"
+              ],
+              "text": "`:absolute` or `:inline`"
+            },
+            {
+              "name": "stylesheets",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the stylesheet names (`\"application\"` by default)"
+            },
+            {
+              "name": "entrypoint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the importmap entry to import with absolute assets; nil imports none"
+            },
+            {
+              "name": "host_styles",
+              "types": [
+                "Symbol"
+              ],
+              "text": "`:structural`, `:all` or `:none`"
+            },
+            {
+              "name": "title",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the resource title"
+            },
+            {
+              "name": "description",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the resource description"
+            },
+            {
+              "name": "connect",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "more origins the page may fetch from"
+            },
+            {
+              "name": "resources",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "more origins the page may load scripts, styles, images and fonts from"
+            },
+            {
+              "name": "frames",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "origins the page may embed in frames"
+            },
+            {
+              "name": "permissions",
+              "types": [
+                "Array<Symbol, String>"
+              ],
+              "text": "camera, microphone, geolocation, clipboard_write"
+            },
+            {
+              "name": "prefers_border",
+              "types": [
+                "Boolean",
+                "nil"
+              ],
+              "text": "whether the host should draw its border around the page"
+            },
+            {
+              "name": "domain",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the host-specific sandbox origin (Claude's `ui.domain`)"
+            },
+            {
+              "name": "locals",
+              "types": [
+                "Hash"
+              ],
+              "text": "locals for the template"
+            },
+            {
+              "name": "html",
+              "types": [
+                "Hash"
+              ],
+              "text": "attributes for the document's `<html>` element (a theme class, say)"
+            },
+            {
+              "name": "renderer",
+              "types": [
+                "#render",
+                "nil"
+              ],
+              "text": "what renders the document (see {Apps.renderer})"
+            }
+          ],
+          "return": {
+            "types": [
+              "Document"
+            ],
+            "text": "a new instance of Document"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 69
+        },
+        {
+          "name": "match?",
+          "scope": "instance",
+          "group": null,
+          "signature": "match?(candidate)",
+          "docstring": "Whether a read names this document.",
+          "params": [
+            {
+              "name": "candidate",
+              "types": [
+                "String"
+              ],
+              "text": "a URI"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 128
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": null,
+          "signature": "name",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the resource name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 35
+        },
+        {
+          "name": "origin",
+          "scope": "instance",
+          "group": null,
+          "signature": "origin",
+          "docstring": "The app's origin the sandbox loads from: the one given, or the\nrequest's own.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 100
+        },
+        {
+          "name": "resource",
+          "scope": "instance",
+          "group": null,
+          "signature": "resource",
+          "docstring": "The gem's resource, for the server's `resources:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "::MCP::Resource"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 112
+        },
+        {
+          "name": "stylesheets",
+          "scope": "instance",
+          "group": null,
+          "signature": "stylesheets",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the stylesheets the page links or inlines"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 41
+        },
+        {
+          "name": "template",
+          "scope": "instance",
+          "group": null,
+          "signature": "template",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the template rendered as the page's body"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 37
+        },
+        {
+          "name": "tool_meta",
+          "scope": "instance",
+          "group": null,
+          "signature": "tool_meta(visibility: nil, meta: nil)",
+          "docstring": "The `_meta` linking a tool to this document.",
+          "params": [
+            {
+              "name": "visibility",
+              "types": [
+                "Array<String>",
+                "nil"
+              ],
+              "text": "`[\"model\"]`, `[\"app\"]` or both (the default)"
+            },
+            {
+              "name": "meta",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "other `_meta` entries"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 121
+        },
+        {
+          "name": "ui_meta",
+          "scope": "instance",
+          "group": null,
+          "signature": "ui_meta",
+          "docstring": "The `_meta.ui` the host reads: the CSP lists (the app's origin\namong them with absolute assets), the permissions, the border\npreference and the sandbox domain.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 140
+        },
+        {
+          "name": "uri",
+          "scope": "instance",
+          "group": null,
+          "signature": "uri",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the `ui://` URI"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 33
+        }
+      ],
+      "constants": [
+        {
+          "name": "ASSETS",
+          "value": "%i[absolute inline].freeze",
+          "docstring": "The asset strategies."
+        },
+        {
+          "name": "HOST_STYLES",
+          "value": "%i[structural all none].freeze",
+          "docstring": "How the host's style variables map onto Poetry's tokens: the\nstructural ones (backgrounds, text, borders, fonts; Poetry's\naccents stay), all of them (the primary and destructive accents\ntoo), or none."
+        },
+        {
+          "name": "MIME_TYPE",
+          "value": "::MCP::Apps::RESOURCE_MIME_TYPE",
+          "docstring": "The resource's MIME type."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Fragment",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One region's change: server-rendered HTML applied by the bridge to\nthe element whose `data-mcp-region` is the target, the way a Turbo\nStream applies to its target.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/fragment.rb",
+      "methods": [
+        {
+          "name": "action",
+          "scope": "instance",
+          "group": null,
+          "signature": "action",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the action"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/fragment.rb",
+          "line": 19
+        },
+        {
+          "name": "html",
+          "scope": "instance",
+          "group": null,
+          "signature": "html",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the HTML (none for remove)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/fragment.rb",
+          "line": 17
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(target:, html: nil, action: :replace)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": "the region (`data-mcp-region`)"
+            },
+            {
+              "name": "html",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the HTML"
+            },
+            {
+              "name": "action",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "one of {ACTIONS}"
+            }
+          ],
+          "return": {
+            "types": [
+              "Fragment"
+            ],
+            "text": "a new instance of Fragment"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/fragment.rb",
+          "line": 25
+        },
+        {
+          "name": "target",
+          "scope": "instance",
+          "group": null,
+          "signature": "target",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the region's name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/fragment.rb",
+          "line": 15
+        },
+        {
+          "name": "to_h",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_h",
+          "docstring": "The wire shape.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/fragment.rb",
+          "line": 36
+        }
+      ],
+      "constants": [
+        {
+          "name": "ACTIONS",
+          "value": "%w[replace append prepend remove].freeze",
+          "docstring": "The actions the bridge applies: replace the region's content,\nappend or prepend to it, or empty it."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Result",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "A UI tool's result: the text block every host shows a model, the\ndata in `structuredContent` (what a host with structured support\ngives its model and the page), and the fragments in `_meta`, which\nreach the page and stay out of the model's context.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/result.rb",
+      "methods": [
+        {
+          "name": "data",
+          "scope": "instance",
+          "group": null,
+          "signature": "data",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "the structured content"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 14
+        },
+        {
+          "name": "error?",
+          "scope": "instance",
+          "group": null,
+          "signature": "error?",
+          "docstring": "Whether the result is an error.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 35
+        },
+        {
+          "name": "fragments",
+          "scope": "instance",
+          "group": null,
+          "signature": "fragments",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Fragment>"
+            ],
+            "text": "the fragments"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 16
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(text:, data: nil, fragments: [], error: false, meta: {})",
+          "docstring": "",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the text content block"
+            },
+            {
+              "name": "data",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "`structuredContent`"
+            },
+            {
+              "name": "fragments",
+              "types": [
+                "Array<Fragment>"
+              ],
+              "text": "the fragments"
+            },
+            {
+              "name": "error",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the result is an error"
+            },
+            {
+              "name": "meta",
+              "types": [
+                "Hash"
+              ],
+              "text": "more `_meta` entries (string keys)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Result"
+            ],
+            "text": "a new instance of Result"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 25
+        },
+        {
+          "name": "meta",
+          "scope": "instance",
+          "group": null,
+          "signature": "meta",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the other `_meta` entries"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 18
+        },
+        {
+          "name": "text",
+          "scope": "instance",
+          "group": null,
+          "signature": "text",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the text content"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 12
+        },
+        {
+          "name": "to_h",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_h",
+          "docstring": "The wire shape.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 54
+        },
+        {
+          "name": "to_meta",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_meta",
+          "docstring": "The `_meta` entry: the fragments under {META_KEY}, beside the others.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "nil when there is nothing to carry"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 46
+        },
+        {
+          "name": "to_response",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_response",
+          "docstring": "The gem's response, as a tool block returns it.",
+          "params": [],
+          "return": {
+            "types": [
+              "::MCP::Tool::Response"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/result.rb",
+          "line": 39
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "Poetry::Agent::Config",
       "type": "class",
       "superclass": "Object",
@@ -11119,6 +12299,31 @@
           "line": 277
         },
         {
+          "name": "apps",
+          "scope": "instance",
+          "group": null,
+          "signature": "apps(*documents)",
+          "docstring": "Serves MCP Apps beside the roster: each document becomes a\n`ui://` resource, the server declares the extension, and the\nhost defines the documents' tools on {#mcp}. Call it before the\nserver first serves.",
+          "params": [
+            {
+              "name": "documents",
+              "types": [
+                "Array<Apps::Document>"
+              ],
+              "text": "the documents to serve"
+            }
+          ],
+          "return": {
+            "types": [
+              "self"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 351
+        },
+        {
           "name": "handle",
           "scope": "instance",
           "group": null,
@@ -11142,7 +12347,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 345
+          "line": 363
         },
         {
           "name": "initialize",
@@ -11218,7 +12423,7 @@
           "scope": "instance",
           "group": null,
           "signature": "mcp",
-          "docstring": "The gem's server over the roster: JSON-RPC, the protocol\nnegotiation, the argument validation and the transports are its;\nevery tool dispatches here. Public so a host can define its own\ntools and resources beside Poetry's (an MCP App among them).",
+          "docstring": "The gem's server over the roster: JSON-RPC, the protocol\nnegotiation, the argument validation and the transports are its;\nevery tool dispatches here. Public so a host can define its own\ntools beside Poetry's (an MCP App's among them, see {#apps}).",
           "params": [],
           "return": {
             "types": [
@@ -11228,7 +12433,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 334
+          "line": 335
         },
         {
           "name": "serve",
@@ -11255,7 +12460,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 355
+          "line": 373
         }
       ],
       "constants": [

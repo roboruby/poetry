@@ -352,6 +352,52 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Functions.basic"
   end
 
+test "the MCP Apps guide renders with its mirror" do
+  get "/mcp-apps"
+
+  assert_response :success
+  assert_includes response.body, "Serve a document"
+  get "/mcp-apps.md"
+
+  assert_response :success
+  assert_includes response.body, "Poetry::Agent::Apps"
+end
+
+test "the site's MCP server serves the plans app beside the roster" do
+  headers = { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }
+  post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json, headers: headers
+  tools = JSON.parse(response.body).dig("result", "tools")
+
+  assert_equal "ui://poetry-docs/plans", tools.find { |t| t["name"] == "show_plans" }.dig("_meta", "ui", "resourceUri")
+  assert_equal [ "app" ], tools.find { |t| t["name"] == "choose_plan" }.dig("_meta", "ui", "visibility")
+  post "/mcp", params: { jsonrpc: "2.0", id: 2, method: "resources/read", params: { uri: "ui://poetry-docs/plans" } }.to_json,
+               headers: headers
+  contents = JSON.parse(response.body).dig("result", "contents", 0)
+
+  assert_equal "text/html;profile=mcp-app", contents["mimeType"]
+  assert_includes contents["text"], %(data-mcp-region="plans")
+  assert_includes contents["text"], %(href="http://www.example.com/assets/poetry_docs)
+  assert_includes contents["text"], %("@poetry/agent/mcp_app": "http://www.example.com/assets/poetry/agent/mcp_app)
+  assert_includes contents["text"], %(class="style-default")
+  assert_equal [ "http://www.example.com" ], contents.dig("_meta", "ui", "csp", "resourceDomains")
+  post "/mcp", params: { jsonrpc: "2.0", id: 3, method: "tools/call",
+                         params: { name: "show_plans", arguments: { team_size: 8 } } }.to_json, headers: headers
+  result = JSON.parse(response.body)["result"]
+
+  assert_includes result.dig("content", 0, "text"), "Recommended for 8: Pro."
+  assert_equal "pro", result.dig("structuredContent", "recommended")
+  fragment = result.dig("_meta", "poetry", "fragments", 0)
+
+  assert_equal "plans", fragment["target"]
+  assert_includes fragment["html"], "Recommended"
+  assert_includes fragment["html"], %(data-mcp-tool="choose_plan")
+  post "/mcp", params: { jsonrpc: "2.0", id: 4, method: "tools/call",
+                         params: { name: "choose_plan", arguments: { plan: "pro", billing: "yearly" } } }.to_json,
+               headers: headers
+
+  assert_includes JSON.parse(response.body).dig("result", "_meta", "poetry", "fragments", 0, "html"), "Pro chosen"
+end
+
   test "the site's MCP server answers at /mcp" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
                  headers: { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }

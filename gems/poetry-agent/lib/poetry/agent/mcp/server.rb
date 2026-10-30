@@ -302,6 +302,7 @@ module Poetry
           @skill_files = {}
           @app_root = app_root
           @recipes = recipes
+          @documents = []
         end
 
         # compose routing: the strong-match threshold, and the words
@@ -328,13 +329,30 @@ module Poetry
         # The gem's server over the roster: JSON-RPC, the protocol
         # negotiation, the argument validation and the transports are its;
         # every tool dispatches here. Public so a host can define its own
-        # tools and resources beside Poetry's (an MCP App among them).
+        # tools beside Poetry's (an MCP App's among them, see {#apps}).
         #
         # @return [::MCP::Server] the server the transports mount
         def mcp
           @mcp ||= ::MCP::Server.new(name: SERVER_INFO["name"], version: SERVER_INFO["version"],
-                                     capabilities: ::MCP::Server::Capabilities.new.tap(&:support_tools),
-                                     tools: tool_classes)
+                                     capabilities: capabilities, tools: tool_classes,
+                                     resources: @documents.map(&:resource)).tap do |server|
+            server.resources_read_handler(&Apps.reader(@documents)) if @documents.any?
+          end
+        end
+
+        # Serves MCP Apps beside the roster: each document becomes a
+        # `ui://` resource, the server declares the extension, and the
+        # host defines the documents' tools on {#mcp}. Call it before the
+        # server first serves.
+        #
+        # @param documents [Array<Apps::Document>] the documents to serve
+        # @return [self]
+        # @raise [ArgumentError] once the server has served (its capabilities are declared)
+        def apps(*documents)
+          raise ArgumentError, "add apps before the server first serves" if @mcp
+
+          @documents.concat(documents.flatten)
+          self
         end
 
         # A JSON-RPC 2.0 request hash -> a response hash (or nil for a
@@ -366,6 +384,11 @@ module Poetry
         end
 
         private
+
+        # Tools alone, or tools, resources and the Apps extension once a document is served.
+        def capabilities
+          @documents.any? ? Apps.capabilities : ::MCP::Server::Capabilities.new.tap(&:support_tools)
+        end
 
         # The roster as the gem's tool classes, each one calling back here
         # with the arguments the gem validated against its schema.

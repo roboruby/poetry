@@ -1350,6 +1350,48 @@
     "path": "/a2ui#setup"
   },
   {
+    "title": "MCP Apps",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps"
+  },
+  {
+    "title": "What an app is",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#what"
+  },
+  {
+    "title": "Serve a document",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#serve"
+  },
+  {
+    "title": "The page",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#page"
+  },
+  {
+    "title": "Assets and the sandbox",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#assets"
+  },
+  {
+    "title": "Theme and the host's styles",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#theme"
+  },
+  {
+    "title": "Try it",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#try"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",
@@ -7254,6 +7296,18 @@
     "path": "/demos/agui-relay#states"
   },
   {
+    "title": "MCP App",
+    "page": "MCP App",
+    "section": "demos",
+    "path": "/demos/mcp-app"
+  },
+  {
+    "title": "Default",
+    "page": "MCP App",
+    "section": "demos",
+    "path": "/demos/mcp-app#default"
+  },
+  {
     "title": "A2UI Surface",
     "page": "A2UI Surface",
     "section": "demos",
@@ -7372,6 +7426,12 @@
     "page": "@poetry/agent",
     "section": "api",
     "path": "/api/poetry-agent-controllers"
+  },
+  {
+    "title": "Bridge",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#bridge"
   },
   {
     "title": "poetry-ui",

@@ -72,6 +72,9 @@ module Poetry
       def a2ui
       end
 
+      def mcp_apps
+      end
+
       # The per-gem library pages (/libraries/:slug) - templates live under
       # docs/libraries/, named by the underscored slug.
       def library
@@ -199,6 +202,7 @@ module Poetry
         when "webmcp" then DocsMarkdown.webmcp(guide_entry("webmcp"))
         when "agui" then DocsMarkdown.agui(guide_entry("ag-ui"))
         when "a2ui" then DocsMarkdown.a2ui(guide_entry("a2ui"))
+        when "mcp_apps" then DocsMarkdown.mcp_apps(guide_entry("mcp-apps"))
         when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
         when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug.tr('-', '_')}", icon_entry)
         when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))

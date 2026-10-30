@@ -385,6 +385,41 @@ module Poetry
         assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "not one of"
       end
 
+      def test_apps_join_the_roster_as_resources_with_the_extension_declared
+        renderer = Object.new.tap { |fake| fake.define_singleton_method(:render) { |**| "<html>" } }
+        document = Apps::Document.new(uri: "ui://poetry/plans", name: "plans", template: "apps/plans",
+                                      origin: "https://docs.example", renderer: renderer)
+        target = server.apps(document)
+        target.mcp.define_tool(name: "show_plans", meta: document.tool_meta) do |**|
+          Apps.result(text: "Plans", fragments: [Apps.fragment("plans", "<p>Pro</p>")]).to_response
+        end
+        params = { "protocolVersion" => MCP::PROTOCOL_VERSION, "capabilities" => {},
+                   "clientInfo" => { "name" => "test", "version" => "0" } }
+        capabilities = target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)
+                             .dig("result", "capabilities")
+
+        assert capabilities.key?("resources")
+        assert_equal({ "mimeTypes" => [Apps::Document::MIME_TYPE] },
+                     capabilities.dig("extensions", "io.modelcontextprotocol/ui"))
+        resources = target.handle("jsonrpc" => "2.0", "id" => 2, "method" => "resources/list").dig("result",
+                                                                                                   "resources")
+
+        assert_equal(["ui://poetry/plans"], resources.map { |resource| resource["uri"] })
+        read = target.handle("jsonrpc" => "2.0", "id" => 3, "method" => "resources/read",
+                             "params" => { "uri" => "ui://poetry/plans" }).dig("result", "contents", 0)
+
+        assert_equal "<html>", read["text"]
+        assert_equal ["https://docs.example"], read.dig("_meta", "ui", "csp", "resourceDomains")
+        result = tool_result(target, "show_plans", {})
+
+        assert_equal "<p>Pro</p>", result.dig("_meta", "poetry", "fragments", 0, "html")
+        assert_includes target.handle("jsonrpc" => "2.0", "id" => 4, "method" => "tools/list").dig("result", "tools")
+                              .map { |tool| tool["name"] }, "show_plans"
+        assert_raises(ArgumentError) { target.apps(document) }
+        refute server.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)
+                     .dig("result", "capabilities").key?("resources"), "a server without apps declares tools alone"
+      end
+
       def test_a_notification_gets_no_reply
         assert_nil server.handle("jsonrpc" => "2.0", "method" => "notifications/initialized")
       end

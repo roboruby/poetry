@@ -4,6 +4,8 @@
 
 ### Added
 
+- The MCP Apps guide (`/mcp-apps`): what an app is, serving a Poetry-rendered document as a `ui://` resource on the official `mcp` gem, answering tool calls with server-rendered fragments, the page's attributes and the bridge, the two asset strategies and what each host does with them, the host's theme and style variables, what the model sees, and how to try it in Claude Desktop; with its markdown mirror.
+- The MCP App demo (`/demos/mcp-app`): a plan picker this site's own MCP server serves beside its roster, shown by a host simulator that speaks the bridge's protocol over `/mcp` and logs it both ways; the same document renders in Claude Desktop through `mcp-remote`.
 - The Islands library page: what an island is, the module contract, fill and flow with two live islands (a canvas clock and a counter that writes to its hidden input), the form seam, the Turbo lifecycle and the check, with its markdown mirror; the poetry-island and @poetry/island API pages.
 
 - `config.community_registry` names a directory of community items: `/r/<name>.json` serves one when the gems ship no item of that name, and `/r/community/registry.json` serves their index. The UI library page explains the community fallback.

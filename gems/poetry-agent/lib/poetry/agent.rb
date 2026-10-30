@@ -10,6 +10,7 @@ require_relative "agent/mcp/http"
 require_relative "agent/webmcp"
 require_relative "agent/agui"
 require_relative "agent/a2ui"
+require_relative "agent/apps"
 require_relative "agent/engine" if defined?(Rails::Engine)
 
 # The poetry namespace.

@@ -146,7 +146,12 @@ module Poetry
                   description: "Render agent-generated UI with your own components: fold A2UI " \
                            "messages into surfaces, render them as forms, stream updates that keep " \
                            "their state, turn a submission into the spec's action, and run the " \
-                           "catalog's functions and checks on the server and in the browser.")
+                           "catalog's functions and checks on the server and in the browser."),
+        Entry.new(slug: "mcp-apps", title: "MCP Apps", section: "docs", icon: :"app-window",
+                  description: "Your screens inside Claude's chat: serve Poetry-rendered documents " \
+                           "as the ui:// resources of your app's own MCP server, answer tool calls " \
+                           "with server-rendered fragments the page applies by region, and let the " \
+                           "page call your tools, post to the chat and follow the host's theme.")
       ].freeze
 
       # The interaction demos are the one hand-curated section: full-page
@@ -167,6 +172,12 @@ module Poetry
                                "into MessageScroller. The tabs component on the page executes the agent's " \
                                "tool call through the registrar once you approve it; the interrupt is " \
                                "answered as a URL decision. No model, no key, same bytes every run."),
+        Entry.new(slug: "mcp-app", title: "MCP App", section: "demos",
+                  description: "A Poetry screen served as an MCP App by this site's own MCP server, " \
+                               "shown by a host simulator: the document loads into a frame, the host " \
+                               "calls show_plans and the page fills from the fragment, a Choose button " \
+                               "calls the app-only tool from inside the page, and the bridge's traffic " \
+                               "is logged both ways. The same document renders in Claude Desktop."),
         Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
                   description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
                                "Poetry's own catalog rendered on the server as forms, and a third streamed " \
@@ -233,7 +244,7 @@ module Poetry
           "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
                            engines
                            herb],
-          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
+          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent]
         }.freeze
 
         # DOC_SECTIONS resolved to entries. Raises when the section map and
