@@ -229,6 +229,13 @@
       #{o} session.surfaces.each_value do |surface| #{e}
         #{o}= Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: assistant_surface_path).call #{e}
       #{o} end #{e}
+    #{o} elsif Poetry::Agent::Apps::Activity.activity?(part) #{e}
+      #{o} app = Poetry::Agent::Apps::Activity.from(part[:content]) #{e}
+      #{o}= poetry_trace do |trace| #{e}
+        #{o} trace.with_step("Ran the app's tool", icon: :"app-window", description: "app not shown") do #{e}
+          #{o}= poetry_code_block(code: app.text.to_s, size: :sm, wrap: true) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
     #{o} else #{e}
       <code>#{o}= part[:activity_type] #{e}: #{o}= part[:content].to_json #{e}</code>
     #{o} end #{e}
@@ -529,7 +536,7 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <h2 id="surfaces">A2UI surfaces in the stream</h2>
+      <h2 id="surfaces">A2UI surfaces and MCP Apps in the stream</h2>
       <p>
         An agent that paints UI sends it inside the stream as an activity: an
         <code>ACTIVITY_SNAPSHOT</code> with <code>activityType</code>
@@ -540,6 +547,20 @@
         <code>forwardedProps.a2uiAction</code>, the placement the AG-UI middleware
         expects. The <%= link_to "A2UI Surfaces guide", a2ui_path %> covers the
         renderer itself.
+      </p>
+      <p>
+        AG-UI's MCP Apps middleware sends a tool's app the same way: an
+        <code>ACTIVITY_SNAPSHOT</code> with <code>activityType</code>
+        <code>mcp-apps</code>, whose content carries the tool's MCP result, the
+        app's <code>resourceUri</code>, the server and the tool's input;
+        <code>Poetry::Agent::Apps::Activity.from(part[:content])</code> reads it.
+        Showing the app is a host's work (a sandbox on its own origin, the bridge,
+        and <code>resources/read</code> proxied through the run), which Poetry does
+        not do yet. The fallback renders the result's text in a Trace step that
+        says the app was not shown; the model read that same text, so the
+        conversation loses the picture and nothing else. The relay demo's plans
+        tool has an app, and its row shows the step. The
+        <%= link_to "MCP Apps guide", mcp_apps_path %> covers the author's side.
       </p>
     <% end %>
     <%= poetry_code_block(code: surface_source, language: "erb", label: "The activity partial") %>

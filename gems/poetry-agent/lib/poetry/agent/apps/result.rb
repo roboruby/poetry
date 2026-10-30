@@ -8,18 +8,28 @@ module Poetry
       # gives its model and the page), and the fragments in `_meta`, which
       # reach the page and stay out of the model's context.
       class Result
-        # @return [String] the text content
+        # The text content block, what the model reads.
+        #
+        # @return [String]
         attr_reader :text
-        # @return [Hash, nil] the structured content
+        # The structured content, the data for the host.
+        #
+        # @return [Hash, nil]
         attr_reader :data
-        # @return [Array<Fragment>] the fragments
+        # The fragments for the page's regions.
+        #
+        # @return [Array<Fragment>]
         attr_reader :fragments
-        # @return [Hash] the other `_meta` entries
+        # The other `_meta` entries.
+        #
+        # @return [Hash]
         attr_reader :meta
 
+        # A result from its parts.
+        #
         # @param text [String] the text content block
         # @param data [Hash, nil] `structuredContent`
-        # @param fragments [Array<Fragment>] the fragments
+        # @param fragments [Array<Fragment>] server-rendered HTML for the page's regions
         # @param error [Boolean] whether the result is an error
         # @param meta [Hash] more `_meta` entries (string keys)
         def initialize(text:, data: nil, fragments: [], error: false, meta: {})

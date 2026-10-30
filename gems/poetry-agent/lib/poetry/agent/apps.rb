@@ -4,6 +4,7 @@ require "mcp"
 require_relative "apps/fragment"
 require_relative "apps/result"
 require_relative "apps/document"
+require_relative "apps/activity"
 
 module Poetry
   module Agent
@@ -72,7 +73,7 @@ module Poetry
       # @param target [String] the region (`data-mcp-region`) the fragment applies to
       # @param html [String, nil] the HTML, when already rendered
       # @param partial [String, nil] the partial to render instead
-      # @param locals [Hash] the partial's locals
+      # @param locals [Hash] the values the partial reads, by name
       # @param action [Symbol, String] replace (the default), append, prepend or remove
       # @param renderer [#render, nil] what renders the partial (see {.renderer})
       # @return [Fragment]
@@ -112,13 +113,15 @@ module Poetry
         Thread.current[:poetry_agent_apps_origin] = previous
       end
 
-      # What renders documents and partials when a call names nothing: the
-      # application controller's renderer, so the app's helpers and layouts
-      # apply, or Action Controller's base one.
+      # What renders documents and partials when a call names nothing:
+      # Action Controller's base renderer, which has Poetry's helpers (they
+      # ride on every view) and the app's templates. Set {.renderer=} to the
+      # application's own controller for its helpers and layouts, or name a
+      # renderer per document or fragment; the gem never names the host.
       #
       # @return [#render]
       def renderer
-        @renderer || (defined?(::ApplicationController) ? ::ApplicationController : ::ActionController::Base)
+        @renderer || ::ActionController::Base
       end
 
       # Sets the default renderer (anything answering `render(**options)`).

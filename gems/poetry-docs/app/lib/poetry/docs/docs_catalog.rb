@@ -167,7 +167,7 @@ module Poetry
                                "stream after your decision. No model, no key, same bytes every run."),
         Entry.new(slug: "agui-relay", title: "AG-UI Relay", section: "demos",
                   description: "A scripted AG-UI agent's event stream - text deltas, reasoning, a " \
-                               "backend tool call, shared state, a frontend tool call that asks first, an " \
+                               "backend tool call with an app the page cannot show, shared state, a frontend tool call that asks first, an " \
                                "interrupt, a subagent - relayed by poetry-agent as versioned Turbo Streams " \
                                "into MessageScroller. The tabs component on the page executes the agent's " \
                                "tool call through the registrar once you approve it; the interrupt is " \

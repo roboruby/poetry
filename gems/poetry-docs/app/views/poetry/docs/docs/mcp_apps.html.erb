@@ -112,6 +112,14 @@
         Turbo Streams apply. Your components, your theme, your partials, with
         <code>tools/call</code> as the transport.
       </p>
+      <p>
+        Apps travel through AG-UI too: AG-UI's MCP Apps middleware calls your
+        server for an agent and sends each result as an <code>mcp-apps</code>
+        activity, which <code>Poetry::Agent::Apps::Activity</code> reads. Showing
+        the app there is the host's work; the
+        <%= link_to "AG-UI Relay guide", agui_path %> has the fallback, a Trace
+        step with the result's text.
+      </p>
     <% end %>
   </section>
 
@@ -120,9 +128,12 @@
       <h2 id="serve">Serve a document</h2>
       <p>
         A <code>Poetry::Agent::Apps::Document</code> is one resource: the template
-        rendered as the page's body through your application controller's renderer
-        (your helpers and Poetry's apply), inside the engine's layout, which writes
-        the head. The server is the official <code>mcp</code> gem's;
+        rendered as the page's body through a controller's renderer, inside the
+        engine's layout, which writes the head. Action Controller's base renderer
+        is the default (Poetry's helpers ride on every view); set
+        <code>Poetry::Agent::Apps.renderer = ApplicationController</code>, or pass
+        <code>renderer:</code> on a document or fragment, for your own helpers and
+        layouts. The server is the official <code>mcp</code> gem's;
         <code>Apps.capabilities</code> declares tools, resources and the extension,
         <code>Apps.reader</code> answers <code>resources/read</code> for each document,
         and <code>document.tool_meta</code> links a tool to its page. A tool with

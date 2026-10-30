@@ -1260,7 +1260,7 @@
     "path": "/ag-ui#stopping"
   },
   {
-    "title": "A2UI surfaces in the stream",
+    "title": "A2UI surfaces and MCP Apps in the stream",
     "page": "AG-UI Relay",
     "section": "docs",
     "path": "/ag-ui#surfaces"

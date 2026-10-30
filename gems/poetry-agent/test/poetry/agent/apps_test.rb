@@ -12,6 +12,7 @@ module Poetry
     class AppsTest < Minitest::Test
       SCHEMA_PATH = File.expand_path("../../fixtures/mcp_apps/upstream/src/generated/schema.json", __dir__)
       SCHEMA_URI = "https://poetry.test/mcp-apps/schema.json"
+      STREAM_PATH = File.expand_path("../../fixtures/agui/1.0/streams/node-mw-mcp_apps-run1.sse", __dir__)
 
       # A renderer that records what it was asked and answers a marker.
       class FakeRenderer
@@ -93,6 +94,42 @@ module Poetry
 
         assert_equal "<rendered apps/plans/table>", fragment.html
         assert_equal [{ partial: "apps/plans/table", locals: { size: 8 } }], renderer.calls
+      end
+
+      # --- the middleware's activity ---
+
+      def test_the_activity_reads_what_the_middleware_sends
+        line = File.readlines(STREAM_PATH).find { |held| held.include?("ACTIVITY_SNAPSHOT") }
+        event = JSON.parse(line.delete_prefix("data: "))
+
+        assert_equal Apps::Activity::TYPE, event["activityType"]
+        activity = Apps::Activity.from(event["content"])
+
+        assert_equal "2026-10-28T20:23:38.554Z", activity.text
+        assert_equal({ "time" => "2026-10-28T20:23:38.554Z" }, activity.structured_content)
+        assert_equal "ui://get-time/mcp-app.html", activity.resource_uri
+        assert_equal "basic", activity.server_id
+        assert_equal "2279c4d9287de1932b697be6d81884a5", activity.server_hash
+        assert_empty activity.tool_input
+        refute_predicate activity, :error?
+      end
+
+      def test_the_activity_joins_text_blocks_reads_an_error_and_knows_its_part
+        blocks = [{ type: "text", text: "a" }, { type: "image", data: "x" }, { type: "text", text: "b" }]
+        content = { result: { content: blocks, isError: true },
+                    toolInput: { plan: "pro" } }
+        activity = Apps::Activity.from(content)
+
+        assert_equal "a\nb", activity.text
+        assert_predicate activity, :error?
+        assert_equal({ plan: "pro" }, activity.tool_input)
+        assert_equal 3, activity.content.size
+        assert_nil activity.resource_uri
+        assert_nil Apps::Activity.from(nil).text
+        assert_empty Apps::Activity.from({}).content
+        assert Apps::Activity.activity?({ kind: :activity, activity_type: "mcp-apps" })
+        refute Apps::Activity.activity?({ kind: :activity, activity_type: "a2ui-surface" })
+        refute Apps::Activity.activity?(nil)
       end
 
       # --- documents ---
@@ -233,8 +270,8 @@ module Poetry
         assert_equal "b{}", Apps::Assets.stylesheet("app.css", pipeline: sprockets, builds: Pathname("/nowhere"))
       end
 
-      def test_the_default_renderer_is_the_application_controller_when_one_exists
-        assert_equal ActionController::Base, Apps.renderer unless defined?(::ApplicationController)
+      def test_the_default_renderer_is_action_controller_s_base_until_set
+        assert_equal ActionController::Base, Apps.renderer
         Apps.renderer = FakeRenderer.new
 
         assert_kind_of FakeRenderer, Apps.renderer

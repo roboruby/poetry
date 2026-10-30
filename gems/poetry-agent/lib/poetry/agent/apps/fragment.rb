@@ -11,15 +11,23 @@ module Poetry
         # append or prepend to it, or empty it.
         ACTIONS = %w[replace append prepend remove].freeze
 
-        # @return [String] the region's name
+        # The region's name.
+        #
+        # @return [String]
         attr_reader :target
-        # @return [String, nil] the HTML (none for remove)
+        # The HTML, none for a remove.
+        #
+        # @return [String, nil]
         attr_reader :html
-        # @return [String] the action
+        # The action, one of {ACTIONS}.
+        #
+        # @return [String]
         attr_reader :action
 
+        # A fragment for a region; the HTML comes with it or from a renderer.
+        #
         # @param target [String] the region (`data-mcp-region`)
-        # @param html [String, nil] the HTML
+        # @param html [String, nil] the markup, none for a remove
         # @param action [Symbol, String] one of {ACTIONS}
         # @raise [ArgumentError] for an unknown action or a blank target
         def initialize(target:, html: nil, action: :replace)

@@ -24,6 +24,9 @@ module Poetry
       USER_TEXT = "Which plan fits a 10-person team? Show me the pricing tab."
       # The subagent that starts the trial in run 3.
       BILLING = "s-billing"
+
+      # What the plans tool's app says, the text its result carries for the model.
+      PLANS_TEXT = "Team: $12 a seat, 5+ seats\nBusiness: $24 a seat, 25+ seats\nRecommended for 10: Team."
       APPROVAL = { "id" => "int-trial", "reason" => "approval",
                    "message" => "Start a 30-day Team trial for the workspace?" }.freeze
 
@@ -161,6 +164,15 @@ module Poetry
             { "type" => "TOOL_CALL_RESULT", "messageId" => "t-plans", "toolCallId" => "c-plans",
               "content" => '{"plans":[{"name":"Team","seat_price":12,"min_seats":5},{"name":"Business","seat_price":24,"min_seats":25}]}',
               "_sleep" => 700 },
+            # The plans tool has an app (the MCP App demo's plan picker), which
+            # AG-UI's MCP Apps middleware sends as an activity after the result;
+            # with no host to show it, the relay's fallback step shows the text.
+            { "type" => "ACTIVITY_SNAPSHOT", "messageId" => "a1", "activityType" => Poetry::Agent::Apps::Activity::TYPE,
+              "content" => { "result" => { "content" => [ { "type" => "text", "text" => PLANS_TEXT } ],
+                                           "structuredContent" => { "recommended" => "Team", "seats" => 10 } },
+                             "resourceUri" => "ui://poetry-docs/plans", "serverId" => "poetry-docs",
+                             "serverHash" => "5b2f0d9c4e7a1b8d3f6c2a9e0d4b7c15", "toolInput" => { "seats" => 10 } },
+              "replace" => true, "_sleep" => 300 },
             { "type" => "STATE_SNAPSHOT", "snapshot" => { "recommended" => "Team", "seats" => 10 } },
             { "type" => "STATE_DELTA", "delta" => [ { "op" => "add", "path" => "/monthly", "value" => 120 } ] },
             *text("m1", "Team is $12 a seat, so $120 a month for ten. I'll switch you to the pricing tab."),

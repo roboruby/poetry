@@ -43,6 +43,17 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'action="remove" target="agui-relay-source"'
   end
 
+  test "a tool's app the page cannot show renders as a step with the result's text" do
+    get "/demos/agui-relay/stream?s=1"
+
+    assert_response :success
+    assert_includes response.body, %(id="app-a1-0")
+    assert_includes response.body, "app not shown"
+    assert_includes response.body, "ui://poetry-docs/plans"
+    assert_includes response.body, "Recommended for 10: Team."
+    assert_operator response.body.scan("Looked up plans for 10 seats").size, :>=, 2
+  end
+
   test "continue resolves the client tool and points at the next run" do
     post "/demos/agui-relay/continue?s=1", params: { toolCallId: "c-tab", name: "poetry.sections.set_value",
                                                      content: '{"value":"pricing","changed":true}' }.to_json,

@@ -2,7 +2,8 @@
     maps each part to a step; a run that stopped before its end reads its
     waiting calls as stopped). A step's detail is the reasoning text, the
     tool's input and output in small CodeBlocks with any images or
-    documents its result carried, or its error in a destructive one. The ids (the trace's, and each block's off it) keep
+    documents its result carried (and, for an app this page cannot show,
+    the note saying so), or its error in a destructive one. The ids (the trace's, and each block's off it) keep
     the disclosures and their names stable across the row's re-renders,
     and a replay byte-identical. %>
 <%= poetry_trace(id: id) do |trace| %>
@@ -33,6 +34,9 @@
               <% end %>
             <% end %>
             <%= render "poetry/docs/agent_activity/media", parts: detail[:media] if detail[:media].present? %>
+            <% if detail[:note] %>
+              <p class="text-xs text-muted-foreground"><%= detail[:note] %></p>
+            <% end %>
           </div>
         <% end %>
       <% end %>

@@ -29,22 +29,34 @@ module Poetry
         # The resource's MIME type.
         MIME_TYPE = ::MCP::Apps::RESOURCE_MIME_TYPE
 
-        # @return [String] the `ui://` URI
+        # The `ui://` URI.
+        #
+        # @return [String]
         attr_reader :uri
-        # @return [String] the resource name
+        # The resource's name.
+        #
+        # @return [String]
         attr_reader :name
-        # @return [String] the template rendered as the page's body
+        # The template rendered as the page's body.
+        #
+        # @return [String]
         attr_reader :template
-        # @return [Symbol] the asset strategy
+        # The asset strategy, absolute or inline.
+        #
+        # @return [Symbol]
         attr_reader :assets
-        # @return [Array<String>] the stylesheets the page links or inlines
+        # The stylesheets the page links or inlines.
+        #
+        # @return [Array<String>]
         attr_reader :stylesheets
-        # @return [String, nil] the importmap entry the page imports (absolute assets)
+        # The importmap entry the page imports, with absolute assets.
+        #
+        # @return [String, nil]
         attr_reader :entrypoint
-        # @return [Symbol] the host-style mapping
+        # The host-style mapping: structural, all or none.
+        #
+        # @return [Symbol]
         attr_reader :host_styles
-
-        # @return [Hash] the resource's title, description and locals
 
         # rubocop:disable Metrics/ParameterLists
         # @param uri [String] the `ui://` URI
@@ -171,7 +183,7 @@ module Poetry
         # origin or inlined, the importmap with every path absolute and the
         # entry import, and the bridge, from the origin or inlined.
         #
-        # @param view [ActionView::Base] the layout's view context
+        # @param view [ActionView::Base] the view rendering the layout, for its tag helpers
         # @param importmap [String, nil] the app's importmap JSON (absolute assets)
         # @return [ActiveSupport::SafeBuffer]
         def head(view, importmap: nil)
@@ -180,6 +192,8 @@ module Poetry
 
         private
 
+        # Refuses a document that cannot serve.
+        #
         # @raise [ArgumentError] for an unknown strategy or mapping, or absolute assets without an origin
         def validate!
           raise ArgumentError, "a document URI starts with ui://" unless uri.start_with?(::MCP::Apps::URI_SCHEME)

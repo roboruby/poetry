@@ -21,7 +21,8 @@
   <% else %>
     <%= poetry_message do %>
       <div class="flex min-w-0 flex-col gap-2">
-        <% runs = { message: message, stopped: stopped, surface_errors: local_assigns[:surface_errors] || {} } %>
+        <% runs = { message: message, stopped: stopped, surface_errors: local_assigns[:surface_errors] || {},
+                    transcript: transcript } %>
         <% if message.subagent_run_id %>
           <% record = transcript&.subagent(message.subagent_run_id) %>
           <% step = Poetry::Docs::AgentActivity.subagent_step(record, stopped: stopped) %>

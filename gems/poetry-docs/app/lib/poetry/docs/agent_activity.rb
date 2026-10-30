@@ -67,15 +67,43 @@ module Poetry
         end
       end
 
-      # The step for a reasoning or tool part. In a run that stopped before
-      # its end (cancelled, or a stream the page stopped reading), a call
-      # still waiting reads stopped, not running.
+      # The step for a reasoning, tool or MCP Apps activity part. In a run
+      # that stopped before its end (cancelled, or a stream the page stopped
+      # reading), a call still waiting reads stopped, not running.
       #
       # @param part [Hash]
       # @param stopped [Boolean]
       # @return [Step]
       def step(part, stopped: false)
-        part[:kind] == :reasoning ? reasoning_step(part) : tool_step(part, stopped)
+        case part[:kind]
+        when :reasoning then reasoning_step(part)
+        when :activity then app_step(part)
+        else tool_step(part, stopped)
+        end
+      end
+
+      # The tool call an MCP Apps activity answers, found in the transcript:
+      # the activity names no call, so it is the nearest earlier assistant
+      # part whose input is the activity's, else that turn's last tool part.
+      #
+      # @param transcript [Poetry::Agent::AGUI::Transcript, nil]
+      # @param message [Poetry::Agent::AGUI::Transcript::Message] the activity's message
+      # @return [Hash, nil] the tool part
+      def app_tool(transcript, message)
+        messages = transcript&.messages || []
+        index = messages.index { |held| held.id == message.id }
+        return unless index
+
+        input = stringify(Poetry::Agent::Apps::Activity.from(message.parts.first&.dig(:content)).tool_input)
+        messages[0...index].reverse_each do |held|
+          next unless held.role == "assistant"
+
+          tools = held.parts.select { |part| part[:kind] == :tool }
+          next if tools.empty?
+
+          return tools.find { |part| stringify(part[:input]) == input } || tools.last
+        end
+        nil
       end
 
       # A media content part as an Attachment shows it. Its name comes from
@@ -187,6 +215,25 @@ module Poetry
         end
       end
 
+      # An MCP Apps activity with no host to show its app: the tool's words
+      # (the relay pairs it with its call; `tool_name:` on the part), the
+      # app named in a note, and the result's text as the output, which is
+      # what the model read.
+      def app_step(part)
+        activity = Poetry::Agent::Apps::Activity.from(part[:content])
+        tool = tool(part[:tool_name] || "the app's tool", activity.tool_input)
+        if activity.error?
+          return Step.new(title: tool.failed, icon: :"app-window", status: :error, description: "app not shown",
+                          detail: { kind: :error, text: activity.text.presence || "The tool failed." })
+        end
+
+        note = "This tool has an app (#{activity.resource_uri}) that an MCP Apps host would show in its sandbox; " \
+               "this page shows the result's text, which is what the model read."
+        Step.new(title: tool.done, icon: :"app-window", description: "app not shown",
+                 detail: { kind: :io, input: JSON.generate(activity.tool_input), output: activity.text,
+                           output_language: "text", media: [], note: note })
+      end
+
       # A finished call's input and output. A result of content parts shows
       # its text as the output and its images and documents as media, never
       # as base64 in a code block.
@@ -265,7 +312,7 @@ module Poetry
         end
       end
 
-      private_class_method :activity, :reasoning_step, :tool_step, :io_detail, :lookup_plans, :set_section, :start_trial,
+      private_class_method :activity, :reasoning_step, :tool_step, :app_step, :io_detail, :lookup_plans, :set_section, :start_trial,
                            :weather, :book_dinner, :build, :error_text, :stringify
     end
   end
