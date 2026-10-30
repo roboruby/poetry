@@ -542,6 +542,12 @@
         The vendored specification and wire schema sit under the gem's fixtures with a
         manifest (<code>rake mcp_apps:verify</code>), and the tests hold a document's
         <code>_meta.ui</code>, a tool's <code>_meta</code> and a result to the schema.
+        Staying current is one more task: <code>rake upstream:watch</code> reports what
+        moved upstream since the pins, across the AG-UI repository (the 1.0 schema, the
+        fixtures and conformance corpus, the MCP Apps and A2UI middlewares' sources and
+        the wire constants Poetry mirrors), the vendored A2UI and MCP Apps material, and
+        the <code>mcp</code> gem, from checkouts under <code>UPSTREAM_DIR</code>; a report,
+        never a gate, and a person decides what to re-vendor or re-read.
       </p>
     <% end %>
   </section>

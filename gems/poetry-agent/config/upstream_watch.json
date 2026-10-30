@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-10-30",
+  "ag-ui": {
+    "pin": "1a9b3db4e",
+    "core_version": "1.0.3",
+    "files": {
+      "spec/1.0/schema.json": "4b5c93226838a0e72d88e6c5df20633c686c49fcb75d9be2815c6cbf9e48e71a",
+      "spec/1.0/proto-freeze.txt": "0da17bfc3b2983117105da3a8c0a45a8b4e9d896f6ca33946d008ebfd62681cc",
+      "spec/1.0/conformance/streams/MANIFEST.txt": "cad0d42b7d3e1a70d32fe4bd15411147409451a235ea64b21ad990700bce26ed",
+      "middlewares/mcp-apps-middleware/src/index.ts": "00ba720097e001c094d59b1ff88cab97e4f1c8752f3366f85e62bd04de88f3e3",
+      "middlewares/a2ui-middleware/src/index.ts": "342b3f6f37ace13bb26c6cdc5f838183c7bb9acfa67d85e4b496828259e0846c",
+      "middlewares/a2ui-middleware/src/types.ts": "cb7e7787cccf2c1a5633a46b36d118124c8a46b794fe1ebc1788727488a5c275",
+      "sdks/typescript/packages/core/package.json": "a9680f6dcc9274bd128e8ca2e0ca7445f0b107d099e8fd3cd96b2c719349d6b2"
+    },
+    "directories": {
+      "spec/1.0/fixtures": "35b224aa245035b2d929a5073b4a8373acbb44f06c9d2086fc6cceba87ca1b11",
+      "spec/1.0/conformance/streams": "a68e477135c29f17b353825c549e301a24c1da7585f49c4b6f778d122fa63003",
+      "sdks/typescript/packages/client/src": "bdeaa9a7d77de24be4f3503acf9060e5b2049140b018f9f9cdc0a054d88faa05"
+    },
+    "tokens": {
+      "middlewares/mcp-apps-middleware/src/index.ts": [
+        "MCPAppsActivityType = \"mcp-apps\"",
+        "serverHash",
+        "serverId",
+        "resourceUri",
+        "toolInput"
+      ],
+      "middlewares/a2ui-middleware/src/index.ts": [
+        "A2UIActivityType = \"a2ui-surface\"",
+        "a2ui_operations",
+        "a2ui-surface-${key}"
+      ],
+      "middlewares/a2ui-middleware/src/types.ts": [
+        "a2uiAction",
+        "userAction",
+        "surfaceId",
+        "sourceComponentId",
+        "createSurface",
+        "updateComponents",
+        "updateDataModel",
+        "deleteSurface"
+      ]
+    }
+  },
+  "mcp": {
+    "version": "1.8.2"
+  }
+}

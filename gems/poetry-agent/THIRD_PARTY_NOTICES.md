@@ -39,7 +39,7 @@ SOFTWARE.
 
 ## A2UI
 
-- Source: https://github.com/google/A2UI (Apache-2.0), at commit `d98472e5d` (2026-10-28)
+- Source: https://github.com/google/A2UI (Apache-2.0), at commit `ceae1ce39` (2026-10-30)
 - Shipped, unmodified: `lib/poetry/agent/a2ui/schemas/` holds what strict validation reads, each protocol version's message schema and common types (v0.9, v0.9.1 and v1.0) and the basic catalogs, in upstream's layout, with upstream's LICENSE inside it; `rake a2ui:verify` holds them byte-identical to the vendored copies
 - Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name, the basic catalogs' examples and each version's JSON schemas, in upstream's layout, with upstream's LICENSE inside it (provenance in `test/fixtures/a2ui/README.md`)
 
