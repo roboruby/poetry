@@ -4,6 +4,9 @@ source "https://rubygems.org"
 
 gemspec
 
+# The site's assets answer with CORS headers: an MCP App's sandbox loads them cross-origin.
+gem "rack-cors"
+
 # The family from the tree beside this gem; a published install resolves
 # the same names from RubyGems.
 sibling = lambda do |name|

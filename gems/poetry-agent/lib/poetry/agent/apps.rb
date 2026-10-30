@@ -5,6 +5,7 @@ require_relative "apps/fragment"
 require_relative "apps/result"
 require_relative "apps/document"
 require_relative "apps/activity"
+require_relative "apps/host"
 
 module Poetry
   module Agent

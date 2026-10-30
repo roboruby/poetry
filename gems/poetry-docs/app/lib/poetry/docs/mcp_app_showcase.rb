@@ -29,6 +29,35 @@ module Poetry
 
       module_function
 
+      # This site as a host of its own app, the way it would host any
+      # server's: one host per origin, the server list naming this site's
+      # `/mcp`, the apps origin from the environment (none here runs the
+      # inline sandbox mode), and the MCP calls made in process through the
+      # site's own Rack stack rather than over the network.
+      #
+      # @param base_url [String] the request's origin
+      # @return [Poetry::Agent::Apps::Host]
+      def host(base_url)
+        @hosts ||= {}
+        @hosts[base_url] ||= Poetry::Agent::Apps::Host.new(
+          servers: { "poetry-docs" => { url: "#{base_url}/mcp" } },
+          origin: base_url, sandbox_origin: ENV["POETRY_DOCS_APPS_ORIGIN"].presence,
+          sandbox_path: "/mcp-apps/sandbox", rpc_path: "/mcp-apps/rpc"
+        ).tap { |host| host.post = in_process_post }
+      end
+
+      # The host's transport: a request into this application's Rack stack.
+      #
+      # @return [Proc]
+      def in_process_post
+        lambda do |uri, body, headers|
+          env = { "CONTENT_TYPE" => "application/json", "HTTP_ACCEPT" => headers["Accept"], "HTTP_HOST" => [ uri.host, uri.port ].compact.join(":"),
+                  "HTTPS" => (uri.scheme == "https" ? "on" : "off"), input: body }
+          response = Rack::MockRequest.new(Rails.application).post(uri.path, env)
+          [ response.status, response.headers.to_h, response.body ]
+        end
+      end
+
       # The docs' MCP server with the app beside the roster.
       #
       # @param app_root [String] the docs engine's root

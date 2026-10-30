@@ -174,10 +174,11 @@ module Poetry
                                "answered as a URL decision. No model, no key, same bytes every run."),
         Entry.new(slug: "mcp-app", title: "MCP App", section: "demos",
                   description: "A Poetry screen served as an MCP App by this site's own MCP server, " \
-                               "shown by a host simulator: the document loads into a frame, the host " \
-                               "calls show_plans and the page fills from the fragment, a Choose button " \
-                               "calls the app-only tool from inside the page, and the bridge's traffic " \
-                               "is logged both ways. The same document renders in Claude Desktop."),
+                               "hosted by this site's own host: the page calls show_plans through the " \
+                               "host, the frame loads the document into the sandbox and fills from the " \
+                               "fragment, a Choose button calls the app-only tool from inside the page " \
+                               "through the host's endpoint, and the bridge's traffic is logged both " \
+                               "ways. The same document renders in Claude Desktop."),
         Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
                   description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
                                "Poetry's own catalog rendered on the server as forms, and a third streamed " \

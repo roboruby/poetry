@@ -402,6 +402,33 @@ test "the site's MCP server serves the plans app beside the roster" do
   assert_includes JSON.parse(response.body).dig("result", "_meta", "poetry", "fragments", 0, "html"), "Pro chosen"
 end
 
+test "the site hosts its own app: the demo renders the frame and the endpoint answers the app's calls" do
+  get "/demos/mcp-app?team_size=12"
+
+  assert_response :success
+  assert_includes response.body, %(data-controller="poetry--agent--mcp-app-host")
+  assert_includes response.body, %(data-poetry--agent--mcp-app-host-rpc-url-value="/mcp-apps/rpc")
+  assert_includes response.body, %(data-poetry--agent--mcp-app-host-debug-value="true")
+  assert_includes response.body, "Recommended for 12: Team."
+  assert_includes response.body, "Inline sandbox mode"
+  headers = { "CONTENT_TYPE" => "application/json", "HTTP_SEC_FETCH_SITE" => "same-origin" }
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "tools/call", params: { name: "choose_plan", arguments: { plan: "pro", billing: "yearly" } } }.to_json, headers: headers
+
+  assert_response :success
+  assert_includes JSON.parse(response.body).dig("result", "_meta", "poetry", "fragments", 0, "html"), "Pro chosen"
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "tools/list", params: {} }.to_json, headers: headers
+
+  assert_response :forbidden
+  assert_equal(-32_601, JSON.parse(response.body).dig("error", "code"))
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "resources/read", params: { uri: "ui://poetry-docs/plans" } }.to_json, headers: headers
+
+  assert_response :success
+  assert_includes JSON.parse(response.body).dig("result", "contents", 0, "text"), %(data-mcp-region="plans")
+  post "/mcp-apps/rpc", params: "nope", headers: headers
+
+  assert_response :bad_request
+end
+
   test "the site's MCP server answers at /mcp" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
                  headers: { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }

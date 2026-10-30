@@ -1392,6 +1392,12 @@
     "path": "/mcp-apps#auth"
   },
   {
+    "title": "Host: other servers' apps in your page",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#host"
+  },
+  {
     "title": "Try it",
     "page": "MCP Apps",
     "section": "docs",
@@ -7438,6 +7444,18 @@
     "page": "@poetry/agent",
     "section": "api",
     "path": "/api/poetry-agent-controllers#bridge"
+  },
+  {
+    "title": "HostBridge",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#hostbridge"
+  },
+  {
+    "title": "HostError",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#hosterror"
   },
   {
     "title": "poetry-ui",

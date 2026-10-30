@@ -72,6 +72,29 @@ module Poetry
       def a2ui
       end
 
+      # The host's endpoint for an app's own requests: the MCP App demo's
+      # frame and the relay's. Same-origin, with the CSRF token the host
+      # controller sends.
+      def mcp_app_rpc
+        body = JSON.parse(request.raw_post)
+        host = McpAppShowcase.host(request.base_url)
+        render json: { result: host.rpc(body["server"].to_s, body["method"].to_s, body["params"] || {}) }
+      rescue JSON::ParserError
+        render json: { error: { code: -32_700, message: "a JSON object with server, method and params" } }, status: :bad_request
+      rescue Poetry::Agent::Apps::Host::Refused => e
+        render json: { error: { code: e.code, message: e.message } }, status: :forbidden
+      end
+
+      # The sandbox proxy page, served on the apps origin when the site has
+      # one; the host's own origin names the page's only framer.
+      def mcp_app_sandbox
+        host = McpAppShowcase.host(ENV.fetch("POETRY_DOCS_ORIGIN", request.base_url))
+        status, headers, body = host.sandbox_app.call(request.env.merge("PATH_INFO" => "/#{params[:token]}"))
+        headers.each { |name, value| response.headers[name] = value }
+        response.headers.delete("X-Frame-Options")
+        render html: body.join.html_safe, status: status, layout: false # rubocop:disable Rails/OutputSafety
+      end
+
       def mcp_apps
       end
 

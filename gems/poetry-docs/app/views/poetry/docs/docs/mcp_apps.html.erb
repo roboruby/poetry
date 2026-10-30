@@ -133,6 +133,35 @@
                      grant_types: %w[authorization_code refresh_token], response_types: ["code"] }, status: :created
     end
   CODE
+  host_source = <<~'CODE'
+    # config/routes.rb - this page as a host of other servers' apps
+    host = Poetry::Agent::Apps::Host.new(
+      servers: { "shop" => { url: "https://shop.example/mcp", headers: { "Authorization" => "Bearer ..." } } },
+      origin: "https://chat.example",               # the page's origin: the only framer of the sandbox
+      sandbox_origin: "https://apps.chat.example"   # a second origin for the sandbox page; nil runs the inline mode
+    )
+    constraints(host: "apps.chat.example") { mount host.sandbox_app => host.sandbox_path }   # /mcp-apps/sandbox
+    mount host.rpc_app => host.rpc_path                                                      # /mcp-apps/rpc, same-origin only
+
+    # In a view: the page calls a tool for the model, and renders the frame the controller fills
+    call = host.call("shop", "show_plans", { "team_size" => 8 })
+    tag.div(data: host.frame_data(call)) if call.app?
+
+    # In an AG-UI relay row: the middleware's activity names the server, the resource and the result
+    activity = Poetry::Agent::Apps::Activity.from(part[:content])
+    call = Poetry::Agent::Apps::Host::Call.new(server: activity.server_id, tool: name, input: activity.tool_input,
+                                               result: activity.result, resource_uri: activity.resource_uri)
+    tag.div(data: host.frame_data(call)) if host.servers.key?(activity.server_id)
+
+    # Per-user credentials: a controller of your own in place of rpc_app
+    def mcp_app_rpc
+      body = JSON.parse(request.raw_post)
+      result = host.rpc(body["server"], body["method"], body["params"], headers: { "Authorization" => "Bearer #{current_user.shop_token}" })
+      render json: { result: result }
+    rescue Poetry::Agent::Apps::Host::Refused => e
+      render json: { error: { code: e.code, message: e.message } }, status: :forbidden
+    end
+  CODE
   events_source = <<~CODE
     // Your own script in the page, beside the bridge
     document.addEventListener("poetry:mcp-app:result", (event) => console.log(event.detail.structuredContent))
@@ -357,11 +386,60 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="host">Host: other servers' apps in your page</h2>
+      <p>
+        The other direction: a Rails chat page showing the apps of the MCP servers
+        its agent uses, as Claude shows yours. A <code>Poetry::Agent::Apps::Host</code>
+        knows its servers by id (a URL and the headers it holds for each), reads
+        their tools and app resources through a small client of Poetry's own (raw,
+        so a tool's visibility and a resource's policy are read as declared, and
+        cached), calls a tool for the page, and answers an app's own requests
+        through an allowlist (<code>tools/call</code>, <code>resources/read</code>,
+        <code>ping</code>, a log line) and the visibility the server declared: a tool
+        without <code>"app"</code> in its visibility is refused to the app, as the
+        extension requires. The frame is the <code>poetry--agent--mcp-app-host</code>
+        controller: it reads the app's HTML through the endpoint, mounts the sandbox,
+        answers <code>ui/initialize</code> with the page's theme and Poetry's tokens as
+        the host's styles, delivers the input and the result, sends the app's requests
+        to the endpoint, resizes to what the app reports, confirms links, and tells the
+        page about messages for the chat, model-context updates and display-mode
+        requests (<code>poetry:mcp-app-host:message</code> and the rest).
+      </p>
+      <p>
+        The sandbox is the extension's: a proxy page on a second origin, served per
+        resource under a signed token with the resource's declared domains as a
+        Content Security Policy header, framed only by your page, holding the app in an
+        inner frame that gets a real origin, storage and a stable identity. That second
+        origin is the one piece of deployment the host asks of you (a hostname for the
+        apps, the sandbox app mounted under a host constraint, the same Puma). Without
+        it the host runs an inline mode, the proxy page as an opaque frame of your own
+        page: isolated, but with no storage and a null origin, which some apps need,
+        and under your page's own policy. The demo here runs inline; the relay's frames
+        too.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: host_source, language: "ruby", label: "The host") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A frame inside a relay row survives the relay's morphs: the runtime cancels the
+        element morph for a frame's holder, since a stream morph would replace it (a
+        <code>data-turbo-permanent</code> one included) or strip its frame. Each app
+        request through the endpoint carries the page's CSRF token and is answered
+        same-origin only; a controller of your own in place of <code>rpc_app</code> adds
+        the signed-in user's credentials per request. Your own documents work in this
+        host too, with one condition the sandbox makes plain: assets linked from your
+        origin load cross-origin, so they answer with CORS headers.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="try">Try it</h2>
       <p>
         The <%= link_to "MCP App demo", "/demos/mcp-app" %> shows a plan picker this site's
-        own MCP server serves beside its roster, through a host simulator that speaks the
-        bridge's protocol over <code>/mcp</code> and logs it both ways. The same document
+        own MCP server serves beside its roster, hosted by this site's own host (the
+        section above) with the bridge's traffic logged both ways. The same document
         renders in Claude Desktop: add the server and ask for the plans. A deployed app is
         a remote connector; Claude asks the user before it shows an app.
       </p>

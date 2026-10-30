@@ -43,15 +43,19 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'action="remove" target="agui-relay-source"'
   end
 
-  test "a tool's app the page cannot show renders as a step with the result's text" do
+  test "a tool's app renders as a frame this page hosts, with the app's real result" do
     get "/demos/agui-relay/stream?s=1"
 
     assert_response :success
     assert_includes response.body, %(id="app-a1-0")
-    assert_includes response.body, "app not shown"
-    assert_includes response.body, "ui://poetry-docs/plans"
-    assert_includes response.body, "Recommended for 10: Team."
-    assert_operator response.body.scan("Looked up plans for 10 seats").size, :>=, 2
+    assert_includes response.body, %(data-controller="poetry--agent--mcp-app-host")
+    assert_includes response.body, %(data-poetry--agent--mcp-app-host-server-value="poetry-docs")
+    assert_includes response.body, %(data-poetry--agent--mcp-app-host-resource-value="ui://poetry-docs/plans")
+    assert_includes response.body, %(data-poetry--agent--mcp-app-host-tool-value="lookup_plans"), "the activity is paired with its call"
+    assert_includes response.body, %(data-poetry--agent--mcp-app-host-sandbox-page-value=), "inline mode here: no apps origin"
+    assert_includes response.body, "data-mcp-app-host"
+    assert_includes response.body, "Recommended for 10: Pro."
+    refute_includes response.body, "app not shown"
   end
 
   test "continue resolves the client tool and points at the next run" do

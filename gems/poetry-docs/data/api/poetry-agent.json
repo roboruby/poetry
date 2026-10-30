@@ -10674,7 +10674,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 49
+          "line": 50
         },
         {
           "name": "fragment",
@@ -10738,7 +10738,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 80
+          "line": 81
         },
         {
           "name": "reader",
@@ -10763,7 +10763,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 62
+          "line": 63
         },
         {
           "name": "renderer",
@@ -10780,7 +10780,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 123
+          "line": 124
         },
         {
           "name": "renderer=",
@@ -10801,7 +10801,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 130
+          "line": 131
         },
         {
           "name": "request_origin",
@@ -10819,7 +10819,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 101
+          "line": 102
         },
         {
           "name": "result",
@@ -10873,7 +10873,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 94
+          "line": 95
         },
         {
           "name": "with_request_origin",
@@ -10898,7 +10898,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps.rb",
-          "line": 108
+          "line": 109
         }
       ],
       "constants": [
@@ -11912,6 +11912,2000 @@
           "docstring": "The actions the bridge applies: replace the region's content,\nappend or prepend to it, or empty it."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The host side of MCP Apps: other servers' apps inside a Rails page.\nA host knows its servers (an id, a URL, the headers it holds for\nthem), reads their tools and app resources through its own client\n(cached), calls tools for the page, answers an app's own requests\nthrough an allowlist and the tool visibility the server declared,\nand serves the sandbox proxy page the app runs in, on a second\norigin by default, with the resource's policy as a header.\n\nThe browser half is the `poetry--agent--mcp-app-host` controller:\nit mounts the frame an app renders in, speaks the bridge, and sends\nthe app's requests to {RpcApp} (or a controller of the application's\nown that calls {#rpc} with the signed-in user's headers).",
+      "examples": [
+        {
+          "title": "config/routes.rb",
+          "text": "host = Poetry::Agent::Apps::Host.new(\n  servers: { \"shop\" => { url: \"https://shop.example/mcp\" } },\n  origin: \"https://chat.example\", sandbox_origin: \"https://apps.chat.example\"\n)\nconstraints(host: \"apps.chat.example\") { mount host.sandbox_app => host.sandbox_path }\nmount host.rpc_app => host.rpc_path"
+        }
+      ],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "app_callable?",
+          "scope": "instance",
+          "group": null,
+          "signature": "app_callable?(id, name)",
+          "docstring": "Whether an app may call the tool: a visibility that names `app`, or none declared.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 211
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(id, name, arguments = {}, headers: {})",
+          "docstring": "A tool call made for the page (the model's side): the result and the app's resource uri.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "arguments",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Call"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 254
+        },
+        {
+          "name": "clear_cache",
+          "scope": "instance",
+          "group": null,
+          "signature": "clear_cache",
+          "docstring": "Forgets the cached tools and resources.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 365
+        },
+        {
+          "name": "client",
+          "scope": "instance",
+          "group": null,
+          "signature": "client(id, headers: {})",
+          "docstring": "A connected client for a server.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash"
+              ],
+              "text": "headers for this request (the signed-in user's, say) over the server's"
+            }
+          ],
+          "return": {
+            "types": [
+              "Client"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 186
+        },
+        {
+          "name": "frame_data",
+          "scope": "instance",
+          "group": null,
+          "signature": "frame_data(call, rpc_url: nil)",
+          "docstring": "The frame element's data attributes: the controller and its values.",
+          "params": [
+            {
+              "name": "call",
+              "types": [
+                "Call"
+              ],
+              "text": "a call whose tool has an app"
+            },
+            {
+              "name": "rpc_url",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "where the app's requests go; {#rpc_path} by default"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "for `tag.div(data: ...)`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 346
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(servers:, origin:, sandbox_origin: nil, sandbox_path: \"/mcp-apps/sandbox\", # rubocop:disable Metrics/ParameterLists rpc_path: \"/mcp-apps/rpc\", secret: nil, cache: nil, name: \"poetry-agent\")",
+          "docstring": "A host over its servers.",
+          "params": [
+            {
+              "name": "servers",
+              "types": [
+                "Hash{String => Hash}"
+              ],
+              "text": "by id: `url:` and optional `headers:`"
+            },
+            {
+              "name": "origin",
+              "types": [
+                "String"
+              ],
+              "text": "the host page's origin (`https://chat.example`)"
+            },
+            {
+              "name": "sandbox_origin",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the apps origin serving the proxy page; nil runs the\ndegraded inline mode (the proxy page as an opaque frame on the host page: no storage,\nno real origin for the app)"
+            },
+            {
+              "name": "sandbox_path",
+              "types": [
+                "String"
+              ],
+              "text": "where {#sandbox_app} is mounted on the apps origin"
+            },
+            {
+              "name": "rpc_path",
+              "types": [
+                "String"
+              ],
+              "text": "where {#rpc_app} (or the application's endpoint) answers"
+            },
+            {
+              "name": "secret",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what signs the sandbox tokens; the application's secret key base by default"
+            },
+            {
+              "name": "cache",
+              "types": [
+                "#fetch",
+                "nil"
+              ],
+              "text": "a store answering `fetch(key, expires_in:) { }`; a {Store} by default"
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the client name servers see"
+            }
+          ],
+          "return": {
+            "types": [
+              "Host"
+            ],
+            "text": "a new instance of Host"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 156
+        },
+        {
+          "name": "inline_sandbox_page",
+          "scope": "instance",
+          "group": null,
+          "signature": "inline_sandbox_page(resource)",
+          "docstring": "The proxy page for the inline mode, with the resource's policy as a meta element.",
+          "params": [
+            {
+              "name": "resource",
+              "types": [
+                "Resource"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 337
+        },
+        {
+          "name": "model_visible?",
+          "scope": "instance",
+          "group": null,
+          "signature": "model_visible?(id, name)",
+          "docstring": "Whether the model (the page acting for it) may call the tool.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 221
+        },
+        {
+          "name": "origin",
+          "scope": "instance",
+          "group": null,
+          "signature": "origin",
+          "docstring": "The host page's origin.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 126
+        },
+        {
+          "name": "resource",
+          "scope": "instance",
+          "group": null,
+          "signature": "resource(id, uri, headers: {})",
+          "docstring": "An app resource, cached.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "uri",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Resource"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 233
+        },
+        {
+          "name": "rpc",
+          "scope": "instance",
+          "group": null,
+          "signature": "rpc(id, method, params = {}, headers: {})",
+          "docstring": "An app's own request: through the allowlist and the visibility check.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "method",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "Array"
+            ],
+            "text": "the result"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 271
+        },
+        {
+          "name": "rpc_app",
+          "scope": "instance",
+          "group": null,
+          "signature": "rpc_app",
+          "docstring": "The RPC endpoint, to mount on the host origin.",
+          "params": [],
+          "return": {
+            "types": [
+              "RpcApp"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 329
+        },
+        {
+          "name": "rpc_path",
+          "scope": "instance",
+          "group": null,
+          "signature": "rpc_path",
+          "docstring": "Where the RPC app is mounted.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 138
+        },
+        {
+          "name": "sandbox_app",
+          "scope": "instance",
+          "group": null,
+          "signature": "sandbox_app",
+          "docstring": "The sandbox proxy page's app, to mount on the apps origin.",
+          "params": [],
+          "return": {
+            "types": [
+              "Sandbox"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 322
+        },
+        {
+          "name": "sandbox_origin",
+          "scope": "instance",
+          "group": null,
+          "signature": "sandbox_origin",
+          "docstring": "The apps origin, or nil for the inline mode.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 130
+        },
+        {
+          "name": "sandbox_path",
+          "scope": "instance",
+          "group": null,
+          "signature": "sandbox_path",
+          "docstring": "Where the sandbox app is mounted.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 134
+        },
+        {
+          "name": "sandbox_token",
+          "scope": "instance",
+          "group": null,
+          "signature": "sandbox_token(id, uri)",
+          "docstring": "A signed claim on a resource for the sandbox page.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "uri",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 295
+        },
+        {
+          "name": "sandbox_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "sandbox_url(id, uri)",
+          "docstring": "The sandbox page's URL for a resource, or nil in the inline mode.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "uri",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 315
+        },
+        {
+          "name": "server",
+          "scope": "instance",
+          "group": null,
+          "signature": "server(id)",
+          "docstring": "A server by id.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Server"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 177
+        },
+        {
+          "name": "servers",
+          "scope": "instance",
+          "group": null,
+          "signature": "servers",
+          "docstring": "The servers by id.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Server}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 142
+        },
+        {
+          "name": "tools",
+          "scope": "instance",
+          "group": null,
+          "signature": "tools(id, headers: {})",
+          "docstring": "The server's tools with their app metadata, cached.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "`name:`, `description:`, `input_schema:`, `resource_uri:`, `visibility:`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 196
+        },
+        {
+          "name": "verify_sandbox_token",
+          "scope": "instance",
+          "group": null,
+          "signature": "verify_sandbox_token(token)",
+          "docstring": "The claim a token carries, or nil.",
+          "params": [
+            {
+              "name": "token",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "`\"server\"` and `\"uri\"`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 303
+        }
+      ],
+      "constants": [
+        {
+          "name": "APP_METHODS",
+          "value": "%w[tools/call resources/read ping notifications/message].freeze",
+          "docstring": "The methods an app may send through the host."
+        },
+        {
+          "name": "CONTROLLER",
+          "value": "\"poetry--agent--mcp-app-host\"",
+          "docstring": "The Stimulus controller the frame carries."
+        },
+        {
+          "name": "RESOURCES_TTL",
+          "value": "600",
+          "docstring": "How long a resource is kept."
+        },
+        {
+          "name": "TOKEN_TTL",
+          "value": "3600",
+          "docstring": "How long a sandbox token stays valid, in seconds."
+        },
+        {
+          "name": "TOOLS_TTL",
+          "value": "60",
+          "docstring": "How long a server's tool list is kept."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Call",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "A tool call the page made, with everything the frame needs.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "app?",
+          "scope": "instance",
+          "group": null,
+          "signature": "app?",
+          "docstring": "Whether the tool has an app to show.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 77
+        },
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input",
+          "docstring": "the arguments",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the current value of input"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "input=",
+          "scope": "instance",
+          "group": null,
+          "signature": "input=(value)",
+          "docstring": "the arguments",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Hash"
+              ],
+              "text": "the value to set the attribute input to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "resource_uri",
+          "scope": "instance",
+          "group": null,
+          "signature": "resource_uri",
+          "docstring": "the app's resource, when the tool has one",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the current value of resource_uri"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "resource_uri=",
+          "scope": "instance",
+          "group": null,
+          "signature": "resource_uri=(value)",
+          "docstring": "the app's resource, when the tool has one",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the value to set the attribute resource_uri to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "result",
+          "scope": "instance",
+          "group": null,
+          "signature": "result",
+          "docstring": "the `CallToolResult`",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the current value of result"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "result=",
+          "scope": "instance",
+          "group": null,
+          "signature": "result=(value)",
+          "docstring": "the `CallToolResult`",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Hash"
+              ],
+              "text": "the value to set the attribute result to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "server",
+          "scope": "instance",
+          "group": null,
+          "signature": "server",
+          "docstring": "the server's id",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of server"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "server=",
+          "scope": "instance",
+          "group": null,
+          "signature": "server=(value)",
+          "docstring": "the server's id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute server to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "tool",
+          "scope": "instance",
+          "group": null,
+          "signature": "tool",
+          "docstring": "the tool's name",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of tool"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        },
+        {
+          "name": "tool=",
+          "scope": "instance",
+          "group": null,
+          "signature": "tool=(value)",
+          "docstring": "the tool's name",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute tool to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 74
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Client",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The host's MCP client: JSON-RPC over Streamable HTTP on the standard\nlibrary, enough for what a host does (initialize with the ui\nextension, list tools, read a resource, call a tool, ping, log) and\nnothing more. Answers come as JSON or as an event stream, with or\nwithout a session; the raw results are kept, `_meta` included, which\nis what a host reads tool visibility and a resource's policy from.",
+      "examples": [
+        {
+          "title": "",
+          "text": "client = Client.new(url: \"https://shop.example/mcp\", headers: { \"Authorization\" => \"Bearer ...\" })\nclient.connect\nclient.tools.first[\"_meta\"]"
+        }
+      ],
+      "file": "lib/poetry/agent/apps/host/client.rb",
+      "methods": [
+        {
+          "name": "call_tool",
+          "scope": "instance",
+          "group": null,
+          "signature": "call_tool(name, arguments = {})",
+          "docstring": "A tool's result.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "arguments",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the `CallToolResult`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 119
+        },
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect",
+          "docstring": "The handshake: `initialize` with the ui extension declared, then\n`notifications/initialized`. Idempotent.",
+          "params": [],
+          "return": {
+            "types": [
+              "self"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 79
+        },
+        {
+          "name": "connected?",
+          "scope": "instance",
+          "group": null,
+          "signature": "connected?",
+          "docstring": "Whether the handshake happened.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 97
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(url:, headers: {}, name: \"poetry-agent\", version: Poetry::Agent::VERSION, # rubocop:disable Metrics/ParameterLists open_timeout: 5, read_timeout: 30, post: nil)",
+          "docstring": "A client for one endpoint; nothing is sent until {#connect}.",
+          "params": [
+            {
+              "name": "url",
+              "types": [
+                "String"
+              ],
+              "text": "the MCP endpoint"
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "headers on every request (a bearer token, say)"
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "this client's name for the handshake"
+            },
+            {
+              "name": "version",
+              "types": [
+                "String"
+              ],
+              "text": "this client's version"
+            },
+            {
+              "name": "open_timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to connect"
+            },
+            {
+              "name": "read_timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to wait for an answer"
+            },
+            {
+              "name": "post",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "the transport, `(uri, body, headers) -> [status, headers, body]`;\nthe standard library by default, a Rack app under test"
+            }
+          ],
+          "return": {
+            "types": [
+              "Client"
+            ],
+            "text": "a new instance of Client"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 61
+        },
+        {
+          "name": "notify",
+          "scope": "instance",
+          "group": null,
+          "signature": "notify(method, params = nil)",
+          "docstring": "A notification, answered with nothing.",
+          "params": [
+            {
+              "name": "method",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 153
+        },
+        {
+          "name": "ping",
+          "scope": "instance",
+          "group": null,
+          "signature": "ping",
+          "docstring": "A ping.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 126
+        },
+        {
+          "name": "read_resource",
+          "scope": "instance",
+          "group": null,
+          "signature": "read_resource(uri)",
+          "docstring": "A resource's contents.",
+          "params": [
+            {
+              "name": "uri",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "the contents items"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 110
+        },
+        {
+          "name": "request",
+          "scope": "instance",
+          "group": null,
+          "signature": "request(method, params = nil)",
+          "docstring": "A request by method, answered with its result.",
+          "params": [
+            {
+              "name": "method",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the result"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 134
+        },
+        {
+          "name": "server_capabilities",
+          "scope": "instance",
+          "group": null,
+          "signature": "server_capabilities",
+          "docstring": "The server's declared capabilities, after {#connect}.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 45
+        },
+        {
+          "name": "server_info",
+          "scope": "instance",
+          "group": null,
+          "signature": "server_info",
+          "docstring": "The server's name and version, after {#connect}.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 50
+        },
+        {
+          "name": "tools",
+          "scope": "instance",
+          "group": null,
+          "signature": "tools",
+          "docstring": "The tools, raw, `_meta` included.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 102
+        }
+      ],
+      "constants": [
+        {
+          "name": "PROTOCOL_VERSION",
+          "value": "\"2025-06-18\"",
+          "docstring": "The protocol version the client asks for."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Client::Error",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "A JSON-RPC error the server answered, or a transport failure.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host/client.rb",
+      "methods": [
+        {
+          "name": "code",
+          "scope": "instance",
+          "group": null,
+          "signature": "code",
+          "docstring": "The JSON-RPC code, -32000 for a transport failure.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 28
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message, code: -32_000)",
+          "docstring": "Names the failure and its code.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String"
+              ],
+              "text": "the server's message, or the transport's"
+            },
+            {
+              "name": "code",
+              "types": [
+                "Integer"
+              ],
+              "text": "the JSON-RPC code"
+            }
+          ],
+          "return": {
+            "types": [
+              "Error"
+            ],
+            "text": "a new instance of Error"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 33
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Csp",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Content Security Policy a sandbox page serves for an app, from\nthe resource's declared domains (`_meta.ui.csp`): the extension's\ndirectives, its restrictive default when nothing is declared, and\na sanitizer that keeps a declared domain from smuggling a\ndirective. `frame-ancestors` names the host page's origin, so the\npage can be framed by the host and nothing else.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host/csp.rb",
+      "methods": [
+        {
+          "name": "domains",
+          "scope": "class",
+          "group": null,
+          "signature": "domains(list)",
+          "docstring": "The declared domains that are safe to put in a directive.",
+          "params": [
+            {
+              "name": "list",
+              "types": [
+                "Array<String>",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the domains joined by spaces"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/csp.rb",
+          "line": 24
+        },
+        {
+          "name": "header",
+          "scope": "class",
+          "group": null,
+          "signature": "header(meta, frame_ancestors:)",
+          "docstring": "The policy as a header value.",
+          "params": [
+            {
+              "name": "meta",
+              "types": [
+                "Hash"
+              ],
+              "text": "the resource's `_meta.ui` (string or symbol keys)"
+            },
+            {
+              "name": "frame_ancestors",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the host page's origin; nil leaves the directive out, since a meta\npolicy ignores it"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/csp.rb",
+          "line": 34
+        },
+        {
+          "name": "read",
+          "scope": "class",
+          "group": null,
+          "signature": "read(hash, key)",
+          "docstring": "A member by symbol or string key.",
+          "params": [
+            {
+              "name": "hash",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "key",
+              "types": [
+                "Symbol"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/csp.rb",
+          "line": 61
+        }
+      ],
+      "constants": [
+        {
+          "name": "UNSAFE",
+          "value": "/[;\\r\\n'\" ]/",
+          "docstring": "Characters a domain may not carry: a `;` or a newline would start\na directive, a quote a keyword, a space a second source."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Refused",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "An app's request the host will not make: a method outside the\nallowlist, a tool the server hides from apps, a server it does\nnot know. Carries the JSON-RPC code the app is answered with.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "code",
+          "scope": "instance",
+          "group": null,
+          "signature": "code",
+          "docstring": "The JSON-RPC code the app is answered with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 42
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message, code: -32_602)",
+          "docstring": "Names the refusal and the code it answers with.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String"
+              ],
+              "text": "what was refused and why"
+            },
+            {
+              "name": "code",
+              "types": [
+                "Integer"
+              ],
+              "text": "the JSON-RPC code (invalid params by default)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Refused"
+            ],
+            "text": "a new instance of Refused"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 47
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Resource",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "An app resource as read: the HTML and its `_meta.ui`.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "html",
+          "scope": "instance",
+          "group": null,
+          "signature": "html",
+          "docstring": "the app's document",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of html"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        },
+        {
+          "name": "html=",
+          "scope": "instance",
+          "group": null,
+          "signature": "html=(value)",
+          "docstring": "the app's document",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute html to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        },
+        {
+          "name": "ui",
+          "scope": "instance",
+          "group": null,
+          "signature": "ui",
+          "docstring": "the resource's `_meta.ui` (string keys), `{}` when none",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the current value of ui"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        },
+        {
+          "name": "ui=",
+          "scope": "instance",
+          "group": null,
+          "signature": "ui=(value)",
+          "docstring": "the resource's `_meta.ui` (string keys), `{}` when none",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Hash"
+              ],
+              "text": "the value to set the attribute ui to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        },
+        {
+          "name": "uri",
+          "scope": "instance",
+          "group": null,
+          "signature": "uri",
+          "docstring": "the resource's `ui://` uri",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of uri"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        },
+        {
+          "name": "uri=",
+          "scope": "instance",
+          "group": null,
+          "signature": "uri=(value)",
+          "docstring": "the resource's `ui://` uri",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute uri to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::RpcApp",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The Rack endpoint an app's own requests go through: `POST` a JSON\nbody `{ \"server\", \"method\", \"params\" }` and get `{ \"result\" }` or\n`{ \"error\": { \"code\", \"message\" } }`. Same-origin only (the\nbrowser's fetch metadata, else the Origin header), since a bare\nRack app sees no CSRF token; an application that needs the\nsigned-in user's credentials calls {Host#rpc} from a controller of\nits own instead and passes the headers.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host/rpc_app.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Array<String>)"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/rpc_app.rb",
+          "line": 27
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(host)",
+          "docstring": "The endpoint for one host.",
+          "params": [
+            {
+              "name": "host",
+              "types": [
+                "Host"
+              ],
+              "text": "the host whose servers it relays to"
+            }
+          ],
+          "return": {
+            "types": [
+              "RpcApp"
+            ],
+            "text": "a new instance of RpcApp"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/rpc_app.rb",
+          "line": 19
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Sandbox",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The sandbox proxy page and the Rack app that serves it. The page is\nthe outer frame on the apps origin: it creates the inner frame for\nthe app's HTML, relays messages between the host page and the app,\nand answers to the host origin only. Served per resource under a\nsigned token, with the resource's policy as a header, so the HTML\ncannot precede it. The same page, with the policy in a meta\nelement, is what the inline mode writes into a frame of its own.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host/sandbox.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point: `GET /<token>`.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Array<String>)"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/sandbox.rb",
+          "line": 27
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(host)",
+          "docstring": "The sandbox pages of one host.",
+          "params": [
+            {
+              "name": "host",
+              "types": [
+                "Host"
+              ],
+              "text": "the host whose origin the pages answer to"
+            }
+          ],
+          "return": {
+            "types": [
+              "Sandbox"
+            ],
+            "text": "a new instance of Sandbox"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/sandbox.rb",
+          "line": 19
+        },
+        {
+          "name": "page",
+          "scope": "instance",
+          "group": null,
+          "signature": "page(csp: nil)",
+          "docstring": "The page's HTML, for the origin mode (no policy inside: the header\ncarries it) or the inline mode (the policy as a meta element, where\na browser ignores `frame-ancestors`, so the inline policy omits it).",
+          "params": [
+            {
+              "name": "csp",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the policy for a meta element"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/sandbox.rb",
+          "line": 53
+        },
+        {
+          "name": "script",
+          "scope": "instance",
+          "group": null,
+          "signature": "script",
+          "docstring": "The relay script: the host origin baked in, never read from the\nreferrer; the inner frame's sandbox flags per the extension; the\napp's HTML written on `sandbox-resource-ready`. Semicolons and no\nline comments, since the page may travel inside an attribute whose\nnewlines a stream collapses.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/sandbox.rb",
+          "line": 83
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Server",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One server the host knows.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "headers",
+          "scope": "instance",
+          "group": null,
+          "signature": "headers",
+          "docstring": "the headers the host holds for it",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the current value of headers"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        },
+        {
+          "name": "headers=",
+          "scope": "instance",
+          "group": null,
+          "signature": "headers=(value)",
+          "docstring": "the headers the host holds for it",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Hash"
+              ],
+              "text": "the value to set the attribute headers to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "the id the page and the apps name it by",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        },
+        {
+          "name": "id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "id=(value)",
+          "docstring": "the id the page and the apps name it by",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        },
+        {
+          "name": "url",
+          "scope": "instance",
+          "group": null,
+          "signature": "url",
+          "docstring": "the MCP endpoint",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the current value of url"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        },
+        {
+          "name": "url=",
+          "scope": "instance",
+          "group": null,
+          "signature": "url=(value)",
+          "docstring": "the MCP endpoint",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value to set the attribute url to."
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 58
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::Store",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "A small store with expiry, for a host without a Rails cache.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "clear",
+          "scope": "instance",
+          "group": null,
+          "signature": "clear",
+          "docstring": "Forgets everything.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 106
+        },
+        {
+          "name": "fetch",
+          "scope": "instance",
+          "group": null,
+          "signature": "fetch(key, expires_in:)",
+          "docstring": "The value under a key, computed and kept for `expires_in` seconds when absent or stale.",
+          "params": [
+            {
+              "name": "key",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "expires_in",
+              "types": [
+                "Numeric"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 94
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "An empty store.",
+          "params": [],
+          "return": {
+            "types": [
+              "Store"
+            ],
+            "text": "a new instance of Store"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 83
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::Apps::Result",

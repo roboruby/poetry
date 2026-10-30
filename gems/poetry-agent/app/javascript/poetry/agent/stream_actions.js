@@ -70,8 +70,20 @@ const isDirty = (element) => {
 }
 
 /**
- * Installs the before-morph-attribute guard once per document, so a streamed
- * re-render morphs without clobbering local state.
+ * Whether a morph must leave an element alone: the frame holder of an MCP
+ * App (`data-mcp-app-host`) and everything inside it, which the host
+ * controller owns. A stream morph would replace the holder outright (even
+ * a `data-turbo-permanent` one) or strip its frame, and the app would
+ * reload and handshake again.
+ *
+ * @param {Element} element the element being morphed
+ * @returns {boolean} true to keep the element as it is
+ */
+export const preservesElement = (element) => !!element?.closest?.("[data-mcp-app-host]")
+
+/**
+ * Installs the morph guards once per document, so a streamed re-render
+ * morphs without clobbering local state or an app's frame.
  *
  * @param {Document} [doc] the document to guard
  * @returns {boolean} true when installed, false when absent or already guarded
@@ -81,6 +93,9 @@ export const installMorphStateGuard = (doc = globalThis.document) => {
   doc.__poetryA2uiMorphGuard = true
   doc.addEventListener("turbo:before-morph-attribute", (event) => {
     if (preservesLocalState(event.target, event.detail?.attributeName)) event.preventDefault()
+  })
+  doc.addEventListener("turbo:before-morph-element", (event) => {
+    if (preservesElement(event.target)) event.preventDefault()
   })
   return true
 }

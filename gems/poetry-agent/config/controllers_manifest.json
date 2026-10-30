@@ -125,5 +125,101 @@
       "resolve": "A value with its bindings read and its calls run, recursively; a literal object's doubled `@@` keys read as their literal.",
       "touch": "Marks the edited input's path touched and evaluates every check."
     }
+  },
+  "poetry--agent--mcp-app-host": {
+    "doc": "The frame another server's MCP App renders in, and the host's half of the bridge. The element carries the call (server, tool, input, result, the app's resource) and where the sandbox page and the RPC endpoint are; the controller reads the app's HTML through the endpoint, mounts the sandbox proxy frame (on the apps origin, or as an opaque frame of the page's own in the inline mode), answers `ui/initialize` with the page's theme and tokens, delivers the input and the result, sends the app's own requests to the endpoint, resizes to what the app reports, and tears the app down when the element leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info), `poetry:mcp-app-host:message` (a message for the chat, `detail.params`), `poetry:mcp-app-host:context` (a model-context update), and `poetry:mcp-app-host:display-mode` (a request; the handler may set `detail.mode` to grant one; `inline` otherwise), and with `debug`, `poetry:mcp-app-host:trace` for every message both ways. A link is opened in a new tab after the person confirms it.",
+    "targets": [
+      "frame",
+      "status"
+    ],
+    "values": {
+      "server": {
+        "type": "String",
+        "doc": "The server's id in the host's registry."
+      },
+      "tool": {
+        "type": "String",
+        "doc": "The tool the app belongs to."
+      },
+      "resource": {
+        "type": "String",
+        "doc": "The app's resource uri."
+      },
+      "input": {
+        "type": "String",
+        "doc": "The tool's input, as JSON."
+      },
+      "result": {
+        "type": "String",
+        "doc": "The tool's result (a CallToolResult), as JSON."
+      },
+      "rpcUrl": {
+        "type": "String",
+        "doc": "Where the app's own requests go: a POST taking { server, method, params }."
+      },
+      "sandboxUrl": {
+        "type": "String",
+        "doc": "The sandbox page's URL on the apps origin; absent in the inline mode."
+      },
+      "sandboxOrigin": {
+        "type": "String",
+        "doc": "The apps origin, the only origin the frame's messages are accepted from."
+      },
+      "sandboxPage": {
+        "type": "String",
+        "doc": "The sandbox page's HTML for the inline mode, written into an opaque frame of the page's own."
+      },
+      "height": {
+        "type": "Number",
+        "default": 160,
+        "doc": "The frame's height before the app reports its size, in pixels."
+      },
+      "maxHeight": {
+        "type": "Number",
+        "default": 4000,
+        "doc": "The most the frame grows to, in pixels."
+      },
+      "debug": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether every message both ways is announced as a `poetry:mcp-app-host:trace` event, for a log."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "emit",
+      "hostContext",
+      "initialized",
+      "mount",
+      "openLink",
+      "post",
+      "receive",
+      "resize",
+      "rpc",
+      "status",
+      "theme",
+      "themeChanged",
+      "unmount"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Mounts the frame and starts the handshake.",
+      "disconnect": "Tears the app down and removes the frame.",
+      "emit": "Dispatches a page event under the controller's prefix.",
+      "hostContext": "The host context the app is initialized with.",
+      "initialized": "Once the app is initialized: tells the page, delivers the input and the result.",
+      "mount": "Reads the app's HTML through the endpoint, builds the bridge and the frame, and starts the sandbox.",
+      "openLink": "Opens a link the app asks for, in a new tab, after the person confirms it.",
+      "post": "Posts a message to the frame, to the apps origin only.",
+      "receive": "Takes a message from the frame: the proxy's ready note gets the app's HTML, everything else goes to the bridge.",
+      "resize": "Sizes the frame to what the app reports: the height within the cap, the width as a floor that still shrinks with the container.",
+      "rpc": "Sends one of the app's requests to the endpoint.",
+      "status": "Shows a status line, when the element has one.",
+      "theme": "The page's theme.",
+      "themeChanged": "Tells the app the page's theme and tokens changed.",
+      "unmount": "Asks the app to tear down, drops the bridge and removes the frame."
+    }
   }
 }

@@ -1,8 +1,8 @@
 <%# An assistant message's runs (Poetry::Docs::AgentActivity): text in a
     muted bubble, each run of reasoning and tool calls as one Trace, and an
-    activity as its A2UI surface, as the fallback step for an MCP App this
-    page cannot show (the result's text, under the tool's words), or as
-    its JSON. %>
+    activity as its A2UI surface, as an MCP App's frame when this page hosts
+    the app's server, as the fallback step when it does not (the result's
+    text, under the tool's words), or as its JSON. %>
 <% Poetry::Docs::AgentActivity.runs(message.parts).each_with_index do |run, index| %>
   <% case run.kind %>
   <% when :text %>
@@ -15,8 +15,20 @@
       <%= render "poetry/docs/agui_relay/surface", content: part[:content], errors: surface_errors %>
     <% elsif Poetry::Agent::Apps::Activity.activity?(part) %>
       <% tool = Poetry::Docs::AgentActivity.app_tool(local_assigns[:transcript], message) %>
-      <%= render "poetry/docs/agent_activity/trace", parts: [ part.merge(tool_name: tool&.dig(:name)) ],
-                 id: "app-#{message.id}-#{index}", stopped: stopped %>
+      <% activity = Poetry::Agent::Apps::Activity.from(part[:content]) %>
+      <% host = Poetry::Docs::McpAppShowcase.host(request.base_url) %>
+      <% if activity.resource_uri && activity.server_id && host.servers.key?(activity.server_id) %>
+        <%# The app itself, hosted by this page: the frame the host controller fills, kept through morphs. %>
+        <% call = Poetry::Agent::Apps::Host::Call.new(server: activity.server_id, tool: tool&.dig(:name) || "tool", input: activity.tool_input,
+                                                      result: activity.result, resource_uri: activity.resource_uri) %>
+        <%= tag.div(id: "app-#{message.id}-#{index}", class: "overflow-hidden rounded-xl border bg-card",
+                    data: host.frame_data(call, rpc_url: mcp_app_rpc_path)) do %>
+          <p class="p-3 text-xs text-muted-foreground" data-poetry--agent--mcp-app-host-target="status">Loading the app</p>
+        <% end %>
+      <% else %>
+        <%= render "poetry/docs/agent_activity/trace", parts: [ part.merge(tool_name: tool&.dig(:name)) ],
+                   id: "app-#{message.id}-#{index}", stopped: stopped %>
+      <% end %>
     <% elsif part[:kind] == :activity %>
       <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
     <% elsif part[:kind] == :media %>

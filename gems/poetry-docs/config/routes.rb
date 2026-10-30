@@ -42,6 +42,8 @@ Poetry::Docs::Engine.routes.draw do
   get "ag-ui" => "docs#agui", as: :agui
   get "a2ui" => "docs#a2ui", as: :a2ui
   get "mcp-apps" => "docs#mcp_apps", as: :mcp_apps
+  post "mcp-apps/rpc" => "docs#mcp_app_rpc", as: :mcp_app_rpc, format: false
+  get "mcp-apps/sandbox/*token" => "docs#mcp_app_sandbox", as: :mcp_app_sandbox, format: false
   # The site's own MCP server over HTTP at the conventional same-origin
   # path - what in-page WebMCP bridges (site MCP server packs)
   # proxy, read-only by construction - with the MCP App demo served
