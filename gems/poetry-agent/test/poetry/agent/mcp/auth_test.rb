@@ -143,6 +143,58 @@ module Poetry
         assert_nil MCP::Auth.current, "the identity does not outlive the request"
       end
 
+      def test_a_lazy_mount_serves_the_open_calls_as_nobody_and_challenges_the_protected_tool
+        server = MCP::Bundled.server(app_root: Dir.pwd)
+        server.mcp.define_tool(name: "catalog", description: "Open", input_schema: { type: "object" }) do |**|
+          ::MCP::Tool::Response.new([{ type: "text", text: "plans for #{MCP::Auth.current&.subject || "anyone"}" }])
+        end
+        server.mcp.define_tool(name: "orders", description: "Protected", input_schema: { type: "object" }) do |**|
+          ::MCP::Tool::Response.new([{ type: "text", text: "orders of #{MCP::Auth.current.subject}" }])
+        end
+        lazy = auth(protected_tools: ["orders"])
+        mount = Rack::MockRequest.new(MCP::HTTP.new(server, auth: lazy))
+        call = lambda do |method, params = {}, token: nil|
+          env = { "CONTENT_TYPE" => "application/json", "HTTP_ACCEPT" => "application/json",
+                  input: JSON.generate({ "jsonrpc" => "2.0", "id" => 1, "method" => method, "params" => params }) }
+          env["HTTP_AUTHORIZATION"] = "Bearer #{token}" if token
+          mount.post("/", env)
+        end
+        text = ->(response) { JSON.parse(response.body).dig("result", "content", 0, "text") }
+        orders = { "name" => "orders", "arguments" => {} }
+        catalog = { "name" => "catalog", "arguments" => {} }
+
+        assert_predicate lazy, :lazy?
+        assert lazy.protected_tool?("orders")
+        refute lazy.protected_tool?("catalog")
+        refute_predicate auth, :lazy?
+        assert_equal 200, call.call("initialize", INITIALIZE).status, "the handshake needs no token"
+        assert_equal 200, call.call("tools/list").status
+        assert_equal "plans for anyone", text.call(call.call("tools/call", catalog))
+        assert_equal "plans for anyone", text.call(call.call("tools/call", catalog, token: "forged")),
+                     "a bad token on an open call is nobody, not a refusal"
+
+        refused = call.call("tools/call", orders)
+
+        assert_equal 401, refused.status
+        assert_includes refused.headers["www-authenticate"],
+                        %(resource_metadata="https://shop.example/.well-known/oauth-protected-resource/mcp")
+        assert_includes refused.headers["www-authenticate"], %(scope="mcp")
+        assert_equal 401, call.call("tools/call", orders, token: "forged").status
+        assert_equal 403, call.call("tools/call", orders, token: "narrow-token").status
+        assert_equal "orders of alice", text.call(call.call("tools/call", orders, token: "alice-token"))
+        assert_equal "plans for alice", text.call(call.call("tools/call", catalog, token: "alice-token")),
+                     "a good token is the identity on the open calls too"
+        batch = JSON.generate([{ "jsonrpc" => "2.0", "id" => 1, "method" => "ping" },
+                               { "jsonrpc" => "2.0", "id" => 2, "method" => "tools/call", "params" => orders }])
+        whole = mount.post("/", "CONTENT_TYPE" => "application/json", "HTTP_ACCEPT" => "application/json", input: batch)
+
+        assert_equal 401, whole.status, "a batch naming a protected tool is challenged as a whole"
+        by_rule = auth(protected_tools: ->(name) { name.start_with?("orders") })
+
+        assert by_rule.protected_tool?("orders_history")
+        refute by_rule.protected_tool?("catalog")
+      end
+
       def test_the_origin_check_comes_first_and_a_failing_verifier_is_an_internal_error
         rpc("tools/list", token: "alice-token", origin: "https://evil.example")
 

@@ -19,6 +19,14 @@ module Poetry
       # gem read it as `server_context.auth_info`, and anything rendering
       # for the request (a document, a fragment, a tool) reads {.current}.
       #
+      # The whole mount is protected by default. With `protected_tools:`
+      # the mount is lazy: the handshake, the tool list and the other tools
+      # answer without a token, and only a call of a protected tool is
+      # challenged, so a host lets people use the open tools at once and
+      # asks them to sign in when the conversation reaches one that needs
+      # their account (Claude's lazy authentication, the spec's challenge
+      # on the request that needs it).
+      #
       # @example config/routes.rb
       #   auth = Poetry::Agent::MCP::Auth.new(
       #     resource: "https://shop.example/mcp", authorization_servers: ["https://shop.example"],
@@ -127,8 +135,10 @@ module Poetry
         #   the advertised ones by default
         # @param resource_name [String, nil] a name for consent screens
         # @param documentation [String, nil] a URL for developers
+        # @param protected_tools [Array<String, Symbol>, #call, nil] the tools that need the person's
+        #   account, by name or as a callable `(name) -> Boolean`; nil protects the whole mount
         def initialize(resource:, authorization_servers:, verifier:, scopes: [], required_scopes: nil, # rubocop:disable Metrics/ParameterLists
-                       resource_name: nil, documentation: nil)
+                       resource_name: nil, documentation: nil, protected_tools: nil)
           @metadata = ::MCP::Server::OAuth::ProtectedResourceMetadata.new(
             resource: resource, authorization_servers: Array(authorization_servers),
             scopes_supported: (scopes.map(&:to_s) if scopes.any?),
@@ -136,6 +146,26 @@ module Poetry
           )
           @required_scopes = Array(required_scopes || scopes).map(&:to_s)
           @verifier = build_verifier(resource, verifier)
+          @protected_tools = protected_tools
+          return if protected_tools.nil? || protected_tools.respond_to?(:call)
+
+          @protected_tools = Array(protected_tools).map(&:to_s)
+        end
+
+        # Whether only some tools need a token (the mount is lazy).
+        #
+        # @return [Boolean]
+        def lazy? = !@protected_tools.nil?
+
+        # Whether a tool needs the person's account on a lazy mount.
+        #
+        # @param name [String] the tool a call names
+        # @return [Boolean] false on a mount protected as a whole, where the question never comes up
+        def protected_tool?(name)
+          return false unless lazy?
+          return @protected_tools.call(name.to_s) ? true : false if @protected_tools.respond_to?(:call)
+
+          @protected_tools.include?(name.to_s)
         end
 
         # The document's path at the origin's root, where hosts look for it
@@ -160,12 +190,16 @@ module Poetry
 
         # Wraps a Rack app in the gem's bearer enforcement: a request without
         # a token is challenged, one with a bad token refused, one with a
-        # good token served with the token in the env and as {.current}.
+        # good token served with the token in the env and as {.current}. On
+        # a lazy mount the gate is {Gate}: the challenge waits for a call of
+        # a protected tool.
         #
         # @param app [#call] the app to protect
         # @return [#call]
         def protect(app)
           inner = ->(env) { self.class.with(env[ENV_KEY]) { app.call(env) } }
+          return Gate.new(inner, self) if lazy?
+
           ::MCP::Server::OAuth::Middleware.new(inner, token_verifier: verifier, required_scopes: required_scopes,
                                                       resource_metadata: metadata)
         end
@@ -194,6 +228,75 @@ module Poetry
           when :introspection
             ::MCP::Server::OAuth::IntrospectionVerifier.new(resource_metadata: metadata, **options)
           else raise ArgumentError, "verifier: unknown kind #{kind.inspect}, expected jwt: or introspection:"
+          end
+        end
+
+        # The lazy mount's gate, decided on the request before the server
+        # sees it: a request with a good token is served as that person;
+        # one without, or with a bad or narrow one, is served as nobody
+        # unless it calls a protected tool, when it gets the gem's challenge
+        # (a 401 naming the document, a 403 `insufficient_scope` for a
+        # narrow token) so the host signs the person in and retries the
+        # call. A tool error inside a 200 would not: hosts start sign-in
+        # on the transport's status alone.
+        class Gate
+          # The gate for one authorization over one app.
+          #
+          # @param app [#call] the app behind the gate
+          # @param auth [Auth] the authorization
+          def initialize(app, auth)
+            @app = app
+            @auth = auth
+            @authenticator = ::MCP::Server::OAuth::Authenticator.new(token_verifier: auth.verifier,
+                                                                     required_scopes: auth.required_scopes,
+                                                                     resource_metadata: auth.metadata)
+          end
+
+          # The Rack entry point.
+          #
+          # @param env [Hash] the Rack environment
+          # @return [Array(Integer, Hash, Array<String>)]
+          def call(env)
+            refusal = verify(env)
+            return @app.call(env) if refusal.nil?
+            return refusal if refusal.is_a?(Array)
+            return @authenticator.challenge_response(refusal) if protected_call?(env)
+
+            env.delete(ENV_KEY)
+            @app.call(env)
+          end
+
+          private
+
+          # Verifies the request's token into the env: nil on success, the
+          # gem's error for a missing, bad or narrow token, or a 500 for a
+          # verifier that failed (a JWKS or introspection endpoint down).
+          def verify(env)
+            env[ENV_KEY] = @authenticator.authenticate(env)
+            nil
+          rescue ::MCP::Server::OAuth::Error => e
+            e
+          rescue StandardError => e
+            ::MCP.configuration.exception_reporter.call(e, { middleware: self.class.name })
+            [500, { "content-type" => "application/json" }, [JSON.generate({ error: "server_error" })]]
+          end
+
+          # Whether the request calls a protected tool: a POST whose JSON
+          # body (one message or a batch) carries a `tools/call` naming one.
+          def protected_call?(env)
+            return false unless env["REQUEST_METHOD"] == "POST" && (input = env["rack.input"])
+
+            body = input.read.to_s
+            input.rewind if input.respond_to?(:rewind)
+            messages = JSON.parse(body)
+            messages = [messages] unless messages.is_a?(Array)
+            messages.any? do |message|
+              next false unless message.is_a?(Hash) && message["method"] == "tools/call"
+
+              @auth.protected_tool?(message.dig("params", "name").to_s)
+            end
+          rescue JSON::ParserError
+            false
           end
         end
 

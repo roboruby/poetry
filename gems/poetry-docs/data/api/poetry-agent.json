@@ -14987,7 +14987,7 @@
       "path": "Poetry::Agent::MCP::Auth",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Per-user authorization for the HTTP mount, the resource-server half\nof MCP's authorization specification on the gem's own stack: the\nprotected resource metadata (RFC 9728) a host reads to find the\nauthorization server, the bearer challenge a request without a\ntoken gets, and the verification of the token every request\ncarries. Poetry never issues tokens: the application (Doorkeeper,\nsay) or an identity provider is the authorization server, and the\nverifier is how this server recognizes that server's tokens.\n\nA verified token is the request's identity: handlers built on the\ngem read it as `server_context.auth_info`, and anything rendering\nfor the request (a document, a fragment, a tool) reads {.current}.",
+      "docstring": "Per-user authorization for the HTTP mount, the resource-server half\nof MCP's authorization specification on the gem's own stack: the\nprotected resource metadata (RFC 9728) a host reads to find the\nauthorization server, the bearer challenge a request without a\ntoken gets, and the verification of the token every request\ncarries. Poetry never issues tokens: the application (Doorkeeper,\nsay) or an identity provider is the authorization server, and the\nverifier is how this server recognizes that server's tokens.\n\nA verified token is the request's identity: handlers built on the\ngem read it as `server_context.auth_info`, and anything rendering\nfor the request (a document, a fragment, a tool) reads {.current}.\n\nThe whole mount is protected by default. With `protected_tools:`\nthe mount is lazy: the handshake, the tool list and the other tools\nanswer without a token, and only a call of a protected tool is\nchallenged, so a host lets people use the open tools at once and\nasks them to sign in when the conversation reaches one that needs\ntheir account (Claude's lazy authentication, the spec's challenge\non the request that needs it).",
       "examples": [
         {
           "title": "config/routes.rb",
@@ -15012,7 +15012,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 100
+          "line": 108
         },
         {
           "name": "with",
@@ -15038,13 +15038,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 107
+          "line": 115
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(resource:, authorization_servers:, verifier:, scopes: [], required_scopes: nil, # rubocop:disable Metrics/ParameterLists resource_name: nil, documentation: nil)",
+          "signature": "initialize(resource:, authorization_servers:, verifier:, scopes: [], required_scopes: nil, # rubocop:disable Metrics/ParameterLists resource_name: nil, documentation: nil, protected_tools: nil)",
           "docstring": "The authorization of one mount: its document, scopes and verifier.",
           "params": [
             {
@@ -15100,6 +15100,15 @@
                 "nil"
               ],
               "text": "a URL for developers"
+            },
+            {
+              "name": "protected_tools",
+              "types": [
+                "Array<String, Symbol>",
+                "#call",
+                "nil"
+              ],
+              "text": "the tools that need the person's\naccount, by name or as a callable `(name) -> Boolean`; nil protects the whole mount"
             }
           ],
           "return": {
@@ -15110,7 +15119,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 130
+          "line": 140
+        },
+        {
+          "name": "lazy?",
+          "scope": "instance",
+          "group": null,
+          "signature": "lazy?",
+          "docstring": "Whether only some tools need a token (the mount is lazy).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 158
         },
         {
           "name": "metadata",
@@ -15127,7 +15153,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 84
+          "line": 92
         },
         {
           "name": "metadata_app",
@@ -15144,14 +15170,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 157
+          "line": 187
         },
         {
           "name": "protect",
           "scope": "instance",
           "group": null,
           "signature": "protect(app)",
-          "docstring": "Wraps a Rack app in the gem's bearer enforcement: a request without\na token is challenged, one with a bad token refused, one with a\ngood token served with the token in the env and as {.current}.",
+          "docstring": "Wraps a Rack app in the gem's bearer enforcement: a request without\na token is challenged, one with a bad token refused, one with a\ngood token served with the token in the env and as {.current}. On\na lazy mount the gate is {Gate}: the challenge waits for a call of\na protected tool.",
           "params": [
             {
               "name": "app",
@@ -15169,7 +15195,32 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 167
+          "line": 199
+        },
+        {
+          "name": "protected_tool?",
+          "scope": "instance",
+          "group": null,
+          "signature": "protected_tool?(name)",
+          "docstring": "Whether a tool needs the person's account on a lazy mount.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the tool a call names"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "false on a mount protected as a whole, where the question never comes up"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 164
         },
         {
           "name": "required_scopes",
@@ -15186,7 +15237,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 89
+          "line": 97
         },
         {
           "name": "verifier",
@@ -15203,7 +15254,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 94
+          "line": 102
         },
         {
           "name": "well_known_path",
@@ -15220,7 +15271,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 145
+          "line": 175
         },
         {
           "name": "well_known_url",
@@ -15237,7 +15288,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 150
+          "line": 180
         }
       ],
       "constants": [
@@ -15247,6 +15298,74 @@
           "docstring": "The Rack env key the gem's middleware stores the verified token under."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::MCP::Auth::Gate",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The lazy mount's gate, decided on the request before the server\nsees it: a request with a good token is served as that person;\none without, or with a bad or narrow one, is served as nobody\nunless it calls a protected tool, when it gets the gem's challenge\n(a 401 naming the document, a 403 `insufficient_scope` for a\nnarrow token) so the host signs the person in and retries the\ncall. A tool error inside a 200 would not: hosts start sign-in\non the transport's status alone.",
+      "examples": [],
+      "file": "lib/poetry/agent/mcp/auth.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Array<String>)"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 259
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(app, auth)",
+          "docstring": "The gate for one authorization over one app.",
+          "params": [
+            {
+              "name": "app",
+              "types": [
+                "#call"
+              ],
+              "text": "the app behind the gate"
+            },
+            {
+              "name": "auth",
+              "types": [
+                "Auth"
+              ],
+              "text": "the authorization"
+            }
+          ],
+          "return": {
+            "types": [
+              "Gate"
+            ],
+            "text": "a new instance of Gate"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 247
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::MCP::Auth::MetadataApp",
@@ -15279,7 +15398,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 216
+          "line": 319
         },
         {
           "name": "initialize",
@@ -15304,7 +15423,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 208
+          "line": 311
         }
       ],
       "constants": [
@@ -15353,7 +15472,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 50
+          "line": 58
         },
         {
           "name": "verify",
@@ -15378,7 +15497,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/auth.rb",
-          "line": 60
+          "line": 68
         }
       ],
       "constants": []

@@ -85,6 +85,9 @@
     mount auth.metadata_app => auth.well_known_path     # /.well-known/oauth-protected-resource/mcp
     mount Poetry::Agent::MCP::HTTP.new(server, auth: auth) => "/mcp"
 
+    # Lazy: only these tools need the person; the rest, the handshake and the list answer anyone
+    #   protected_tools: ["show_plans", "choose_plan"]   # or a rule: ->(name) { name.start_with?("my_") }
+
     # An identity provider's signed tokens instead (gem "jwt"):
     #   verifier: { jwt: { jwks_uri: "https://id.example/.well-known/jwks.json" } }
 
@@ -384,6 +387,22 @@
         request's identity: <code>Poetry::Agent::MCP::Auth.current</code> in your
         tools and templates, <code>server_context.auth_info</code> in handlers
         defined on the gem.
+      </p>
+      <p>
+        Lazy authorization, when some tools work without the person's account:
+        name the ones that need it with <code>protected_tools:</code> and the mount
+        is lazy. The handshake, the tool list and the other tools answer without
+        a token, so a host lets people use them the moment they add your server;
+        the first call of a protected tool without a token is answered 401 with
+        the document's address, and Claude shows a Connect card in the
+        conversation, signs the person in and retries the same call. A good token
+        is the identity on every call, open ones included; a bad one on an open
+        call counts as nobody; a narrow one on a protected call gets the 403 that
+        asks for more scope. The challenge has to be the HTTP status: a tool
+        error inside a 200 reads as a failed tool and starts no sign-in, which is
+        why the gate decides on the request before the server sees it. Test it
+        with curl, then with Claude Code against localhost (<code>claude mcp add
+        --transport http</code>, <code>/mcp</code> to sign in).
       </p>
     <% end %>
     <%= poetry_code_block(code: auth_source, language: "ruby", label: "The resource server") %>
