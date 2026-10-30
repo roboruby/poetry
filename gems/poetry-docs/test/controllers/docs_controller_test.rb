@@ -391,6 +391,8 @@ test "the site's MCP server serves the plans app beside the roster" do
   assert_equal "plans", fragment["target"]
   assert_includes fragment["html"], "Recommended"
   assert_includes fragment["html"], %(data-mcp-tool="choose_plan")
+  assert_includes fragment["html"], %(class="cn-table-cell whitespace-normal")
+  assert_includes fragment["html"], "up to 10 seats"
   post "/mcp", params: { jsonrpc: "2.0", id: 4, method: "tools/call",
                          params: { name: "choose_plan", arguments: { plan: "pro", billing: "yearly" } } }.to_json,
                headers: headers

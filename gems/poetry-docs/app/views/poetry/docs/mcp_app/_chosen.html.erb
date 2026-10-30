@@ -1,16 +1,16 @@
 <%# The confirmation, a fragment for the "plans" region after choose_plan:
     one button posts a message into the host's chat, the other calls the
     model's tool again from inside the page. %>
-<%= poetry_card do |card| %>
-  <% card.with_title { "#{plan["name"]} chosen" } %>
-  <% card.with_description { "Billed #{billing}, $#{plan[billing]} per #{billing == "monthly" ? "month" : "year"}." } %>
-  <%= poetry_alert do |alert| %>
-    <% alert.with_icon(name: :"circle-check") %>
-    <% alert.with_title { "Nothing is charged yet" } %>
-    The agent can finish the checkout, or you can go back and pick another plan.
-  <% end %>
-  <% card.with_footer(class: "gap-2") do %>
-    <%= poetry_button(data: { mcp_message: "I chose the #{plan["name"]} plan, billed #{billing}. Please continue." }) { "Tell the agent" } %>
-    <%= poetry_button(variant: :outline, data: { mcp_tool: "show_plans", mcp_args: { team_size: plan["seats"] }.to_json }) { "Back to plans" } %>
-  <% end %>
+<header class="flex flex-col gap-1.5">
+  <h3 class="font-semibold leading-none"><%= plan["name"] %> chosen</h3>
+  <p class="text-sm text-muted-foreground">Billed <%= billing %>, $<%= plan[billing] %> per <%= billing == "monthly" ? "month" : "year" %>.</p>
+</header>
+<%= poetry_alert do |alert| %>
+  <% alert.with_icon(name: :"circle-check") %>
+  <% alert.with_title { "Nothing is charged yet" } %>
+  The agent can finish the checkout, or you can go back and pick another plan.
 <% end %>
+<div class="flex flex-wrap gap-2">
+  <%= poetry_button(data: { mcp_message: "I chose the #{plan["name"]} plan, billed #{billing}. Please continue." }) { "Tell the agent" } %>
+  <%= poetry_button(variant: :outline, data: { mcp_tool: "show_plans", mcp_args: { team_size: plan["seats"] }.to_json }) { "Back to plans" } %>
+</div>

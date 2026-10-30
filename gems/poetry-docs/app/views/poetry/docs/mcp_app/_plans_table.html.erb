@@ -1,36 +1,39 @@
-<%# The plans table, a fragment for the "plans" region: Poetry's card, tabs
-    and table, with a Choose button per row that calls the app-only tool. %>
-<%= poetry_card do |card| %>
-  <% card.with_title { "Plans" } %>
-  <% card.with_description { team_size ? "For a team of #{team_size}" : "Pick a plan" } %>
-  <%= poetry_tabs(label: "Billing") do |tabs| %>
-    <% %w[monthly yearly].each do |period| %>
-      <% tabs.with_tab(period.capitalize, value: period) do %>
-        <%= poetry_table do %>
-          <%= poetry_table_header do %>
-            <%= poetry_table_row do %>
-              <%= poetry_table_head { "Plan" } %>
-              <%= poetry_table_head { "Price" } %>
-              <%= poetry_table_head { "Seats" } %>
-              <%= poetry_table_head { "" } %>
-            <% end %>
+<%# The plans table, a fragment for the "plans" region: Poetry's tabs and
+    table, with a Choose button per row that calls the app-only tool. A
+    chat panel is narrow, so the table keeps to three columns (the seats
+    ride in the plan's note) and the plan cell wraps, the theme's nowrap
+    staying on the price and the button. %>
+<header class="flex flex-col gap-1.5">
+  <h3 class="font-semibold leading-none">Plans</h3>
+  <p class="text-sm text-muted-foreground"><%= team_size ? "For a team of #{team_size}" : "Pick a plan" %></p>
+</header>
+<%= poetry_tabs(label: "Billing") do |tabs| %>
+  <% %w[monthly yearly].each do |period| %>
+    <% tabs.with_tab(period.capitalize, value: period) do %>
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Plan" } %>
+            <%= poetry_table_head { "Price" } %>
+            <%= poetry_table_head { tag.span("Choose", class: "sr-only") } %>
           <% end %>
-          <%= poetry_table_body do %>
-            <% plans.each do |plan| %>
-              <%= poetry_table_row(data: ({ selected: true } if plan == recommended)) do %>
-                <%= poetry_table_cell do %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% plans.each do |plan| %>
+            <%= poetry_table_row(data: ({ selected: true } if plan == recommended)) do %>
+              <%= poetry_table_cell(class: "whitespace-normal") do %>
+                <div class="flex flex-wrap items-center gap-2">
                   <span class="font-medium"><%= plan["name"] %></span>
                   <% if plan == recommended %>
                     <%= poetry_badge(variant: :success) { "Recommended" } %>
                   <% end %>
-                  <div class="text-xs text-muted-foreground"><%= plan["note"] %></div>
-                <% end %>
-                <%= poetry_table_cell { "$#{plan[period]} / #{period == "monthly" ? "month" : "year"}" } %>
-                <%= poetry_table_cell { "up to #{plan["seats"]}" } %>
-                <%= poetry_table_cell(class: "text-right") do %>
-                  <%= poetry_button(size: :sm, variant: (plan == recommended ? :default : :outline),
-                                    data: { mcp_tool: "choose_plan", mcp_args: { plan: plan["id"], billing: period }.to_json }) { "Choose" } %>
-                <% end %>
+                </div>
+                <div class="text-xs text-muted-foreground"><%= plan["note"] %>, up to <%= plan["seats"] %> seats</div>
+              <% end %>
+              <%= poetry_table_cell { "$#{plan[period]}/#{period == "monthly" ? "mo" : "yr"}" } %>
+              <%= poetry_table_cell(class: "text-right") do %>
+                <%= poetry_button(size: :sm, variant: (plan == recommended ? :default : :outline),
+                                  data: { mcp_tool: "choose_plan", mcp_args: { plan: plan["id"], billing: period }.to_json }) { "Choose" } %>
               <% end %>
             <% end %>
           <% end %>

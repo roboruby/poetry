@@ -45,20 +45,16 @@
   template_source = <<~CODE
     #{o}# app/views/apps/plans.html.erb - the page's body, rendered once as the shell #{e}
     <main class="p-4">
-      <div data-mcp-region="plans">
-        #{o}= poetry_card do |card| #{e}
-          #{o} card.with_title { "Plans" } #{e}
-          #{o}= poetry_skeleton(class: "h-4 w-2/3") #{e}
-        #{o} end #{e}
+      <div class="flex flex-col gap-4" data-mcp-region="plans">
+        <h3 class="font-semibold leading-none">Plans</h3>
+        #{o}= poetry_skeleton(class: "h-4 w-2/3") #{e}
       </div>
     </main>
 
     #{o}# app/views/apps/plans/_table.html.erb - a fragment for the region #{e}
-    #{o}= poetry_card do |card| #{e}
-      #{o} card.with_title { "Plans" } #{e}
-      #{o}= poetry_button(data: { mcp_tool: "choose_plan", mcp_args: { plan: "pro" }.to_json }) { "Choose Pro" } #{e}
-      #{o}= poetry_button(variant: :outline, data: { mcp_message: "Tell me more about Pro" }) { "Ask" } #{e}
-    #{o} end #{e}
+    <h3 class="font-semibold leading-none">Plans</h3>
+    #{o}= poetry_button(data: { mcp_tool: "choose_plan", mcp_args: { plan: "pro" }.to_json }) { "Choose Pro" } #{e}
+    #{o}= poetry_button(variant: :outline, data: { mcp_message: "Tell me more about Pro" }) { "Ask" } #{e}
   CODE
   roster_source = <<~CODE
     # Beside poetry-agent's own coding-agent roster (this site does this at /mcp)
@@ -158,6 +154,13 @@
         <code>data-mcp-message</code> posts a user message into the chat,
         <code>data-mcp-link</code> asks the host to open a link. Stimulus connects
         Poetry's controllers in swapped-in fragments as it does anywhere else.
+      </p>
+      <p>
+        The host's panel is narrow, a few hundred pixels in a chat, and the host
+        owns its width. Compose for it: few columns, prose cells that wrap
+        (the theme's table cells do not), and no card of the page's own when the
+        document asks the host for a border with <code>prefers_border</code>.
+        The demo's plans table is three columns for that reason.
       </p>
     <% end %>
     <%= poetry_code_block(code: template_source, language: "erb", label: "The template and a fragment") %>
