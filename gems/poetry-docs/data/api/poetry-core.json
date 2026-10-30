@@ -6062,7 +6062,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 86
+          "line": 147
         },
         {
           "name": "gem_roots",
@@ -6096,7 +6096,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 178
+          "line": 239
         },
         {
           "name": "helper_for",
@@ -6129,7 +6129,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 107
+          "line": 168
         },
         {
           "name": "invalid_at?",
@@ -6155,7 +6155,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 141
+          "line": 202
         },
         {
           "name": "merged",
@@ -6189,7 +6189,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 196
+          "line": 257
         },
         {
           "name": "published_at?",
@@ -6215,7 +6215,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 151
+          "line": 212
         },
         {
           "name": "read_file",
@@ -6242,7 +6242,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 123
+          "line": 184
         },
         {
           "name": "roots",
@@ -6259,7 +6259,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 163
+          "line": 224
         },
         {
           "name": "blocks",
@@ -6271,7 +6271,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 270
+          "line": 331
         },
         {
           "name": "components",
@@ -6283,7 +6283,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 266
+          "line": 327
         },
         {
           "name": "entries",
@@ -6300,7 +6300,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 283
+          "line": 344
         },
         {
           "name": "form_builder",
@@ -6312,7 +6312,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 277
+          "line": 338
         },
         {
           "name": "generate!",
@@ -6338,7 +6338,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 308
+          "line": 369
         },
         {
           "name": "helper_args",
@@ -6350,7 +6350,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 273
+          "line": 334
         },
         {
           "name": "initialize",
@@ -6438,7 +6438,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 251
+          "line": 312
         },
         {
           "name": "source_root",
@@ -6450,7 +6450,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 270
+          "line": 331
         },
         {
           "name": "to_yaml",
@@ -6467,7 +6467,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 292
+          "line": 353
         },
         {
           "name": "verified?",
@@ -6493,7 +6493,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 319
+          "line": 380
         }
       ],
       "constants": [
@@ -6537,7 +6537,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "entries",
@@ -6549,7 +6549,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "form_builder",
@@ -6561,7 +6561,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "helper_args",
@@ -6573,7 +6573,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "helpers",
@@ -6585,7 +6585,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "initialize",
@@ -6663,7 +6663,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 68
+          "line": 129
         },
         {
           "name": "internal",
@@ -6675,7 +6675,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 47
+          "line": 108
         },
         {
           "name": "internals",
@@ -6692,7 +6692,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 53
+          "line": 114
         },
         {
           "name": "source_root",
@@ -6704,10 +6704,99 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         }
       ],
       "constants": []
+    },
+    {
+      "path": "Poetry::Core::Registry::ContentScan",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The source scan behind the entry's content fact: whether a class or\nmodule body, or a template, calls the block (`content`, `content?`).",
+      "examples": [],
+      "file": "lib/poetry/core/registry.rb",
+      "methods": [
+        {
+          "name": "source?",
+          "scope": "class",
+          "group": null,
+          "signature": "source?(source, line)",
+          "docstring": "Whether the class or module defined at a line calls the block in\nits own body (a nested class's or module's body is its own).",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "String"
+              ],
+              "text": "the file's Ruby"
+            },
+            {
+              "name": "line",
+              "types": [
+                "Integer"
+              ],
+              "text": "the line the definition starts on"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 56
+        },
+        {
+          "name": "template?",
+          "scope": "class",
+          "group": null,
+          "signature": "template?(erb)",
+          "docstring": "Whether a template's Ruby calls the block.",
+          "params": [
+            {
+              "name": "erb",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 65
+        }
+      ],
+      "constants": [
+        {
+          "name": "COMMENT",
+          "value": "/<%#.*?%>/m",
+          "docstring": "A template's comments, dropped before the tags are read."
+        },
+        {
+          "name": "NAMES",
+          "value": "%i[content content?].freeze",
+          "docstring": "The calls that read the block."
+        },
+        {
+          "name": "TAG",
+          "value": "/<%(?!#)=?(.*?)-?%>/m",
+          "docstring": "A template's tags, their Ruby captured."
+        },
+        {
+          "name": "TEMPLATE_CALL",
+          "value": "/(?<![\\w.:@$])content\\??(?![\\w:(])(?!\\s*=[^=~>])/",
+          "docstring": "A template tag's call: a bare `content` or `content?`, not\n`content_for`, `.content`, `:content`, `content:` or `content =`."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::RegistryAddress",

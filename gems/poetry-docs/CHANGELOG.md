@@ -16,6 +16,7 @@
 
 ### Changed
 
+- The MCP guide, the agent library page and the editors page say the server runs on the official `mcp` gem, and the guide's HTTP section describes the stateless JSON transport, `Accept: application/json`, `allowed_origins:` and `Server#mcp`.
 - The A2UI Surface demo renders a v0.9 surface, a feedback card shaped as AG-UI's A2UI middleware sends one, beside its v1.0 surfaces; its action and the agent's reply speak v0.9.
 - The A2UI guide names `session.capabilities(inline: true)`.
 - The A2UI guide's checks section says when the browser tells the user of a failure (once they have edited the input, a button's reason once any input is edited) and that a streamed re-render judges the edited inputs again.

@@ -64,7 +64,7 @@
       <h2 id="mcp">The MCP server</h2>
       <p>
         <code>poetry-agent</code> speaks newline-delimited JSON-RPC over
-        stdio with no SDK dependency. Wire it into Claude Code, Cursor, VS
+        stdio, on the official <code>mcp</code> gem. Wire it into Claude Code, Cursor, VS
         Code, Zed, or RubyMine with <code>bin/rails g poetry:editor</code>;
         the <%= link_to "MCP guide", mcp_path %> covers the ten tools and
         the verify loop they close.
@@ -162,7 +162,7 @@
       <table>
         <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
         <tbody>
-          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop</td></tr>
+          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server on the official <code>mcp</code> gem; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop, <code>#mcp</code> the gem's server underneath, open to a host's own tools</td></tr>
           <tr><td><code>exe/poetry-agent</code></td><td>the one executable (<code>bundle exec poetry-agent</code>); skills, helpers, and recipes ride along when poetry-ui is bundled</td></tr>
           <tr><td><code>poetry--agent--webmcp</code></td><td>the registrar controller: registers an opted-in instance's tools on connect, aborts them on disconnect, dispatches calls to the component's own action</td></tr>
           <tr><td><code>poetry--agent--webmcp-form</code></td><td>the declarative-form controller: an agent-invoked submit answers through <code>SubmitEvent.respondWith</code> instead of navigating</td></tr>

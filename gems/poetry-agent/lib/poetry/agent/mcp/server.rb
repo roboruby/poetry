@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "mcp"
 
 module Poetry
   module Agent
@@ -11,24 +12,29 @@ module Poetry
     # source. Read-only, progressive-disclosure (brief|detailed|full), and
     # verdict-returning (check returns per-finding pass/fail).
     #
-    # Two transports, one server: newline-delimited JSON-RPC 2.0 over stdio
-    # (the `poetry-agent` exe; own the supply chain - no MCP SDK dependency)
-    # and POST JSON-RPC over HTTP ({HTTP}, for the same-origin `/mcp` mount
-    # in-page bridges read). {Server#handle} is a pure request->response
-    # function (testable without either transport); {Server#serve} is the
-    # stdio loop; {Bundled} is the one assembly both transports share.
+    # Two transports, one server, on the official `mcp` gem: the gem speaks
+    # JSON-RPC 2.0, negotiates the protocol version, validates a call's
+    # arguments against the tool's schema and serves Streamable HTTP; this
+    # class owns the roster and the tools. Newline-delimited JSON-RPC over
+    # stdio is the `poetry-agent` exe ({Server#serve}); POST JSON-RPC over
+    # HTTP is {HTTP}, for the same-origin `/mcp` mount in-page bridges read.
+    # {Server#handle} is a pure request->response function (testable without
+    # either transport); {Bundled} is the one assembly both transports share;
+    # {Server#mcp} is the gem's server, open to a host's own tools.
     #
     # v1 is the read/verify surface. The heavier roadmap - verify_screen
     # running the eval gate array, component:// artifact resources, tag
     # browsing, SSE streaming - is maturity-gated and NOT in this cut.
     module MCP
-      # The MCP protocol revision this server negotiates.
-      PROTOCOL_VERSION = "2025-06-18"
+      # The latest MCP protocol revision this server negotiates (the gem's); a
+      # client asking for an older supported revision is answered in that one.
+      PROTOCOL_VERSION = ::MCP::Configuration::LATEST_HANDSHAKE_PROTOCOL_VERSION
       # The serverInfo payload returned by the initialize handshake.
       SERVER_INFO = { "name" => "poetry-agent", "version" => Poetry::Agent::VERSION }.freeze
 
       # Tools that answer a blank brief with guidance of their own (the
-      # block catalog, what to send) rather than a pass.
+      # block catalog, what to send) rather than a pass; their schemas
+      # mark nothing required, so the gem lets the blank call through.
       TOLERATES_BLANK = %w[compose build_page].freeze
 
       # The tool roster the server advertises (tools/list): MCP Tool-shaped
@@ -46,8 +52,7 @@ module Poetry
             "properties" => {
               "brief" => { "type" => "string",
                            "description" => "the task text, verbatim (a sentence is enough)" }
-            },
-            "required" => ["brief"]
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -71,8 +76,7 @@ module Poetry
                           "description" => "the workflow step to run; omit to start at the routed entry" },
               "source" => { "type" => "string",
                             "description" => "verify step only: the ERB you built, to run through check" }
-            },
-            "required" => ["intent"]
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -321,22 +325,26 @@ module Poetry
           title titles description descriptions action actions
         ].to_set.freeze
 
+        # The gem's server over the roster: JSON-RPC, the protocol
+        # negotiation, the argument validation and the transports are its;
+        # every tool dispatches here. Public so a host can define its own
+        # tools and resources beside Poetry's (an MCP App among them).
+        #
+        # @return [::MCP::Server] the server the transports mount
+        def mcp
+          @mcp ||= ::MCP::Server.new(name: SERVER_INFO["name"], version: SERVER_INFO["version"],
+                                     capabilities: ::MCP::Server::Capabilities.new.tap(&:support_tools),
+                                     tools: tool_classes)
+        end
+
         # A JSON-RPC 2.0 request hash -> a response hash (or nil for a
         # notification, which gets no reply).
         #
         # @param request [Hash] one parsed JSON-RPC 2.0 request
         # @return [Hash, nil] the response hash, or nil for a notification
         def handle(request)
-          id = request["id"]
-          case request["method"]
-          when "initialize" then result(id, initialize_result)
-          when "tools/list" then result(id, { "tools" => TOOLS })
-          when "tools/call" then result(id, call_tool(request["params"] || {}))
-          when %r{\Anotifications/} then nil
-          else error(id, -32_601, "method not found: #{request["method"]}")
-          end
-        rescue StandardError => e
-          error(id, -32_603, e.message)
+          response = mcp.handle_json(JSON.generate(request))
+          response && JSON.parse(response)
         end
 
         # The thin stdio loop: newline-delimited JSON-RPC in, replies out.
@@ -349,34 +357,34 @@ module Poetry
             line = line.strip
             next if line.empty?
 
-            response =
-              begin
-                handle(JSON.parse(line))
-              rescue JSON::ParserError => e
-                error(nil, -32_700, "parse error: #{e.message}")
-              end
+            response = mcp.handle_json(line)
             next unless response
 
-            output.puts(JSON.generate(response))
+            output.puts(response)
             output.flush
           end
         end
 
         private
 
-        # The initialize result: protocol version, server info and capabilities.
-        def initialize_result
-          {
-            "protocolVersion" => PROTOCOL_VERSION,
-            "serverInfo" => SERVER_INFO,
-            "capabilities" => { "tools" => {} }
-          }
+        # The roster as the gem's tool classes, each one calling back here
+        # with the arguments the gem validated against its schema.
+        def tool_classes
+          poetry = self
+          TOOLS.map do |tool|
+            name = tool["name"]
+            schema = JSON.parse(JSON.generate(tool["inputSchema"]), symbolize_names: true)
+            annotations = { read_only_hint: tool.dig("annotations", "readOnlyHint") }
+            ::MCP::Tool.define(name: name, description: tool["description"], input_schema: schema,
+                               annotations: annotations) do |**arguments|
+              poetry.send(:dispatch, name, arguments.transform_keys(&:to_s))
+            end
+          end
         end
 
-        # Dispatches a tools/call to its tool; missing required arguments answer as an error.
-        def call_tool(params)
-          name = params["name"]
-          arguments = params["arguments"] || {}
+        # Runs one tool; a blank required argument answers as a tool error
+        # (the gem already refused an absent one or a value off the schema).
+        def dispatch(name, arguments)
           if !TOLERATES_BLANK.include?(name) && (missing = missing_arguments(name, arguments)).any?
             return tool_content("#{name}: missing required argument#{"s" if missing.size > 1} " \
                                 "#{missing.join(", ")} (see tools/list for the schema)", error: true)
@@ -393,7 +401,6 @@ module Poetry
             when "list_recipes" then list_recipes
             when "get_skill" then get_skill(arguments)
             when "guidance" then guidance(arguments)
-            else return tool_content("unknown tool: #{name}", error: true)
             end
           tool_content(text)
         end
@@ -636,7 +643,8 @@ module Poetry
            "", "To build a NEW page instead, re-call with a build verb."].join("\n")
         end
 
-        # One build_page step by name; an unknown step redirects.
+        # One build_page step by name (the gem refuses a name off the
+        # schema's enum before the call reaches here).
         def run_step(step, intent, arguments)
           case step
           when "probe" then framed(1, "PROBE (host setup)", probe_body, "plan")
@@ -644,7 +652,6 @@ module Poetry
           when "direct" then framed(3, "DIRECT (creative direction)", direct_body, "snippets")
           when "snippets" then framed(4, "SNIPPETS (start-from source)", snippets_body(intent), "verify")
           when "verify" then verify_body(arguments)
-          else redirect_step(step)
           end
         end
 
@@ -652,12 +659,6 @@ module Poetry
         def framed(number, label, body, nxt)
           ["STEP #{number}/5 - #{label}", "", body, "",
            %(NEXT -> call build_page again with step: "#{nxt}" (same intent).)].join("\n")
-        end
-
-        # The answer for an unknown step name.
-        def redirect_step(step)
-          "no such step: #{step.inspect} - the workflow is #{STEPS.join(" -> ")}. " \
-            "Omit step for the guided entry, or pass one of those."
         end
 
         # Step 1: host doctor. Reads what it can from @app_root and degrades
@@ -1112,19 +1113,9 @@ module Poetry
         # The registry path whose title matches a name, or nil.
         def path_for(name) = @entries.keys.find { |path| title(path) == name }
 
-        # A JSON-RPC result envelope.
-        def result(id, value) = { "jsonrpc" => "2.0", "id" => id, "result" => value }
-
-        # A JSON-RPC error envelope.
-        def error(id, code,
-                  message)
-          { "jsonrpc" => "2.0", "id" => id, "error" => { "code" => code, "message" => message } }
-        end
-
         # A tool result with one text content block, flagged when it is an error.
-        def tool_content(text,
-                         error: false)
-          { "content" => [{ "type" => "text", "text" => text }], "isError" => error }
+        def tool_content(text, error: false)
+          ::MCP::Tool::Response.new([{ type: "text", text: text }], error: error)
         end
       end
     end

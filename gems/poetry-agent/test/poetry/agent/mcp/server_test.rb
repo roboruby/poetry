@@ -103,9 +103,13 @@ module Poetry
       end
 
       def call_on(target, name, arguments = {})
-        response = target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
-                                 "params" => { "name" => name, "arguments" => arguments })
-        response.dig("result", "content", 0, "text")
+        tool_result(target, name, arguments).dig("content", 0, "text")
+      end
+
+      # The result of one tools/call, as the gem answers it.
+      def tool_result(target, name, arguments = {})
+        target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
+                      "params" => { "name" => name, "arguments" => arguments })["result"]
       end
 
       # --- protocol ---
@@ -120,7 +124,9 @@ module Poetry
       end
 
       def test_initialize_advertises_protocol_and_server_info
-        result = server.handle("id" => 1, "method" => "initialize")["result"]
+        params = { "protocolVersion" => MCP::PROTOCOL_VERSION, "capabilities" => {},
+                   "clientInfo" => { "name" => "test", "version" => "0" } }
+        result = server.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)["result"]
 
         assert_equal MCP::PROTOCOL_VERSION, result["protocolVersion"]
         assert_equal "poetry-agent", result.dig("serverInfo", "name")
@@ -128,7 +134,7 @@ module Poetry
       end
 
       def test_tools_list_advertises_the_read_only_tools_compose_first
-        tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
+        tools = server.handle("jsonrpc" => "2.0", "id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
         assert_equal %w[compose build_page list_components describe_component check list_blocks
@@ -376,15 +382,15 @@ module Poetry
       end
 
       def test_build_page_rejects_an_unknown_step
-        assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "no such step"
+        assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "not one of"
       end
 
       def test_a_notification_gets_no_reply
-        assert_nil server.handle("method" => "notifications/initialized")
+        assert_nil server.handle("jsonrpc" => "2.0", "method" => "notifications/initialized")
       end
 
       def test_an_unknown_method_is_a_json_rpc_error
-        response = server.handle("id" => 9, "method" => "nonsense")
+        response = server.handle("jsonrpc" => "2.0", "id" => 9, "method" => "nonsense")
 
         assert_equal(-32_601, response.dig("error", "code"))
       end
@@ -533,13 +539,15 @@ module Poetry
 
       def test_a_tool_called_without_a_required_argument_errors_instead_of_passing
         with_blocks_server do |server|
-          result = server.send(:call_tool, { "name" => "check", "arguments" => { "erb" => "<%= poetry_nope %>" } })
+          result = tool_result(server, "check", "erb" => "<%= poetry_nope %>")
 
           assert result["isError"], "a wrong key is not an empty source that passes"
-          assert_includes result["content"].first["text"], "missing required argument source"
-          blank = server.send(:call_tool, { "name" => "describe_component", "arguments" => { "name" => "  " } })
+          assert_match(/missing required argument/i, result["content"].first["text"])
+          assert_includes result["content"].first["text"], "source"
+          blank = tool_result(server, "describe_component", "name" => "  ")
 
           assert blank["isError"]
+          assert_includes blank["content"].first["text"], "missing required argument name"
           assert_includes call_on(server, "check", "source" => "<%= poetry_nope %>"), "FAIL"
         end
       end
@@ -697,7 +705,7 @@ module Poetry
       # --- stdio framing ---
 
       def test_serve_reads_ndjson_and_writes_replies
-        input = StringIO.new(%({"id":1,"method":"tools/list"}\n\n))
+        input = StringIO.new(%({"jsonrpc":"2.0","id":1,"method":"tools/list"}\n\n))
         output = StringIO.new
         server.serve(input: input, output: output)
 
@@ -705,11 +713,11 @@ module Poetry
       end
 
       def test_serve_survives_a_malformed_line
-        input = StringIO.new(%(not json\n{"id":1,"method":"tools/list"}\n))
+        input = StringIO.new(%(not json\n{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n))
         output = StringIO.new
         server.serve(input: input, output: output)
 
-        assert_includes output.string, "parse error" # the bad line
+        assert_includes output.string, "Parse error" # the bad line
         assert_includes output.string, "list_components" # the loop kept going
       end
     end

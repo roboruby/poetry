@@ -18,7 +18,8 @@ module Poetry
   # surfaces through which agents reach the component contract, built
   # once (the registry) and projected many ways:
   #
-  # - {MCP::Server} - the boot-free `poetry-agent` MCP server (discover:
+  # - {MCP::Server} - the boot-free `poetry-agent` MCP server, on the
+  #   official `mcp` gem (discover:
   #   list_components / describe_component / check / compose / build_page
   #   / get_skill) for coding agents in editors.
   # - {WebMCP} - the in-page runtime: rendered components' declared tools

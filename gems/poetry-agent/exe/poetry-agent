@@ -3,7 +3,8 @@
 
 # poetry-agent: the poetry MCP server - newline-delimited JSON-RPC 2.0
 # over stdio, serving list_components / describe_component / check /
-# compose / build_page / get_skill from the committed registry. Boot-free:
+# compose / build_page / get_skill from the committed registry, on the
+# official mcp gem. Boot-free:
 # the gems load once per agent session (~0.4s); the Rails app never boots,
 # so every call after that is milliseconds.
 #

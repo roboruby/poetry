@@ -1,33 +1,37 @@
 # frozen_string_literal: true
 
 require "json"
+require "mcp"
 
 module Poetry
   module Agent
     module MCP
-      # The MCP server over HTTP: a Rack app answering JSON-RPC 2.0 POSTs
-      # (the Streamable HTTP transport's request/response half) with the
-      # same pure {Server#handle} the stdio exe uses - one surface, two
-      # transports. Mount it at the conventional same-origin `/mcp`, which
-      # is where in-page bridges (WebMCP site MCP server packs among them)
-      # look for a site's own MCP server.
+      # The MCP server over HTTP: the gem's Streamable HTTP transport, as a
+      # Rack app, in its stateless JSON mode (one POST, one JSON reply; no
+      # session to keep, no event stream to hold), over the same server the
+      # stdio exe serves - one surface, two transports. Mount it at the
+      # conventional same-origin `/mcp`, which is where in-page bridges
+      # (WebMCP site MCP server packs among them) look for a site's own MCP
+      # server; a browser client sends `Accept: application/json`.
       #
       # Read-only by construction (every tool describes or verifies), so
       # exposing it is a discovery surface, not a mutation surface. The
       # Origin header is validated against the request's own host, so a
-      # cross-site page cannot drive it through a visitor's browser.
+      # cross-site page cannot drive it through a visitor's browser;
+      # `allowed_origins:` names the other origins to let in. The Host
+      # header is the host application's to validate (Rails does), so the
+      # transport's own loopback-only host check stays off.
       #
       # @example config/routes.rb
       #   mount Poetry::Agent::MCP::HTTP.new => "/mcp"
       class HTTP
-        # The response media type.
-        JSON_TYPE = "application/json"
-
         # A Rack endpoint over a server, a callable that builds one, or the bundled default.
         # @param server [Server, Proc, nil] the server, a lambda building it
         #   on first request, or nil for the bundled assembly
-        def initialize(server = nil)
+        # @param allowed_origins [Array<String>, nil] origins accepted beside the request's own
+        def initialize(server = nil, allowed_origins: nil)
           @server = server
+          @allowed_origins = allowed_origins
         end
 
         # The Rack entry point.
@@ -35,24 +39,30 @@ module Poetry
         # @param env [Hash] the Rack environment
         # @return [Array(Integer, Hash, Array<String>)] status, headers, body
         def call(env)
-          request = Rack::Request.new(env)
-          return not_allowed unless request.post?
-          return forbidden unless same_origin?(request)
+          return forbidden unless origin_allowed?(Rack::Request.new(env))
 
-          payload = JSON.parse(request.body.read)
-          # A batch is an Array; a single request is a Hash (never Array() a
-          # Hash - it splits into pairs).
-          messages = payload.is_a?(Array) ? payload : [payload]
-          responses = messages.filter_map { |message| server.handle(message) }
-          return [202, headers, []] if responses.empty?
-
-          body = payload.is_a?(Array) ? responses : responses.first
-          [200, headers, [JSON.generate(body)]]
-        rescue JSON::ParserError => e
-          [400, headers, [JSON.generate(rpc_error(-32_700, "parse error: #{e.message}"))]]
+          transport.call(env)
         end
 
         private
+
+        # An absent Origin (same-origin fetch, curl, an MCP client) passes;
+        # a present one must match the request's own scheme + host, or be
+        # allow-listed.
+        def origin_allowed?(request)
+          origin = request.get_header("HTTP_ORIGIN")
+          return true if origin.nil? || origin.empty?
+          return true if Array(@allowed_origins).any? { |allowed| origin.casecmp?(allowed) }
+
+          origin.casecmp?("#{request.scheme}://#{request.host_with_port}")
+        end
+
+        # The 403 response for a cross-origin request.
+        def forbidden
+          error = { "code" => -32_600, "message" => "origin not allowed" }
+          [403, { "content-type" => "application/json" },
+           [JSON.generate({ "jsonrpc" => "2.0", "id" => nil, "error" => error })]]
+        end
 
         # The MCP server, built on first use.
         def server
@@ -60,34 +70,11 @@ module Poetry
           @server ||= Bundled.server
         end
 
-        # The JSON response headers.
-        def headers
-          { "content-type" => JSON_TYPE, "cache-control" => "no-store" }
-        end
-
-        # The 405 response for anything but POST.
-        def not_allowed
-          [405, headers.merge("allow" => "POST"),
-           [JSON.generate(rpc_error(-32_601, "POST JSON-RPC only (SSE streaming is not offered)"))]]
-        end
-
-        # The 403 response for a cross-origin request.
-        def forbidden
-          [403, headers, [JSON.generate(rpc_error(-32_600, "origin not allowed"))]]
-        end
-
-        # An absent Origin (same-origin fetch, curl, an MCP client) passes;
-        # a present one must match the request's own scheme + host.
-        def same_origin?(request)
-          origin = request.get_header("HTTP_ORIGIN")
-          return true if origin.nil? || origin.empty?
-
-          origin.casecmp?("#{request.scheme}://#{request.host_with_port}")
-        end
-
-        # A JSON-RPC error body with no id.
-        def rpc_error(code, message)
-          { "jsonrpc" => "2.0", "id" => nil, "error" => { "code" => code, "message" => message } }
+        # The gem's transport over the server, built on first use.
+        def transport
+          @transport ||= ::MCP::Server::Transports::StreamableHTTPTransport.new(
+            server.mcp, stateless: true, enable_json_response: true, dns_rebinding_protection: false
+          )
         end
       end
     end

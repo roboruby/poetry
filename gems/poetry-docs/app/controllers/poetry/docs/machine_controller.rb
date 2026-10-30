@@ -14,7 +14,7 @@ module Poetry
         "/llms.txt" => { summary: "Site index for agents: every docs page with a one-line description", type: "text/markdown" },
         "/poetry/llms.txt" => { summary: "Component catalog for agents", type: "text/markdown" },
         "/poetry/llms-full.txt" => { summary: "Full component contracts + Stimulus wiring + agent tools", type: "text/markdown" },
-        "/mcp" => { summary: "The poetry MCP server over HTTP: POST JSON-RPC 2.0 (initialize, tools/list, tools/call) - the same read-only tools as `bundle exec poetry-agent`, for in-page bridges", type: "application/json", method: :post },
+        "/mcp" => { summary: "The poetry MCP server over HTTP: POST JSON-RPC 2.0 (initialize, tools/list, tools/call; stateless, `Accept: application/json`) - the same read-only tools as `bundle exec poetry-agent`, for in-page bridges", type: "application/json", method: :post },
         "/r/registry.json" => { summary: "Registry index (shadcn registry schema)", type: "application/json" },
         "/r/registries.json" => { summary: "Directory of registries", type: "application/json" },
         "/r/{name}" => { summary: "One registry item as <name>.json (shadcn registry-item schema: https://ui.shadcn.com/schema/registry-item.json)", type: "application/json" },

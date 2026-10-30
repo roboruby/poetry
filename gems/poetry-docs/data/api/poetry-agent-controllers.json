@@ -104,21 +104,65 @@
       "path": "poetry--agent--a2ui-surface",
       "type": "controller",
       "superclass": null,
-      "docstring": "The client side of an A2UI surface's checks: the server renders the\nprogram (every checked component's rules with absolute bindings, the\nbound inputs by path with their kinds, and the data model) and this\ncontroller evaluates it as the user types - a button whose own checks\nfail is disabled, a failing input is marked invalid and its error slot\ncarries the message. The five validators and the three combinators are\nthe checks vocabulary; anything else passes here and is judged by the\nserver, which re-runs every rule on the action.\n\n**Values**:\n- `program` (Object): The check program the server compiled: the checks, the bound inputs by path, and the data model.",
+      "docstring": "The client side of an A2UI surface's checks: the server renders the\nprogram (every checked component's rules, spelled as v1.0 spells them\nwhatever the surface speaks: `{\"@path\"}` bindings made absolute,\n`{\"@call\", args}` calls, a literal `@` key doubled; the path each\nchecked control binds; the bound inputs by path with their kinds; and\nthe data model) and this controller evaluates it as the user types.\n\nA button whose own checks fail is disabled from the start. What the\nuser sees of a failure waits for them: an input's message and invalid\nstate appear once its path has been edited, a button's reason once any\ninput has. Until then the server's rendering stands, including the\nfailures it rendered after a rejected action; one the browser cannot\njudge (a rule on a function it does not know) stands until the server\njudges it again. A morph keeps the element and this controller, so the\nedited inputs are judged again once the morph is over.\n\nThe five validators and the three combinators are the checks\nvocabulary; anything else passes here and is judged by the server,\nwhich re-runs every rule on the action.\n\n**Values**:\n- `program` (Object): The check program the server compiled: the checks (each with the path its control binds), the bound inputs by path, and the data model.",
       "examples": [],
       "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
       "methods": [
         {
-          "name": "connect",
+          "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "connect()",
-          "docstring": "Evaluates every check once at mount.",
+          "signature": "initialize()",
+          "docstring": "Starts with nothing touched: the paths the user has edited since the\nsurface mounted.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 24
+          "line": 39
+        },
+        {
+          "name": "programValueChanged",
+          "scope": "instance",
+          "group": null,
+          "signature": "programValueChanged()",
+          "docstring": "Evaluates every check at mount and again when a server render\nchanges the program.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 47
+        },
+        {
+          "name": "touch",
+          "scope": "instance",
+          "group": null,
+          "signature": "touch(event)",
+          "docstring": "Marks the edited input's path touched and evaluates every check.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Event"
+              ],
+              "text": "the input or change event"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 56
+        },
+        {
+          "name": "morphed",
+          "scope": "instance",
+          "group": null,
+          "signature": "morphed()",
+          "docstring": "Evaluates every check once a morph of the surface is over: the morph\nleft the slots and attributes as the server rendered them, and the\nedited inputs keep their values. One pass per morph, however many\nelements it touched.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 68
         },
         {
           "name": "evaluate",
@@ -130,14 +174,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 31
+          "line": 80
         },
         {
           "name": "failure",
           "scope": "instance",
           "group": null,
           "signature": "failure(rule)",
-          "docstring": "A rule's failure message, or null when it passes or cannot be decided\nhere.",
+          "docstring": "A rule's failure message, null when it passes, or undefined when it\ncannot be decided here.",
           "params": [
             {
               "name": "rule",
@@ -149,20 +193,20 @@
           ],
           "return": {
             "types": [
-              "string|null"
+              "string|null|undefined"
             ],
-            "text": "the failure message, or null"
+            "text": "the failure message, null, or undefined"
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 46
+          "line": 95
         },
         {
           "name": "apply",
           "scope": "instance",
           "group": null,
-          "signature": "apply(key, kind, failures)",
-          "docstring": "Reflects a check's failures on the elements bound to a key: a button\ndisables, an input turns invalid.",
+          "signature": "apply(key, entry, failures, undecided)",
+          "docstring": "Reflects a check's verdict on the elements bound to a key. A button\ndisables while its checks fail. The message and the invalid state\nfollow the verdict only once the user has touched the input (any\ninput, for a button); before that, and for a server failure the\nbrowser cannot judge, the server's rendering stands.",
           "params": [
             {
               "name": "key",
@@ -172,38 +216,45 @@
               "text": "the bound key the elements carry"
             },
             {
-              "name": "kind",
+              "name": "entry",
               "types": [
-                "string"
+                "Object"
               ],
-              "text": "the control kind: button or input"
+              "text": "the check entry: its kind (button or input) and the path its control binds"
             },
             {
               "name": "failures",
               "types": [
                 "string[]"
               ],
-              "text": "the failure messages, empty when the check passes"
+              "text": "the failure messages, empty when every decided rule passes"
+            },
+            {
+              "name": "undecided",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether a rule could not be decided here"
             }
           ],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 62
+          "line": 115
         },
         {
           "name": "resolve",
           "scope": "instance",
           "group": null,
           "signature": "resolve(value)",
-          "docstring": "A value with its bindings read and its calls run, recursively.",
+          "docstring": "A value with its bindings read and its calls run, recursively; a\nliteral object's doubled `@@` keys read as their literal.",
           "params": [
             {
               "name": "value",
               "types": [
                 "*"
               ],
-              "text": "a literal, a binding, a call, or an array of them"
+              "text": "a literal, a binding, a call, an object or an array of them"
             }
           ],
           "return": {
@@ -214,7 +265,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 83
+          "line": 140
         },
         {
           "name": "call",
@@ -246,7 +297,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 99
+          "line": 156
         },
         {
           "name": "read",
@@ -271,7 +322,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 114
+          "line": 171
         }
       ],
       "constants": []

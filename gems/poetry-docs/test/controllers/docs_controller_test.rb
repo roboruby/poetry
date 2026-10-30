@@ -354,7 +354,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
 
   test "the site's MCP server answers at /mcp" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
-                 headers: { "CONTENT_TYPE" => "application/json" }
+                 headers: { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }
 
     assert_response :success
     assert_includes JSON.parse(response.body).dig("result", "tools").map { |t| t["name"] }, "describe_component"
