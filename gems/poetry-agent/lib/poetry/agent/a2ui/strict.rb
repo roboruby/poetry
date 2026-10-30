@@ -54,25 +54,30 @@ module Poetry
 
         # The topology problems of a surface's candidate component set: no
         # root, a child reference to no component, a component the root does
-        # not reach.
+        # not reach, each check one the caller may waive.
         # @param components [Hash{String => Hash}] the candidate set by id
         # @param surface [Surface] whose catalogs say which properties are references
+        # @param root [Boolean] whether a set without its root is a problem (strict mode's rule)
+        # @param orphans [Boolean] whether a component the root does not reach is a problem
+        # @param dangling [Boolean] whether a reference to a component the set lacks is a problem
         # @return [Array<Hash>]
-        def topology_problems(components, surface)
+        def topology_problems(components, surface, root: true, orphans: true, dangling: true)
           return [] if components.empty?
-          unless components.key?(ROOT)
+          if root && !components.key?(ROOT)
             return [problem("INTEGRITY_ERROR", "Missing root component: No component has id='#{ROOT}'")]
           end
 
-          dangling = components.each_value.flat_map { |component| dangling_problems(component, components, surface) }
-          return dangling if dangling.any?
+          if dangling
+            missing = components.each_value.flat_map { |component| dangling_problems(component, components, surface) }
+            return missing if missing.any?
+          end
 
           depth = tree_depth(components, surface)
           if depth > MAX_DEPTH
             return [problem("RECURSION_ERROR", "Global recursion limit exceeded: logical depth > #{MAX_DEPTH}")]
           end
 
-          orphan = (components.keys - reachable(components, surface)).first
+          orphan = orphans ? (components.keys - reachable(components, surface)).first : nil
           return [] unless orphan
 
           [problem("INTEGRITY_ERROR", "Component '#{orphan}' is not reachable from '#{ROOT}' " \
@@ -114,7 +119,12 @@ module Poetry
         # @return [Array<Hash>]
         def composition_problems(components, surface)
           root = components[ROOT]
-          problems = root ? Array(parent_problem(root, { "id" => "Surface", "component" => "Surface" }, surface)) : []
+          problems = if root
+                       [parent_problem(root, { "id" => "Surface", "component" => "Surface" },
+                                       surface)].compact
+                     else
+                       []
+                     end
           components.each_value do |parent|
             fields = surface.catalog_of(parent)&.then { |catalog| reference_fields(catalog, parent) } || []
             fields.flat_map { |field, reference| named(field, reference).map(&:last) }.each do |child_id|

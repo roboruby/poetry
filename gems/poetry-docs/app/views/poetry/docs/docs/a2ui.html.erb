@@ -249,13 +249,22 @@
     <%= poetry_code_block(code: fold_source, language: "ruby", label: "Folding") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <p>
-        Strict validation is opt in. With <code>strict: true</code> an update is
-        refused whole unless the surface keeps its <code>root</code>, references
-        only components it holds, and reaches every component from the root; values
-        and function calls nest within the spec's limits, bound paths are pointers,
-        v1.0 ids and function names are identifiers, every call names a function
-        its catalog declares, and a catalog's <code>allowedParents</code> and
-        <code>allowedChildren</code> hold. Every message is also held to its version's
+        A catalog's composition rules hold in every mode: an update that puts a
+        component under a parent its <code>allowedParents</code> leaves out, or a
+        child into a container its <code>allowedChildren</code> leaves out, is
+        refused whole, as the spec's processors refuse it. Strict validation is opt
+        in. With <code>strict: true</code> an update is refused whole unless the
+        surface keeps its <code>root</code>, references only components it holds,
+        and reaches every component from the root; values and function calls nest
+        within the spec's limits, bound paths are pointers, v1.0 ids and function
+        names are identifiers, and every call names a function its catalog
+        declares. The two topology rules are also flags of their own,
+        <code>allow_orphans:</code> and <code>allow_dangling_references:</code>,
+        for a session that is not strict but should still refuse an unreached
+        component or a reference to one it does not hold (the spec's
+        <code>allowOrphanComponents</code> and <code>allowDanglingReferences</code>);
+        by default a surface tolerates what streaming leaves incomplete. Every
+        message is also held to its version's
         schema, the specification's own, with the surface's catalogs plugged in, so
         an unknown property, a mistyped value or a malformed call is refused and
         named by its component. A catalog binding of your own takes part by
@@ -307,7 +316,11 @@
         carries, each coerced to its kind), runs the surface's checks, and resolves
         the source component's event into the spec's action message. A valid
         action goes to the agent; an invalid one comes back with its failures by
-        component, and you re-render the surface with them.
+        component, and you re-render the surface with them. A
+        <code>functionCall</code> action never reaches the agent: it runs a catalog
+        function on the renderer, under the user's gesture, and the surface's data
+        may have changed, so <code>action.local?</code> means re-render the surface
+        and send nothing.
       </p>
     <% end %>
     <%= poetry_code_block(code: action_source, language: "ruby", label: "The action endpoint") %>
@@ -374,7 +387,10 @@
         renderer-only unless it declares otherwise; one declared for agents answers
         an agent's <code>callRendererFunction</code> with a response the session
         collects in <code>session.responses</code>, its value or, when the call is
-        refused or raises, an error inside it. A call names its catalog. Pass
+        refused or raises, an error inside it. A call names its catalog, and runs in
+        the surface it names, whose root data context its arguments read, or in an
+        isolated empty model when it names none, so nothing of any surface leaks
+        into it. Pass
         <code>session.apply(message, user_activated: true)</code> when the message
         answers the user's own gesture, so a function that needs one may run.
       </p>

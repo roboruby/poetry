@@ -14,6 +14,16 @@ class FunctionsTest < Minitest::Test
     A2UI::Evaluator.new(surface(data), scope, on_error: errors && ->(message) { errors << message })
   end
 
+  def test_a_copied_set_takes_definitions_of_its_own_without_changing_the_source
+    copy = A2UI::Functions.basic.dup
+    copy.define("shout", description: "upper", returns: "string", params: { "text" => { "type" => "string" } },
+                         required: ["text"]) { |args, _| args["text"].upcase }
+
+    assert copy.declared?("shout")
+    refute A2UI::Functions.basic.declared?("shout")
+    assert copy.declared?("formatString"), "the basic set comes along"
+  end
+
   def test_validators_return_validation_results
     ev = evaluator
 

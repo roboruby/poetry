@@ -31,12 +31,20 @@ module Poetry
         MESSAGE_KEYS = (MESSAGE_KEYS_V0_9 + %w[callRendererFunction agentFunctionResponse]).freeze
 
         # A user action, ready for the agent: the spec message plus the
-        # AG-UI placement (`forwardedProps.a2uiAction.userAction`).
-        Action = Struct.new(:message, :surface, :errors, keyword_init: true) do
+        # AG-UI placement (`forwardedProps.a2uiAction.userAction`). A
+        # function call as an action runs on the renderer instead and
+        # produces no message: `local?`, with the surface's data changed.
+        Action = Struct.new(:message, :surface, :errors, :local, keyword_init: true) do
           # Whether the action produced a message and no check failed.
           # @return [Boolean] whether every check passed and the message exists
           def valid?
             !message.nil? && (errors.nil? || errors.empty?)
+          end
+
+          # Whether the action ran on the renderer (a `functionCall` action), with nothing for the agent.
+          # @return [Boolean]
+          def local?
+            local == true
           end
 
           # The renderer-to-agent action message, or nil when a check failed.
@@ -85,14 +93,25 @@ module Poetry
         # @param catalogs [Hash{String => Object}] catalog bindings by id
         # @param fallback_catalog [Object, nil] the binding a createSurface's unknown catalog id gets (none: refused)
         # @param strict [Boolean] A2UI's strict validation: limits on every
-        #   message, and an update refused whole unless its surface keeps a
-        #   root, references only components it holds, reaches every component
-        #   from the root, and (v1.0) uses identifier ids. By default a surface
-        #   tolerates what streaming leaves incomplete.
-        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false)
+        #   message, the message schemas, (v1.0) identifier ids, and an update
+        #   refused whole unless its surface keeps a root, references only
+        #   components it holds and reaches every component from the root. By
+        #   default a surface tolerates what streaming leaves incomplete. A
+        #   catalog's composition constraints (`allowedParents`,
+        #   `allowedChildren`) are checked in every mode, as the spec's
+        #   processors do.
+        # @param allow_orphans [Boolean, nil] whether an update may leave a component unreachable from
+        #   the root (the spec's `allowOrphanComponents`): the mode's default when nil (tolerated unless
+        #   strict), else as given
+        # @param allow_dangling_references [Boolean, nil] whether an update may reference a component the
+        #   surface does not hold yet (`allowDanglingReferences`): the mode's default when nil, else as given
+        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil,
+                       allow_dangling_references: nil)
           @catalogs = catalogs
           @fallback_catalog = fallback_catalog
           @strict = strict
+          @allow_orphans = allow_orphans.nil? ? !strict : allow_orphans
+          @allow_dangling_references = allow_dangling_references.nil? ? !strict : allow_dangling_references
           @surfaces = {}
           @errors = []
           @deleted = []
@@ -191,11 +210,19 @@ module Poetry
           write_inputs(surface, values)
           component_id, scope = source.to_s.split("@", 2)
           component = surface.component(component_id)
+          call = component && local_call_of(component)
+          return local_action(surface, call, scope) if call
+
           event = component && surface.event_of(component)
           return unless event.is_a?(Hash) && event["name"].is_a?(String)
 
           failures = surface.failures
           return Action.new(message: nil, surface: surface, errors: failures) if failures.any?
+
+          if event.key?("userMessage") && !(event["userMessage"].is_a?(String) || event["userMessage"].is_a?(Hash))
+            reject("INVALID_ACTION", "action.event.userMessage must be a string", surface_id)
+            return Action.new(message: nil, surface: surface, errors: { "userMessage" => "must be a string" })
+          end
 
           context = (event["context"] || {}).to_h { |name, value| [name.to_s, surface.resolve(value, scope)] }
           action = { "name" => event["name"], "surfaceId" => surface_id, "sourceComponentId" => component_id,
@@ -366,7 +393,8 @@ module Poetry
           duplicate = ids.detect { |id| ids.count(id) > 1 }
           return reject("INTEGRITY_ERROR", "Duplicate component ID: '#{duplicate}'", surface.id) if duplicate
 
-          if @strict && (problems = strict_problems(surface, components)).any?
+          problems = @strict ? strict_problems(surface, components) : structure_problems(surface, components)
+          if problems.any?
             record(surface.id, problems)
             return []
           end
@@ -388,8 +416,17 @@ module Poetry
           schema = validator(surface.dialect, surface.catalog_id).problem(update)
           return [schema] if schema
 
+          structure_problems(surface, components)
+        end
+
+        # What every mode refuses an update for: the topology of the set it
+        # would make (the root only in strict mode; its references and its
+        # reach unless the session allows them dangling or unreached) and
+        # its catalogs' composition rules.
+        def structure_problems(surface, components)
           candidate = surface.candidate(components)
-          topology = Strict.topology_problems(candidate, surface)
+          topology = Strict.topology_problems(candidate, surface, root: @strict, orphans: !@allow_orphans,
+                                                                  dangling: !@allow_dangling_references)
           topology.any? ? topology : Strict.composition_problems(candidate, surface)
         end
 
@@ -474,18 +511,59 @@ module Poetry
                           dialect: dialect)
           end
 
+          unless call["args"].nil? || call["args"].is_a?(Hash)
+            return reject("INVALID_MESSAGE", "callRendererFunction.callFunction.args must be an object",
+                          dialect: dialect)
+          end
+
           name = dialect.call_name(call).to_s
           catalog, refusal = rpc_target(call["catalogId"], name, dialect, user_activated)
           return answer(body, dialect, error: refusal) if refusal
 
-          evaluator = Evaluator.new(Surface.new(id: "callRendererFunction", catalog: catalog, dialect: dialect))
-          answer(body, dialect, value: catalog.functions.call(name, evaluator.argument(call["args"] || {}), evaluator))
+          surface, refusal = rpc_scope(body, catalog, dialect)
+          return answer(body, dialect, error: refusal) if refusal
+
+          problems = []
+          evaluator = Evaluator.new(surface, on_error: ->(message) { problems << message })
+          args, failure = rpc_arguments(call["args"], evaluator, problems)
+          return answer(body, dialect, error: failure) if failure
+
+          answer(body, dialect, value: catalog.functions.call(name, args, evaluator))
         rescue Functions::Error, Expression::SyntaxError => e
           answer(body, dialect, error: { "code" => "INVALID_FUNCTION_CALL", "message" => e.message })
         rescue StandardError => e
           # A host function's own failure: the agent learns only that it failed.
           answer(body, dialect, error: { "code" => "EXECUTION_ERROR",
                                          "message" => "An error occurred during function execution (#{e.class})." })
+        end
+
+        # The surface an agent's call runs in: the one it names, whose root
+        # data context its arguments read, or an isolated empty one when it
+        # names none, so nothing of any surface leaks into it.
+        def rpc_scope(body, catalog, dialect)
+          id = body["surfaceId"]
+          return [Surface.new(id: "callRendererFunction", catalog: catalog, dialect: dialect), nil] if id.nil?
+
+          surface = id.is_a?(String) && @surfaces[id]
+          return [surface, nil] if surface
+
+          [nil, { "code" => "INVALID_FUNCTION_CALL", "message" => "Surface not found: #{id}" }]
+        end
+
+        # The call's arguments resolved in its surface, with the execution
+        # error their evaluation met (an `@index` outside a template, say):
+        # the evaluator reports a failed call to its listener and resolves it
+        # to nothing, and a syntax error raises.
+        def rpc_arguments(args, evaluator, problems)
+          resolved = evaluator.argument(args || {})
+          return [resolved, nil] if problems.empty?
+
+          [nil, { "code" => "EXECUTION_ERROR",
+                  "message" => "An error occurred evaluating the call's arguments: #{problems.first}" }]
+        rescue Functions::Error, Expression::SyntaxError => e
+          [nil,
+           { "code" => "EXECUTION_ERROR",
+             "message" => "An error occurred evaluating the call's arguments: #{e.message}" }]
         end
 
         # The catalog an agent's call runs in, or the refusal: no such catalog
@@ -570,6 +648,30 @@ module Poetry
         def version_for(surface_id, dialect = nil)
           surface = surface_id.is_a?(String) && @surfaces[surface_id]
           (surface ? surface.dialect : dialect || Dialect::V1_0).version
+        end
+
+        # The function call a component's action makes, or nil for an event.
+        def local_call_of(component)
+          action = component["action"]
+          call = action.is_a?(Hash) && action["functionCall"]
+          call.is_a?(Hash) ? call : nil
+        end
+
+        # Runs a function-call action on the renderer, under the user's
+        # gesture, against the surface: its data may change, nothing goes to
+        # the agent, and a failure is reported on the surface.
+        def local_action(surface, call, scope)
+          name = surface.dialect.call_name(call).to_s
+          problems = []
+          evaluator = Evaluator.new(surface, scope, gesture: true, on_error: ->(message) { problems << message })
+          args = evaluator.argument(call["args"] || {})
+          raise Functions::Error, problems.first if problems.any?
+
+          surface.catalog.functions.call(name, args, evaluator)
+          Action.new(message: nil, surface: surface, errors: {}, local: true)
+        rescue StandardError => e
+          reject("EXECUTION_ERROR", "An error occurred during function execution (#{e.class}).", surface.id)
+          Action.new(message: nil, surface: surface, errors: { "action" => e.message }, local: true)
         end
 
         # Only bound paths are writable, each coerced to its input's kind;

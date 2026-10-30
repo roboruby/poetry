@@ -298,9 +298,42 @@ module A2UIConformance
   # A session with the basic catalog bound to every catalog id the case
   # names, each in the protocol version its definition (or the message
   # naming it, or the case) gives.
+  # The case's session: strict for a validate case, the suite's validation
+  # flags as the session's relaxations, and the local action functions the
+  # official harness fakes (`incrementCounter`, `openUrl`, `failingAction`)
+  # on the basic catalog for a dispatch case.
   def session_for(test_case)
     strict = test_case["action"] == "validate" || test_case["strictMode"] == true
-    A::Session.new(catalogs: case_catalogs(test_case), strict: strict)
+    # A validation config on the case or its first step; a rule it leaves out is strict, as the suite reads it;
+    # no config at all leaves the mode's own defaults.
+    steps = test_case["steps"].is_a?(Array) ? test_case["steps"] : []
+    configs = [test_case["validationConfig"], *steps.map { |step| step["validationConfig"] }]
+    config = configs.find { |held| held.is_a?(Hash) }
+    catalogs = case_catalogs(test_case)
+    if test_case["action"] == "dispatch_action"
+      catalogs["basic"] =
+        ActionCatalog.new(dialect: catalogs["basic"].dialect)
+    end
+    flag = ->(key) { config.is_a?(Hash) ? config[key] == true : nil }
+    A::Session.new(catalogs: catalogs, strict: strict, allow_orphans: flag.call("allowOrphanComponents"),
+                   allow_dangling_references: flag.call("allowDanglingReferences"))
+  end
+
+  # The basic catalog plus the local action functions the official harness fakes.
+  class ActionCatalog < A::Catalogs::Basic
+    def functions
+      @functions ||= A::Functions.basic.dup.tap do |registry|
+        counter = { "path" => { "type" => "string" }, "step" => { "type" => "number" } }
+        registry.define("incrementCounter", description: "test", returns: "any", params: counter,
+                                            required: ["path"]) do |args, evaluator|
+          current = evaluator.surface.resolve({ "@path" => args["path"] }) || 0
+          evaluator.surface.update_data(args["path"], current + (args["step"] || 1))
+        end
+        registry.define("openUrl", description: "test", returns: "any", params: { "url" => { "type" => "string" } },
+                                   activation: true) { |_args, _evaluator| nil }
+        registry.define("failingAction", description: "test", returns: "any") { |_args, _evaluator| raise "failed" }
+      end
+    end
   end
 
   def case_catalogs(test_case)
@@ -546,6 +579,7 @@ module A2UIConformance
         when "openExternalUrl" then { "opened" => true }
         when "failingFunction" then raise "An error occurred during function execution."
         when "calculateTax" then (args["amount"] || 0) * 0.1
+        when "echoArgs" then args
         end
       end
     end
@@ -566,7 +600,16 @@ module A2UIConformance
     catalog_id ||= "basic"
     registry = rpc_functions(args["functionMetadata"] || {})
     dialect = A::Dialect.for(args["catalogVersion"].to_s) || A::Dialect::V1_0
-    session = A::Session.new(catalogs: { catalog_id => RpcCatalog.new(catalog_id, registry, dialect) })
+    catalogs = { catalog_id => RpcCatalog.new(catalog_id, registry, dialect) }
+    catalogs["basic"] ||= A::Catalogs::Basic.new(dialect: dialect)
+    session = A::Session.new(catalogs: catalogs)
+    # The surface the case names, holding its data model, as the official harness creates it.
+    if (surface_id = args["surfaceId"]).is_a?(String)
+      create = { "surfaceId" => surface_id, "catalogId" => catalog_id }
+      model = { "surfaceId" => surface_id, "path" => "/", "value" => deep_copy(args["dataModel"] || {}) }
+      session.apply_all([{ "version" => dialect.version, "createSurface" => create },
+                         { "version" => dialect.version, "updateDataModel" => model }])
+    end
     before = session.errors.size
     activated = args["userActivationPresent"] == true
     Array(message.is_a?(Array) ? message : [message]).each { |item| session.apply(item, user_activated: activated) }

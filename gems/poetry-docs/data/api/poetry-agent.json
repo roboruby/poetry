@@ -2412,7 +2412,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 169
+          "line": 177
         },
         {
           "name": "agent_callable?",
@@ -2437,7 +2437,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 142
+          "line": 150
         },
         {
           "name": "any_function",
@@ -2454,7 +2454,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 228
+          "line": 236
         },
         {
           "name": "argument_problem",
@@ -2494,7 +2494,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 154
+          "line": 162
         },
         {
           "name": "call",
@@ -2533,7 +2533,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 193
+          "line": 201
         },
         {
           "name": "declared?",
@@ -2558,7 +2558,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 182
+          "line": 190
         },
         {
           "name": "define",
@@ -2625,7 +2625,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 130
+          "line": 138
         },
         {
           "name": "initialize",
@@ -2645,6 +2645,26 @@
           "line": 112
         },
         {
+          "name": "initialize_copy",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize_copy(source)",
+          "docstring": "A copy with definitions of its own, so a host adds functions to the\nbasic set without changing it.",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "Functions"
+              ],
+              "text": "the set copied"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 119
+        },
+        {
           "name": "names",
           "scope": "instance",
           "group": null,
@@ -2659,7 +2679,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 175
+          "line": 183
         },
         {
           "name": "schema",
@@ -2684,7 +2704,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 212
+          "line": 220
         }
       ],
       "constants": [
@@ -2761,7 +2781,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 283
+          "line": 291
         },
         {
           "name": "list",
@@ -2778,7 +2798,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 275
+          "line": 283
         }
       ],
       "constants": [
@@ -4929,7 +4949,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 187
+          "line": 206
         },
         {
           "name": "apply",
@@ -4961,7 +4981,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 113
+          "line": 132
         },
         {
           "name": "apply_activity",
@@ -4987,7 +5007,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 149
+          "line": 168
         },
         {
           "name": "apply_all",
@@ -5012,7 +5032,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 135
+          "line": 154
         },
         {
           "name": "capabilities",
@@ -5044,7 +5064,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 222
+          "line": 249
         },
         {
           "name": "catalog_for",
@@ -5071,7 +5091,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 257
+          "line": 284
         },
         {
           "name": "catalogs",
@@ -5088,7 +5108,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 75
+          "line": 83
         },
         {
           "name": "catalogs_for",
@@ -5113,7 +5133,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 264
+          "line": 291
         },
         {
           "name": "deleted",
@@ -5130,7 +5150,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 69
+          "line": 77
         },
         {
           "name": "errors",
@@ -5147,13 +5167,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 66
+          "line": 74
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false)",
+          "signature": "initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil, allow_dangling_references: nil)",
           "docstring": "A session over catalog bindings. A surface that names a catalog the\nsession does not hold is refused (`CATALOG_ERROR`), as the spec\nsays; a host that wants such surfaces rendered anyway names a\nfallback binding.",
           "params": [
             {
@@ -5176,7 +5196,23 @@
               "types": [
                 "Boolean"
               ],
-              "text": "A2UI's strict validation: limits on every\nmessage, and an update refused whole unless its surface keeps a\nroot, references only components it holds, reaches every component\nfrom the root, and (v1.0) uses identifier ids. By default a surface\ntolerates what streaming leaves incomplete."
+              "text": "A2UI's strict validation: limits on every\nmessage, the message schemas, (v1.0) identifier ids, and an update\nrefused whole unless its surface keeps a root, references only\ncomponents it holds and reaches every component from the root. By\ndefault a surface tolerates what streaming leaves incomplete. A\ncatalog's composition constraints (`allowedParents`,\n`allowedChildren`) are checked in every mode, as the spec's\nprocessors do."
+            },
+            {
+              "name": "allow_orphans",
+              "types": [
+                "Boolean",
+                "nil"
+              ],
+              "text": "whether an update may leave a component unreachable from\nthe root (the spec's `allowOrphanComponents`): the mode's default when nil (tolerated unless\nstrict), else as given"
+            },
+            {
+              "name": "allow_dangling_references",
+              "types": [
+                "Boolean",
+                "nil"
+              ],
+              "text": "whether an update may reference a component the\nsurface does not hold yet (`allowDanglingReferences`): the mode's default when nil, else as given"
             }
           ],
           "return": {
@@ -5187,7 +5223,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 92
+          "line": 108
         },
         {
           "name": "renderer_data_model",
@@ -5213,7 +5249,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 244
+          "line": 271
         },
         {
           "name": "responses",
@@ -5230,7 +5266,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 72
+          "line": 80
         },
         {
           "name": "status",
@@ -5248,7 +5284,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 79
+          "line": 87
         },
         {
           "name": "surface",
@@ -5274,7 +5310,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 170
+          "line": 189
         },
         {
           "name": "surfaces",
@@ -5291,7 +5327,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 63
+          "line": 71
         }
       ],
       "constants": [
@@ -5311,7 +5347,7 @@
       "path": "Poetry::Agent::A2UI::Session::Action",
       "type": "class",
       "superclass": "Struct",
-      "docstring": "A user action, ready for the agent: the spec message plus the\nAG-UI placement (`forwardedProps.a2uiAction.userAction`).",
+      "docstring": "A user action, ready for the agent: the spec message plus the\nAG-UI placement (`forwardedProps.a2uiAction.userAction`). A\nfunction call as an action runs on the renderer instead and\nproduces no message: `local?`, with the surface's data changed.",
       "examples": [],
       "file": "lib/poetry/agent/a2ui/session.rb",
       "methods": [
@@ -5330,7 +5366,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "errors=",
@@ -5355,7 +5391,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "forwarded_props",
@@ -5372,7 +5408,66 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 52
+          "line": 60
+        },
+        {
+          "name": "local",
+          "scope": "instance",
+          "group": null,
+          "signature": "local",
+          "docstring": "Returns the value of attribute local",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of local"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 37
+        },
+        {
+          "name": "local=",
+          "scope": "instance",
+          "group": null,
+          "signature": "local=(value)",
+          "docstring": "Sets the attribute local",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute local to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 37
+        },
+        {
+          "name": "local?",
+          "scope": "instance",
+          "group": null,
+          "signature": "local?",
+          "docstring": "Whether the action ran on the renderer (a `functionCall` action), with nothing for the agent.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 46
         },
         {
           "name": "message",
@@ -5389,7 +5484,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "message=",
@@ -5414,7 +5509,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "surface",
@@ -5431,7 +5526,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "surface=",
@@ -5456,7 +5551,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 35
+          "line": 37
         },
         {
           "name": "to_h",
@@ -5474,7 +5569,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 45
+          "line": 53
         },
         {
           "name": "valid?",
@@ -5491,7 +5586,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 38
+          "line": 40
         }
       ],
       "constants": []
@@ -5739,7 +5834,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 103
+          "line": 108
         },
         {
           "name": "composition_problems",
@@ -5771,7 +5866,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 115
+          "line": 120
         },
         {
           "name": "identifier_problems",
@@ -5803,7 +5898,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 86
+          "line": 91
         },
         {
           "name": "limit_problem",
@@ -5875,14 +5970,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 132
+          "line": 142
         },
         {
           "name": "topology_problems",
           "scope": "class",
           "group": null,
-          "signature": "topology_problems(components, surface)",
-          "docstring": "The topology problems of a surface's candidate component set: no\nroot, a child reference to no component, a component the root does\nnot reach.",
+          "signature": "topology_problems(components, surface, root: true, orphans: true, dangling: true)",
+          "docstring": "The topology problems of a surface's candidate component set: no\nroot, a child reference to no component, a component the root does\nnot reach, each check one the caller may waive.",
           "params": [
             {
               "name": "components",
@@ -5897,6 +5992,27 @@
                 "Surface"
               ],
               "text": "whose catalogs say which properties are references"
+            },
+            {
+              "name": "root",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a set without its root is a problem (strict mode's rule)"
+            },
+            {
+              "name": "orphans",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a component the root does not reach is a problem"
+            },
+            {
+              "name": "dangling",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a reference to a component the set lacks is a problem"
             }
           ],
           "return": {
@@ -5907,7 +6023,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 61
+          "line": 64
         }
       ],
       "constants": [

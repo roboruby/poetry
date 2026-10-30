@@ -113,6 +113,14 @@ module Poetry
           @definitions = {}
         end
 
+        # A copy with definitions of its own, so a host adds functions to the
+        # basic set without changing it.
+        # @param source [Functions] the set copied
+        def initialize_copy(source)
+          super
+          @definitions = source.instance_variable_get(:@definitions).dup
+        end
+
         # Declares a function.
         #
         # @param name [String]

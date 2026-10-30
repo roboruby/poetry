@@ -385,16 +385,83 @@ class SessionTest < Minitest::Test
                  accepted.forwarded_props.dig("a2uiAction", "dataModel"))
   end
 
-  def test_action_returns_nil_without_an_agent_event
+  # The basic catalog plus one function an agent may call, answering what it was handed.
+  class GreetingCatalog < A2UI::Catalogs::Basic
+    def functions
+      @functions ||= A2UI::Functions.basic.dup.tap do |registry|
+        registry.define("greet", description: "hi", returns: "string", params: { "value" => { "type" => "string" } },
+                                 callers: "rendererOrAgent") { |args, _| "hi #{args["value"]}" }
+      end
+    end
+  end
+
+  def test_a_renderer_function_runs_in_the_surface_it_names_or_in_an_empty_one
+    session = A2UI::Session.new(catalogs: { "greet" => GreetingCatalog.new })
+    session.apply_all([{ "version" => "1.0", "createSurface" => { "surfaceId" => "s", "catalogId" => "greet" } },
+                       { "version" => "1.0",
+                         "updateDataModel" => { "surfaceId" => "s", "path" => "/", "value" => { "name" => "Ada" } } }])
+    call = lambda do |id, surface_id = nil, value = "${/name}"|
+      body = { "functionCallId" => id,
+               "callFunction" => { "@call" => "greet", "catalogId" => "greet", "args" => { "value" => value } } }
+      body["surfaceId"] = surface_id if surface_id
+      session.apply({ "version" => "1.0", "callRendererFunction" => body })
+      session.responses.last["rendererFunctionResponse"]
+    end
+
+    assert_equal "hi Ada", call.call("c1", "s")["value"], "a named surface lends its root data context"
+    assert_equal "hi ", call.call("c2")["value"], "no surface named: an isolated empty model, nothing leaks"
+    assert_equal "INVALID_FUNCTION_CALL", call.call("c3", "nope").dig("error", "code")
+    assert_includes call.call("c3", "nope").dig("error", "message"), "nope"
+    assert_equal "EXECUTION_ERROR", call.call("c4", "s", { "@call" => "@index" }).dig("error", "code"),
+                 "an argument that cannot be evaluated is an execution error"
+    body = { "functionCallId" => "c5",
+             "callFunction" => { "@call" => "greet", "catalogId" => "greet", "args" => "no" } }
+    session.apply({ "version" => "1.0", "callRendererFunction" => body })
+
+    assert_equal "INVALID_MESSAGE", session.errors.last.dig("error", "code"), "args must be an object"
+  end
+
+  def test_orphans_and_dangling_references_follow_the_mode_unless_told_otherwise
+    create = { "version" => "1.0", "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID } }
+    dangling = { "version" => "1.0", "updateComponents" => { "surfaceId" => "s", "components" => [
+      { "id" => "root", "component" => "Column", "children" => %w[later] }
+    ] } }
+    orphan = { "version" => "1.0", "updateComponents" => { "surfaceId" => "s", "components" => [
+      { "id" => "root", "component" => "Column",
+        "children" => [] }, { "id" => "stray", "component" => "Text", "text" => "x" }
+    ] } }
+
+    relaxed = A2UI::Session.new
+    relaxed.apply_all([create, dangling, orphan])
+
+    assert_equal %w[root stray], relaxed.surface("s").components.keys.sort, "the default tolerates both"
+    told = A2UI::Session.new(allow_orphans: false, allow_dangling_references: false)
+    told.apply_all([create, dangling])
+
+    assert_equal "INTEGRITY_ERROR", told.errors.last.dig("error", "code")
+    assert_match(/Dangling reference/, told.errors.last.dig("error", "message"))
+    told.apply(orphan)
+
+    assert_match(/not reachable/, told.errors.last.dig("error", "message"))
+    strict_but_lenient = A2UI::Session.new(strict: true, allow_dangling_references: true)
+    strict_but_lenient.apply_all([create, dangling])
+
+    assert_equal %w[root], strict_but_lenient.surface("s").components.keys, "a flag overrides the mode"
+  end
+
+  def test_a_function_call_action_runs_locally_and_nothing_comes_back_without_an_event
     session = A2UI::Session.new
     button = { "id" => "root", "component" => "Button", "child" => "t",
-               "action" => { "functionCall" => { "@call" => "openUrl" } } }
+               "action" => { "functionCall" => { "@call" => "openUrl", "args" => { "url" => "https://x.example" } } } }
     session.apply({ "version" => "1.0",
                     "createSurface" => { "surfaceId" => "p", "catalogId" => A2UI::Catalogs::Basic::ID,
                                          "components" => [button, { "id" => "t", "component" => "Text",
                                                                     "text" => "x" }] } })
+    local = session.action(surface_id: "p", source: "root")
 
-    assert_nil session.action(surface_id: "p", source: "root")
+    assert_predicate local, :local?, "a function call as an action runs on the renderer"
+    assert_nil local.message
+    refute_predicate local, :valid?, "nothing goes to the agent"
     assert_nil session.action(surface_id: "p", source: "missing")
     assert_nil session.action(surface_id: "nope", source: "root")
   end
