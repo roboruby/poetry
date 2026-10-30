@@ -22,6 +22,9 @@
 /** The protocol version the bridge speaks. */
 export const PROTOCOL_VERSION = "2026-01-26"
 
+/** The display modes the extension names. */
+export const DISPLAY_MODES = ["inline", "fullscreen", "pip"]
+
 /** Poetry's tokens that take the host's structural variables (backgrounds, text, borders, fonts). */
 export const STRUCTURAL_TOKENS = {
   "--background": "--color-background-primary",
@@ -61,11 +64,14 @@ export class Bridge {
    * @param {Window} [options.target] the host window (the parent by default)
    * @param {Document} [options.document] the page (the global document by default)
    * @param {Object} [options.appInfo] the app's name and version
+   * @param {Array<string>} [options.displayModes] the display modes the page handles; the document's
+   *   `data-mcp-display-modes` by default, else inline alone
    */
-  constructor({ target = window.parent, document: page = document, appInfo = { name: "poetry-app", version: "1" } } = {}) {
+  constructor({ target = window.parent, document: page = document, appInfo = { name: "poetry-app", version: "1" }, displayModes } = {}) {
     this.target = target
     this.document = page
     this.appInfo = appInfo
+    this.displayModes = displayModes
     this.pending = new Map()
     this.nextId = 1
     this.context = {}
@@ -88,7 +94,7 @@ export class Bridge {
     this.document.addEventListener("submit", this.onSubmit)
     const result = await this.request("ui/initialize", {
       appInfo: this.appInfo,
-      appCapabilities: { availableDisplayModes: ["inline"] },
+      appCapabilities: { availableDisplayModes: this.availableDisplayModes() },
       protocolVersion: PROTOCOL_VERSION
     })
     this.capabilities = result.hostCapabilities || {}
@@ -99,6 +105,18 @@ export class Bridge {
     this.reportSize()
     this.emit("connect", result)
     return result
+  }
+
+  /**
+   * The display modes the page declares: the option, else the document's
+   * `data-mcp-display-modes` (space-separated), else inline alone.
+   *
+   * @returns {Array<string>} a subset of inline, fullscreen and pip, inline always
+   */
+  availableDisplayModes() {
+    const named = this.displayModes || (this.document.documentElement.dataset.mcpDisplayModes || "").split(/\s+/)
+    const modes = named.filter((mode) => DISPLAY_MODES.includes(mode))
+    return modes.includes("inline") ? modes : ["inline", ...modes]
   }
 
   /** Stops listening and observing. */
@@ -209,6 +227,7 @@ export class Bridge {
       root.classList.toggle("dark", context.theme === "dark")
       root.style.colorScheme = context.theme
     }
+    if (context.displayMode) root.dataset.displayMode = context.displayMode
     if (context.styles?.variables) this.applyStyles(context.styles.variables)
     if (context.styles?.css?.fonts) this.applyFonts(context.styles.css.fonts)
     const insets = context.safeAreaInsets
@@ -360,17 +379,18 @@ export class Bridge {
   }
 
   /**
-   * A click on a marked button: a tool call, a message or a link.
+   * A click on a marked button: a tool call, a message, a link or a display mode.
    *
    * @param {Event} event the click
    */
   async click(event) {
-    const button = event.target.closest("[data-mcp-tool], [data-mcp-message], [data-mcp-link]")
+    const button = event.target.closest("[data-mcp-tool], [data-mcp-message], [data-mcp-link], [data-mcp-display-mode]")
     if (!button || button.tagName === "FORM") return
     event.preventDefault()
     try {
       if (button.dataset.mcpLink) await this.openLink(button.dataset.mcpLink)
       else if (button.dataset.mcpMessage) await this.message(button.dataset.mcpMessage)
+      else if (button.dataset.mcpDisplayMode) await this.requestDisplayMode(button.dataset.mcpDisplayMode)
       else await this.busy(button, () => this.call(button.dataset.mcpTool, JSON.parse(button.dataset.mcpArgs || "{}")))
     } catch (error) {
       this.emit("error", { error, element: button })

@@ -31,10 +31,12 @@ module Poetry
             claim = @host.verify_sandbox_token(token)
             return [403, { "content-type" => "text/plain" }, ["forbidden"]] unless claim
 
-            resource = @host.resource(claim["server"], claim["uri"])
+            # The policy rides in the token (the frame's data read the resource with the person's credentials);
+            # a token without one reads the resource here, as the host itself.
+            ui = claim.key?("csp") ? { "csp" => claim["csp"] } : @host.resource(claim["server"], claim["uri"]).ui
             headers = {
               "content-type" => "text/html; charset=utf-8",
-              "content-security-policy" => Csp.header(resource.ui, frame_ancestors: @host.origin),
+              "content-security-policy" => Csp.header(ui, frame_ancestors: @host.origin),
               "cache-control" => "no-store",
               "referrer-policy" => "no-referrer"
             }

@@ -105,7 +105,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 431
+          "line": 451
         }
       ],
       "constants": [
@@ -113,6 +113,11 @@
           "name": "PROTOCOL_VERSION",
           "value": "\"2026-01-26\"",
           "docstring": "The protocol version the bridge speaks."
+        },
+        {
+          "name": "DISPLAY_MODES",
+          "value": "[\"inline\", \"fullscreen\", \"pip\"]",
+          "docstring": "The display modes the extension names."
         },
         {
           "name": "STRUCTURAL_TOKENS",
@@ -220,7 +225,7 @@
           "name": "constructor",
           "scope": "instance",
           "group": null,
-          "signature": "constructor({ target = window.parent, document: page = document, appInfo = { name: \"poetry-app\", version: \"1\" } } = {})",
+          "signature": "constructor({ target = window.parent, document: page = document, appInfo = { name: \"poetry-app\", version: \"1\" }, displayModes } = {})",
           "docstring": "",
           "params": [
             {
@@ -250,12 +255,19 @@
                 "Object"
               ],
               "text": "the app's name and version"
+            },
+            {
+              "name": "[options.displayModes]",
+              "types": [
+                "Array<string>"
+              ],
+              "text": "the display modes the page handles; the document's `data-mcp-display-modes` by default, else inline alone"
             }
           ],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 65
+          "line": 70
         },
         {
           "name": "connect",
@@ -272,7 +284,24 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 85
+          "line": 91
+        },
+        {
+          "name": "availableDisplayModes",
+          "scope": "instance",
+          "group": null,
+          "signature": "availableDisplayModes()",
+          "docstring": "The display modes the page declares: the option, else the document's\n`data-mcp-display-modes` (space-separated), else inline alone.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<string>"
+            ],
+            "text": "a subset of inline, fullscreen and pip, inline always"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app.js",
+          "line": 116
         },
         {
           "name": "disconnect",
@@ -284,7 +313,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 105
+          "line": 123
         },
         {
           "name": "call",
@@ -316,7 +345,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 120
+          "line": 138
         },
         {
           "name": "message",
@@ -341,7 +370,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 132
+          "line": 150
         },
         {
           "name": "openLink",
@@ -366,7 +395,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 142
+          "line": 160
         },
         {
           "name": "updateModelContext",
@@ -391,7 +420,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 152
+          "line": 170
         },
         {
           "name": "requestDisplayMode",
@@ -416,7 +445,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 162
+          "line": 180
         },
         {
           "name": "applyResult",
@@ -441,7 +470,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 172
+          "line": 190
         },
         {
           "name": "applyFragment",
@@ -482,7 +511,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 189
+          "line": 207
         },
         {
           "name": "applyContext",
@@ -502,7 +531,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 205
+          "line": 223
         },
         {
           "name": "applyStyles",
@@ -522,7 +551,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 228
+          "line": 247
         },
         {
           "name": "applyFonts",
@@ -542,7 +571,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 245
+          "line": 264
         },
         {
           "name": "observe",
@@ -554,7 +583,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 256
+          "line": 275
         },
         {
           "name": "reportSize",
@@ -566,7 +595,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 263
+          "line": 282
         },
         {
           "name": "request",
@@ -598,7 +627,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 278
+          "line": 297
         },
         {
           "name": "notify",
@@ -625,7 +654,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 292
+          "line": 311
         },
         {
           "name": "post",
@@ -645,7 +674,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 301
+          "line": 320
         },
         {
           "name": "receive",
@@ -665,7 +694,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 311
+          "line": 330
         },
         {
           "name": "settle",
@@ -685,14 +714,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 351
+          "line": 370
         },
         {
           "name": "click",
           "scope": "instance",
           "group": null,
           "signature": "click(event)",
-          "docstring": "A click on a marked button: a tool call, a message or a link.",
+          "docstring": "A click on a marked button: a tool call, a message, a link or a display mode.",
           "params": [
             {
               "name": "event",
@@ -705,7 +734,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 367
+          "line": 386
         },
         {
           "name": "submit",
@@ -725,7 +754,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 385
+          "line": 405
         },
         {
           "name": "busy",
@@ -757,7 +786,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 408
+          "line": 428
         },
         {
           "name": "emit",
@@ -784,7 +813,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app.js",
-          "line": 419
+          "line": 439
         }
       ],
       "constants": []
@@ -1758,7 +1787,7 @@
       "path": "poetry--agent--mcp-app-host",
       "type": "controller",
       "superclass": null,
-      "docstring": "The frame another server's MCP App renders in, and the host's half of\nthe bridge. The element carries the call (server, tool, input, result,\nthe app's resource) and where the sandbox page and the RPC endpoint\nare; the controller reads the app's HTML through the endpoint, mounts\nthe sandbox proxy frame (on the apps origin, or as an opaque frame of\nthe page's own in the inline mode), answers `ui/initialize` with the\npage's theme and tokens, delivers the input and the result, sends the\napp's own requests to the endpoint, resizes to what the app reports,\nand tears the app down when the element leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info),\n`poetry:mcp-app-host:message` (a message for the chat, `detail.params`),\n`poetry:mcp-app-host:context` (a model-context update), and\n`poetry:mcp-app-host:display-mode` (a request; the handler may set\n`detail.mode` to grant one; `inline` otherwise), and with `debug`,\n`poetry:mcp-app-host:trace` for every message both ways. A link is\nopened in a new tab after the person confirms it.\n\n**Targets**: `frame`, `status`\n\n**Values**:\n- `server` (String): The server's id in the host's registry.\n- `tool` (String): The tool the app belongs to.\n- `resource` (String): The app's resource uri.\n- `input` (String): The tool's input, as JSON.\n- `result` (String): The tool's result (a CallToolResult), as JSON.\n- `rpcUrl` (String): Where the app's own requests go: a POST taking { server, method, params }.\n- `sandboxUrl` (String): The sandbox page's URL on the apps origin; absent in the inline mode.\n- `sandboxOrigin` (String): The apps origin, the only origin the frame's messages are accepted from.\n- `sandboxPage` (String): The sandbox page's HTML for the inline mode, written into an opaque frame of the page's own.\n- `height` (Number, default: 160): The frame's height before the app reports its size, in pixels.\n- `maxHeight` (Number, default: 4000): The most the frame grows to, in pixels.\n- `debug` (Boolean, default: false): Whether every message both ways is announced as a `poetry:mcp-app-host:trace` event, for a log.",
+      "docstring": "The frame another server's MCP App renders in, and the host's half of\nthe bridge. The element carries the call (server, tool, input, result,\nthe app's resource) and where the sandbox page and the RPC endpoint\nare; the controller reads the app's HTML through the endpoint, mounts\nthe sandbox proxy frame (on the apps origin, or as an opaque frame of\nthe page's own in the inline mode), answers `ui/initialize` with the\npage's theme and tokens, delivers the input and the result, sends the\napp's own requests to the endpoint, resizes to what the app reports,\nmoves the frame between the display modes (inline in the page,\nfullscreen over it, pip in a corner), and tears the app down when the\nelement leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info),\n`poetry:mcp-app-host:message` (a message for the chat, `detail.params`),\n`poetry:mcp-app-host:context` (a model-context update),\n`poetry:mcp-app-host:display-mode` (a mode about to be entered, by the\napp's request or the page's call: `detail.requested`, `detail.mode` the\ncontroller is granting, which the handler may change, `inline` to\nrefuse), `poetry:mcp-app-host:authorize` (the endpoint wants the person\nsigned in to the server first: `detail.url`), and with `debug`,\n`poetry:mcp-app-host:trace` for every message both ways. A link is\nopened in a new tab after the person confirms it.\n\n**Targets**: `frame`, `status`\n\n**Values**:\n- `server` (String): The server's id in the host's registry.\n- `tool` (String): The tool the app belongs to.\n- `resource` (String): The app's resource uri.\n- `input` (String): The tool's input, as JSON.\n- `result` (String): The tool's result (a CallToolResult), as JSON.\n- `rpcUrl` (String): Where the app's own requests go: a POST taking { server, method, params }.\n- `sandboxUrl` (String): The sandbox page's URL on the apps origin; absent in the inline mode.\n- `sandboxOrigin` (String): The apps origin, the only origin the frame's messages are accepted from.\n- `sandboxPage` (String): The sandbox page's HTML for the inline mode, written into an opaque frame of the page's own.\n- `height` (Number, default: 160): The frame's height before the app reports its size, in pixels.\n- `maxHeight` (Number, default: 4000): The most the frame grows to inline, in pixels.\n- `displayModes` (Array, default: [\"inline\", \"fullscreen\", \"pip\"]): The display modes this page offers: inline, fullscreen and pip, in any subset.\n- `pipWidth` (Number, default: 360): The pip panel's width, in pixels.\n- `pipHeight` (Number, default: 480): The most the frame grows to in the pip panel, in pixels.\n- `debug` (Boolean, default: false): Whether every message both ways is announced as a `poetry:mcp-app-host:trace` event, for a log.",
       "examples": [],
       "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
       "methods": [
@@ -1772,19 +1801,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 56
+          "line": 67
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Tears the app down and removes the frame.",
+          "docstring": "Tears the app down, puts the element back inline and removes the frame.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 66
+          "line": 78
         },
         {
           "name": "mount",
@@ -1801,7 +1830,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 77
+          "line": 90
         },
         {
           "name": "unmount",
@@ -1818,7 +1847,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 128
+          "line": 141
         },
         {
           "name": "receive",
@@ -1838,7 +1867,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 145
+          "line": 158
         },
         {
           "name": "post",
@@ -1858,7 +1887,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 164
+          "line": 177
         },
         {
           "name": "initialized",
@@ -1870,14 +1899,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 173
+          "line": 186
         },
         {
           "name": "rpc",
           "scope": "instance",
           "group": null,
           "signature": "rpc(method, params)",
-          "docstring": "Sends one of the app's requests to the endpoint.\n\nRaises `HostError` - what the endpoint refused",
+          "docstring": "Sends one of the app's requests to the endpoint. An answer that asks\nfor the person's authorization first is announced to the page as\n`poetry:mcp-app-host:authorize` with the URL to send them to.\n\nRaises `HostError` - what the endpoint refused",
           "params": [
             {
               "name": "method",
@@ -1902,7 +1931,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 188
+          "line": 203
         },
         {
           "name": "openLink",
@@ -1934,14 +1963,14 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 208
+          "line": 227
         },
         {
           "name": "resize",
           "scope": "instance",
           "group": null,
           "signature": "resize({ height, width })",
-          "docstring": "Sizes the frame to what the app reports: the height within the cap,\nthe width as a floor that still shrinks with the container.",
+          "docstring": "Sizes the frame to what the app reports: the height within the mode's\ncap (fullscreen fills the viewport whatever the app says), the width\nas a floor that still shrinks with the container.",
           "params": [
             {
               "name": "size",
@@ -1968,7 +1997,115 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 224
+          "line": 244
+        },
+        {
+          "name": "displayMode",
+          "scope": "instance",
+          "group": null,
+          "signature": "displayMode(event)",
+          "docstring": "A page action putting the frame in a mode: `data-action=\"click->poetry--agent--mcp-app-host#displayMode\"`\nwith `data-poetry--agent--mcp-app-host-mode-param=\"fullscreen\"`.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Event"
+              ],
+              "text": "the click, with `params.mode`"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 257
+        },
+        {
+          "name": "setDisplayMode",
+          "scope": "instance",
+          "group": null,
+          "signature": "setDisplayMode(mode, { by = \"page\" } = {})",
+          "docstring": "Puts the frame in a display mode: fullscreen (the element over the\nwhole viewport), pip (a fixed panel in the corner, the page's row kept\nat its height) or inline (back in the page), the frame staying put so\nthe app never reloads. A mode the page does not offer, or the app did\nnot declare, is refused; the page hears `display-mode` first and may\nchange `detail.mode`. The app is told through the host context.",
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "string"
+              ],
+              "text": "inline, fullscreen or pip"
+            },
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[options.by]",
+              "types": [
+                "string"
+              ],
+              "text": "`app` for the app's request, `page` otherwise"
+            }
+          ],
+          "return": {
+            "types": [
+              "string"
+            ],
+            "text": "the mode in effect"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 274
+        },
+        {
+          "name": "applyDisplayMode",
+          "scope": "instance",
+          "group": null,
+          "signature": "applyDisplayMode(mode)",
+          "docstring": "Moves the element into a mode: fixed over the page or in its corner\nwith a placeholder holding the row's height and a button back, or\nback into the page's flow.",
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "string"
+              ],
+              "text": "inline, fullscreen or pip"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 294
+        },
+        {
+          "name": "leaveMode",
+          "scope": "instance",
+          "group": null,
+          "signature": "leaveMode()",
+          "docstring": "Undoes what a mode put in place: the placeholder, the button, the key\nlistener, the page's scroll lock and the element's styles.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 328
+        },
+        {
+          "name": "availableDisplayModes",
+          "scope": "instance",
+          "group": null,
+          "signature": "availableDisplayModes()",
+          "docstring": "The display modes this page offers, in the spec's names.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<string>"
+            ],
+            "text": "a subset of inline, fullscreen and pip, inline always"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 346
         },
         {
           "name": "themeChanged",
@@ -1980,7 +2117,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 233
+          "line": 354
         },
         {
           "name": "hostContext",
@@ -1993,11 +2130,28 @@
             "types": [
               "Object"
             ],
-            "text": "theme, platform, locale, time zone, display mode, dimensions and styles"
+            "text": "theme, platform, locale, time zone, display modes, dimensions and styles"
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 243
+          "line": 364
+        },
+        {
+          "name": "containerDimensions",
+          "scope": "instance",
+          "group": null,
+          "signature": "containerDimensions()",
+          "docstring": "What the frame may grow to in the mode in effect.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "width and maxHeight"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
+          "line": 379
         },
         {
           "name": "theme",
@@ -2014,7 +2168,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 258
+          "line": 389
         },
         {
           "name": "emit",
@@ -2046,7 +2200,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 269
+          "line": 400
         },
         {
           "name": "status",
@@ -2066,7 +2220,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/mcp_app_host_controller.js",
-          "line": 279
+          "line": 410
         }
       ],
       "constants": []

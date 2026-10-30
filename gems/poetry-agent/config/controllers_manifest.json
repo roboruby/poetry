@@ -127,7 +127,7 @@
     }
   },
   "poetry--agent--mcp-app-host": {
-    "doc": "The frame another server's MCP App renders in, and the host's half of the bridge. The element carries the call (server, tool, input, result, the app's resource) and where the sandbox page and the RPC endpoint are; the controller reads the app's HTML through the endpoint, mounts the sandbox proxy frame (on the apps origin, or as an opaque frame of the page's own in the inline mode), answers `ui/initialize` with the page's theme and tokens, delivers the input and the result, sends the app's own requests to the endpoint, resizes to what the app reports, and tears the app down when the element leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info), `poetry:mcp-app-host:message` (a message for the chat, `detail.params`), `poetry:mcp-app-host:context` (a model-context update), and `poetry:mcp-app-host:display-mode` (a request; the handler may set `detail.mode` to grant one; `inline` otherwise), and with `debug`, `poetry:mcp-app-host:trace` for every message both ways. A link is opened in a new tab after the person confirms it.",
+    "doc": "The frame another server's MCP App renders in, and the host's half of the bridge. The element carries the call (server, tool, input, result, the app's resource) and where the sandbox page and the RPC endpoint are; the controller reads the app's HTML through the endpoint, mounts the sandbox proxy frame (on the apps origin, or as an opaque frame of the page's own in the inline mode), answers `ui/initialize` with the page's theme and tokens, delivers the input and the result, sends the app's own requests to the endpoint, resizes to what the app reports, moves the frame between the display modes (inline in the page, fullscreen over it, pip in a corner), and tears the app down when the element leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info), `poetry:mcp-app-host:message` (a message for the chat, `detail.params`), `poetry:mcp-app-host:context` (a model-context update), `poetry:mcp-app-host:display-mode` (a mode about to be entered, by the app's request or the page's call: `detail.requested`, `detail.mode` the controller is granting, which the handler may change, `inline` to refuse), `poetry:mcp-app-host:authorize` (the endpoint wants the person signed in to the server first: `detail.url`), and with `debug`, `poetry:mcp-app-host:trace` for every message both ways. A link is opened in a new tab after the person confirms it.",
     "targets": [
       "frame",
       "status"
@@ -177,7 +177,26 @@
       "maxHeight": {
         "type": "Number",
         "default": 4000,
-        "doc": "The most the frame grows to, in pixels."
+        "doc": "The most the frame grows to inline, in pixels."
+      },
+      "displayModes": {
+        "type": "Array",
+        "default": [
+          "inline",
+          "fullscreen",
+          "pip"
+        ],
+        "doc": "The display modes this page offers: inline, fullscreen and pip, in any subset."
+      },
+      "pipWidth": {
+        "type": "Number",
+        "default": 360,
+        "doc": "The pip panel's width, in pixels."
+      },
+      "pipHeight": {
+        "type": "Number",
+        "default": 480,
+        "doc": "The most the frame grows to in the pip panel, in pixels."
       },
       "debug": {
         "type": "Boolean",
@@ -187,17 +206,23 @@
     },
     "classes": [],
     "methods": [
+      "applyDisplayMode",
+      "availableDisplayModes",
       "connect",
+      "containerDimensions",
       "disconnect",
+      "displayMode",
       "emit",
       "hostContext",
       "initialized",
+      "leaveMode",
       "mount",
       "openLink",
       "post",
       "receive",
       "resize",
       "rpc",
+      "setDisplayMode",
       "status",
       "theme",
       "themeChanged",
@@ -205,17 +230,23 @@
     ],
     "events": [],
     "method_docs": {
+      "applyDisplayMode": "Moves the element into a mode: fixed over the page or in its corner with a placeholder holding the row's height and a button back, or back into the page's flow.",
+      "availableDisplayModes": "The display modes this page offers, in the spec's names.",
       "connect": "Mounts the frame and starts the handshake.",
-      "disconnect": "Tears the app down and removes the frame.",
+      "containerDimensions": "What the frame may grow to in the mode in effect.",
+      "disconnect": "Tears the app down, puts the element back inline and removes the frame.",
+      "displayMode": "A page action putting the frame in a mode: `data-action=\"click->poetry--agent--mcp-app-host#displayMode\"` with `data-poetry--agent--mcp-app-host-mode-param=\"fullscreen\"`.",
       "emit": "Dispatches a page event under the controller's prefix.",
       "hostContext": "The host context the app is initialized with.",
       "initialized": "Once the app is initialized: tells the page, delivers the input and the result.",
+      "leaveMode": "Undoes what a mode put in place: the placeholder, the button, the key listener, the page's scroll lock and the element's styles.",
       "mount": "Reads the app's HTML through the endpoint, builds the bridge and the frame, and starts the sandbox.",
       "openLink": "Opens a link the app asks for, in a new tab, after the person confirms it.",
       "post": "Posts a message to the frame, to the apps origin only.",
       "receive": "Takes a message from the frame: the proxy's ready note gets the app's HTML, everything else goes to the bridge.",
-      "resize": "Sizes the frame to what the app reports: the height within the cap, the width as a floor that still shrinks with the container.",
-      "rpc": "Sends one of the app's requests to the endpoint.",
+      "resize": "Sizes the frame to what the app reports: the height within the mode's cap (fullscreen fills the viewport whatever the app says), the width as a floor that still shrinks with the container.",
+      "rpc": "Sends one of the app's requests to the endpoint. An answer that asks for the person's authorization first is announced to the page as `poetry:mcp-app-host:authorize` with the URL to send them to.",
+      "setDisplayMode": "Puts the frame in a display mode: fullscreen (the element over the whole viewport), pip (a fixed panel in the corner, the page's row kept at its height) or inline (back in the page), the frame staying put so the app never reloads. A mode the page does not offer, or the app did not declare, is refused; the page hears `display-mode` first and may change `detail.mode`. The app is told through the host context.",
       "status": "Shows a status line, when the element has one.",
       "theme": "The page's theme.",
       "themeChanged": "Tells the app the page's theme and tokens changed.",

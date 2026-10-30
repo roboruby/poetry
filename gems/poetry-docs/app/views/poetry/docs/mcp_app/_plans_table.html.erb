@@ -3,9 +3,13 @@
     chat panel is narrow, so the table keeps to three columns (the seats
     ride in the plan's note) and the plan cell wraps, the theme's nowrap
     staying on the price and the button. %>
-<header class="flex flex-col gap-1.5">
-  <h3 class="font-semibold leading-none">Plans</h3>
-  <p class="text-sm text-muted-foreground"><%= team_size ? "For a team of #{team_size}" : "Pick a plan" %></p>
+<header class="flex items-start justify-between gap-3">
+  <div class="flex flex-col gap-1.5">
+    <h3 class="font-semibold leading-none">Plans</h3>
+    <p class="text-sm text-muted-foreground"><%= team_size ? "For a team of #{team_size}" : "Pick a plan" %></p>
+  </div>
+  <%= poetry_button(variant: :ghost, size: :sm, type: :button, class: "[[data-display-mode=fullscreen]_&]:hidden",
+                    data: { mcp_display_mode: "fullscreen" }) { "Expand" } %>
 </header>
 <%= poetry_tabs(label: "Billing") do |tabs| %>
   <% %w[monthly yearly].each do |period| %>

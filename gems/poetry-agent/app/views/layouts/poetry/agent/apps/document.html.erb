@@ -2,7 +2,7 @@
     carries the assets the document's strategy chose and the bridge; the
     body is the template, rendered once as the shell the fragments fill. %>
 <!DOCTYPE html>
-<%= tag.html(**{ lang: I18n.locale, data: { host_styles: @poetry_app.host_styles } }.merge(@poetry_app.html_attributes)) do %>
+<%= tag.html(**{ lang: I18n.locale, data: { host_styles: @poetry_app.host_styles, mcp_display_modes: @poetry_app.display_modes.join(" ") } }.merge(@poetry_app.html_attributes)) do %>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

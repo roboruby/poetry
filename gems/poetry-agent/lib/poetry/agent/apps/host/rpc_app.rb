@@ -10,14 +10,19 @@ module Poetry
         # body `{ "server", "method", "params" }` and get `{ "result" }` or
         # `{ "error": { "code", "message" } }`. Same-origin only (the
         # browser's fetch metadata, else the Origin header), since a bare
-        # Rack app sees no CSRF token; an application that needs the
-        # signed-in user's credentials calls {Host#rpc} from a controller of
-        # its own instead and passes the headers.
+        # Rack app sees no CSRF token. The signed-in person reaches the
+        # servers' credentials through `context:`, a callable reading the
+        # Rack environment (Warden's user, say); an application that would
+        # rather do it in a controller calls {Host#rpc} from one of its own.
+        # A server that wants the person authorized first is answered with
+        # a 401 carrying the URL that starts it.
         class RpcApp
           # The endpoint for one host.
           # @param host [Host] the host whose servers it relays to
-          def initialize(host)
+          # @param context [#call, nil] `(env) -> context`, what the servers' credentials are keyed by
+          def initialize(host, context: nil)
             @host = host
+            @context = context
           end
 
           # The Rack entry point.
@@ -37,13 +42,18 @@ module Poetry
             end
 
             body = JSON.parse(env["rack.input"].read.to_s)
-            result = @host.rpc(body.fetch("server").to_s, body.fetch("method").to_s, body["params"] || {})
+            result = @host.rpc(body.fetch("server").to_s, body.fetch("method").to_s, body["params"] || {},
+                               context: @context&.call(env))
             answer(200, { "result" => result })
           rescue JSON::ParserError, KeyError
             answer(400,
                    { "error" => { "code" => -32_700, "message" => "a JSON object with server, method and params" } })
           rescue Refused => e
             answer(403, { "error" => { "code" => e.code, "message" => e.message } })
+          rescue AuthorizationRequired => e
+            answer(401,
+                   { "error" => { "code" => e.code, "message" => e.message,
+                                  "data" => { "authorizationUrl" => e.url } } })
           rescue Client::Error => e
             answer(502, { "error" => { "code" => e.code, "message" => e.message } })
           end

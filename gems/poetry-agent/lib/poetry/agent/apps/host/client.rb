@@ -27,12 +27,18 @@ module Poetry
             # @return [Integer]
             attr_reader :code
 
+            # The HTTP status the server answered, when the failure was one (a 401 wants fresh credentials).
+            # @return [Integer, nil]
+            attr_reader :http_status
+
             # Names the failure and its code.
             # @param message [String] the server's message, or the transport's
             # @param code [Integer] the JSON-RPC code
-            def initialize(message, code: -32_000)
+            # @param http_status [Integer, nil] the HTTP status, for a refused request
+            def initialize(message, code: -32_000, http_status: nil)
               super(message)
               @code = code
+              @http_status = http_status
             end
           end
 
@@ -170,7 +176,10 @@ module Poetry
             status, headers, body = post(JSON.generate(message))
             headers = headers.to_h.transform_keys { |key| key.to_s.downcase }
             @session_id = headers["mcp-session-id"] if headers["mcp-session-id"]
-            raise Error, "#{@uri} answered #{status}" unless (200..299).cover?(status.to_i)
+            unless (200..299).cover?(status.to_i)
+              raise Error.new("#{@uri} answered #{status}",
+                              http_status: status.to_i)
+            end
             return nil unless expect
 
             type = headers["content-type"].to_s

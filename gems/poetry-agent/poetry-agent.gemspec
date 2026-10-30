@@ -59,6 +59,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "faraday", "~> 2.0" # the mcp gem's OAuth client (a host's per-user credentials) calls it
   spec.add_dependency "mcp", "~> 1.8"
   spec.add_dependency "poetry-core", "= #{Poetry::Agent::VERSION}"
 end

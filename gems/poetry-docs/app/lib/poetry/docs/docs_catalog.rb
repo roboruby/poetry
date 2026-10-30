@@ -177,8 +177,9 @@ module Poetry
                                "hosted by this site's own host: the page calls show_plans through the " \
                                "host, the frame loads the document into the sandbox and fills from the " \
                                "fragment, a Choose button calls the app-only tool from inside the page " \
-                               "through the host's endpoint, and the bridge's traffic is logged both " \
-                               "ways. The same document renders in Claude Desktop."),
+                               "through the host's endpoint, the frame goes fullscreen or into the corner " \
+                               "without reloading, and the bridge's traffic is logged both ways. The same " \
+                               "document renders in Claude Desktop."),
         Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
                   description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
                                "Poetry's own catalog rendered on the server as forms, and a third streamed " \

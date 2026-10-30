@@ -153,13 +153,57 @@
                                                result: activity.result, resource_uri: activity.resource_uri)
     tag.div(data: host.frame_data(call)) if host.servers.key?(activity.server_id)
 
-    # Per-user credentials: a controller of your own in place of rpc_app
-    def mcp_app_rpc
-      body = JSON.parse(request.raw_post)
-      result = host.rpc(body["server"], body["method"], body["params"], headers: { "Authorization" => "Bearer #{current_user.shop_token}" })
-      render json: { result: result }
-    rescue Poetry::Agent::Apps::Host::Refused => e
-      render json: { error: { code: e.code, message: e.message } }, status: :forbidden
+    # The page's side of the display modes: the controller moves the frame, the app never reloads
+    #   data-poetry--agent--mcp-app-host-display-modes-value='["inline", "fullscreen"]'   # what this page offers (all three by default)
+    #   application.getControllerForElementAndIdentifier(frame, "poetry--agent--mcp-app-host").setDisplayMode("fullscreen")
+  CODE
+  credentials_source = <<~'CODE'
+    # config/initializers/mcp_apps.rb - the mcp gem's OAuth client toward the servers; your app keeps the tokens
+    oauth = Poetry::Agent::Apps::Host::OAuth.new(
+      client_metadata: { client_name: "Chat" },
+      redirect_uri: "https://chat.example/mcp-apps/callback",             # the server's id is appended: one callback route per server
+      storage: ->(user, server) { McpCredential.storage(user, server) }   # the gem's storage interface, per person and server
+    )
+    host = Poetry::Agent::Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", credentials: oauth } },
+                                         origin: "https://chat.example")
+
+    # config/routes.rb - the endpoint learns the person from the request; the callback finishes the flow
+    mount Poetry::Agent::Apps::Host::RpcApp.new(host, context: ->(env) { env["warden"].user }) => host.rpc_path
+    get "mcp-apps/callback/:server", to: "mcp_authorizations#callback"
+
+    # A call for the signed-in person; the first time, they go to the server's sign-in and consent
+    call = host.call("shop", "show_plans", { "team_size" => 8 }, context: current_user)
+    tag.div(data: host.frame_data(call, context: current_user))   # the app's resource read as that person too
+  rescue Poetry::Agent::Apps::Host::AuthorizationRequired => e
+    redirect_to e.url, allow_other_host: true
+
+    # app/controllers/mcp_authorizations_controller.rb
+    def callback
+      host.finish_authorization(params[:server], context: current_user, params: request.query_parameters)
+      redirect_to chat_path
+    end
+
+    # app/models/mcp_credential.rb - one row per person and server, the gem's storage interface over it
+    class McpCredential < ApplicationRecord
+      belongs_to :user
+      serialize :tokens, coder: JSON
+      serialize :client_information, coder: JSON
+      serialize :pending_authorizations, coder: JSON
+      encrypts :tokens, :client_information, :pending_authorizations
+
+      def self.storage(user, server) = find_or_create_by!(user: user, server_id: server.id)
+
+      def save_tokens(value) = update!(tokens: value)
+      def save_client_information(value) = update!(client_information: value)
+      def save_pending_authorization(state, pending) = with_lock { update!(pending_authorizations: (pending_authorizations || {}).merge(state => pending)) }
+      def pending_authorization(state) = (pending_authorizations || {})[state]
+      def delete_pending_authorization(state)   # atomic: the entry, once, or nil
+        with_lock do
+          held = (pending_authorizations || {})[state]
+          update!(pending_authorizations: pending_authorizations.except(state)) if held
+          held
+        end
+      end
     end
   CODE
   events_source = <<~CODE
@@ -406,6 +450,19 @@
         requests (<code>poetry:mcp-app-host:message</code> and the rest).
       </p>
       <p>
+        Three display modes: inline in the page, fullscreen over it, pip as a panel in
+        the corner, the frame staying where it is so the app never reloads (a placeholder
+        keeps the row's height, a button and Escape bring it back). A document declares
+        the modes it handles (<code>display_modes:</code>, inline alone by default), the
+        page the ones it offers (<code>display-modes-value</code>, all three by default),
+        and the host grants only what both allow. Either side may ask: the app through
+        <code>requestDisplayMode</code> or a <code>data-mcp-display-mode</code> button,
+        the page through the controller's <code>setDisplayMode</code>; the page hears
+        <code>poetry:mcp-app-host:display-mode</code> first and may change the mode on
+        it, and the app learns the mode in effect from the host context (the document's
+        root carries it as <code>data-display-mode</code>).
+      </p>
+      <p>
         The sandbox is the extension's: a proxy page on a second origin, served per
         resource under a signed token with the resource's declared domains as a
         Content Security Policy header, framed only by your page, holding the app in an
@@ -425,12 +482,28 @@
         element morph for a frame's holder, since a stream morph would replace it (a
         <code>data-turbo-permanent</code> one included) or strip its frame. Each app
         request through the endpoint carries the page's CSRF token and is answered
-        same-origin only; a controller of your own in place of <code>rpc_app</code> adds
-        the signed-in user's credentials per request. Your own documents work in this
-        host too, with one condition the sandbox makes plain: assets linked from your
-        origin load cross-origin, so they answer with CORS headers.
+        same-origin only, and the endpoint learns the signed-in person from the request
+        (<code>RpcApp.new(host, context:)</code>). Your own documents work in this host
+        too, with one condition the sandbox makes plain: assets linked from your origin
+        load cross-origin, so they answer with CORS headers.
+      </p>
+      <p>
+        Per-user credentials: a server's <code>credentials:</code> turns the person a
+        call passes as <code>context:</code> into that person's headers. A callable of
+        your own serves tokens you already hold; <code>Poetry::Agent::Apps::Host::OAuth</code>
+        is the <code>mcp</code> gem's own OAuth client toward the server (its authorization
+        server discovered, a client ID metadata document or dynamic registration, PKCE,
+        the token exchange, a refresh on a 401 before the person is asked again). Poetry
+        keeps no tokens: the storage you supply per person and server answers the gem's
+        interface, and an ActiveRecord row does. The first call for a person raises
+        <code>AuthorizationRequired</code> with the URL to send them to, one callback
+        route per server finishes the flow, and an app whose server wants the person
+        signed in first gets a 401 the frame announces to the page as
+        <code>poetry:mcp-app-host:authorize</code>. Tools and resources stay cached per
+        server, not per person.
       </p>
     <% end %>
+    <%= poetry_code_block(code: credentials_source, language: "ruby", label: "Per-user credentials") %>
   </section>
 
   <section class="flex flex-col gap-4">

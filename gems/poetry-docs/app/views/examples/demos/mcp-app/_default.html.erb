@@ -3,12 +3,15 @@
     host (in process), renders the frame the host controller fills, and
     logs the bridge's traffic both ways. With no apps origin configured
     the frame runs the inline sandbox mode (an opaque frame of the page's
-    own); with one, the two-origin sandbox the extension asks for. %>
+    own); with one, the two-origin sandbox the extension asks for. The
+    page's own buttons put the frame fullscreen or in the corner (the
+    host's side of display modes); the app's Expand button asks for
+    fullscreen from inside (the app's side). %>
 <% host = Poetry::Docs::McpAppShowcase.host(request.base_url) %>
 <% team_size = params.fetch(:team_size, 8).to_i.clamp(1, 500) %>
 <% call = host.call("poetry-docs", "show_plans", { "team_size" => team_size }) %>
 <div class="grid w-full gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" data-controller="mcp-app-demo"
-     data-action="poetry:mcp-app-host:connect->mcp-app-demo#connected poetry:mcp-app-host:message->mcp-app-demo#message poetry:mcp-app-host:context->mcp-app-demo#context poetry:mcp-app-host:display-mode->mcp-app-demo#displayMode poetry:mcp-app-host:trace->mcp-app-demo#trace">
+     data-action="poetry:mcp-app-host:connect->mcp-app-demo#connected poetry:mcp-app-host:message->mcp-app-demo#message poetry:mcp-app-host:context->mcp-app-demo#context poetry:mcp-app-host:display-mode->mcp-app-demo#displayMode poetry:mcp-app-host:authorize->mcp-app-demo#authorize poetry:mcp-app-host:trace->mcp-app-demo#trace">
   <div class="flex flex-col gap-4">
     <%= form_with url: request.path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do |form| %>
       <%= poetry_field(id: "mcp-app-team-size", label_text: "Team size", class: "w-32") do |field| %>
@@ -16,6 +19,8 @@
       <% end %>
       <%= poetry_button(type: :submit) { "Call show_plans" } %>
       <%= poetry_button(variant: :outline, type: :button, data: { action: "click->mcp-app-demo#toggleTheme" }) { "Flip the host theme" } %>
+      <%= poetry_button(variant: :outline, type: :button, data: { action: "click->mcp-app-demo#fullscreen" }) { "Fullscreen" } %>
+      <%= poetry_button(variant: :outline, type: :button, data: { action: "click->mcp-app-demo#pip" }) { "Picture in picture" } %>
     <% end %>
     <%= tag.div(class: "overflow-hidden rounded-xl border bg-card",
                 data: host.frame_data(call, rpc_url: mcp_app_rpc_path).merge("poetry--agent--mcp-app-host-debug-value" => "true")) do %>
@@ -36,7 +41,10 @@
       server: the page called <code>show_plans</code> through the host, the frame
       read the document and handed it to the sandbox, and the app's own calls
       (<code>choose_plan</code>, a tool only the app may call) go through the
-      host's endpoint with its visibility check. The same frame renders in the
+      host's endpoint with its visibility check. Fullscreen and Picture in
+      picture move the frame without reloading the app (the host's display
+      modes; Escape or the frame's own button brings it back), and the app's
+      Expand asks for fullscreen from inside. The same frame renders in the
       AG-UI Relay demo when the agent's tool has an app.
     </p>
   </div>

@@ -33,6 +33,9 @@ module Poetry
         #
         # @return [String]
         attr_reader :uri
+
+        # The display modes the extension names.
+        DISPLAY_MODES = %w[inline fullscreen pip].freeze
         # The resource's name.
         #
         # @return [String]
@@ -75,14 +78,16 @@ module Poetry
         # @param frames [Array<String>] origins the page may embed in frames
         # @param permissions [Array<Symbol, String>] camera, microphone, geolocation, clipboard_write
         # @param prefers_border [Boolean, nil] whether the host should draw its border around the page
+        # @param display_modes [Array<String, Symbol>] the display modes the page handles (`inline`, `fullscreen`,
+        #   `pip`); the page declares them to the host, which offers no other
         # @param domain [String, nil] the host-specific sandbox origin (Claude's `ui.domain`)
         # @param locals [Hash] locals for the template
         # @param html [Hash] attributes for the document's `<html>` element (a theme class, say)
         # @param renderer [#render, nil] what renders the document (see {Apps.renderer})
         def initialize(uri:, name:, template:, origin: nil, assets: :absolute, stylesheets: ["application"],
                        entrypoint: "application", host_styles: :structural, title: nil, description: nil,
-                       connect: [], resources: [], frames: [], permissions: [], prefers_border: nil, domain: nil,
-                       locals: {}, html: {}, renderer: nil)
+                       connect: [], resources: [], frames: [], permissions: [], prefers_border: nil,
+                       display_modes: ["inline"], domain: nil, locals: {}, html: {}, renderer: nil)
           # rubocop:enable Metrics/ParameterLists
           @uri = uri.to_s
           @name = name.to_s
@@ -100,6 +105,7 @@ module Poetry
           @frames = Array(frames)
           @permissions = Array(permissions).map { |permission| permission.to_s.tr("_", "-") }
           @prefers_border = prefers_border
+          @display_modes = Array(display_modes).map(&:to_s)
           @domain = domain
           @locals = locals
           @renderer = renderer
@@ -120,6 +126,10 @@ module Poetry
         # The attributes of the document's `<html>` element.
         # @return [Hash]
         attr_reader :html_attributes
+
+        # The display modes the page handles, inline always among them.
+        # @return [Array<String>]
+        attr_reader :display_modes
 
         # The gem's resource, for the server's `resources:`.
         # @return [::MCP::Resource]
@@ -196,6 +206,9 @@ module Poetry
         #
         # @raise [ArgumentError] for an unknown strategy or mapping, or absolute assets without an origin
         def validate!
+          unknown = @display_modes - DISPLAY_MODES
+          raise ArgumentError, "unknown display modes: #{unknown.join(", ")}" unless unknown.empty?
+
           raise ArgumentError, "a document URI starts with ui://" unless uri.start_with?(::MCP::Apps::URI_SCHEME)
           raise ArgumentError, "assets: is one of #{ASSETS.join(", ")}" unless ASSETS.include?(assets)
           unless HOST_STYLES.include?(host_styles)

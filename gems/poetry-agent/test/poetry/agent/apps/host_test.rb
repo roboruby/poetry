@@ -4,6 +4,7 @@ require "test_helper"
 require "action_controller"
 require "rack/mock"
 require "json"
+require "faraday"
 
 module Poetry
   module Agent
@@ -47,6 +48,8 @@ module Poetry
         app = MCP::HTTP.new(server)
         lambda do |uri, body, headers|
           @posts << { uri: uri.to_s, body: JSON.parse(body), headers: headers }
+          return [401, { "content-type" => "application/json" }, ""] if @reject && headers["Authorization"] == @reject
+
           env = { "CONTENT_TYPE" => "application/json", "HTTP_ACCEPT" => headers["Accept"], input: body }
           env["HTTP_AUTHORIZATION"] = headers["Authorization"] if headers["Authorization"]
           response = Rack::MockRequest.new(app).post("/", env)
@@ -182,6 +185,10 @@ module Poetry
         assert_nil subject.verify_sandbox_token("#{token}x")
         assert_nil subject.verify_sandbox_token(host(secret: "other").sandbox_token("shop", "ui://shop/plans"))
         assert_equal "#{APPS}/mcp-apps/sandbox/#{token}", subject.sandbox_url("shop", "ui://shop/plans")
+        csp = { "connectDomains" => ["https://api.example"] }
+        with_policy = subject.sandbox_token("shop", "ui://shop/plans", csp: csp)
+
+        assert_equal csp, subject.verify_sandbox_token(with_policy)["csp"]
         response = Rack::MockRequest.new(subject.sandbox_app).get("/#{token}")
 
         assert_equal 200, response.status
@@ -263,6 +270,132 @@ module Poetry
                                                                               "HTTP_ORIGIN" => ORIGIN).status
         assert_equal 400, endpoint.post("/", { "HTTP_SEC_FETCH_SITE" => "same-origin", input: "nope" }).status
         assert_equal 405, endpoint.get("/").status
+      end
+
+      # --- credentials: a callable, the gem's OAuth client, the endpoint's context ---
+
+      def test_a_server_s_credentials_turn_the_context_into_headers_for_every_request
+        seen = []
+        credentials = lambda do |context, held|
+          seen << [context, held.id]
+          { "Authorization" => "Bearer #{context}-token" }
+        end
+        subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", headers: { "X-Shop" => "yes" },
+                                                        credentials: credentials } },
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+
+        call = subject.call("shop", "show_plans", { "team_size" => 2 }, context: "alice")
+
+        assert_equal "plans for 2", call.result.dig("content", 0, "text")
+        assert_equal "Bearer alice-token", @posts.last[:headers]["Authorization"]
+        assert_equal "yes", @posts.last[:headers]["X-Shop"], "the server's own headers stay"
+        assert_includes seen, %w[alice shop]
+        assert subject.authorized?("shop", context: "alice"), "a callable holds no authorization of its own"
+        assert_raises(ArgumentError) { subject.authorization_url("shop", context: "alice") }
+      end
+
+      def test_the_oauth_client_sends_the_person_to_authorize_then_sends_their_token_and_refreshes_it
+        stubs = Faraday::Adapter::Test::Stubs.new
+        json = ->(status, body) { [status, { "Content-Type" => "application/json" }, JSON.generate(body)] }
+        stubs.get("https://shop.example/.well-known/oauth-protected-resource/mcp") do
+          json.call(200, "resource" => "https://shop.example/mcp", "authorization_servers" => ["https://auth.example"],
+                         "scopes_supported" => ["plans"])
+        end
+        stubs.get("https://auth.example/.well-known/oauth-authorization-server") do
+          json.call(200, "issuer" => "https://auth.example",
+                         "authorization_endpoint" => "https://auth.example/authorize",
+                         "token_endpoint" => "https://auth.example/token",
+                         "registration_endpoint" => "https://auth.example/register",
+                         "response_types_supported" => ["code"],
+                         "grant_types_supported" => %w[authorization_code refresh_token],
+                         "code_challenge_methods_supported" => ["S256"],
+                         "token_endpoint_auth_methods_supported" => ["none"],
+                         "scopes_supported" => ["plans"])
+        end
+        stubs.post("https://auth.example/register") do
+          json.call(201, "client_id" => "client-1", "redirect_uris" => ["https://chat.example/mcp-apps/callback/shop"],
+                         "token_endpoint_auth_method" => "none", "grant_types" => %w[authorization_code refresh_token],
+                         "response_types" => ["code"])
+        end
+        exchanges = []
+        stubs.post("https://auth.example/token") do |env|
+          form = env.body.is_a?(String) ? URI.decode_www_form(env.body).to_h : env.body.to_h.transform_keys(&:to_s)
+          exchanges << form
+          token = form["grant_type"] == "refresh_token" ? "t2" : "t1"
+          json.call(200, "access_token" => token, "token_type" => "Bearer", "expires_in" => 3600,
+                         "refresh_token" => "r1")
+        end
+        stores = Hash.new { |held, key| held[key] = ::MCP::Client::OAuth::InMemoryStorage.new }
+        oauth = Apps::Host::OAuth.new(redirect_uri: "https://chat.example/mcp-apps/callback/",
+                                      storage: ->(context, held) { stores[[context, held.id]] },
+                                      http_client_customizer: ->(faraday) { faraday.adapter(:test, stubs) })
+        subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", credentials: oauth } },
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+
+        refute subject.authorized?("shop", context: "alice")
+        error = assert_raises(Apps::Host::AuthorizationRequired) { subject.tools("shop", context: "alice") }
+        assert_equal "shop", error.server
+        assert_equal(-32_001, error.code)
+        url = URI.parse(error.url)
+        query = URI.decode_www_form(url.query.to_s).to_h
+
+        assert_equal "https://auth.example/authorize", "#{url.scheme}://#{url.host}#{url.path}"
+        assert_equal "S256", query["code_challenge_method"]
+        assert_equal "https://shop.example/mcp", query["resource"]
+        assert_equal "https://chat.example/mcp-apps/callback/shop", query["redirect_uri"]
+        assert_equal "client-1", query["client_id"]
+        assert_empty @posts, "nothing reached the server before the person authorized"
+
+        assert subject.finish_authorization("shop", context: "alice",
+                                                    params: { "code" => "abc", "state" => query["state"] })
+        assert subject.authorized?("shop", context: "alice")
+        assert_equal "abc", exchanges.last["code"]
+        assert_equal "authorization_code", exchanges.last["grant_type"]
+        refute subject.authorized?("shop", context: "bob"), "tokens are the person's"
+
+        subject.tools("shop", context: "alice")
+
+        assert_equal "Bearer t1", @posts.last[:headers]["Authorization"]
+
+        @reject = "Bearer t1"
+        call = subject.call("shop", "show_plans", { "team_size" => 3 }, context: "alice")
+
+        assert_equal "plans for 3", call.result.dig("content", 0, "text")
+        assert_equal "refresh_token", exchanges.last["grant_type"]
+        assert_equal "Bearer t2", @posts.last[:headers]["Authorization"],
+                     "a 401 is tried once more with the refreshed token"
+      end
+
+      def test_the_rpc_endpoint_reads_the_context_from_the_environment_and_answers_an_authorization_as_unauthorized
+        credentials = lambda do |context, held|
+          if context == "bob"
+            raise Apps::Host::AuthorizationRequired.new(server: held.id,
+                                                        url: "https://auth.example/start")
+          end
+
+          { "Authorization" => "Bearer #{context}-token" }
+        end
+        subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", credentials: credentials } },
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+        app = Apps::Host::RpcApp.new(subject, context: ->(env) { env["HTTP_X_USER"] })
+        body = JSON.generate("server" => "shop", "method" => "tools/call", "params" => { "name" => "choose_plan" })
+        request = lambda do |user|
+          Rack::MockRequest.new(app).post("/mcp-apps/rpc", "CONTENT_TYPE" => "application/json",
+                                                           "HTTP_SEC_FETCH_SITE" => "same-origin",
+                                                           "HTTP_X_USER" => user, input: body)
+        end
+
+        response = request.call("alice")
+
+        assert_equal 200, response.status
+        assert_equal "Bearer alice-token", @posts.last[:headers]["Authorization"]
+
+        response = request.call("bob")
+        error = JSON.parse(response.body)["error"]
+
+        assert_equal 401, response.status
+        assert_equal(-32_001, error["code"])
+        assert_equal "https://auth.example/start", error.dig("data", "authorizationUrl")
       end
 
       def test_the_store_keeps_a_value_until_it_expires

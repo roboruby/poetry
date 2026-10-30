@@ -1,12 +1,19 @@
 <%# The plans app's template: rendered once, before any call, as the shell
     the fragments fill. The region waits with a skeleton until the host
     delivers the tool result. No card of the page's own: the document asks
-    the host for a border (prefers_border), and a chat panel is narrow. %>
+    the host for a border (prefers_border), and a chat panel is narrow.
+    The Expand button asks the host for the fullscreen mode (the page
+    bridge sends ui/request-display-mode); the host's own control brings
+    it back, and the root's data-display-mode says which mode is on. %>
 <main class="p-4">
   <div class="flex flex-col gap-4" data-mcp-region="plans">
-    <header class="flex flex-col gap-1.5">
-      <h3 class="font-semibold leading-none">Plans</h3>
-      <p class="text-sm text-muted-foreground">Waiting for the plans</p>
+    <header class="flex items-start justify-between gap-3">
+      <div class="flex flex-col gap-1.5">
+        <h3 class="font-semibold leading-none">Plans</h3>
+        <p class="text-sm text-muted-foreground">Waiting for the plans</p>
+      </div>
+      <%= poetry_button(variant: :ghost, size: :sm, type: :button, class: "[[data-display-mode=fullscreen]_&]:hidden",
+                        data: { mcp_display_mode: "fullscreen" }) { "Expand" } %>
     </header>
     <div class="flex flex-col gap-2">
       <%= poetry_skeleton(class: "h-4 w-2/3") %>

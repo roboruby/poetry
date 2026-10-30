@@ -11222,7 +11222,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 252
+          "line": 265
         },
         {
           "name": "stylesheet",
@@ -11263,7 +11263,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 239
+          "line": 252
         }
       ],
       "constants": []
@@ -11291,7 +11291,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 47
+          "line": 50
         },
         {
           "name": "contents",
@@ -11308,7 +11308,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 146
+          "line": 156
         },
         {
           "name": "csp",
@@ -11325,7 +11325,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 168
+          "line": 178
+        },
+        {
+          "name": "display_modes",
+          "scope": "instance",
+          "group": null,
+          "signature": "display_modes",
+          "docstring": "The display modes the page handles, inline always among them.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/document.rb",
+          "line": 132
         },
         {
           "name": "entrypoint",
@@ -11343,7 +11360,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 55
+          "line": 58
         },
         {
           "name": "head",
@@ -11376,7 +11393,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 189
+          "line": 199
         },
         {
           "name": "host_styles",
@@ -11393,7 +11410,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 59
+          "line": 62
         },
         {
           "name": "html",
@@ -11410,7 +11427,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 177
+          "line": 187
         },
         {
           "name": "html_attributes",
@@ -11427,13 +11444,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 122
+          "line": 128
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(uri:, name:, template:, origin: nil, assets: :absolute, stylesheets: [\"application\"], entrypoint: \"application\", host_styles: :structural, title: nil, description: nil, connect: [], resources: [], frames: [], permissions: [], prefers_border: nil, domain: nil, locals: {}, html: {}, renderer: nil)",
+          "signature": "initialize(uri:, name:, template:, origin: nil, assets: :absolute, stylesheets: [\"application\"], entrypoint: \"application\", host_styles: :structural, title: nil, description: nil, connect: [], resources: [], frames: [], permissions: [], prefers_border: nil, display_modes: [\"inline\"], domain: nil, locals: {}, html: {}, renderer: nil)",
           "docstring": "rubocop:disable Metrics/ParameterLists",
           "params": [
             {
@@ -11548,6 +11565,13 @@
               "text": "whether the host should draw its border around the page"
             },
             {
+              "name": "display_modes",
+              "types": [
+                "Array<String, Symbol>"
+              ],
+              "text": "the display modes the page handles (`inline`, `fullscreen`,\n`pip`); the page declares them to the host, which offers no other"
+            },
+            {
               "name": "domain",
               "types": [
                 "String",
@@ -11586,7 +11610,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 82
+          "line": 87
         },
         {
           "name": "name",
@@ -11603,7 +11627,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 39
+          "line": 42
         },
         {
           "name": "origin",
@@ -11621,7 +11645,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 113
+          "line": 119
         },
         {
           "name": "resource",
@@ -11638,7 +11662,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 126
+          "line": 136
         },
         {
           "name": "serves?",
@@ -11663,7 +11687,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 142
+          "line": 152
         },
         {
           "name": "stylesheets",
@@ -11680,7 +11704,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 51
+          "line": 54
         },
         {
           "name": "template",
@@ -11697,7 +11721,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 43
+          "line": 46
         },
         {
           "name": "tool_meta",
@@ -11731,7 +11755,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 135
+          "line": 145
         },
         {
           "name": "ui_meta",
@@ -11748,7 +11772,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/document.rb",
-          "line": 154
+          "line": 164
         },
         {
           "name": "uri",
@@ -11773,6 +11797,11 @@
           "name": "ASSETS",
           "value": "%i[absolute inline].freeze",
           "docstring": "The asset strategies."
+        },
+        {
+          "name": "DISPLAY_MODES",
+          "value": "%w[inline fullscreen pip].freeze",
+          "docstring": "The display modes the extension names."
         },
         {
           "name": "HOST_STYLES",
@@ -11930,7 +11959,7 @@
           "name": "app_callable?",
           "scope": "instance",
           "group": null,
-          "signature": "app_callable?(id, name)",
+          "signature": "app_callable?(id, name, context: nil)",
           "docstring": "Whether an app may call the tool: a visibility that names `app`, or none declared.",
           "params": [
             {
@@ -11946,6 +11975,14 @@
                 "String"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -11956,13 +11993,79 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 211
+          "line": 291
+        },
+        {
+          "name": "authorization_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "authorization_url(id, context: nil)",
+          "docstring": "The URL that starts the context's authorization toward a server.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 245
+        },
+        {
+          "name": "authorized?",
+          "scope": "instance",
+          "group": null,
+          "signature": "authorized?(id, context: nil)",
+          "docstring": "Whether the context holds credentials for the server (true for a server without credentials).",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 232
         },
         {
           "name": "call",
           "scope": "instance",
           "group": null,
-          "signature": "call(id, name, arguments = {}, headers: {})",
+          "signature": "call(id, name, arguments = {}, headers: {}, context: nil)",
           "docstring": "A tool call made for the page (the model's side): the result and the app's resource uri.",
           "params": [
             {
@@ -11992,6 +12095,14 @@
                 "Hash"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -12002,7 +12113,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 254
+          "line": 337
         },
         {
           "name": "clear_cache",
@@ -12019,14 +12130,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 365
+          "line": 465
         },
         {
           "name": "client",
           "scope": "instance",
           "group": null,
-          "signature": "client(id, headers: {})",
-          "docstring": "A connected client for a server.",
+          "signature": "client(id, headers: {}, context: nil)",
+          "docstring": "A connected client for a server: the server's headers, the\ncontext's through the server's credentials, this request's.",
           "params": [
             {
               "name": "id",
@@ -12040,7 +12151,15 @@
               "types": [
                 "Hash"
               ],
-              "text": "headers for this request (the signed-in user's, say) over the server's"
+              "text": "headers for this request over the rest"
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "what the server's credentials turn into headers (the signed-in person)"
             }
           ],
           "return": {
@@ -12051,13 +12170,53 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 186
+          "line": 221
+        },
+        {
+          "name": "finish_authorization",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish_authorization(id, context: nil, params: {})",
+          "docstring": "Finishes the context's authorization toward a server with the callback's query.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash"
+              ],
+              "text": "the callback's query parameters, as they arrived"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether tokens were saved"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 262
         },
         {
           "name": "frame_data",
           "scope": "instance",
           "group": null,
-          "signature": "frame_data(call, rpc_url: nil)",
+          "signature": "frame_data(call, rpc_url: nil, context: nil)",
           "docstring": "The frame element's data attributes: the controller and its values.",
           "params": [
             {
@@ -12074,6 +12233,14 @@
                 "nil"
               ],
               "text": "where the app's requests go; {#rpc_path} by default"
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "what the server's credentials turn into headers, as the call passed it;\nthe app's resource is read here, with it, and its policy travels in the sandbox token"
             }
           ],
           "return": {
@@ -12084,7 +12251,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 346
+          "line": 445
         },
         {
           "name": "initialize",
@@ -12098,7 +12265,7 @@
               "types": [
                 "Hash{String => Hash}"
               ],
-              "text": "by id: `url:` and optional `headers:`"
+              "text": "by id: `url:`, optional `headers:` held for every request, and\noptional `credentials:` (an {OAuth} or a callable `(context, server) -> headers`) turning the\ncontext a call passes (the signed-in person) into that person's headers"
             },
             {
               "name": "origin",
@@ -12161,7 +12328,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 156
+          "line": 188
         },
         {
           "name": "inline_sandbox_page",
@@ -12186,13 +12353,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 337
+          "line": 434
         },
         {
           "name": "model_visible?",
           "scope": "instance",
           "group": null,
-          "signature": "model_visible?(id, name)",
+          "signature": "model_visible?(id, name, context: nil)",
           "docstring": "Whether the model (the page acting for it) may call the tool.",
           "params": [
             {
@@ -12208,6 +12375,14 @@
                 "String"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -12218,7 +12393,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 221
+          "line": 302
         },
         {
           "name": "origin",
@@ -12235,13 +12410,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 126
+          "line": 156
         },
         {
           "name": "resource",
           "scope": "instance",
           "group": null,
-          "signature": "resource(id, uri, headers: {})",
+          "signature": "resource(id, uri, headers: {}, context: nil)",
           "docstring": "An app resource, cached.",
           "params": [
             {
@@ -12264,6 +12439,14 @@
                 "Hash"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -12274,13 +12457,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 233
+          "line": 315
         },
         {
           "name": "rpc",
           "scope": "instance",
           "group": null,
-          "signature": "rpc(id, method, params = {}, headers: {})",
+          "signature": "rpc(id, method, params = {}, headers: {}, context: nil)",
           "docstring": "An app's own request: through the allowlist and the visibility check.",
           "params": [
             {
@@ -12310,6 +12493,14 @@
                 "Hash"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -12321,7 +12512,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 271
+          "line": 357
         },
         {
           "name": "rpc_app",
@@ -12338,7 +12529,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 329
+          "line": 426
         },
         {
           "name": "rpc_path",
@@ -12355,7 +12546,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 138
+          "line": 168
         },
         {
           "name": "sandbox_app",
@@ -12372,7 +12563,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 322
+          "line": 419
         },
         {
           "name": "sandbox_origin",
@@ -12390,7 +12581,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 130
+          "line": 160
         },
         {
           "name": "sandbox_path",
@@ -12407,14 +12598,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 134
+          "line": 164
         },
         {
           "name": "sandbox_token",
           "scope": "instance",
           "group": null,
-          "signature": "sandbox_token(id, uri)",
-          "docstring": "A signed claim on a resource for the sandbox page.",
+          "signature": "sandbox_token(id, uri, csp: nil)",
+          "docstring": "A signed claim on a resource for the sandbox page, carrying the\nresource's policy when given, so the page needs no read of its own.",
           "params": [
             {
               "name": "id",
@@ -12429,6 +12620,14 @@
                 "String"
               ],
               "text": ""
+            },
+            {
+              "name": "csp",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "the resource's `_meta.ui.csp`"
             }
           ],
           "return": {
@@ -12439,13 +12638,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 295
+          "line": 389
         },
         {
           "name": "sandbox_url",
           "scope": "instance",
           "group": null,
-          "signature": "sandbox_url(id, uri)",
+          "signature": "sandbox_url(id, uri, csp: nil)",
           "docstring": "The sandbox page's URL for a resource, or nil in the inline mode.",
           "params": [
             {
@@ -12461,6 +12660,14 @@
                 "String"
               ],
               "text": ""
+            },
+            {
+              "name": "csp",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "the resource's `_meta.ui.csp`, carried in the token"
             }
           ],
           "return": {
@@ -12472,7 +12679,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 315
+          "line": 412
         },
         {
           "name": "server",
@@ -12497,7 +12704,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 177
+          "line": 209
         },
         {
           "name": "servers",
@@ -12514,14 +12721,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 142
+          "line": 172
         },
         {
           "name": "tools",
           "scope": "instance",
           "group": null,
-          "signature": "tools(id, headers: {})",
-          "docstring": "The server's tools with their app metadata, cached.",
+          "signature": "tools(id, headers: {}, context: nil)",
+          "docstring": "The server's tools with their app metadata, cached (per server, not per context).",
           "params": [
             {
               "name": "id",
@@ -12536,6 +12743,14 @@
                 "Hash"
               ],
               "text": ""
+            },
+            {
+              "name": "context",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
             }
           ],
           "return": {
@@ -12546,7 +12761,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 196
+          "line": 275
         },
         {
           "name": "verify_sandbox_token",
@@ -12572,7 +12787,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 303
+          "line": 399
         }
       ],
       "constants": [
@@ -12604,6 +12819,106 @@
       ]
     },
     {
+      "path": "Poetry::Agent::Apps::Host::AuthorizationRequired",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "The person must authorize the server first; the URL starts it.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host.rb",
+      "methods": [
+        {
+          "name": "code",
+          "scope": "instance",
+          "group": null,
+          "signature": "code",
+          "docstring": "The JSON-RPC code an app is answered with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 78
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(server:, url:)",
+          "docstring": "Names the server and the URL that starts its authorization.",
+          "params": [
+            {
+              "name": "server",
+              "types": [
+                "String"
+              ],
+              "text": "the server's id"
+            },
+            {
+              "name": "url",
+              "types": [
+                "String"
+              ],
+              "text": "the authorization URL"
+            }
+          ],
+          "return": {
+            "types": [
+              "AuthorizationRequired"
+            ],
+            "text": "a new instance of AuthorizationRequired"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 70
+        },
+        {
+          "name": "server",
+          "scope": "instance",
+          "group": null,
+          "signature": "server",
+          "docstring": "The server's id.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 61
+        },
+        {
+          "name": "url",
+          "scope": "instance",
+          "group": null,
+          "signature": "url",
+          "docstring": "Where to send the person.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 65
+        }
+      ],
+      "constants": [
+        {
+          "name": "CODE",
+          "value": "-32_001",
+          "docstring": "The JSON-RPC code an app is answered with."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Agent::Apps::Host::Call",
       "type": "class",
       "superclass": "Struct",
@@ -12626,7 +12941,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 77
+          "line": 107
         },
         {
           "name": "input",
@@ -12643,7 +12958,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "input=",
@@ -12668,7 +12983,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "resource_uri",
@@ -12686,7 +13001,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "resource_uri=",
@@ -12713,7 +13028,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "result",
@@ -12730,7 +13045,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "result=",
@@ -12755,7 +13070,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "server",
@@ -12772,7 +13087,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "server=",
@@ -12797,7 +13112,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "tool",
@@ -12814,7 +13129,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         },
         {
           "name": "tool=",
@@ -12839,7 +13154,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 74
+          "line": 104
         }
       ],
       "constants": []
@@ -12887,7 +13202,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 119
+          "line": 125
         },
         {
           "name": "connect",
@@ -12904,7 +13219,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 79
+          "line": 85
         },
         {
           "name": "connected?",
@@ -12921,7 +13236,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 97
+          "line": 103
         },
         {
           "name": "initialize",
@@ -12989,7 +13304,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 61
+          "line": 67
         },
         {
           "name": "notify",
@@ -13022,7 +13337,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 153
+          "line": 159
         },
         {
           "name": "ping",
@@ -13039,7 +13354,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 126
+          "line": 132
         },
         {
           "name": "read_resource",
@@ -13064,7 +13379,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 110
+          "line": 116
         },
         {
           "name": "request",
@@ -13097,7 +13412,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 134
+          "line": 140
         },
         {
           "name": "server_capabilities",
@@ -13115,7 +13430,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 45
+          "line": 51
         },
         {
           "name": "server_info",
@@ -13133,7 +13448,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 50
+          "line": 56
         },
         {
           "name": "tools",
@@ -13150,7 +13465,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 102
+          "line": 108
         }
       ],
       "constants": [
@@ -13187,10 +13502,28 @@
           "line": 28
         },
         {
+          "name": "http_status",
+          "scope": "instance",
+          "group": null,
+          "signature": "http_status",
+          "docstring": "The HTTP status the server answered, when the failure was one (a 401 wants fresh credentials).",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/client.rb",
+          "line": 32
+        },
+        {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(message, code: -32_000)",
+          "signature": "initialize(message, code: -32_000, http_status: nil)",
           "docstring": "Names the failure and its code.",
           "params": [
             {
@@ -13206,6 +13539,14 @@
                 "Integer"
               ],
               "text": "the JSON-RPC code"
+            },
+            {
+              "name": "http_status",
+              "types": [
+                "Integer",
+                "nil"
+              ],
+              "text": "the HTTP status, for a refused request"
             }
           ],
           "return": {
@@ -13216,7 +13557,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 33
+          "line": 38
         }
       ],
       "constants": []
@@ -13332,6 +13673,320 @@
       ]
     },
     {
+      "path": "Poetry::Agent::Apps::Host::OAuth",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "A server's credentials from the `mcp` gem's own OAuth client: a\nperson's tokens toward the server, obtained by the authorization\ncode flow with PKCE (discovery of the server's authorization\nserver, a client ID metadata document or dynamic registration, the\ntoken exchange, refresh), kept in a storage the application\nsupplies per person and server. {#headers} answers the bearer\ntoken, or raises {AuthorizationRequired} with the URL to send the\nperson to; the application's callback action finishes with\n{#finish}. One callback path per server: the redirect URI given\ngains the server's id as its last segment, so the callback knows\nwhich server's storage holds the pending authorization.",
+      "examples": [],
+      "file": "lib/poetry/agent/apps/host/oauth.rb",
+      "methods": [
+        {
+          "name": "authorization_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "authorization_url(context, server)",
+          "docstring": "Starts an authorization: discovery, registration, a pending\nauthorization saved in the storage; the URL to send the person to.",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the person"
+            },
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the authorization URL"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 98
+        },
+        {
+          "name": "authorized?",
+          "scope": "instance",
+          "group": null,
+          "signature": "authorized?(context, server)",
+          "docstring": "Whether the person has a token toward the server.",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the person"
+            },
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 121
+        },
+        {
+          "name": "client_metadata",
+          "scope": "instance",
+          "group": null,
+          "signature": "client_metadata",
+          "docstring": "The client's metadata, without the redirect URIs (filled per server).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => Object}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 36
+        },
+        {
+          "name": "finish",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish(context, server, params)",
+          "docstring": "Finishes an authorization with the callback's query (`code`, `state`, `iss`).",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the person"
+            },
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash"
+              ],
+              "text": "the callback's query parameters, as they arrived"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether tokens were saved"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 112
+        },
+        {
+          "name": "headers",
+          "scope": "instance",
+          "group": null,
+          "signature": "headers(context, server)",
+          "docstring": "The bearer header for a person toward a server.",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the person (whatever the storage is keyed by)"
+            },
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": "the Authorization header"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 74
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(redirect_uri:, storage:, client_metadata: {}, scope: nil, # rubocop:disable Metrics/ParameterLists client_id_metadata_document_url: nil, http_client_customizer: nil, pending_authorization_max_age: 600)",
+          "docstring": "The gem's client for a host's servers.",
+          "params": [
+            {
+              "name": "redirect_uri",
+              "types": [
+                "String"
+              ],
+              "text": "the callback URL's base (`https://chat.example/mcp-apps/callback`);\nthe server's id is appended, so the application routes `callback/:server`"
+            },
+            {
+              "name": "storage",
+              "types": [
+                "#call",
+                "Object"
+              ],
+              "text": "`(context, server) -> storage`: a storage answering the gem's\ninterface (`tokens`, `save_tokens`, `client_information`, `save_client_information`,\n`save_pending_authorization`, `pending_authorization`, `delete_pending_authorization`) for\nthat person and server; an object answering it serves everyone"
+            },
+            {
+              "name": "client_metadata",
+              "types": [
+                "Hash"
+              ],
+              "text": "the client's registration metadata (`client_name`, `grant_types`,\n`response_types`, `token_endpoint_auth_method`, `client_uri`, ...); `redirect_uris` is filled\nper server"
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the scope to ask for; what the server advertises by default"
+            },
+            {
+              "name": "client_id_metadata_document_url",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the client's hosted metadata document, used\nin place of dynamic registration where the authorization server supports it"
+            },
+            {
+              "name": "http_client_customizer",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "a hook on the gem's HTTP connection (middleware, an\nadapter under test)"
+            },
+            {
+              "name": "pending_authorization_max_age",
+              "types": [
+                "Integer"
+              ],
+              "text": "seconds a started authorization stays redeemable"
+            }
+          ],
+          "return": {
+            "types": [
+              "OAuth"
+            ],
+            "text": "a new instance of OAuth"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 55
+        },
+        {
+          "name": "redirect_uri",
+          "scope": "instance",
+          "group": null,
+          "signature": "redirect_uri",
+          "docstring": "The callback URL's base; the server's id is appended.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 32
+        },
+        {
+          "name": "redirect_uri_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "redirect_uri_for(server)",
+          "docstring": "The callback URL for a server.",
+          "params": [
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 129
+        },
+        {
+          "name": "refresh",
+          "scope": "instance",
+          "group": null,
+          "signature": "refresh(context, server)",
+          "docstring": "Trades the refresh token for a new access token.",
+          "params": [
+            {
+              "name": "context",
+              "types": [
+                "Object"
+              ],
+              "text": "the person"
+            },
+            {
+              "name": "server",
+              "types": [
+                "Server"
+              ],
+              "text": "the server the token is for"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether there is a new token"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/oauth.rb",
+          "line": 86
+        }
+      ],
+      "constants": [
+        {
+          "name": "DEFAULT_CLIENT_METADATA",
+          "value": "{\n  client_name: \"poetry-agent\",\n  grant_types: %w[authorization_code refresh_token],\n  response_types: %w[code],\n  token_endpoint_auth_method: \"none\"\n}.freeze",
+          "docstring": "What a client is unless the metadata says otherwise: a public\nclient on the authorization code grant that may refresh."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Agent::Apps::Host::Refused",
       "type": "class",
       "superclass": "StandardError",
@@ -13354,7 +14009,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 42
+          "line": 43
         },
         {
           "name": "initialize",
@@ -13386,7 +14041,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 47
+          "line": 48
         }
       ],
       "constants": []
@@ -13414,7 +14069,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         },
         {
           "name": "html=",
@@ -13439,7 +14094,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         },
         {
           "name": "ui",
@@ -13456,7 +14111,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         },
         {
           "name": "ui=",
@@ -13481,7 +14136,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         },
         {
           "name": "uri",
@@ -13498,7 +14153,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         },
         {
           "name": "uri=",
@@ -13523,7 +14178,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 95
         }
       ],
       "constants": []
@@ -13532,7 +14187,7 @@
       "path": "Poetry::Agent::Apps::Host::RpcApp",
       "type": "class",
       "superclass": "Object",
-      "docstring": "The Rack endpoint an app's own requests go through: `POST` a JSON\nbody `{ \"server\", \"method\", \"params\" }` and get `{ \"result\" }` or\n`{ \"error\": { \"code\", \"message\" } }`. Same-origin only (the\nbrowser's fetch metadata, else the Origin header), since a bare\nRack app sees no CSRF token; an application that needs the\nsigned-in user's credentials calls {Host#rpc} from a controller of\nits own instead and passes the headers.",
+      "docstring": "The Rack endpoint an app's own requests go through: `POST` a JSON\nbody `{ \"server\", \"method\", \"params\" }` and get `{ \"result\" }` or\n`{ \"error\": { \"code\", \"message\" } }`. Same-origin only (the\nbrowser's fetch metadata, else the Origin header), since a bare\nRack app sees no CSRF token. The signed-in person reaches the\nservers' credentials through `context:`, a callable reading the\nRack environment (Warden's user, say); an application that would\nrather do it in a controller calls {Host#rpc} from one of its own.\nA server that wants the person authorized first is answered with\na 401 carrying the URL that starts it.",
       "examples": [],
       "file": "lib/poetry/agent/apps/host/rpc_app.rb",
       "methods": [
@@ -13559,13 +14214,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/rpc_app.rb",
-          "line": 27
+          "line": 32
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(host)",
+          "signature": "initialize(host, context: nil)",
           "docstring": "The endpoint for one host.",
           "params": [
             {
@@ -13574,6 +14229,14 @@
                 "Host"
               ],
               "text": "the host whose servers it relays to"
+            },
+            {
+              "name": "context",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "`(env) -> context`, what the servers' credentials are keyed by"
             }
           ],
           "return": {
@@ -13584,7 +14247,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/rpc_app.rb",
-          "line": 19
+          "line": 23
         }
       ],
       "constants": []
@@ -13671,7 +14334,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/sandbox.rb",
-          "line": 53
+          "line": 55
         },
         {
           "name": "script",
@@ -13688,7 +14351,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host/sandbox.rb",
-          "line": 83
+          "line": 85
         }
       ],
       "constants": []
@@ -13701,6 +14364,54 @@
       "examples": [],
       "file": "lib/poetry/agent/apps/host.rb",
       "methods": [
+        {
+          "name": "credentials",
+          "scope": "instance",
+          "group": null,
+          "signature": "credentials",
+          "docstring": "what turns a context (the signed-in person) into headers\nfor it: an {OAuth}, or a callable `(context, server) -> headers`",
+          "params": [],
+          "return": {
+            "types": [
+              "#headers",
+              "#call",
+              "nil"
+            ],
+            "text": "the current value of credentials"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 88
+        },
+        {
+          "name": "credentials=",
+          "scope": "instance",
+          "group": null,
+          "signature": "credentials=(value)",
+          "docstring": "what turns a context (the signed-in person) into headers\nfor it: an {OAuth}, or a callable `(context, server) -> headers`",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "#headers",
+                "#call",
+                "nil"
+              ],
+              "text": "the value to set the attribute credentials to."
+            }
+          ],
+          "return": {
+            "types": [
+              "#headers",
+              "#call",
+              "nil"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 88
+        },
         {
           "name": "headers",
           "scope": "instance",
@@ -13716,7 +14427,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         },
         {
           "name": "headers=",
@@ -13741,7 +14452,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         },
         {
           "name": "id",
@@ -13758,7 +14469,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         },
         {
           "name": "id=",
@@ -13783,7 +14494,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         },
         {
           "name": "url",
@@ -13800,7 +14511,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         },
         {
           "name": "url=",
@@ -13825,7 +14536,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 58
+          "line": 88
         }
       ],
       "constants": []
@@ -13853,7 +14564,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 136
         },
         {
           "name": "fetch",
@@ -13885,7 +14596,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 94
+          "line": 124
         },
         {
           "name": "initialize",
@@ -13902,7 +14613,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 83
+          "line": 113
         }
       ],
       "constants": []

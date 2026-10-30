@@ -23,6 +23,7 @@ module Poetry
         uri: "ui://poetry-docs/plans", name: "plans", title: "Plans",
         description: "The plan picker: a table of plans with a recommendation, and a choice made inside the page",
         template: "poetry/docs/mcp_app/plans", origin: :request, stylesheets: [ "poetry_docs" ],
+        display_modes: %w[inline fullscreen pip],
         entrypoint: "poetry_docs/application", html: { class: "style-default" }, prefers_border: true,
         renderer: Poetry::Docs::ApplicationController
       )

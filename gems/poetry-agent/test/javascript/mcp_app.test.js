@@ -25,6 +25,38 @@ const connect = async (bridge) => {
   return promise
 }
 
+describe("the MCP App bridge's display modes", () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute("data-mcp-display-modes")
+    document.documentElement.removeAttribute("data-display-mode")
+    vi.restoreAllMocks()
+  })
+
+  it("declares the document's modes, inline always, and marks the root with the mode in effect", async () => {
+    vi.spyOn(window, "postMessage").mockImplementation(() => {})
+    document.documentElement.setAttribute("data-mcp-display-modes", "fullscreen pip carousel")
+    const bridge = new Bridge({ target: window })
+    expect(bridge.availableDisplayModes()).toEqual(["inline", "fullscreen", "pip"])
+    await connect(bridge)
+    expect(lastRequest("ui/initialize").params.appCapabilities.availableDisplayModes).toEqual(["inline", "fullscreen", "pip"])
+    bridge.applyContext({ displayMode: "fullscreen" })
+    expect(document.documentElement.dataset.displayMode).toBe("fullscreen")
+    expect(new Bridge({ target: window, displayModes: ["pip"] }).availableDisplayModes()).toEqual(["inline", "pip"])
+    bridge.disconnect()
+  })
+
+  it("a marked button asks for a mode", async () => {
+    vi.spyOn(window, "postMessage").mockImplementation(() => {})
+    document.body.innerHTML = `<button id="expand" data-mcp-display-mode="fullscreen">Expand</button>`
+    const bridge = new Bridge({ target: window })
+    await connect(bridge)
+    document.getElementById("expand").click()
+    await flush()
+    expect(lastRequest("ui/request-display-mode").params).toEqual({ mode: "fullscreen" })
+    bridge.disconnect()
+  })
+})
+
 describe("the MCP App bridge", () => {
   let bridge
 
