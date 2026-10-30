@@ -70,6 +70,69 @@
     // claude_desktop_config.json - a local server through mcp-remote; a deployed one is a remote connector
     { "mcpServers": { "shop": { "command": "npx", "args": ["-y", "mcp-remote", "http://localhost:3000/mcp"] } } }
   CODE
+  auth_source = <<~'CODE'
+    # config/routes.rb - the endpoint as a protected resource
+    auth = Poetry::Agent::MCP::Auth.new(
+      resource: "https://shop.example/mcp",             # the endpoint as hosts enter it: the token's audience
+      authorization_servers: ["https://shop.example"],  # the issuer; hosts read the first
+      scopes: ["mcp"],                                  # advertised, and required of every request
+      verifier: ->(token) do                            # your own tokens, in your own table
+        record = Doorkeeper::AccessToken.by_token(token)
+        { subject: record.resource_owner_id.to_s, scopes: record.scopes.to_a,
+          expires_at: record.expires_at&.to_i } if record&.accessible?
+      end
+    )
+    mount auth.metadata_app => auth.well_known_path     # /.well-known/oauth-protected-resource/mcp
+    mount Poetry::Agent::MCP::HTTP.new(server, auth: auth) => "/mcp"
+
+    # An identity provider's signed tokens instead (gem "jwt"):
+    #   verifier: { jwt: { jwks_uri: "https://id.example/.well-known/jwks.json" } }
+
+    # In a tool or a template: the user the token names
+    user = User.find_by(id: Poetry::Agent::MCP::Auth.current&.subject)
+  CODE
+  doorkeeper_source = <<~'CODE'
+    # config/initializers/doorkeeper.rb - the app as its own authorization server
+    Doorkeeper.configure do
+      orm :active_record
+      resource_owner_authenticator { current_user || redirect_to(sign_in_path(return_to: request.fullpath)) }
+      force_pkce                                        # S256 from public clients
+      grant_flows %w[authorization_code refresh_token]
+      use_refresh_token
+      default_scopes :mcp
+      enforce_configured_scopes
+    end
+
+    # config/routes.rb - the two documents Doorkeeper does not serve
+    use_doorkeeper
+    get "/.well-known/oauth-authorization-server" => "oauth_metadata#show"   # RFC 8414
+    get "/.well-known/openid-configuration" => "oauth_metadata#show"
+    post "/oauth/register" => "oauth_registrations#create"                   # RFC 7591
+
+    # app/controllers/oauth_metadata_controller.rb
+    def show
+      issuer = request.base_url
+      render json: { issuer: issuer, authorization_endpoint: "#{issuer}/oauth/authorize",
+                     token_endpoint: "#{issuer}/oauth/token", registration_endpoint: "#{issuer}/oauth/register",
+                     response_types_supported: ["code"], grant_types_supported: %w[authorization_code refresh_token],
+                     code_challenge_methods_supported: ["S256"],
+                     token_endpoint_auth_methods_supported: %w[none client_secret_basic client_secret_post],
+                     scopes_supported: ["mcp"] }
+    end
+
+    # app/controllers/oauth_registrations_controller.rb (skip_forgery_protection)
+    def create
+      body = JSON.parse(request.raw_post)
+      uris = Array(body["redirect_uris"])
+      application = Doorkeeper::Application.create!(
+        name: body["client_name"].presence || "MCP client", redirect_uri: uris.join("\n"),
+        scopes: "mcp", confidential: body["token_endpoint_auth_method"] != "none"
+      )
+      render json: { client_id: application.uid, redirect_uris: uris, scope: "mcp",
+                     token_endpoint_auth_method: body["token_endpoint_auth_method"],
+                     grant_types: %w[authorization_code refresh_token], response_types: ["code"] }, status: :created
+    end
+  CODE
   events_source = <<~CODE
     // Your own script in the page, beside the bridge
     document.addEventListener("poetry:mcp-app:result", (event) => console.log(event.detail.structuredContent))
@@ -231,6 +294,69 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="auth">Per-user authorization</h2>
+      <p>
+        A host signs each user in to your app once, and every call after that
+        carries that user's token. MCP's authorization specification makes the
+        MCP server an OAuth 2.1 resource server, the host the OAuth client, and
+        your app (or an identity provider) the authorization server. Poetry wires
+        the resource server on the gem's own stack and never issues tokens. A
+        <code>Poetry::Agent::MCP::Auth</code> names the resource (the endpoint's
+        URL as hosts enter it), the authorization server, the scopes and the
+        verifier, and the mount takes it as <code>auth:</code>. A request without
+        a token is answered 401 with the address of the protected resource
+        metadata, which <code>auth.metadata_app</code> serves at
+        <code>auth.well_known_path</code>; one with a token the verifier does not
+        know is refused; one with a good token is served, with the token as the
+        request's identity: <code>Poetry::Agent::MCP::Auth.current</code> in your
+        tools and templates, <code>server_context.auth_info</code> in handlers
+        defined on the gem.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: auth_source, language: "ruby", label: "The resource server") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The verifier is how your server recognizes its authorization server's
+        tokens: a callable looking the token up in your own tables and answering
+        its parts (subject, scopes, expiry) or nil; the gem's JWT verifier for an
+        identity provider's signed tokens; or its introspection verifier. The gem
+        checks the audience, so a token minted for another resource is refused;
+        for a token your own app issued, the lookup is that check.
+      </p>
+      <p>
+        What every host needs from the authorization server: OAuth 2.1's
+        authorization code grant with PKCE (S256, advertised in the server's
+        metadata), that metadata (RFC 8414 or OpenID Connect discovery), and a
+        way to get a client id without a person registering one: a client ID
+        metadata document, which Claude and ChatGPT prefer (the server advertises
+        <code>client_id_metadata_document_supported</code> and <code>none</code>
+        among its token endpoint auth methods), or dynamic client registration
+        (RFC 7591), which Claude Desktop through <code>mcp-remote</code>, Cursor
+        and the fallback in Claude and ChatGPT use. Hosts register as public
+        clients, so the token endpoint takes a client id without a secret, and
+        refresh tokens are rotated. Claude's redirect URI is
+        <code>https://claude.ai/api/mcp/auth_callback</code> (Claude Code uses a
+        loopback one on any port), ChatGPT's
+        <code>https://chatgpt.com/connector_platform_oauth_redirect</code>, and
+        <code>mcp-remote</code> registers a loopback port of its own. Doorkeeper
+        serves the grant and PKCE but neither the metadata nor the registration,
+        which are two small controllers:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: doorkeeper_source, language: "ruby", label: "The authorization server, with Doorkeeper") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        This ran against <code>mcp-remote</code>, the path Claude Desktop takes to
+        a remote server: the 401, both metadata documents, registration, the
+        consent screen as a signed-in user, the token, then <code>show_plans</code>
+        answering for that user. A deployed app is the same over HTTPS, with its
+        public hostname as the resource and the issuer.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="try">Try it</h2>
       <p>
         The <%= link_to "MCP App demo", "/demos/mcp-app" %> shows a plan picker this site's
@@ -246,8 +372,6 @@
         The vendored specification and wire schema sit under the gem's fixtures with a
         manifest (<code>rake mcp_apps:verify</code>), and the tests hold a document's
         <code>_meta.ui</code>, a tool's <code>_meta</code> and a result to the schema.
-        Per-user authorization, where the MCP server is an OAuth resource server and
-        the host signs the user in once, is the gem's resource-server stack, outside this page.
       </p>
     <% end %>
   </section>

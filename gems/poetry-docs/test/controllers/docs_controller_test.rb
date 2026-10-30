@@ -357,6 +357,8 @@ test "the MCP Apps guide renders with its mirror" do
 
   assert_response :success
   assert_includes response.body, "Serve a document"
+  assert_includes response.body, "Per-user authorization"
+  assert_includes response.body, "auth.well_known_path"
   get "/mcp-apps.md"
 
   assert_response :success

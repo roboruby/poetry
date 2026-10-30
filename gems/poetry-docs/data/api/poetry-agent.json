@@ -35,7 +35,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "configure",
@@ -57,7 +57,7 @@
             }
           ],
           "file": "lib/poetry/agent.rb",
-          "line": 62
+          "line": 63
         },
         {
           "name": "root",
@@ -74,7 +74,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 43
+          "line": 44
         }
       ],
       "constants": [
@@ -12279,6 +12279,406 @@
       ]
     },
     {
+      "path": "Poetry::Agent::MCP::Auth",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Per-user authorization for the HTTP mount, the resource-server half\nof MCP's authorization specification on the gem's own stack: the\nprotected resource metadata (RFC 9728) a host reads to find the\nauthorization server, the bearer challenge a request without a\ntoken gets, and the verification of the token every request\ncarries. Poetry never issues tokens: the application (Doorkeeper,\nsay) or an identity provider is the authorization server, and the\nverifier is how this server recognizes that server's tokens.\n\nA verified token is the request's identity: handlers built on the\ngem read it as `server_context.auth_info`, and anything rendering\nfor the request (a document, a fragment, a tool) reads {.current}.",
+      "examples": [
+        {
+          "title": "config/routes.rb",
+          "text": "auth = Poetry::Agent::MCP::Auth.new(\n  resource: \"https://shop.example/mcp\", authorization_servers: [\"https://shop.example\"],\n  scopes: [\"mcp\"],\n  verifier: ->(token) do\n    record = Doorkeeper::AccessToken.by_token(token)\n    { subject: record.resource_owner_id.to_s, scopes: record.scopes.to_a,\n      expires_at: record.expires_at&.to_i } if record&.accessible?\n  end\n)\nmount auth.metadata_app => auth.well_known_path\nmount Poetry::Agent::MCP::HTTP.new(server, auth: auth) => \"/mcp\""
+        }
+      ],
+      "file": "lib/poetry/agent/mcp/auth.rb",
+      "methods": [
+        {
+          "name": "current",
+          "scope": "class",
+          "group": null,
+          "signature": "current",
+          "docstring": "The verified token of the request being served, or nil outside\none (or on an open mount).",
+          "params": [],
+          "return": {
+            "types": [
+              "::MCP::Server::OAuth::AccessToken",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 100
+        },
+        {
+          "name": "with",
+          "scope": "class",
+          "group": null,
+          "signature": "with(access_token)",
+          "docstring": "Serves a block as the request the token authenticated.",
+          "params": [
+            {
+              "name": "access_token",
+              "types": [
+                "::MCP::Server::OAuth::AccessToken",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the block's value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 107
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(resource:, authorization_servers:, verifier:, scopes: [], required_scopes: nil, # rubocop:disable Metrics/ParameterLists resource_name: nil, documentation: nil)",
+          "docstring": "The authorization of one mount: its document, scopes and verifier.",
+          "params": [
+            {
+              "name": "resource",
+              "types": [
+                "String"
+              ],
+              "text": "the canonical URL of the MCP endpoint as hosts enter it\n(`https://shop.example/mcp`), the token's audience"
+            },
+            {
+              "name": "authorization_servers",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the issuer URLs; hosts read the first"
+            },
+            {
+              "name": "scopes",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the scopes the document advertises, the ones a host\nrequests"
+            },
+            {
+              "name": "verifier",
+              "types": [
+                "#verify",
+                "#call",
+                "Hash"
+              ],
+              "text": "any object answering `verify(token)`, a callable\n(see {Verifier}), or a hash naming one of the gem's verifiers with its options:\n`{ jwt: { jwks_uri: } }` (an identity provider's signed tokens; needs the `jwt` gem)\nor `{ introspection: { introspection_endpoint:, client_id:, client_secret: } }`"
+            },
+            {
+              "name": "required_scopes",
+              "types": [
+                "Array<String>",
+                "nil"
+              ],
+              "text": "the scopes every request must carry;\nthe advertised ones by default"
+            },
+            {
+              "name": "resource_name",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "a name for consent screens"
+            },
+            {
+              "name": "documentation",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "a URL for developers"
+            }
+          ],
+          "return": {
+            "types": [
+              "Auth"
+            ],
+            "text": "a new instance of Auth"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 130
+        },
+        {
+          "name": "metadata",
+          "scope": "instance",
+          "group": null,
+          "signature": "metadata",
+          "docstring": "The metadata document, the gem's.",
+          "params": [],
+          "return": {
+            "types": [
+              "::MCP::Server::OAuth::ProtectedResourceMetadata"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 84
+        },
+        {
+          "name": "metadata_app",
+          "scope": "instance",
+          "group": null,
+          "signature": "metadata_app",
+          "docstring": "A Rack app answering the document (GET and HEAD, with the CORS\nheaders a browser host needs, and OPTIONS), to mount at\n{#well_known_path}.",
+          "params": [],
+          "return": {
+            "types": [
+              "#call"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 157
+        },
+        {
+          "name": "protect",
+          "scope": "instance",
+          "group": null,
+          "signature": "protect(app)",
+          "docstring": "Wraps a Rack app in the gem's bearer enforcement: a request without\na token is challenged, one with a bad token refused, one with a\ngood token served with the token in the env and as {.current}.",
+          "params": [
+            {
+              "name": "app",
+              "types": [
+                "#call"
+              ],
+              "text": "the app to protect"
+            }
+          ],
+          "return": {
+            "types": [
+              "#call"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 167
+        },
+        {
+          "name": "required_scopes",
+          "scope": "instance",
+          "group": null,
+          "signature": "required_scopes",
+          "docstring": "The scopes every request needs.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 89
+        },
+        {
+          "name": "verifier",
+          "scope": "instance",
+          "group": null,
+          "signature": "verifier",
+          "docstring": "The gem's verifier, or the adapted callable.",
+          "params": [],
+          "return": {
+            "types": [
+              "#verify"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 94
+        },
+        {
+          "name": "well_known_path",
+          "scope": "instance",
+          "group": null,
+          "signature": "well_known_path",
+          "docstring": "The document's path at the origin's root, where hosts look for it\n(`/.well-known/oauth-protected-resource/mcp` for a resource at `/mcp`).",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 145
+        },
+        {
+          "name": "well_known_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "well_known_url",
+          "docstring": "The document's absolute URL, the one the challenge names.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 150
+        }
+      ],
+      "constants": [
+        {
+          "name": "ENV_KEY",
+          "value": "::MCP::Server::OAuth::ENV_KEY",
+          "docstring": "The Rack env key the gem's middleware stores the verified token under."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::MCP::Auth::MetadataApp",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The metadata document as a Rack endpoint.",
+      "examples": [],
+      "file": "lib/poetry/agent/mcp/auth.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Array<String>)"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 216
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(metadata)",
+          "docstring": "The endpoint for one document, serialized once.",
+          "params": [
+            {
+              "name": "metadata",
+              "types": [
+                "::MCP::Server::OAuth::ProtectedResourceMetadata"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "MetadataApp"
+            ],
+            "text": "a new instance of MetadataApp"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 208
+        }
+      ],
+      "constants": [
+        {
+          "name": "METHODS",
+          "value": "\"GET, HEAD, OPTIONS\"",
+          "docstring": "The methods the document answers."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::MCP::Auth::Verifier",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Adapts a callable to the gem's verifier contract: the callable\ntakes the raw bearer token and answers an access token, a hash\nof its parts (`subject:`, `scopes:`, `expires_at:`, `client_id:`,\n`claims:`), or nil for a token it does not know. The hash is the\napplication's shape: a lookup in its own tables answers in one\nline, and the audience check for a self-issued token is that\nlookup, since the token exists only there.",
+      "examples": [],
+      "file": "lib/poetry/agent/mcp/auth.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(resource, callable)",
+          "docstring": "A verifier over a lookup.",
+          "params": [
+            {
+              "name": "resource",
+              "types": [
+                "String"
+              ],
+              "text": "the canonical resource the tokens are for"
+            },
+            {
+              "name": "callable",
+              "types": [
+                "#call"
+              ],
+              "text": "the lookup"
+            }
+          ],
+          "return": {
+            "types": [
+              "Verifier"
+            ],
+            "text": "a new instance of Verifier"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 50
+        },
+        {
+          "name": "verify",
+          "scope": "instance",
+          "group": null,
+          "signature": "verify(token)",
+          "docstring": "The gem's contract.",
+          "params": [
+            {
+              "name": "token",
+              "types": [
+                "String"
+              ],
+              "text": "the raw bearer token"
+            }
+          ],
+          "return": {
+            "types": [
+              "::MCP::Server::OAuth::AccessToken"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/auth.rb",
+          "line": 60
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "Poetry::Agent::MCP::Bundled",
       "type": "module",
       "superclass": null,
@@ -12350,7 +12750,7 @@
       "path": "Poetry::Agent::MCP::HTTP",
       "type": "class",
       "superclass": "Object",
-      "docstring": "The MCP server over HTTP: the gem's Streamable HTTP transport, as a\nRack app, in its stateless JSON mode (one POST, one JSON reply; no\nsession to keep, no event stream to hold), over the same server the\nstdio exe serves - one surface, two transports. Mount it at the\nconventional same-origin `/mcp`, which is where in-page bridges\n(WebMCP site MCP server packs among them) look for a site's own MCP\nserver; a browser client sends `Accept: application/json`.\n\nRead-only by construction (every tool describes or verifies), so\nexposing it is a discovery surface, not a mutation surface. The\nOrigin header is validated against the request's own host, so a\ncross-site page cannot drive it through a visitor's browser;\n`allowed_origins:` names the other origins to let in. The Host\nheader is the host application's to validate (Rails does), so the\ntransport's own loopback-only host check stays off.",
+      "docstring": "The MCP server over HTTP: the gem's Streamable HTTP transport, as a\nRack app, in its stateless JSON mode (one POST, one JSON reply; no\nsession to keep, no event stream to hold), over the same server the\nstdio exe serves - one surface, two transports. Mount it at the\nconventional same-origin `/mcp`, which is where in-page bridges\n(WebMCP site MCP server packs among them) look for a site's own MCP\nserver; a browser client sends `Accept: application/json`.\n\nRead-only by construction (every tool describes or verifies), so\nexposing it is a discovery surface, not a mutation surface. The\nOrigin header is validated against the request's own host, so a\ncross-site page cannot drive it through a visitor's browser;\n`allowed_origins:` names the other origins to let in. The Host\nheader is the host application's to validate (Rails does), so the\ntransport's own loopback-only host check stays off.\n\nWith `auth:` (an {Auth}) the mount is a protected resource: every\nrequest needs a bearer token the application's verifier knows, a\nrequest without one is challenged with the metadata's address, and\nthe verified token is the request's identity ({Auth.current}).",
       "examples": [
         {
           "title": "config/routes.rb",
@@ -12382,13 +12782,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/http.rb",
-          "line": 41
+          "line": 48
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(server = nil, allowed_origins: nil)",
+          "signature": "initialize(server = nil, allowed_origins: nil, auth: nil)",
           "docstring": "A Rack endpoint over a server, a callable that builds one, or the bundled default.",
           "params": [
             {
@@ -12407,6 +12807,14 @@
                 "nil"
               ],
               "text": "origins accepted beside the request's own"
+            },
+            {
+              "name": "auth",
+              "types": [
+                "Auth",
+                "nil"
+              ],
+              "text": "per-user authorization; nil leaves the mount open"
             }
           ],
           "return": {
@@ -12417,7 +12825,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/http.rb",
-          "line": 32
+          "line": 38
         }
       ],
       "constants": []

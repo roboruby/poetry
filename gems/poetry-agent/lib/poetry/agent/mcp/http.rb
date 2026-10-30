@@ -22,6 +22,11 @@ module Poetry
       # header is the host application's to validate (Rails does), so the
       # transport's own loopback-only host check stays off.
       #
+      # With `auth:` (an {Auth}) the mount is a protected resource: every
+      # request needs a bearer token the application's verifier knows, a
+      # request without one is challenged with the metadata's address, and
+      # the verified token is the request's identity ({Auth.current}).
+      #
       # @example config/routes.rb
       #   mount Poetry::Agent::MCP::HTTP.new => "/mcp"
       class HTTP
@@ -29,9 +34,11 @@ module Poetry
         # @param server [Server, Proc, nil] the server, a lambda building it
         #   on first request, or nil for the bundled assembly
         # @param allowed_origins [Array<String>, nil] origins accepted beside the request's own
-        def initialize(server = nil, allowed_origins: nil)
+        # @param auth [Auth, nil] per-user authorization; nil leaves the mount open
+        def initialize(server = nil, allowed_origins: nil, auth: nil)
           @server = server
           @allowed_origins = allowed_origins
+          @auth = auth
         end
 
         # The Rack entry point.
@@ -42,7 +49,7 @@ module Poetry
           request = Rack::Request.new(env)
           return forbidden unless origin_allowed?(request)
 
-          Apps.with_request_origin(request.base_url) { transport.call(env) }
+          Apps.with_request_origin(request.base_url) { endpoint.call(env) }
         end
 
         private
@@ -69,6 +76,11 @@ module Poetry
         def server
           @server = @server.call if @server.respond_to?(:call) && !@server.respond_to?(:handle)
           @server ||= Bundled.server
+        end
+
+        # The transport, behind the bearer enforcement when the mount has an {Auth}.
+        def endpoint
+          @endpoint ||= @auth ? @auth.protect(transport) : transport
         end
 
         # The gem's transport over the server, built on first use.

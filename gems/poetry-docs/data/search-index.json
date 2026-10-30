@@ -1386,6 +1386,12 @@
     "path": "/mcp-apps#theme"
   },
   {
+    "title": "Per-user authorization",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#auth"
+  },
+  {
     "title": "Try it",
     "page": "MCP Apps",
     "section": "docs",

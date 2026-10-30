@@ -162,7 +162,7 @@
       <table>
         <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
         <tbody>
-          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server on the official <code>mcp</code> gem; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop, <code>#mcp</code> the gem's server underneath, open to a host's own tools</td></tr>
+          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server on the official <code>mcp</code> gem; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop, <code>#mcp</code> the gem's server underneath, open to a host's own tools; <code>Poetry::Agent::MCP::Auth</code> makes the HTTP mount a protected resource (the metadata document, the challenge, the verified token as <code>Auth.current</code>)</td></tr>
           <tr><td><code>exe/poetry-agent</code></td><td>the one executable (<code>bundle exec poetry-agent</code>); skills, helpers, and recipes ride along when poetry-ui is bundled</td></tr>
           <tr><td><code>poetry--agent--webmcp</code></td><td>the registrar controller: registers an opted-in instance's tools on connect, aborts them on disconnect, dispatches calls to the component's own action</td></tr>
           <tr><td><code>poetry--agent--webmcp-form</code></td><td>the declarative-form controller: an agent-invoked submit answers through <code>SubmitEvent.respondWith</code> instead of navigating</td></tr>

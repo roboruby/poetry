@@ -124,6 +124,9 @@
         <%= link_to "WebMCP runtime", webmcp_path %> for the browser side.
         The server underneath, <code>Poetry::Agent::MCP::Server#mcp</code>,
         is the gem's, open to your own tools and resources beside Poetry's.
+        With <code>auth:</code>, a <code>Poetry::Agent::MCP::Auth</code>, the
+        mount is a protected resource and every request carries a user's token
+        (the <%= link_to "MCP Apps guide", mcp_apps_path %>, Per-user authorization).
       </p>
     <% end %>
     <%= poetry_code_block(code: http_source, language: "ruby", label: "Mount") %>

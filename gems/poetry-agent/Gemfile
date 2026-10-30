@@ -40,6 +40,7 @@ gem "flog", require: false
 
 gem "bundler-audit", require: false
 gem "herb", "~> 0.11.0" # the ERB parser behind check (build-time, optional in hosts)
+gem "jwt", require: false # the gem's JWT verifier under test, an identity provider's tokens
 gem "rack-test", require: false
 gem "simplecov", require: false
 gem "yard", require: false
