@@ -95,7 +95,9 @@
         registers typed tools - a name, a description, a JSON Schema, and a
         function - and the agent built into the browser calls them instead of
         scraping the DOM and guessing at clicks. It is in origin trial in
-        Chrome 149 and Edge 150, and ChatGPT Desktop's browser supports it.
+        Chrome 149 and Edge 150; ChatGPT Desktop's browser supports it,
+        Brave's Leo has experimental support, and Meta's Ray-Ban Display is
+        to follow.
       </p>
       <p>
         Poetry treats it as one more projection of the component contract.
@@ -218,13 +220,23 @@
     <%= poetry_code_block(code: form_source, language: "erb", label: "Forms") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
-        One honest limit of the declarative path: a form tool carries no
-        annotations today (the attribute set is four, and annotations for
-        forms are an open spec issue), so an audit that reads
-        <code>readOnlyHint</code> cannot tell a search form from a
-        mutation. The GET-only <code>autosubmit</code> rule is the
-        guarantee it cannot see; where the annotation itself matters, a
-        component tool carries it.
+        Two honest limits of the declarative path. The form attributes left
+        the specification on 2026-10-08, "for now": they live in their own
+        explainer and in Chrome's origin trial, so
+        <code>poetry_webmcp_form</code> rides shipped browser behaviour
+        rather than spec text, and the imperative surface is the stable
+        one. And a form tool carries no annotations (the attribute set is
+        four), so an audit that reads <code>readOnlyHint</code> cannot tell
+        a search form from a mutation; the GET-only <code>autosubmit</code>
+        rule is the guarantee it cannot see. Where the annotation itself
+        matters, a component tool carries it.
+      </p>
+      <p>
+        One thing to watch: a continuations proposal (an explainer, not yet
+        spec text) would let a tool that navigates or pages hand the agent
+        a token to call again on the next document. Today a navigating
+        tool's answer is lost, which is why the form runtime fetches the
+        answer itself and reports it before the page catches up.
       </p>
     <% end %>
   </section>
@@ -247,7 +259,7 @@
       <ul>
         <li><strong>Answer tools</strong> read: search, details, availability. Ship these first; they keep an agent from guessing about your data. A GET <code>poetry_webmcp_form</code> is one.</li>
         <li><strong>Action tools</strong> change state without commitment: filter, add to cart, open a panel. Component tools live here; they are declared <code>mutating: true</code>.</li>
-        <li><strong>Sensitive actions</strong> involve money or commitment. Keep the person's Submit: a form without <code>autosubmit</code> is the reversible boundary.</li>
+        <li><strong>Sensitive actions</strong> involve money or commitment. Keep the person's Submit: a form without <code>autosubmit</code> is the reversible boundary, and a component tool that commits is declared <code>consequential: true</code>, the hint an agent confirms before calling.</li>
       </ul>
       <p>
         One function per tool and no overlap; names that say what happens
@@ -300,7 +312,18 @@
         <code>app/assets/tailwind/poetry/agent.css</code> and imports it into
         <code>layer(base)</code> when the gem is bundled, so a host without
         poetry-agent never carries the rules; restyle them with any rule of
-        your own, the two are <code>:where()</code>-wrapped. One thing to
+        your own, the two are <code>:where()</code>-wrapped. The runtime
+        also listens for the browser's <code>toolactivated</code> and
+        <code>toolcancel</code> events on <code>document.modelContext</code>
+        for the form's own tool: the form carries
+        <code>data-webmcp-agent="active"</code> while an agent's fill is
+        pending (until the cancel, the person's submit, or the delivered
+        answer of an agent's own submit),
+        <code>poetry:webmcp:tool-activated</code> and
+        <code>poetry:webmcp:tool-cancelled</code> fire on it, and
+        screen-reader users hear the fill of a form they are left to
+        submit and any cancel, in the words of the
+        <code>poetry.webmcp.form</code> locale keys. One thing to
         expect: the CSS optimizer does not yet know these origin-trial
         pseudo-classes and prints two warnings about them on every minified
         build, which the Rails Tailwind task runs by default
@@ -336,7 +359,7 @@
       <h2 id="safety">Safety by construction</h2>
       <ul>
         <li>Off by default: declaring a tool exposes nothing; a rendered instance opts in.</li>
-        <li>Read-only by default: a tool is <code>mutating: true</code> only when declared so, and the annotation says which.</li>
+        <li>Read-only by default: a tool is <code>mutating: true</code> only when declared so, and the annotation says which; <code>consequential: true</code> and <code>debugging: true</code> carry the spec's other two hints, an effect worth confirming and a developer tool.</li>
         <li><code>autosubmit</code> is GET-only; a mutating form keeps the person in the loop.</li>
         <li>A per-document registration budget; duplicate names are refused by the browser and skipped.</li>
         <li>Re-registration only when the payload changed, never under Turbo's cache preview - the two morph-time hazards the standard documents.</li>

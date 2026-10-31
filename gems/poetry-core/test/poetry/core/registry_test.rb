@@ -205,7 +205,8 @@ module Poetry
         assert_equal "toggle_section", tool["name"]
         assert_equal "poetry--core--accordion#toggle", tool["executes"]
         assert_equal ["value"], tool.dig("inputSchema", "required")
-        assert_equal({ "readOnlyHint" => false, "untrustedContentHint" => false }, tool["annotations"])
+        assert_equal({ "readOnlyHint" => false, "untrustedContentHint" => false, "consequentialHint" => false,
+                       "debugging" => false }, tool["annotations"])
         refute registry.entries.fetch("poetry/core/box").key?("tools")
       end
 

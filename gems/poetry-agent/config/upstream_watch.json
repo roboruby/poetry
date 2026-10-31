@@ -42,6 +42,44 @@
       ]
     }
   },
+  "webmcp": {
+    "pin": "6838130ef",
+    "files": {
+      "index.bs": "66fb2aaf8fa668c7312f36cda477bb4332ea42337ed006d9852fe02825e9ef39",
+      "declarative-api-explainer.md": "4587c9f2540b673210c4eb0221d12ceda39496910dcdd6e649dc8ffa968bbd28",
+      "continuations-explainer.md": "009b04ae31ffdb0c3ca211572d49f3a6d68cf85f66e0be541bfb8a3ac9fe9de8",
+      "implementation-status.md": "555b564af51df41c43f75ee887343d9a64c2728da00c8e5eb35102afd312a828"
+    },
+    "directories": {},
+    "tokens": {
+      "index.bs": [
+        "partial interface Document",
+        "readonly attribute ModelContext modelContext",
+        "interface ModelContext : EventTarget",
+        "registerTool(",
+        "getTools(",
+        "executeTool(",
+        "ontoolchange",
+        "ontoolactivated",
+        "ontoolcancel",
+        "readonly attribute DOMString toolName",
+        "boolean readOnlyHint",
+        "boolean untrustedContentHint",
+        "boolean consequentialHint",
+        "boolean debugging"
+      ],
+      "declarative-api-explainer.md": [
+        "toolname",
+        "tooldescription",
+        "toolautosubmit",
+        "toolparamdescription",
+        ":tool-form-active",
+        ":tool-submit-active",
+        "agentInvoked",
+        "respondWith"
+      ]
+    }
+  },
   "mcp": {
     "version": "1.8.2"
   }

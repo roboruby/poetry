@@ -1,19 +1,25 @@
 // The document.modelContext adapter - the ONE file that knows the WebMCP
-// surface's shape, so API churn (the spec has changed twice this summer,
-// and the shipping browser trails it) stays a one-file fix. Everything
-// else in the runtime talks to this.
+// surface's shape, so API churn (the spec changed twice over the summer of
+// 2026 and again through the autumn, and the shipping browser trails it)
+// stays a one-file fix. Everything else in the runtime talks to this.
 //
-// Spec surface (rev 41d12f0): document.modelContext with
+// Spec surface (rev 6838130ef, 2026-10-27; config/upstream_watch.json pins
+// the specification repository there, and the upstream watch test holds
+// this line to the pin): document.modelContext with
 // registerTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving
 // RegisteredTool dictionaries whose inputSchema is an object,
 // executeTool(tool, inputObject, {signal}) resolving the stringified
-// result, and the toolchange event.
+// result, and the toolchange, toolactivated and toolcancel events on the
+// context (an EventTarget). ToolAnnotations carries readOnlyHint,
+// untrustedContentHint, consequentialHint and debugging.
 //
 // Shipping-browser deltas this file absorbs (Chrome 151, measured
 // 2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema
 // as a serialized JSON string, and executeTool() parses ONLY a JSON-string
 // argument - an object rejects with UnknownError("Failed to parse input
-// arguments"), not a TypeError.
+// arguments"), not a TypeError. Chrome 155 deprecates the string form, so
+// the object goes first and the string form is remembered only where a
+// browser taught it.
 
 /**
  * The live ModelContext, or null where the browser exposes none - callers

@@ -27,7 +27,7 @@
       "path": "@poetry/agent/adapter",
       "type": "module",
       "superclass": null,
-      "docstring": "The document.modelContext adapter - the ONE file that knows the WebMCP\nsurface's shape, so API churn (the spec has changed twice this summer,\nand the shipping browser trails it) stays a one-file fix. Everything\nelse in the runtime talks to this.\n\nSpec surface (rev 41d12f0): document.modelContext with\nregisterTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving\nRegisteredTool dictionaries whose inputSchema is an object,\nexecuteTool(tool, inputObject, {signal}) resolving the stringified\nresult, and the toolchange event.\n\nShipping-browser deltas this file absorbs (Chrome 151, measured\n2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema\nas a serialized JSON string, and executeTool() parses ONLY a JSON-string\nargument - an object rejects with UnknownError(\"Failed to parse input\narguments\"), not a TypeError.",
+      "docstring": "The document.modelContext adapter - the ONE file that knows the WebMCP\nsurface's shape, so API churn (the spec changed twice over the summer of\n2026 and again through the autumn, and the shipping browser trails it)\nstays a one-file fix. Everything else in the runtime talks to this.\n\nSpec surface (rev 6838130ef, 2026-10-27; config/upstream_watch.json pins\nthe specification repository there, and the upstream watch test holds\nthis line to the pin): document.modelContext with\nregisterTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving\nRegisteredTool dictionaries whose inputSchema is an object,\nexecuteTool(tool, inputObject, {signal}) resolving the stringified\nresult, and the toolchange, toolactivated and toolcancel events on the\ncontext (an EventTarget). ToolAnnotations carries readOnlyHint,\nuntrustedContentHint, consequentialHint and debugging.\n\nShipping-browser deltas this file absorbs (Chrome 151, measured\n2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema\nas a serialized JSON string, and executeTool() parses ONLY a JSON-string\nargument - an object rejects with UnknownError(\"Failed to parse input\narguments\"), not a TypeError. Chrome 155 deprecates the string form, so\nthe object goes first and the string form is remembered only where a\nbrowser taught it.",
       "examples": [],
       "file": "app/javascript/poetry/agent/adapter.js",
       "methods": [],
@@ -2344,7 +2344,7 @@
       "path": "poetry--agent--webmcp-form",
       "type": "controller",
       "superclass": null,
-      "docstring": "The declarative-form companion: a form declared with poetry_webmcp_form\n(toolname/tooldescription on the <form>) is registered by the BROWSER;\nthis controller only answers an agent-invoked submit with the outcome.\nChrome's SubmitEvent carries agentInvoked + respondWith(promise): we\nsubmit the form ourselves (fetch, same method/action, Turbo-Stream\naccepting) and respond with a short descriptive result instead of\nnavigating, so the agent learns whether the submission succeeded and\nwhat the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the\nresult is handed to the browser, so a navigation can never swallow\nit): a GET answer is the page at that URL - a Turbo visit, or a plain\nnavigation without Turbo; a Turbo-Stream answer renders; a redirected\nPOST (redirect-after-create) visits where the redirect went. An HTML\nre-render of a failed POST stays put - the agent already holds the\nerrors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through\nuntouched: the human path stays the human path.\n\n**Events**: `poetry:webmcp:form-submitted`",
+      "docstring": "The declarative-form companion: a form declared with poetry_webmcp_form\n(toolname/tooldescription on the <form>) is registered by the BROWSER;\nthis controller only answers an agent-invoked submit with the outcome.\nChrome's SubmitEvent carries agentInvoked + respondWith(promise): we\nsubmit the form ourselves (fetch, same method/action, Turbo-Stream\naccepting) and respond with a short descriptive result instead of\nnavigating, so the agent learns whether the submission succeeded and\nwhat the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the\nresult is handed to the browser, so a navigation can never swallow\nit): a GET answer is the page at that URL - a Turbo visit, or a plain\nnavigation without Turbo; a Turbo-Stream answer renders; a redirected\nPOST (redirect-after-create) visits where the redirect went. An HTML\nre-render of a failed POST stays put - the agent already holds the\nerrors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through\nuntouched: the human path stays the human path.\n\nThe browser also tells the page when an agent runs a tool: toolactivated\nfires on document.modelContext once the agent has filled a declarative\nform (before its submit, or right before an autosubmit), and toolcancel\nwhen the agent abandons the call because the person moved on to another\nturn. For its own tool this controller marks the form\n(`data-webmcp-agent=\"active\"` until the cancel or the submit), dispatches\npoetry:webmcp:tool-activated and poetry:webmcp:tool-cancelled on it, and\nannounces both through the shared live region - the agent's fill is a\nchange the person did not make. The browser's pseudo-classes carry the\nvisual; a browser without a model context hears nothing and loses nothing.\n\n**Values**:\n- `activatedMessage` (String, default: \"Your agent filled this form. Review it, then submit.\"): What screen-reader users hear once an agent has filled this form.\n- `cancelledMessage` (String, default: \"Your agent stopped filling this form.\"): What they hear when the agent abandons the fill.\n\n**Events**: `poetry:webmcp:form-submitted`, `poetry:webmcp:tool-activated`, `poetry:webmcp:tool-cancelled`",
       "examples": [],
       "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
       "methods": [
@@ -2353,24 +2353,24 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Listens for the form's submit.",
+          "docstring": "Listens for the form's submit, and for the browser's tool events when\nit exposes a model context.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
-          "line": 30
+          "line": 50
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Stops listening for the form's submit.",
+          "docstring": "Stops listening, drops the agent marker and releases the live region.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
-          "line": 37
+          "line": 63
         }
       ],
       "constants": []

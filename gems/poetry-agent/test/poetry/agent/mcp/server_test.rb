@@ -18,7 +18,8 @@ module Poetry
           "tools" => [{ "name" => "set_value", "description" => "Activate the tab whose value matches.",
                         "inputSchema" => { "type" => "object", "properties" => { "value" => { "type" => "string" } },
                                            "required" => ["value"] },
-                        "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                        "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false,
+                                           "consequentialHint" => false, "debugging" => false },
                         "executes" => "poetry--core--tabs#setValue" }]
         },
         "poetry/ui/button" => {

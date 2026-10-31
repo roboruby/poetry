@@ -1076,6 +1076,16 @@ module Poetry
           "- wiring #{controller["identifier"]}: actions #{actions.join(", ")}"
         end
 
+        # The words for a tool's hints: read-only or mutating, then the hints set.
+        def tool_hints(tool)
+          annotations = tool["annotations"] || {}
+          words = [annotations["readOnlyHint"] ? "read-only" : "mutating"]
+          words << "untrusted content" if annotations["untrustedContentHint"]
+          words << "consequential" if annotations["consequentialHint"]
+          words << "debugging" if annotations["debugging"]
+          words
+        end
+
         # One line for a component's WebMCP tool: its name, description and parameters.
         def tool_line(tool)
           schema = tool["inputSchema"] || {}
@@ -1086,8 +1096,7 @@ module Poetry
             facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
             "#{name} (#{facets.join(", ")})"
           end
-          hint = tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"
-          facets = [hint]
+          facets = [tool_hints(tool).join(", ")]
           facets << "params: #{params.join(", ")}" if params.any?
           "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
             "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"

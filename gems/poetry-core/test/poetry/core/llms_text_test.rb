@@ -41,7 +41,8 @@ module Poetry
                                   "inputSchema" => { "type" => "object",
                                                      "properties" => { "value" => { "type" => "string" } },
                                                      "required" => ["value"] },
-                                  "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                                  "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false,
+                                                     "consequentialHint" => false, "debugging" => false },
                                   "executes" => "poetry--core--tabs#setValue" }] }
           full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/tabs" => entry },
                                                          blocks: registry.blocks,
@@ -55,6 +56,26 @@ module Poetry
       APP_ENTRY = { "class_name" => "Demo::Badge::Component", "bem_block" => "demo-badge", "helper" => "demo_badge",
                     "styles" => [{ "name" => "tone", "variants" => %w[neutral loud] }], "options" => [], "slots" => [],
                     "agent_rules" => ["Demo badges are read-only labels."] }.freeze
+
+      def test_full_names_the_hints_a_tool_sets
+        with_registry do |registry|
+          hints = { "readOnlyHint" => false, "untrustedContentHint" => false, "consequentialHint" => true,
+                    "debugging" => false }
+          entry = { "class_name" => "Poetry::Ui::Tabs::Component", "styles" => [], "options" => [], "slots" => [],
+                    "tools" => [{ "name" => "commit", "description" => "Commit the order.", "annotations" => hints,
+                                  "executes" => "poetry--core--tabs#commit" },
+                                { "name" => "dump", "description" => "Dump the state.",
+                                  "annotations" => hints.merge("readOnlyHint" => true, "untrustedContentHint" => true,
+                                                               "consequentialHint" => false, "debugging" => true),
+                                  "executes" => "poetry--core--tabs#dump" }] }
+          full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/tabs" => entry },
+                                                         blocks: registry.blocks,
+                                                         source_root: registry.source_root)).full
+
+          assert_includes full, "- tool commit (mutating, consequential) - Commit the order."
+          assert_includes full, "- tool dump (read-only, untrusted content, debugging) - Dump the state."
+        end
+      end
 
       def test_app_components_follow_the_gem_catalog_under_their_declared_helpers
         with_registry do |registry|

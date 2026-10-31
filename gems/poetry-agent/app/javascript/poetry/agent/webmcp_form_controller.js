@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { acquire, release, announce } from "@poetry/controllers/helpers/announce"
 
 /**
  * The declarative-form companion: a form declared with poetry_webmcp_form
@@ -20,29 +21,101 @@ import { Controller } from "@hotwired/stimulus"
  *
  * Submits without agentInvoked (a person pressed Submit) pass through
  * untouched: the human path stays the human path.
+ *
+ * The browser also tells the page when an agent runs a tool: toolactivated
+ * fires on document.modelContext once the agent has filled a declarative
+ * form, and toolcancel when the agent abandons the call because the person
+ * moved on to another turn. For its own tool this controller marks the form
+ * (`data-webmcp-agent="active"`), dispatches poetry:webmcp:tool-activated
+ * and poetry:webmcp:tool-cancelled on it, and announces the fill and the
+ * cancel through the shared live region - the agent's fill is a change the
+ * person did not make. The marker lasts until the cancel, the person's own
+ * submit, or the delivered answer of an agent-invoked submit: Chrome 156
+ * (measured 2026-10-30) fires toolactivated AFTER the submit of an
+ * autosubmit form, so a submit alone cannot end it. An autosubmit form's
+ * fill is announced by nothing here - its submit's answer, and the page
+ * catching up, are what the person perceives. The browser's pseudo-classes
+ * carry the visual; a browser without a model context hears nothing and
+ * loses nothing.
  */
 export default class extends Controller {
-  static events = ["poetry:webmcp:form-submitted"]
+  static values = {
+    // What screen-reader users hear once an agent has filled this form.
+    activatedMessage: { type: String, default: "Your agent filled this form. Review it, then submit." },
+    // What they hear when the agent abandons the fill.
+    cancelledMessage: { type: String, default: "Your agent stopped filling this form." }
+  }
+
+  static events = ["poetry:webmcp:form-submitted", "poetry:webmcp:tool-activated", "poetry:webmcp:tool-cancelled"]
 
   /**
-   * Listens for the form's submit.
+   * Listens for the form's submit, and for the browser's tool events when
+   * it exposes a model context.
    */
   connect() {
     this.element.addEventListener("submit", this.submit)
+    const context = document.modelContext
+    if (typeof context?.addEventListener !== "function") return
+    this.#context = context
+    acquire()
+    context.addEventListener("toolactivated", this.activated)
+    context.addEventListener("toolcancel", this.cancelled)
   }
 
   /**
-   * Stops listening for the form's submit.
+   * Stops listening, drops the agent marker and releases the live region.
    */
   disconnect() {
     this.element.removeEventListener("submit", this.submit)
+    if (!this.#context) return
+    this.#context.removeEventListener("toolactivated", this.activated)
+    this.#context.removeEventListener("toolcancel", this.cancelled)
+    this.#context = null
+    this.#clear()
+    release()
   }
 
   submit = (event) => {
-    if (!event.agentInvoked || typeof event.respondWith !== "function") return
+    if (!event.agentInvoked || typeof event.respondWith !== "function") {
+      this.#clear()
+      return
+    }
 
     event.preventDefault()
-    event.respondWith(this.#deliver())
+    const delivery = this.#deliver()
+    event.respondWith(delivery)
+    delivery.finally(() => this.#clear())
+  }
+
+  activated = (event) => {
+    if (!this.#own(event)) return
+    this.element.setAttribute("data-webmcp-agent", "active")
+    this.dispatch("tool-activated", { prefix: "poetry:webmcp", detail: { tool: event.toolName } })
+    if (!this.element.hasAttribute("toolautosubmit")) announce(this.activatedMessageValue)
+  }
+
+  cancelled = (event) => {
+    if (!this.#own(event)) return
+    this.#clear()
+    this.dispatch("tool-cancelled", { prefix: "poetry:webmcp", detail: { tool: event.toolName } })
+    announce(this.cancelledMessageValue)
+  }
+
+  /**
+   * Whether a tool event names this form's own tool.
+   *
+   * @param {Event} event a toolactivated or toolcancel event
+   * @returns {boolean} true when its toolName is the form's toolname
+   */
+  #own(event) {
+    return typeof event.toolName === "string" && event.toolName === this.element.getAttribute("toolname")
+  }
+
+  /**
+   * Drops the agent marker.
+   */
+  #clear() {
+    this.element.removeAttribute("data-webmcp-agent")
   }
 
   async #deliver() {
@@ -72,6 +145,8 @@ export default class extends Controller {
       return `${form.getAttribute("toolname")} failed - ${error?.message ?? error}`
     }
   }
+
+  #context = null
 }
 
 // The page shows what the agent read.

@@ -186,11 +186,21 @@ module Poetry
             facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
             "#{name} (#{facets.join(", ")})"
           end
-          facets = [tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"]
+          facets = [tool_hints(tool).join(", ")]
           facets << "params: #{params.join(", ")}" if params.any?
           "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
             "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
         end
+      end
+
+      # The words for a tool's hints: read-only or mutating, then the hints set.
+      def tool_hints(tool)
+        annotations = tool["annotations"] || {}
+        words = [annotations["readOnlyHint"] ? "read-only" : "mutating"]
+        words << "untrusted content" if annotations["untrustedContentHint"]
+        words << "consequential" if annotations["consequentialHint"]
+        words << "debugging" if annotations["debugging"]
+        words
       end
 
       # The styling contract: every data-slot part with its state

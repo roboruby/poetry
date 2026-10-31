@@ -39,20 +39,33 @@
     }
   },
   "poetry--agent--webmcp-form": {
-    "doc": "The declarative-form companion: a form declared with poetry_webmcp_form (toolname/tooldescription on the <form>) is registered by the BROWSER; this controller only answers an agent-invoked submit with the outcome. Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we submit the form ourselves (fetch, same method/action, Turbo-Stream accepting) and respond with a short descriptive result instead of navigating, so the agent learns whether the submission succeeded and what the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the result is handed to the browser, so a navigation can never swallow it): a GET answer is the page at that URL - a Turbo visit, or a plain navigation without Turbo; a Turbo-Stream answer renders; a redirected POST (redirect-after-create) visits where the redirect went. An HTML re-render of a failed POST stays put - the agent already holds the errors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through untouched: the human path stays the human path.",
+    "doc": "The declarative-form companion: a form declared with poetry_webmcp_form (toolname/tooldescription on the <form>) is registered by the BROWSER; this controller only answers an agent-invoked submit with the outcome. Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we submit the form ourselves (fetch, same method/action, Turbo-Stream accepting) and respond with a short descriptive result instead of navigating, so the agent learns whether the submission succeeded and what the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the result is handed to the browser, so a navigation can never swallow it): a GET answer is the page at that URL - a Turbo visit, or a plain navigation without Turbo; a Turbo-Stream answer renders; a redirected POST (redirect-after-create) visits where the redirect went. An HTML re-render of a failed POST stays put - the agent already holds the errors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through untouched: the human path stays the human path.\n\nThe browser also tells the page when an agent runs a tool: toolactivated fires on document.modelContext once the agent has filled a declarative form, and toolcancel when the agent abandons the call because the person moved on to another turn. For its own tool this controller marks the form (`data-webmcp-agent=\"active\"`), dispatches poetry:webmcp:tool-activated and poetry:webmcp:tool-cancelled on it, and announces the fill and the cancel through the shared live region - the agent's fill is a change the person did not make. The marker lasts until the cancel, the person's own submit, or the delivered answer of an agent-invoked submit: Chrome 156 (measured 2026-10-30) fires toolactivated AFTER the submit of an autosubmit form, so a submit alone cannot end it. An autosubmit form's fill is announced by nothing here - its submit's answer, and the page catching up, are what the person perceives. The browser's pseudo-classes carry the visual; a browser without a model context hears nothing and loses nothing.",
     "targets": [],
-    "values": {},
+    "values": {
+      "activatedMessage": {
+        "type": "String",
+        "default": "Your agent filled this form. Review it, then submit.",
+        "doc": "What screen-reader users hear once an agent has filled this form."
+      },
+      "cancelledMessage": {
+        "type": "String",
+        "default": "Your agent stopped filling this form.",
+        "doc": "What they hear when the agent abandons the fill."
+      }
+    },
     "classes": [],
     "methods": [
       "connect",
       "disconnect"
     ],
     "events": [
-      "poetry:webmcp:form-submitted"
+      "poetry:webmcp:form-submitted",
+      "poetry:webmcp:tool-activated",
+      "poetry:webmcp:tool-cancelled"
     ],
     "method_docs": {
-      "connect": "Listens for the form's submit.",
-      "disconnect": "Stops listening for the form's submit."
+      "connect": "Listens for the form's submit, and for the browser's tool events when it exposes a model context.",
+      "disconnect": "Stops listening, drops the agent marker and releases the live region."
     }
   },
   "poetry--agent--agui-client-tool": {

@@ -2,9 +2,10 @@
 
 # The report-only upstream watch (see lib/poetry/agent/upstream_watch.rb).
 # Neither task joins the default gate: both need the upstream checkouts
-# (UPSTREAM_DIR, default ~/Desktop/save/upstream, holding ag-ui, A2UI and
-# ext-apps), and pin/watch is a human cadence, not a CI one. The offline
-# verify tasks (agui, a2ui, mcp_apps) stay in the gate.
+# (UPSTREAM_DIR, default ~/Desktop/save/upstream, holding ag-ui, webmcp,
+# A2UI and ext-apps), and pin/watch is a human cadence, not a CI one. The
+# offline verify tasks (agui, a2ui, mcp_apps) stay in the gate, and a test
+# holds the adapter's named WebMCP revision to the manifest's pin.
 namespace :upstream do
   manifest_path = File.expand_path("../config/upstream_watch.json", __dir__)
   gem_root = File.expand_path("..", __dir__)
@@ -17,19 +18,25 @@ namespace :upstream do
   head = ->(dir) { `git -C #{dir} rev-parse --short=9 HEAD`.strip }
   mcp_version = -> { Gem::Specification.find_by_name("mcp").version.to_s }
 
-  desc "Pin the upstream watch manifest to the current ag-ui checkout and the installed mcp gem"
+  desc "Pin the upstream watch manifest to the current ag-ui and webmcp checkouts and the installed mcp gem"
   task :pin do
     require_relative "../lib/poetry/agent/upstream_watch"
 
     root = checkout.call("ag-ui")
+    webmcp = checkout.call("webmcp")
     manifest = Poetry::Agent::UpstreamWatch.build_manifest(root, pin: head.call(root),
                                                                  generated_at: Time.now.strftime("%Y-%m-%d"),
-                                                                 mcp_version: mcp_version.call)
+                                                                 mcp_version: mcp_version.call,
+                                                                 webmcp_root: webmcp, webmcp_pin: head.call(webmcp))
     File.write(manifest_path, "#{JSON.pretty_generate(manifest)}\n")
     ag_ui = manifest["ag-ui"]
+    spec = manifest["webmcp"]
     puts "upstream:pin: ag-ui at #{ag_ui["pin"]} (@ag-ui/core #{ag_ui["core_version"]}), " \
-         "#{ag_ui["files"].size} files, #{ag_ui["directories"].size} directories, " \
+         "#{ag_ui["files"].size} files, #{ag_ui["directories"].size} directories; " \
+         "webmcp at #{spec["pin"]}, #{spec["files"].size} files; " \
          "mcp #{manifest["mcp"]["version"]} -> #{manifest_path}"
+    puts "upstream:pin: app/javascript/poetry/agent/adapter.js names the WebMCP revision it was read against; " \
+         "re-read the spec and move that line to rev #{spec["pin"]} (the upstream watch test holds it)"
   end
 
   desc "Report upstream drift since the pins (PULL=1 pulls the checkouts first, NETWORK=1 asks the registries)"
@@ -43,13 +50,21 @@ namespace :upstream do
     roots.each_value { |dir| system("git", "-C", dir, "pull", "--ff-only", "--quiet") } if ENV["PULL"]
     reports = []
     drifted = false
+    currents = {}
 
-    pinned = manifest["ag-ui"]
-    current = watch.build_ag_ui(roots["ag-ui"])
-    diff = watch.diff_ag_ui(pinned, current)
-    drifted ||= watch.drift?(diff)
-    heading = "pin #{pinned["pin"]} (#{manifest["generated_at"]}) vs checkout #{head.call(roots["ag-ui"])}"
-    reports << watch.format_report("ag-ui", heading, diff)
+    watch::TREES.each do |name, config|
+      pinned = manifest[name]
+      unless pinned
+        reports << "#{name}: not pinned\n  run rake upstream:pin"
+        drifted = true
+        next
+      end
+      currents[name] = watch.build_tree(config, roots[name])
+      diff = watch.diff_tree(config, pinned, currents[name])
+      drifted ||= watch.drift?(diff)
+      heading = "pin #{pinned["pin"]} (#{manifest["generated_at"]}) vs checkout #{head.call(roots[name])}"
+      reports << watch.format_report(name, heading, diff)
+    end
 
     watch::VENDORED.each do |name, config|
       commit = File.read(File.join(gem_root, config[:commit])).strip
@@ -65,7 +80,8 @@ namespace :upstream do
       latest = JSON.parse(Net::HTTP.get(URI("https://rubygems.org/api/v1/gems/mcp.json")))["version"]
       gem_diff["latest"] = [installed, latest] if latest != installed
       core = JSON.parse(Net::HTTP.get(URI("https://registry.npmjs.org/@ag-ui/core/latest")))["version"]
-      gem_diff["core_latest"] = [current["core_version"], core] if core != current["core_version"]
+      pinned_core = currents.dig("ag-ui", "core_version")
+      gem_diff["core_latest"] = [pinned_core, core] if core != pinned_core
     end
     drifted ||= watch.drift?(gem_diff)
     asked = ENV["NETWORK"] ? ", registries asked" : ""

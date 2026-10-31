@@ -1727,7 +1727,7 @@
       "path": "Poetry::Core::Concerns::AgentTools",
       "type": "module",
       "superclass": null,
-      "docstring": "The agent-tool contract: class-level declarations of the\ncomponent's agent-callable tools - the \"operate\" projection of the\ncomponent's Stimulus surface. A tool names one action an in-page\nagent may invoke on a rendered instance (WebMCP's\n`document.modelContext`, or any client that reads the registry),\ndescribed in MCP `Tool` shape: name, description, JSON-Schema\ninput, and safety annotations.\n\n  tool :set_value,\n       description: \"Select the option whose value matches.\",\n       params: { value: { type: \"string\", required: true,\n                          description: \"The option value to select.\" } },\n       executes: :set_value,\n       mutating: true\n\nDeclarations are validated at CLASS LOAD, like use_stimulus:\n`executes:` resolves through {Concerns::Stimulus#stimulus_action}\nagainst the component's declared controllers and the controllers\nmanifest, so a tool can never name an action the JS does not\ndefine - declare `use_stimulus` before `tool`. The resolved\ndescriptor (\"poetry--core--combobox#setValue\") is the tool's wire\nform: registration runtimes dispatch it verbatim.\n\nSafety doctrine (non-negotiable): tools are read-only unless\ndeclared `mutating: true` (`annotations.readOnlyHint` inverts it),\n`untrusted_content: true` marks tools whose output carries\nuser-authored content, and declaring a tool exposes NOTHING by\nitself - emission is opt-in per rendered instance, owned by the\nregistration runtime, never default-on.\n\nProjection: {ClassMethods#tool_definitions} feeds the registry's\nper-component `tools` section (plain strings, YAML-safe), which\nthe agent surfaces (llms.txt, MCP server, skills, docs) and the\nWebMCP registration payload all read - one contract, every\nsurface.",
+      "docstring": "The agent-tool contract: class-level declarations of the\ncomponent's agent-callable tools - the \"operate\" projection of the\ncomponent's Stimulus surface. A tool names one action an in-page\nagent may invoke on a rendered instance (WebMCP's\n`document.modelContext`, or any client that reads the registry),\ndescribed in MCP `Tool` shape: name, description, JSON-Schema\ninput, and safety annotations.\n\n  tool :set_value,\n       description: \"Select the option whose value matches.\",\n       params: { value: { type: \"string\", required: true,\n                          description: \"The option value to select.\" } },\n       executes: :set_value,\n       mutating: true\n\nDeclarations are validated at CLASS LOAD, like use_stimulus:\n`executes:` resolves through {Concerns::Stimulus#stimulus_action}\nagainst the component's declared controllers and the controllers\nmanifest, so a tool can never name an action the JS does not\ndefine - declare `use_stimulus` before `tool`. The resolved\ndescriptor (\"poetry--core--combobox#setValue\") is the tool's wire\nform: registration runtimes dispatch it verbatim.\n\nSafety doctrine (non-negotiable): tools are read-only unless\ndeclared `mutating: true` (`annotations.readOnlyHint` inverts it),\n`untrusted_content: true` marks tools whose output carries\nuser-authored content, `consequential: true` marks a tool whose\neffect is significant or hard to undo (`annotations.consequentialHint`,\nwhich an agent confirms before calling), `debugging: true` keeps a\ndeveloper tool out of end-user agents (`annotations.debugging`), and\ndeclaring a tool exposes NOTHING by itself - emission is opt-in per\nrendered instance, owned by the registration runtime, never\ndefault-on.\n\nProjection: {ClassMethods#tool_definitions} feeds the registry's\nper-component `tools` section (plain strings, YAML-safe), which\nthe agent surfaces (llms.txt, MCP server, skills, docs) and the\nWebMCP registration payload all read - one contract, every\nsurface.",
       "examples": [],
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [
@@ -1746,7 +1746,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 141
+          "line": 155
         },
         {
           "name": "resolve_tool_action",
@@ -1771,13 +1771,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 199
+          "line": 215
         },
         {
           "name": "tool",
           "scope": "class",
           "group": null,
-          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)",
+          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false, consequential: false, debugging: false)",
           "docstring": "Declares one agent-callable tool of this component.",
           "params": [
             {
@@ -1839,6 +1839,20 @@
                 "Boolean"
               ],
               "text": "declare true when the\ntool's output can carry user-authored content"
+            },
+            {
+              "name": "consequential",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true when invoking the\ntool has a significant, real-world or hard-to-undo effect\n(`annotations.consequentialHint`); an agent confirms such a\ncall before making it"
+            },
+            {
+              "name": "debugging",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true for a tool meant for\ndeveloper tooling rather than end users\n(`annotations.debugging`)"
             }
           ],
           "return": {
@@ -1854,7 +1868,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 121
+          "line": 132
         },
         {
           "name": "tool_definitions",
@@ -1871,7 +1885,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 177
+          "line": 191
         },
         {
           "name": "tools",
@@ -1888,7 +1902,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 149
+          "line": 163
         },
         {
           "name": "webmcp_enabled?",
@@ -1905,7 +1919,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 346
+          "line": 362
         },
         {
           "name": "webmcp_name",
@@ -1923,7 +1937,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 359
+          "line": 375
         },
         {
           "name": "webmcp_tool_definition",
@@ -1948,7 +1962,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 387
+          "line": 403
         },
         {
           "name": "webmcp_tools",
@@ -1965,7 +1979,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 377
+          "line": 393
         }
       ],
       "constants": [
@@ -2010,6 +2024,90 @@
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [
         {
+          "name": "consequential",
+          "scope": "instance",
+          "group": null,
+          "signature": "consequential",
+          "docstring": "Returns the value of attribute consequential",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of consequential"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "consequential=",
+          "scope": "instance",
+          "group": null,
+          "signature": "consequential=(value)",
+          "docstring": "Sets the attribute consequential",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute consequential to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "debugging",
+          "scope": "instance",
+          "group": null,
+          "signature": "debugging",
+          "docstring": "Returns the value of attribute debugging",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of debugging"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "debugging=",
+          "scope": "instance",
+          "group": null,
+          "signature": "debugging=(value)",
+          "docstring": "Sets the attribute debugging",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute debugging to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
           "name": "description",
           "scope": "instance",
           "group": null,
@@ -2024,7 +2122,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "description=",
@@ -2049,7 +2147,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "executes",
@@ -2066,7 +2164,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "executes=",
@@ -2091,7 +2189,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "input_schema",
@@ -2108,7 +2206,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "input_schema=",
@@ -2133,7 +2231,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "mutating",
@@ -2150,7 +2248,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "mutating=",
@@ -2175,7 +2273,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "name",
@@ -2192,7 +2290,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "name=",
@@ -2217,7 +2315,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "title",
@@ -2234,7 +2332,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "title=",
@@ -2259,7 +2357,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "untrusted_content",
@@ -2276,7 +2374,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "untrusted_content=",
@@ -2301,7 +2399,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         }
       ],
       "constants": []

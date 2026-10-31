@@ -21,6 +21,8 @@
 - Behavior `direct_upload`: Active Storage direct uploads for one connect, Rails' own `DirectUpload` behind a queue with a concurrency cap, real progress from the storage request, cancel through the kept request, retry, remove, a hidden signed-id input per finished upload under the field name, the form's submit held while anything is in flight, and teardown aborting what still runs. The class loads through the host's importmap as a dynamic import, so a host without the pin fails one upload with a message, never the module graph. `useDirectUploadEvents` reads Rails' own submit-time events the same way. The file-input controller clones one Attachment chip per file from the component's template and draws the queue on it.
 - An option named after a rendering method (`capture`, `content`, `render`, `helpers`, `view_context`, `output_buffer`, `controller`, `request`) raises at class load: a `capture` option once blanked every block a template captured.
 - `poetry check` gains two upload rules: `upload-immediate-without-direct-upload` (an error: a FileInput with `upload: :immediate` and no `direct_upload: true` or `direct_upload_url:`) and `direct-upload-unpinned` (a warning: direct uploads in a host whose `config/importmap.rb` does not pin `@rails/activestorage`); the runner reads the host's pins once per root.
+- A tool declares the specification's other two hints: `consequential: true` (`annotations.consequentialHint`, an effect that is significant, real-world or hard to undo, which an agent confirms before calling) and `debugging: true` (`annotations.debugging`, a developer tool kept out of end-user agents). Every projection carries all four hints, and llms.txt, the MCP server and the docs name the ones a tool sets.
+
 
 ### Changed
 

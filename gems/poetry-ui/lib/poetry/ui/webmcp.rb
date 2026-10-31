@@ -29,6 +29,9 @@ module Poetry
       # poetry-agent's declarative-form controller (the respondWith path);
       # emitted as a plain token so the markup stays inert without the gem.
       FORM_CONTROLLER = "poetry--agent--webmcp-form"
+      # What the form controller announces, by locale key under
+      # `poetry.webmcp.form`: the agent's fill and its cancellation.
+      MESSAGE_KEYS = %i[activated cancelled].freeze
 
       module_function
 
@@ -66,6 +69,20 @@ module Poetry
           attributes[:toolautosubmit] = ""
         end
         attributes
+      end
+
+      # The form controller's spoken messages as its values, from the app's
+      # locale (`poetry.webmcp.form.activated` and `.cancelled`), for the
+      # form's `data:`.
+      #
+      # @return [Hash{String => String}] the controller's value attributes, keyed as `data:` takes them
+      # @example
+      #   Poetry::Ui::Webmcp.form_messages
+      #   # => { "poetry--agent--webmcp-form-activated-message-value" => "Your agent filled this form. ...", ... }
+      def form_messages
+        MESSAGE_KEYS.to_h do |key|
+          ["#{FORM_CONTROLLER}-#{key}-message-value", I18n.t("poetry.webmcp.form.#{key}")]
+        end
       end
 
       # The control attribute for a parameter-description override.

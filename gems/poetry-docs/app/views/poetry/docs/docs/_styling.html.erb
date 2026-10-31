@@ -114,7 +114,8 @@
               <%= poetry_table_row do %>
                 <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
                   <%= tool["name"] %>
-                  <span class="ml-1 font-sans text-muted-foreground"><%= tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating" %></span>
+                  <% annotations = tool["annotations"] || {} %>
+                  <span class="ml-1 font-sans text-muted-foreground"><%= [annotations["readOnlyHint"] ? "read-only" : "mutating", ("consequential" if annotations["consequentialHint"]), ("debugging" if annotations["debugging"])].compact.join(", ") %></span>
                 <% end %>
                 <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") do %>
                   <% properties = tool.dig("inputSchema", "properties") || {} %>

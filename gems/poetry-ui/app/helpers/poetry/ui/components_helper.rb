@@ -304,6 +304,9 @@ module Poetry
         # gem the token is inert and the browser's own submission runs.
         options[:data] = (options[:data] || {}).dup
         options[:data][:controller] = [options[:data][:controller], Webmcp::FORM_CONTROLLER].compact.join(" ")
+        # What the controller says when the browser reports an agent's fill
+        # or its cancellation, in the app's language.
+        options[:data].merge!(Webmcp.form_messages)
         form_with(**options, &)
       end
 

@@ -2787,6 +2787,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--combobox#setValue
     - name: clear
       title: Clear
@@ -2794,6 +2796,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--combobox#clear
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
@@ -4540,6 +4544,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--dialog#open
     - name: close
       title: Close
@@ -4547,6 +4553,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--dialog#close
   poetry/ui/drawer:
     class_name: Poetry::Ui::Drawer::Component
@@ -4764,6 +4772,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--drawer#open
     - name: close
       title: Close
@@ -4771,6 +4781,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--drawer#close
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
@@ -10204,6 +10216,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--sheet#open
     - name: close
       title: Close
@@ -10211,6 +10225,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--sheet#close
   poetry/ui/sidebar:
     class_name: Poetry::Ui::Sidebar::Component
@@ -11190,6 +11206,8 @@ components:
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
       executes: poetry--core--tabs#setValue
   poetry/ui/tag_group:
     class_name: Poetry::Ui::TagGroup::Component

@@ -21,6 +21,8 @@
 - `Poetry::Ui::AttachmentBroadcasts`: a model opts its attachments in with `broadcasts_attachment_updates_for :photos, variant: :thumb`, and the chips are replaced over Turbo Streams when the attachment is created, when its blob's analysis lands and when a variant record is written; the page subscribes with `turbo_stream_from record, :attachments`.
 - `form.file_input` reads active_storage_validations' content type, size and limit validators on the attribute as `accept:`, `max_size:`, `min_size:` and `max_files:` when the gem is loaded and the call passes none of its own.
 - `poetry:install` wires Active Storage when its engine is in the app: the `@rails/activestorage` pin in `config/importmap.rb` and `ActiveStorage.start()` in `application.js`, once each, so FileInput's direct uploads find the class.
+- `poetry_webmcp_form` hands poetry-agent's form controller its spoken messages (the `poetry.webmcp.form.activated` and `.cancelled` locale keys) as values, so what screen-reader users hear when an agent fills or abandons the form speaks the app's language.
+
 
 ### Changed
 

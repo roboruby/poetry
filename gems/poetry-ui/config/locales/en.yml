@@ -110,3 +110,7 @@ en:
     message_scroller:
       region: "Conversation"
       scroll_to_end: "Scroll to latest messages"
+    webmcp:
+      form:
+        activated: "Your agent filled this form. Review it, then submit."
+        cancelled: "Your agent stopped filling this form."
