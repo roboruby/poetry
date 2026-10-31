@@ -118,6 +118,14 @@ export default class extends Controller {
     this.element.removeAttribute("data-webmcp-agent")
   }
 
+  /**
+   * Submits the form on the agent's behalf: a fetch with the form's method
+   * and data (the query string for GET, the body otherwise), accepting a
+   * Turbo Stream, HTML or JSON; tells the page it was submitted and reflects
+   * the answer on it.
+   *
+   * @returns {Promise<string>} a one-line summary of the answer for the agent, or of the failure
+   */
   async #deliver() {
     const form = this.element
     const method = (form.getAttribute("method") || "get").toUpperCase()

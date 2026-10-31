@@ -90,6 +90,7 @@
 - A tool result is a message of its own in the transcript, as AG-UI 1.0 models it, instead of a field on its call: the call's part still reads the answer (`output`, `state`), `messages` still leaves results out, and `messages_for_input` sends each result right after the call it answers, as providers require.
 - A string outside a closed set (a message `role`, an encrypted value's `subtype`) is stripped with a warning, as AG-UI 1.0's processing model requires, instead of failing the run; in a required position the event or entry carrying it is dropped. A value of the wrong type is still fatal.
 - `Transcript#run[:result]` holds a successful run's result only.
+- The JavaScript documentation floor (`.jsdoc_floor`, the shape of `yard:coverage`) is zero: every class and method under `app/javascript` carries a docstring, the two private tool runners included.
 
 ### Fixed
 
