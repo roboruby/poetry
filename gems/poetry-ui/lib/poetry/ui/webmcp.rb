@@ -15,7 +15,7 @@ module Poetry
     # the user pressing Submit) is only allowed on GET forms - read-only
     # lookups. A mutating form keeps the user in the loop, always.
     #
-    # Consumers: {ComponentsHelper#poetry_webmcp_form} (the form), the
+    # Consumers: `ComponentsHelper#poetry_webmcp_form` (the form), the
     # FormBuilder's `tool_description:` field option (the override), and
     # poetry-agent's imperative runtime, which shares this vocabulary.
     module Webmcp

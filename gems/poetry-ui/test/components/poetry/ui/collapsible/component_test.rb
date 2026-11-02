@@ -23,7 +23,7 @@ module Poetry
           assert trigger, "the trigger is a real button"
           assert_equal "button", trigger["type"]
           assert_equal "button", trigger["data-component"], "the trigger is a poetry Button - Button's treatment"
-          assert_includes html, 'data-action="click->poetry--core--state#toggle"'
+          assert_equal "click->poetry--core--state#toggle", trigger["data-action"]
           assert_includes html, 'data-poetry--core--state-target="trigger"'
           assert_includes html, 'data-poetry--core--state-target="content"'
         end
