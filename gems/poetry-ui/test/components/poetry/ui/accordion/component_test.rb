@@ -34,7 +34,11 @@ module Poetry
 
           assert_includes html,
                           'data-controller="host-thing poetry--core--accordion poetry--core--roving-focus"'
-          assert_match(/data-action="click->host#track [^"]+"/, html)
+          # The arrow is read off the attribute: serialized markup escapes it
+          # as the HTML standard asks (nokogiri 1.19.5).
+          root = Nokogiri::HTML5.fragment(html).at_css('[data-slot="accordion"]')
+
+          assert_match(/\Aclick->host#track .+/, root["data-action"])
         end
 
         def test_open_state_is_server_rendered
@@ -65,8 +69,12 @@ module Poetry
           assert_includes html, "data-poetry-collection-item"
           # The browser pass caught this missing: the roving keydown action
           # must be WIRED by the consumer - registration alone is deaf.
-          assert_includes html, "keydown->poetry--core--roving-focus#keydown"
-          assert_includes html, 'data-action="click->poetry--core--accordion#toggle"'
+          fragment = Nokogiri::HTML5.fragment(html)
+
+          assert_includes fragment.at_css('[data-slot="accordion"]')["data-action"],
+                          "keydown->poetry--core--roving-focus#keydown"
+          assert_equal "click->poetry--core--accordion#toggle",
+                       fragment.at_css('[data-slot="accordion-trigger"]')["data-action"]
         end
 
         def test_heading_level_fits_the_outline

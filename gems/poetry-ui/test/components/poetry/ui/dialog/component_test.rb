@@ -21,8 +21,12 @@ module Poetry
           assert_includes html, 'data-controller="poetry--core--dialog"'
           assert_includes html, 'data-closed=""'
           assert_includes html, "cn-dialog-content" # panel chrome + backdrop tint ride the theme rule
-          assert_includes html,
-                          'data-action="cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose"'
+          # The arrow is read off the attribute: serialized markup escapes it
+          # as the HTML standard asks (nokogiri 1.19.5).
+          dialog = Nokogiri::HTML5.fragment(html).at_css("dialog")
+
+          assert_equal "cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose",
+                       dialog["data-action"]
         end
 
         def test_closed_dialog_stays_hidden_under_ua_styles
@@ -82,7 +86,8 @@ module Poetry
           refute_includes html, 'data-action="poetry--core--dialog#close"'
           refute_includes html, 'aria-label="Close"'
           # Esc still closes - the <dialog> cancel wiring is untouched.
-          assert_includes html, "cancel->poetry--core--dialog#close"
+          assert_includes Nokogiri::HTML5.fragment(html).at_css("dialog")["data-action"],
+                          "cancel->poetry--core--dialog#close"
         end
 
         def test_dismissible_false_flows_to_the_controller_value
