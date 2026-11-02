@@ -246,7 +246,7 @@ def handle_decl(result, klass, parsed, decl, lines, index, indent, file)
     else
       @errors << "#{file}:#{line_number}: documented static #{name} outside a known class"
     end
-  when /\A\s*(?:static\s+)?(?:get\s+|set\s+)?#\w+\s*\(/, /\A(?:async\s+)?function\*?\s+\w+/, /\A\s{3,}\S/,
+  when /\A\s*(?:static\s+)?(?:async\s+)?(?:get\s+|set\s+)?#\w+\s*\(/, /\A(?:async\s+)?function\*?\s+\w+/, /\A\s{3,}\S/,
        /\A\s*(?:const|let|var)\s+\w+/
     # Documented but not surface: a private member, a module-private
     # function or variable, or a declaration nested inside a function body.
