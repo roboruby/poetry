@@ -26,6 +26,7 @@ jobs:
   ruby:
     name: ${{ matrix.gem.name }} on Ruby ${{ matrix.ruby }}
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     strategy:
       fail-fast: false
       matrix:
@@ -78,6 +79,7 @@ jobs:
   javascript:
     name: JavaScript (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     strategy:
       fail-fast: false
       matrix:
@@ -103,6 +105,7 @@ jobs:
   herb:
     name: Herb lint (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     strategy:
       fail-fast: false
       matrix:
@@ -133,6 +136,7 @@ jobs:
   reactionview:
     name: ReActionView ${{ matrix.mode }} (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     strategy:
       fail-fast: false
       matrix:
@@ -179,6 +183,7 @@ jobs:
   rails-main:
     name: Rails main (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -219,6 +224,7 @@ jobs:
   rails-main-docs:
     name: Rails main (poetry-docs)
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     continue-on-error: true
     defaults:
       run:
@@ -241,6 +247,7 @@ jobs:
   audit:
     name: bundle audit (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     strategy:
       fail-fast: false
       matrix:
@@ -276,6 +283,7 @@ jobs:
   reference-fresh:
     name: Reference data is fresh
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     defaults:
       run:
         working-directory: gems/poetry-docs
@@ -310,6 +318,7 @@ jobs:
   releaser:
     name: Releaser tests and a build
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
     defaults:
       run:
         working-directory: tools/releaser
@@ -331,7 +340,7 @@ jobs:
   # One status for branch rules: green only when every job above is.
   all-green:
     name: All green
-    if: always()
+    if: always() && (github.event_name != 'schedule' || github.repository == 'roboruby/poetry')
     needs: [ruby, javascript, herb, reactionview, audit, reference-fresh, releaser]
     runs-on: ubuntu-latest
     steps:
