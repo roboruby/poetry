@@ -4,6 +4,7 @@
 
 ### Added
 
+- The Testing guide names `bin/rails poetry:audit` beside the check commands, in its markdown mirror too.
 - The root llms.txt opens on the five usage rules every llms surface prints (compose with the helpers, start from a block, forms on the builder, where state lives, check last) and lists the cold-start prompt among the machine-readable resources.
 - The Installation guide's "Hand it to an assistant" section: the cold-start prompt `bin/rails poetry:prompt` prints, for an assistant that has none of poetry's surfaces in front of it yet, and four prompts to try that teach the workflow by example; the markdown mirror carries both.
 - The Where State Lives guide (`/where-state-lives`): the tiers a component's state lives in - the record and the form, the URL, a cookie or localStorage, a reactive template's state on a ReActionView host, attributes on the element - each with the component that ships it, why Poetry's controllers call no `useState` (Herb's included), and what a Turbo morph does to each tier; with its markdown mirror.

@@ -28,39 +28,11 @@ namespace :poetry do
 
     # Every published registry in the boot (poetry-ui, poetry-charts, any
     # engine on the DSL that committed one, the app's own file): no gem is
-    # named. The valid helper set is each registry's component-mapped
-    # helpers plus its helpers section (the pathless wrappers, part
-    # helpers, value contracts), which the builders keep complete.
+    # named, and the app's own components and poetry_* helper methods join
+    # the valid set with contracts of their own. One builder, shared with
+    # poetry:audit (Poetry::Ui::CheckCatalog).
     roots = Poetry::Core::Registry.roots
-    # The active set's names light up membership validation (the value
-    # contract) and the declaration tier; a host without a
-    # registered set still checks icon-name shape.
-    icon_names = begin
-      Poetry::Core::Icons.set.names
-    rescue Poetry::Core::Error
-      nil
-    end
-    # The app's own components (`helper :name` on the DSL): their declared
-    # helpers join the valid set and their contracts are checked like the
-    # gems' - built live from the loaded classes, never a committed file.
-    host = Poetry::Core::HostComponents.registry(root: Rails.root)
-    # The app's own poetry_* helper METHODS (app/helpers: the adapter
-    # poetry:pagination copies in, a wrapper the host wrote) are valid
-    # names with contracts of their own - the wiring rules still apply.
-    host_helpers = Poetry::Core::HostComponents.helper_methods(root: Rails.root)
-    # Every registered set by key: a call naming its set (library: :tabler)
-    # is checked against that set rather than the active one.
-    icon_libraries = Poetry::Core::Icons.registry.transform_values(&:names)
-    # Renamed names render through a set's aliases; check warns with the rename.
-    icon_library_aliases = Poetry::Core::Icons.registry.transform_values do |set|
-      set.respond_to?(:aliases) ? set.aliases : {}
-    end
-    icon_aliases = icon_library_aliases.fetch(Poetry::Core::Config.current.icon_library.to_sym, {})
-    catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host,
-                                                                  host_helpers: host_helpers,
-                                                                  icon_libraries: icon_libraries,
-                                                                  icon_aliases: icon_aliases,
-                                                                  icon_library_aliases: icon_library_aliases)
+    catalog = Poetry::Ui::CheckCatalog.build(root: Rails.root)
     # The compile tier: Rails checks an app's views (`bin/rails
     # herb:check` walks the view paths), which leaves the templates that
     # sit beside their components unchecked - the app's own and the ones

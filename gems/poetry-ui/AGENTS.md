@@ -44,6 +44,15 @@ visual fragments under `themes/`.
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
   (`POETRY_CHECK_DESIGN=1` adds the 27 design-slop rules); `design:lint`
   runs design-slop over the gem's own templates and previews.
+- `bin/rails poetry:audit` (in a host) — the consumer-app audit
+  (`Poetry::Ui::Audit` over `Poetry::Core::Audit`'s analyzers): components
+  and declared axes used, raw colors, off-scale lengths, font sizes, icons,
+  the check's and the design tier's findings, partials nothing renders
+  (Herb's render analyzer), routes, pages and flow edges with unresolved
+  targets recorded by kind. Writes `.poetry/audit/{summary,inventory,health,
+  flows}.json` and `report.html` (Poetry components rendered through the
+  app's own controller, the compiled stylesheet inlined); the report
+  template under `app/views/poetry/ui/` is in the safelist scan.
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the
   card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm

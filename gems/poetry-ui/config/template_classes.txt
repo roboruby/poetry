@@ -2,6 +2,7 @@
 absolute
 animate-spin
 aspect-square
+bg-background
 bg-popover
 bg-primary
 bg-sidebar-primary
@@ -19,6 +20,7 @@ data-active:focus:bg-muted
 data-active:hover:bg-muted
 data-open:opacity-100
 data-open:translate-y-0
+divide-y
 flex
 flex-1
 flex-col
@@ -32,6 +34,7 @@ gap-2
 gap-3
 gap-4
 gap-6
+gap-8
 grid
 grid-cols-2
 grid-cols-3
@@ -55,7 +58,9 @@ max-w-3xl
 max-w-5xl
 max-w-md
 max-w-xl
+md:grid-cols-2
 md:grid-cols-3
+md:grid-cols-4
 min-h-64
 min-h-72
 min-w-0
@@ -71,6 +76,7 @@ p-2
 p-3
 p-4
 p-6
+p-8
 pb-16
 px-2
 px-4
@@ -92,8 +98,10 @@ space-y-4
 sr-only
 tabular-nums
 text-2xl
+text-3xl
 text-base
 text-destructive
+text-foreground
 text-left
 text-lg
 text-muted-foreground

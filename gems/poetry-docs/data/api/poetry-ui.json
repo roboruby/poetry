@@ -397,7 +397,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 258
+          "line": 260
         },
         {
           "name": "block_components",
@@ -424,7 +424,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 385
+          "line": 387
         },
         {
           "name": "charts_registry",
@@ -436,7 +436,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 213
+          "line": 215
         },
         {
           "name": "committed_charts_registry",
@@ -448,7 +448,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 291
+          "line": 293
         },
         {
           "name": "committed_island_registry",
@@ -460,7 +460,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 311
+          "line": 313
         },
         {
           "name": "committed_motion_registry",
@@ -472,7 +472,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 301
+          "line": 303
         },
         {
           "name": "helper_names",
@@ -484,7 +484,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 109
+          "line": 111
         },
         {
           "name": "host_registry",
@@ -496,7 +496,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 203
+          "line": 205
         },
         {
           "name": "island_registry",
@@ -508,7 +508,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 235
+          "line": 237
         },
         {
           "name": "motion_registry",
@@ -520,7 +520,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 224
+          "line": 226
         },
         {
           "name": "recipe_items",
@@ -532,7 +532,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 161
+          "line": 163
         },
         {
           "name": "registry",
@@ -544,7 +544,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 122
+          "line": 124
         },
         {
           "name": "registry_blocks",
@@ -564,7 +564,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 359
+          "line": 361
         },
         {
           "name": "registry_descriptions",
@@ -576,7 +576,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 139
+          "line": 141
         },
         {
           "name": "registry_helpers",
@@ -596,7 +596,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 343
+          "line": 345
         },
         {
           "name": "registry_items",
@@ -608,7 +608,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 149
+          "line": 151
         },
         {
           "name": "root",
@@ -620,7 +620,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 93
+          "line": 95
         },
         {
           "name": "skill_files",
@@ -641,7 +641,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 178
+          "line": 180
         },
         {
           "name": "template_classes",
@@ -658,7 +658,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 99
+          "line": 101
         },
         {
           "name": "theme_owned_names",
@@ -683,7 +683,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 195
+          "line": 197
         }
       ],
       "constants": [
@@ -2557,6 +2557,220 @@
           "name": "ARCHIVE_TYPES",
           "value": "%w[application/zip application/x-zip-compressed application/x-7z-compressed application/x-tar\napplication/gzip application/x-gzip application/x-rar-compressed application/vnd.rar].freeze",
           "docstring": "Content types that read as archives."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Ui::Audit",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The consumer-app audit, `bin/rails poetry:audit`: what the app's\ntemplates exercise of the catalog, what they paint outside it, what\nthe check and the design tier find, which partials nothing renders,\nand where the routes, pages and links lead. Four JSON files under\n`.poetry/audit/` an agent cites by field, one self-contained HTML\nreport composed from Poetry's own components, and a summary on the\nterminal. Every number is counted from parsed source and the booted\nroute set; a value a template passes dynamically is listed as\ndynamic, an edge whose target is not literal is recorded by kind.",
+      "examples": [
+        {
+          "title": "",
+          "text": "audit = Poetry::Ui::Audit.new(root: Rails.root, catalog: Poetry::Ui::CheckCatalog.build(root: Rails.root),\n                              routes: Poetry::Ui::Audit.routes_from(Rails.application.routes))\naudit.run\naudit.write"
+        }
+      ],
+      "file": "lib/poetry/ui/audit.rb",
+      "methods": [
+        {
+          "name": "routes_from",
+          "scope": "class",
+          "group": null,
+          "signature": "routes_from(route_set)",
+          "docstring": "The routes of a Rails route set as plain data: every route with a\ncontroller and an action (mounts and redirects have none), the\nframework's own left out.",
+          "params": [
+            {
+              "name": "route_set",
+              "types": [
+                "ActionDispatch::Routing::RouteSet"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "\"name\", \"verb\", \"path\", \"controller\" and \"action\" per route"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 45
+        },
+        {
+          "name": "data",
+          "scope": "instance",
+          "group": null,
+          "signature": "data",
+          "docstring": "The audit's data once run (nil before).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 58
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(root:, catalog:, routes: [], compiled_css: nil, app: nil, renderer: nil)",
+          "docstring": "An audit over one app, run once and written once.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the app root"
+            },
+            {
+              "name": "catalog",
+              "types": [
+                "Poetry::Core::Check::Catalog"
+              ],
+              "text": "the host's check catalog (CheckCatalog.build)"
+            },
+            {
+              "name": "routes",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "the routes (routes_from), or none outside a booted app"
+            },
+            {
+              "name": "compiled_css",
+              "types": [
+                "Pathname",
+                "String",
+                "nil"
+              ],
+              "text": "the compiled stylesheet the report inlines"
+            },
+            {
+              "name": "app",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the app's name for the report's header"
+            },
+            {
+              "name": "renderer",
+              "types": [
+                "#render",
+                "nil"
+              ],
+              "text": "what renders the report (the app's ApplicationController by default)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Audit"
+            ],
+            "text": "a new instance of Audit"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 68
+        },
+        {
+          "name": "run",
+          "scope": "instance",
+          "group": null,
+          "signature": "run",
+          "docstring": "Runs every analyzer and assembles the data.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the data, \"summary\" first"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 80
+        },
+        {
+          "name": "summary_text",
+          "scope": "instance",
+          "group": null,
+          "signature": "summary_text",
+          "docstring": "The terminal summary.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 117
+        },
+        {
+          "name": "write",
+          "scope": "instance",
+          "group": null,
+          "signature": "write(dir = @root.join(OUTPUT))",
+          "docstring": "Writes the four JSON files and the report, each file whole (written\nbeside, then moved into place).",
+          "params": [
+            {
+              "name": "dir",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the output folder (`.poetry/audit` under the root by default)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Pathname>"
+            ],
+            "text": "the files written"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/audit.rb",
+          "line": 104
+        }
+      ],
+      "constants": [
+        {
+          "name": "EDGE_GLOB",
+          "value": "\"app/{views,components,helpers,controllers}/**/*.{erb,rb}\"",
+          "docstring": "The files the flow edges are read from."
+        },
+        {
+          "name": "OUTPUT",
+          "value": "\".poetry/audit\"",
+          "docstring": "Where the files land, under the app root."
+        },
+        {
+          "name": "RESOLVABLE_KINDS",
+          "value": "%w[path_helper literal_path].freeze",
+          "docstring": "The edge kinds a booted route set resolves."
+        },
+        {
+          "name": "RUBY_GLOB",
+          "value": "\"app/**/*.rb\"",
+          "docstring": "The Ruby the check's declaration tiers read."
+        },
+        {
+          "name": "SCHEMA",
+          "value": "1",
+          "docstring": "The files' schema version; a reader pins it."
+        },
+        {
+          "name": "SUBMITTING_CALLS",
+          "value": "%w[form_with form_for button_to].freeze",
+          "docstring": "The calls that submit, so a literal path resolves to the POST route first."
+        },
+        {
+          "name": "TEMPLATE_GLOB",
+          "value": "\"app/{views,components}/**/*.html.erb\"",
+          "docstring": "The templates the inventory, the token readers and the design tier read."
         }
       ]
     },
@@ -5075,6 +5289,43 @@
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
           "line": 332
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::CheckCatalog",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The host's check catalog, built the one way `poetry:check` and\n`poetry:audit` share: every published registry in the boot (poetry-ui,\npoetry-charts, any engine on the DSL that committed one, the app's own\nfile), the app's own components and `poetry_*` helper methods, and\nevery registered icon set with its aliases.",
+      "examples": [],
+      "file": "lib/poetry/ui/check_catalog.rb",
+      "methods": [
+        {
+          "name": "build",
+          "scope": "class",
+          "group": null,
+          "signature": "build(root:)",
+          "docstring": "The catalog for an app.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the app root"
+            }
+          ],
+          "return": {
+            "types": [
+              "Poetry::Core::Check::Catalog"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/check_catalog.rb",
+          "line": 17
         }
       ],
       "constants": []

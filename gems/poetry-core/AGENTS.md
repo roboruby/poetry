@@ -83,6 +83,13 @@ files against the manifest stamped at last bless.
   rules: twenty-three on the Herb AST (ERB or plain HTML, the motion floor
   and the craft floor among them), four on computed styles. Warnings name
   the fix; provenance cited per rule.
+- `Poetry::Core::Audit` — the consumer-app audit's Rails-free analyzers:
+  `Inventory` (components by call sites, every declared axis against the
+  literal values passed, icons) over the check linter's call sink
+  (`Check::Call`, `Linter#lint(calls:)`, `Runner#run(calls:)`), `Tokens`
+  (raw colors, off-scale lengths, font sizes per template), `Edges` (link,
+  form and redirect targets by kind, never inferred), `Health` (findings by
+  severity and rule). poetry-ui's `poetry:audit` runs them.
 
 ## Contracts
 

@@ -25,6 +25,13 @@ module Poetry
     module Check
       SEVERITIES = %i[error warning].freeze
 
+      # One helper call the linter validated, as the audit reads it: the
+      # helper, where it sits, its keyword literals (nil for a value passed
+      # dynamically) and its first positional literal.
+      #
+      # @api private
+      Call = Struct.new(:helper, :line, :file, :keywords, :positional, keyword_init: true)
+
       # A single lint result. file is attached by the Runner; line is
       # 1-based into that file. suggestion is a did-you-mean fix or nil.
       #
@@ -206,6 +213,8 @@ module Poetry
 
         # The registry path a helper renders, or nil.
         def path_for(helper) = @path_by_helper[helper]
+        # A component's registry entry by path (its styles, options, slots), or nil.
+        def component_entry(path) = @components[path]
         # The helper that renders a registry path (the declared name, or the
         # poetry_ convention).
         def helper_for(path) = @helper_by_path[path]
@@ -410,10 +419,13 @@ module Poetry
         #   every other rule runs as on a page.
         # @param importmap_pins [Array<String>, nil] the host's importmap pins
         #   (Check.importmap_pins); nil skips the rules that read them
-        def lint(source, mail: false, importmap_pins: nil)
+        # @param calls [Array<Call>, nil] a sink the known helper calls are
+        #   appended to as they are validated (the audit's inventory)
+        def lint(source, mail: false, importmap_pins: nil, calls: nil)
           require "herb"
           require "prism"
           @mail = mail
+          @calls = calls
           # The host's importmap pins, when the runner read them (nil: no
           # importmap, so the pin rules stand down).
           @importmap_pins = importmap_pins
@@ -474,6 +486,7 @@ module Poetry
           parsed = Prism.parse(node.content.value)
           calls = []
           collect_calls(parsed.value, calls)
+          @calls&.concat(calls.filter_map { |call| call_record(call, base_line) })
           content_fed = content_fed_calls(parsed.value)
           findings = calls.flat_map { |call| call_findings(call, base_line, bindings, content_fed) }
           findings += slot_findings(parsed.value, bindings, base_line)
@@ -511,6 +524,23 @@ module Poetry
         # as unknown-component) or a helper the catalog knows by name (an
         # app component's declared helper).
         def helper_call?(name) = name.start_with?("poetry_") || @catalog.helper?(name)
+
+        # The audit's record of a known helper call, or nil for a helper the
+        # catalog does not know (that one is a finding, not inventory).
+        def call_record(call, base_line)
+          helper = call.name.to_s
+          return unless @catalog.helper?(helper)
+
+          # A literal nil is "not passed" to the inventory (the default
+          # applies), unlike a dynamic value, which it lists as such.
+          keywords = keyword_pairs(call).filter_map do |key, value, _line|
+            [key, value] unless value.equal?(NIL_LITERAL)
+          end
+          first = positional_arguments(call)&.first
+          first &&= literal_value(first)
+          Call.new(helper: helper, line: base_line + (call.location.start_line - 1), keywords: keywords.to_h,
+                   positional: first.equal?(NIL_LITERAL) ? nil : first)
+        end
 
         # The findings for one helper call: an unknown helper, or its arity, block, options, values and content.
         def call_findings(call, base_line, bindings, content_fed = Set.new)
@@ -1877,9 +1907,13 @@ module Poetry
         # @param root [String, Pathname, nil] the app root the paths sit
         #   under, so a template is read as a mailer's by its path inside
         #   the app, never by a folder above it
-        def run(paths, root: nil)
+        # @param calls [Array<Call>, nil] a sink the helper calls of every
+        #   template are appended to, each stamped with its file
+        def run(paths, root: nil, calls: nil)
           paths.flat_map do |path|
-            findings = run_one(path, root)
+            before = calls&.size || 0
+            findings = run_one(path, root, calls)
+            calls&.drop(before)&.each { |call| call.file = path }
             findings.each { |finding| finding.file = path }
           end
         end
@@ -1905,7 +1939,7 @@ module Poetry
 
         # One file's findings; a file that cannot be read or decoded is one
         # warning naming it, never the end of the sweep.
-        def run_one(path, root)
+        def run_one(path, root, calls = nil)
           source = File.read(path, encoding: "UTF-8")
           unless source.valid_encoding?
             return [Finding.new(rule: "unreadable", severity: :warning,
@@ -1916,7 +1950,7 @@ module Poetry
           end
 
           findings = @linter.lint(source, mail: Check.mail_template?(path, root: root),
-                                          importmap_pins: importmap_pins(root))
+                                          importmap_pins: importmap_pins(root), calls: calls)
           # The StableId heuristics ride every ERB pass (warnings only -
           # they never flip the exit code); the element rule rides a
           # component's template, and so does the compile tier when the

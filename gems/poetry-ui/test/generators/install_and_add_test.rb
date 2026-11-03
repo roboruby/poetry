@@ -20,6 +20,14 @@ module Poetry
       assert_includes output, "bin/rails poetry:prompt | pbcopy"
     end
 
+    def test_the_install_ignores_the_audit_folder_once
+      File.write(File.join(destination_root, ".gitignore"), "/tmp\n")
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_equal ["/tmp", ".poetry/audit/"], File.read(File.join(destination_root, ".gitignore")).lines.map(&:strip)
+    end
+
     def test_installs_tokens_theme_safelist_initializer_and_manifest
       run_generator
 

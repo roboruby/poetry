@@ -11,7 +11,8 @@ def poetry_ui_template_classes_text
   # Component templates + the block templates: a block's
   # consumer utilities (group-has-*/sidebar-wrapper etc.) must reach host
   # safelists and the dummy's compiled build like any other gem markup.
-  scans = ["app/components/**/*.html.erb", "lib/generators/poetry/block/templates/*.html.erb"].map do |glob|
+  scans = ["app/components/**/*.html.erb", "lib/generators/poetry/block/templates/*.html.erb",
+           "app/views/poetry/ui/**/*.html.erb"].map do |glob|
     Poetry::Core::CSS::TemplateClasses.scan(root: Poetry::Ui.root, glob: glob)
   end
   abort scans.flat_map(&:errors).join("\n") unless scans.all? { |scan| scan.errors.empty? }

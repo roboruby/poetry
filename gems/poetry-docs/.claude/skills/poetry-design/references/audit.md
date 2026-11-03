@@ -90,6 +90,21 @@ transition (`transition-colors`, `transition-[color,box-shadow]`,
 `transition-transform`). poetry ships the upstream default, so re-timing it
 is a design decision, surfaced rather than enforced.
 
+## Inventory it (the whole app, deterministic)
+
+`bin/rails poetry:audit` writes `.poetry/audit/` - `summary.json` (the
+headline numbers), `inventory.json` (components by call sites, every
+declared axis with the values the templates pass and the values they never
+pass, raw colors and off-scale lengths by uses, font sizes per template,
+icons), `health.json` (every check and design finding with file, line and
+fix), `flows.json` (routes, pages with the components they render, link
+and form edges with unresolved targets recorded by kind, partials nothing
+renders) - and `report.html`, the same numbers as a page. Cite the JSON
+fields; never re-count what the files already hold. An axis value no
+template passes is a state the app has no coverage of; a partial with no
+static render site is listed beside the dynamic renders, never declared
+dead.
+
 ## Score it (deterministic)
 
 When the audit needs a NUMBER - a PR gate, a before/after, a fleet

@@ -515,6 +515,19 @@ module Poetry
       apply_poetry_skills
     end
 
+    # `poetry:audit` writes its files under .poetry/audit/, regenerated on
+    # every run and disposable - ignored once, like any built artifact.
+    # @api private
+    def ignore_audit_folder
+      line = "#{Poetry::Ui::Audit::OUTPUT}/"
+      gitignore = File.join(destination_root, ".gitignore")
+      if File.exist?(gitignore)
+        append_to_file ".gitignore", "#{line}\n" unless File.read(gitignore).lines.map(&:strip).include?(line)
+      else
+        create_file ".gitignore", "#{line}\n"
+      end
+    end
+
     # Dark mode is one layout line, but nothing else in the install touches
     # the layout - without the pointer the theme never applies before first
     # paint and hosts rediscover the flash-of-light-mode pothole.
