@@ -27,6 +27,7 @@
 
 ### Changed
 
+- The Where State Lives guide's morph section and the Stable IDs guide's list of what morph identity preserves describe Poetry's morph guard: a state attribute the client changed and a control whose value differs from the rendered one survive a morph on a node the morph keeps, a change the server made still lands, a dialog closes on its own form's success, and `data-turbo-permanent` remains the answer for a subtree a morph must not touch. The A2UI and AG-UI guides credit the guard to core and keep the MCP App frame guard with the agent runtime.
 - The MCP guide, the agent library page and the editors page say the server runs on the official `mcp` gem, and the guide's HTTP section describes the stateless JSON transport, `Accept: application/json`, `allowed_origins:` and `Server#mcp`.
 - The A2UI Surface demo renders a v0.9 surface, a feedback card shaped as AG-UI's A2UI middleware sends one, beside its v1.0 surfaces; its action and the agent's reply speak v0.9.
 - The A2UI guide names `session.capabilities(inline: true)`.

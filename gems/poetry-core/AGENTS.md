@@ -154,6 +154,16 @@ files against the manifest stamped at last bless.
   subclass override without the super call. Page-lifetime nets (the
   presence and portal cache nets, id_integrity, registration_guard,
   dismissable's static heal) stay outside the scope on purpose.
+- State a controller writes lives on the element, through `setState` and
+  the mirrors beside it (`aria-selected`, `aria-expanded`, `tabindex`,
+  `hidden`, a dialog's `open`), and the morph guard
+  (`helpers/morph_guard.js`, installed once by `registerPoetryControllers`)
+  keeps what the client changed across a Turbo morph: per element and
+  attribute, by observation, with form controls judged against their
+  defaults. A change the server made on purpose still lands on anything
+  the client never touched; a controller never patches a morph itself.
+  Overlays still close before Turbo caches a restoration snapshot, and a
+  dialog closes on its own form's successful submission.
 - A layered popup (a trigger, portaled content, focus-scope and
   dismissable tokens while open) composes `behaviors/overlay.js`
   (`useOverlay(this, { content, trigger, layers, eventPrefix, ... })`)

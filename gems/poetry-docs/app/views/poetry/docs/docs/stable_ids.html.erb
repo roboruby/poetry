@@ -185,8 +185,11 @@
       <p>
         With a paired (keyed) component, Turbo morph keeps the DOM node
         itself: Stimulus controller instances, element properties, scroll
-        state, everything riding the element object. Two things never
-        survive regardless of ids, by design:
+        state, everything riding the element object, and what Poetry's
+        morph guard keeps on it: a state attribute the client changed and a
+        control whose value differs from the one the server rendered
+        (<%= link_to "Where State Lives", where_state_lives_path(anchor: "morph") %>).
+        Two things never survive regardless of ids, by design:
       </p>
       <ul>
         <li>
@@ -194,9 +197,10 @@
           reinserts, which blurs it. Not an id failure.
         </li>
         <li>
-          <strong>User-typed input values.</strong> The morph deliberately
-          syncs values back to server truth. User-held input state is
-          <code>data-turbo-permanent</code> territory.
+          <strong>State on a replaced node.</strong> The guard works on the
+          nodes a morph keeps; an unkeyed component's random-id subtree is
+          replaced, typed values and all. A subtree a morph must not touch
+          at all is <code>data-turbo-permanent</code> territory.
         </li>
       </ul>
     <% end %>

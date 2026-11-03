@@ -15,7 +15,7 @@
           "scope": "class",
           "group": null,
           "signature": "registerPoetryControllers(application)",
-          "docstring": "The bundler-host one-liner: registers every poetry controller on the\nhost's Stimulus application (importmap hosts get the same\nregistrations via the engine's pins + this same call in their\ncontrollers/index.js), arms the portal event bridge, and installs the\nunregistered-controller warning.",
+          "docstring": "The bundler-host one-liner: registers every poetry controller on the\nhost's Stimulus application (importmap hosts get the same\nregistrations via the engine's pins + this same call in their\ncontrollers/index.js), arms the portal event bridge, and installs the\nunregistered-controller warning and the morph guard.",
           "params": [
             {
               "name": "application",
@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/index.js",
-          "line": 208
+          "line": 210
         }
       ],
       "constants": [
@@ -2469,6 +2469,144 @@
           "name": "DEFAULT_TOKENS",
           "value": "{",
           "docstring": "The default token map: mask char -> the pattern one input char must match."
+        }
+      ]
+    },
+    {
+      "path": "@poetry/controllers/helpers/morph_guard",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The morph guard: under turbo-refresh-method=morph a Turbo refresh keeps\nthe nodes the new page also has and syncs their attributes and form\nvalues to what the server rendered, which would strip the state a\ncontroller wrote onto the element (the DOM is the store, state.js): the\nselected tab, the open dialog, the expanded collapsible, the half-typed\nvalue. Ownership is per element AND attribute, by observation: a\nguarded attribute the client changed since the page was rendered is\nclient-owned until the next full render, and the morph leaves exactly\nthat attribute alone (its turbo:before-morph-attribute is cancelled).\nEverything the client never touched follows the server, so a change the\nserver made on purpose still lands. A form control follows the\nbrowser's own rule: kept while its value differs from what the server\nrendered (value against defaultValue, checked against defaultChecked,\nselected against defaultSelected). The morph's own writes never count:\na morph is synchronous within its task, so from its first\nturbo:before-morph-element to a zero timer (which runs after the\nmicrotasks that deliver the records) the observer ignores what it is\nhanded. Installed once per document by registerPoetryControllers; a\npage without Turbo never fires the events, and the observer costs one\nfiltered callback per client write. A node the morph replaces (no\nstable id to pair it) loses its state with the node - the guard works\non what the morph keeps.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+      "methods": [
+        {
+          "name": "ownsAttribute",
+          "scope": "class",
+          "group": null,
+          "signature": "ownsAttribute(element, name)",
+          "docstring": "Whether the client owns `name` on `element`: it changed the attribute's\nvalue since the page was rendered, outside a morph.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute name"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 53
+        },
+        {
+          "name": "isDirtyControl",
+          "scope": "class",
+          "group": null,
+          "signature": "isDirtyControl(element, name = \"value\")",
+          "docstring": "Whether a form control differs from what the server rendered: the\nbrowser's own dirty rule (value against defaultValue, checked against\ndefaultChecked, an option's selected against defaultSelected). A file\ninput has no server value to compare.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[name=\"value\"]",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute the morph is syncing: `value`, `checked` or `selected`"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 68
+        },
+        {
+          "name": "keepsAttribute",
+          "scope": "class",
+          "group": null,
+          "signature": "keepsAttribute(element, name)",
+          "docstring": "Whether a morph must leave `name` on `element` as it is: a dirty form\ncontrol's value, checked or selected, or a guarded attribute the client\nowns.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": "the element being morphed"
+            },
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute the morph would sync"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 90
+        },
+        {
+          "name": "installMorphGuard",
+          "scope": "class",
+          "group": null,
+          "signature": "installMorphGuard(doc = document)",
+          "docstring": "Installs the guard on `doc` once: the attribute observer that records\nthe client's writes, the window that ignores a morph's own writes, and\nthe `turbo:before-morph-attribute` listener that keeps what the client\nowns. Returns false when it is already installed, or when the\nenvironment has no MutationObserver.",
+          "params": [
+            {
+              "name": "[doc=document]",
+              "types": [
+                "Document"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": "true when this call installed it"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 128
+        }
+      ],
+      "constants": [
+        {
+          "name": "MORPH_GUARDED_ATTRIBUTES",
+          "value": "Object.freeze([",
+          "docstring": "The attributes a morph may not reset once the client wrote them: every\nattribute the state vocabulary writes, and the mirrors controllers write\nbeside it (the ARIA twin of a selection, a disclosure, a check or a\npress, the roving tabindex, hidden and its data twin, a dialog's open)."
         }
       ]
     },
@@ -5787,12 +5925,12 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Heals a restored zombie snapshot, subscribes the before-cache close,\nand arms the opt-in global hotkey.",
+          "docstring": "Heals a restored zombie snapshot, subscribes the before-cache close\nand the close on the dialog's own successful form submission, and\narms the opt-in global hotkey.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 39
+          "line": 40
         },
         {
           "name": "disconnect",
@@ -5804,7 +5942,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 71
+          "line": 81
         },
         {
           "name": "toggle",
@@ -5816,7 +5954,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 106
+          "line": 116
         },
         {
           "name": "open",
@@ -5833,7 +5971,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 118
+          "line": 128
         },
         {
           "name": "close",
@@ -5858,7 +5996,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 138
+          "line": 148
         },
         {
           "name": "backdropClose",
@@ -5878,7 +6016,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 164
+          "line": 174
         },
         {
           "name": "lockScroll",
@@ -5890,7 +6028,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 186
+          "line": 196
         },
         {
           "name": "unlockScroll",
@@ -5902,7 +6040,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 191
+          "line": 201
         }
       ],
       "constants": []

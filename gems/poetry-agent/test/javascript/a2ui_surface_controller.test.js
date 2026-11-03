@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { Application } from "@hotwired/stimulus"
-import { registerPoetryAgent, installVersionedReplace, preservesLocalState } from "@poetry/agent"
+import { registerPoetryAgent, installVersionedReplace, preservesElement } from "@poetry/agent"
 
 // The client side of a surface's checks: buttons disable while their own
 // checks fail, inputs turn invalid and their error slot carries the
@@ -199,34 +199,17 @@ describe("versioned replace with morph", () => {
   })
 })
 
-describe("the morph state guard", () => {
+describe("the frame guard", () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <form data-a2ui-surface="s">
-        <button data-slot="tabs-trigger" aria-selected="true" id="tab"></button>
-        <div data-slot="tabs-content" hidden id="panel"></div>
-        <dialog data-slot="dialog-content" open id="dialog"></dialog>
-        <input id="typed" value="server"><input id="untouched" value="server">
-        <input id="box" type="checkbox"><textarea id="area">server</textarea>
-        <span id="popup" aria-expanded="true"></span>
-      </form>
-      <input id="outside" value="server">`
-    document.getElementById("typed").value = "mine"
-    document.getElementById("box").checked = true
-    document.getElementById("area").value = "mine"
-    document.getElementById("outside").value = "mine"
+      <div data-mcp-app-host="h"><iframe id="frame"></iframe><p id="inside"></p></div>
+      <p id="outside"></p>`
   })
 
-  it("keeps tab selection, dialog state, expanded popups, and dirty controls inside a surface", () => {
-    expect(preservesLocalState(document.getElementById("tab"), "aria-selected")).toBe(true)
-    expect(preservesLocalState(document.getElementById("tab"), "class")).toBe(false)
-    expect(preservesLocalState(document.getElementById("panel"), "hidden")).toBe(true)
-    expect(preservesLocalState(document.getElementById("dialog"), "open")).toBe(true)
-    expect(preservesLocalState(document.getElementById("popup"), "aria-expanded")).toBe(true)
-    expect(preservesLocalState(document.getElementById("typed"), "value")).toBe(true)
-    expect(preservesLocalState(document.getElementById("untouched"), "value")).toBe(false)
-    expect(preservesLocalState(document.getElementById("box"), "checked")).toBe(true)
-    expect(preservesLocalState(document.getElementById("area"), "value")).toBe(true)
-    expect(preservesLocalState(document.getElementById("outside"), "value")).toBe(false)
+  it("keeps an MCP App's host and everything inside it, nothing outside", () => {
+    expect(preservesElement(document.querySelector("[data-mcp-app-host]"))).toBe(true)
+    expect(preservesElement(document.getElementById("frame"))).toBe(true)
+    expect(preservesElement(document.getElementById("inside"))).toBe(true)
+    expect(preservesElement(document.getElementById("outside"))).toBe(false)
   })
 })

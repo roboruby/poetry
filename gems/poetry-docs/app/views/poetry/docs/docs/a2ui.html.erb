@@ -18,7 +18,7 @@
     import { registerPoetryControllers } from "@poetry/controllers"
     import { registerPoetryAgent } from "@poetry/agent"
     registerPoetryControllers(application)
-    registerPoetryAgent(application) // the surface controller, the versioned replace, the morph guard
+    registerPoetryAgent(application) // the surface controller, the versioned replace, the MCP App frame guard
   CODE
   catalog_source = <<~CODE
     # config/routes.rb
@@ -405,10 +405,10 @@
         An update replaces the whole surface, which would reset a tab the reader
         picked or text they typed. Two things prevent that. Every rendered component
         carries a render-stable key, so two renders of a surface are byte-identical
-        and Turbo morph pairs the same element across them. And the runtime's guard
-        keeps what the server cannot know while a morph runs: tab selection, a
-        dialog's open state, an expanded popup, and any control whose value differs
-        from what the server last rendered. Pass <code>morph: false</code> to
+        and Turbo morph pairs the same element across them. And Poetry's morph guard
+        keeps what the server cannot know while a morph runs: the tab selection,
+        dialog state and expanded popups the reader changed, and any control whose
+        value differs from what the server last rendered. Pass <code>morph: false</code> to
         Streams if you want plain swaps.
       </p>
     <% end %>

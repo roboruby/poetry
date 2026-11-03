@@ -19,7 +19,7 @@
         {
           "name": "registerPoetryAgent",
           "value": "(application) => {",
-          "docstring": "Registers the runtime's controllers, installs the versioned replace\nstream action the AG-UI relay and the A2UI streams emit (when Turbo is\npresent), and the morph guards that keep an A2UI surface's local state\nand an MCP App's frame through a streamed re-render."
+          "docstring": "Registers the runtime's controllers, installs the versioned replace\nstream action the AG-UI relay and the A2UI streams emit (when Turbo is\npresent), and the frame guard that keeps an MCP App's frame through a\nstreamed re-render (a surface's local state is kept by Poetry's morph\nguard in core, installed with the core controllers)."
         }
       ]
     },
@@ -186,7 +186,7 @@
       "path": "@poetry/agent/stream_actions",
       "type": "module",
       "superclass": null,
-      "docstring": "Local state a morph must not reset inside an A2UI surface: the\nselection a tab strip holds, a dialog's open state, a popup's expanded\nstate, and a control the user has edited (its value or checked state\ndiffers from what the server last rendered). The server does not know\nthis state, so its frame would carry the defaults; canceling Turbo's\nbefore-morph-attribute event keeps the page's own.",
+      "docstring": "The local state a surface holds (tab selection, dialog state, expanded\npopups, edited controls) is kept across a morph by Poetry's morph guard\nin core (helpers/morph_guard.js, installed by registerPoetryControllers):\nwhat the client changed on an element survives, what it never touched\nfollows the server. This file keeps only what is the agent runtime's\nown: an MCP App's frame.",
       "examples": [],
       "file": "app/javascript/poetry/agent/stream_actions.js",
       "methods": [],
@@ -197,11 +197,6 @@
           "docstring": "The versioned replace Turbo Stream action the AG-UI relay and the A2UI\nsurface streams emit: a streamed frame re-renders the SAME element from\na server stream, which inherits an out-of-order delivery race, so every\npayload carries data-version and this action applies only strictly-newer\nframes - older or duplicate frames are dropped silently. With\nmethod=\"morph\" the newer frame morphs the element through Turbo's own\nreplace action (idiomorph), so local state survives an update. Installed\non Turbo by registerPoetryAgent when the host has Turbo and no vreplace\nof its own."
         },
         {
-          "name": "preservesLocalState",
-          "value": "(element, attributeName) => {",
-          "docstring": "Whether a morph must leave an attribute alone to keep an A2UI surface's\nlocal state: an edited input's value or checked state, an open disclosure,\nor a slot-specific attribute the runtime owns."
-        },
-        {
           "name": "preservesElement",
           "value": "(element) => !!element?.closest?.(\"[data-mcp-app-host]\")",
           "docstring": "Whether a morph must leave an element alone: the frame holder of an MCP\nApp (`data-mcp-app-host`) and everything inside it, which the host\ncontroller owns. A stream morph would replace the holder outright (even\na `data-turbo-permanent` one) or strip its frame, and the app would\nreload and handshake again."
@@ -209,7 +204,7 @@
         {
           "name": "installMorphStateGuard",
           "value": "(doc = globalThis.document) => {",
-          "docstring": "Installs the morph guards once per document, so a streamed re-render\nmorphs without clobbering local state or an app's frame."
+          "docstring": "Installs the frame guard once per document, so a streamed re-render\nmorphs without reloading an MCP App's frame. A surface's local state is\nPoetry's morph guard's work, installed with the core controllers."
         }
       ]
     },

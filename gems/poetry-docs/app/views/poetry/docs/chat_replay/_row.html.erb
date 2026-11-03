@@ -1,6 +1,6 @@
 <%# One assistant message row, rendered from a Poetry::Ui::Chat frame's
     accumulated parts. The stream vreplace-s this same row as frames
-    arrive; data-version is the morph guard's monotonic clock. Before the
+    arrive; data-version is the versioned replace's monotonic clock. Before the
     first frame the row is a running "Thinking" line; after, its runs
     (Poetry::Docs::AgentActivity): text in a muted bubble, each run of
     reasoning and tool calls as one Trace. A tool waiting on approval is

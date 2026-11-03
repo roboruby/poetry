@@ -142,15 +142,24 @@
         nodes the new page also has and syncs their attributes and form
         values to what the server rendered. The durable, addressable and
         preference tiers come back exactly, because the server rendered
-        them. Template state survives in the browser. Transient state does
-        not: an open dialog, a selected tab and an expanded collapsible
-        reset to the server's first state, and a half-typed input returns
-        to its value. Two answers today: render the state the page should
-        keep from a higher tier (<code>open:</code> from the URL,
-        <code>value:</code> from the record), or mark the element
-        <code>data-turbo-permanent</code> with an id, which a morph leaves
-        as it is. <%= link_to "Stable IDs", stable_ids_path(anchor: "morph") %>
+        them. Template state survives in the browser. Transient state
+        survives through Poetry's morph guard, installed with the
+        controllers: a state attribute the client changed since the page
+        was rendered is client-owned until the next full render, and the
+        morph leaves exactly that attribute alone, so the selected tab, the
+        open dialog, the expanded collapsible and the half-typed value stay
+        as they are, while everything the client never touched follows the
+        server, a cookie it read or a record it saved included. A form
+        control follows the browser's own rule, kept while its value
+        differs from the one the server rendered. A dialog whose own form
+        submits successfully closes before the refresh, and overlays still
+        close before Turbo caches a restoration snapshot, as they do before
+        any navigation. The guard works on the nodes a morph keeps: a
+        component without a stable id is replaced, state and all, so
+        <%= link_to "Stable IDs", stable_ids_path(anchor: "morph") %>
         covers what pairing a morph needs from you.
+        <code>data-turbo-permanent</code> with an id remains the answer for
+        a subtree a morph must not touch at all.
       </p>
     <% end %>
   </section>

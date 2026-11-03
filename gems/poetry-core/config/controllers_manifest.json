@@ -605,7 +605,7 @@
     "method_docs": {
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens modally: showModal() (the platform trap, top-layer and focus return), the pair flip, and the body scroll lock. Returns the resulting state (what an agent tool reports back).",
@@ -689,7 +689,7 @@
     "method_docs": {
       "backdropClose": "The inherited backdrop click, minus the ghost: a press that started inside the panel can end over the backdrop (a drag against the clamp, a slip off an inner control) and the click the browser then fires is a backdrop click by target and coordinates, never by intent.",
       "close": "Closes through the animated exit (data-ending-style), then the native close(), the unlock, and the swipe-var reset. The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "escapeClose": "The non-modal Escape exit (the component wires this keydown action only when modal is false): a non-modal dialog never fires cancel, so Esc needs its own path while focus is inside; modal drawers ride the native cancel.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
@@ -1792,7 +1792,7 @@
     "method_docs": {
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens with the animated entry: showModal(), then the presence enter so the data-starting-style hook fires like every other presence consumer (the exit half is inherited - the base close() already holds through the slide-out).",

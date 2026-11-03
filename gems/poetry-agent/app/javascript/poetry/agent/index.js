@@ -21,7 +21,7 @@ export { default as A2uiSurfaceController } from "@poetry/agent/a2ui_surface_con
 export { default as McpAppHostController } from "@poetry/agent/mcp_app_host_controller"
 export * from "@poetry/agent/adapter"
 export { _registrations, executeRegisteredTool } from "@poetry/agent/webmcp_controller"
-export { installVersionedReplace, installMorphStateGuard, preservesLocalState, preservesElement } from "@poetry/agent/stream_actions"
+export { installVersionedReplace, installMorphStateGuard, preservesElement } from "@poetry/agent/stream_actions"
 export * from "@poetry/agent/mcp_app_host"
 
 /**
@@ -38,8 +38,9 @@ export const controllers = {
 /**
  * Registers the runtime's controllers, installs the versioned replace
  * stream action the AG-UI relay and the A2UI streams emit (when Turbo is
- * present), and the morph guards that keep an A2UI surface's local state
- * and an MCP App's frame through a streamed re-render.
+ * present), and the frame guard that keeps an MCP App's frame through a
+ * streamed re-render (a surface's local state is kept by Poetry's morph
+ * guard in core, installed with the core controllers).
  *
  * @param {Object} application the Stimulus application
  */

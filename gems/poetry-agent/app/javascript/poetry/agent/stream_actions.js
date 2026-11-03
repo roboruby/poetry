@@ -31,43 +31,12 @@ export const installVersionedReplace = (turbo = globalThis.Turbo) => {
   return true
 }
 
-// Local state a morph must not reset inside an A2UI surface: the
-// selection a tab strip holds, a dialog's open state, a popup's expanded
-// state, and a control the user has edited (its value or checked state
-// differs from what the server last rendered). The server does not know
-// this state, so its frame would carry the defaults; canceling Turbo's
-// before-morph-attribute event keeps the page's own.
-const LOCAL_STATE = {
-  "tabs-trigger": ["aria-selected", "tabindex", "data-active"],
-  "tabs-content": ["hidden", "data-hidden"],
-  "dialog-content": ["open", "data-closed"]
-}
-const EXPANDED = ["aria-expanded", "data-open", "data-state"]
-
-/**
- * Whether a morph must leave an attribute alone to keep an A2UI surface's
- * local state: an edited input's value or checked state, an open disclosure,
- * or a slot-specific attribute the runtime owns.
- *
- * @param {Element} element the element being morphed
- * @param {string} attributeName the attribute the morph would change
- * @returns {boolean} true to keep the current attribute
- */
-export const preservesLocalState = (element, attributeName) => {
-  if (!element?.closest?.("[data-a2ui-surface]")) return false
-  if (attributeName === "value" || attributeName === "checked") return isDirty(element)
-  if (EXPANDED.includes(attributeName)) return true
-  return (LOCAL_STATE[element.dataset?.slot] || []).includes(attributeName)
-}
-
-const isDirty = (element) => {
-  if (element instanceof HTMLInputElement) {
-    if (element.type === "checkbox" || element.type === "radio") return element.checked !== element.defaultChecked
-    return element.value !== element.defaultValue
-  }
-  if (element instanceof HTMLTextAreaElement) return element.value !== element.defaultValue
-  return false
-}
+// The local state a surface holds (tab selection, dialog state, expanded
+// popups, edited controls) is kept across a morph by Poetry's morph guard
+// in core (helpers/morph_guard.js, installed by registerPoetryControllers):
+// what the client changed on an element survives, what it never touched
+// follows the server. This file keeps only what is the agent runtime's
+// own: an MCP App's frame.
 
 /**
  * Whether a morph must leave an element alone: the frame holder of an MCP
@@ -82,8 +51,9 @@ const isDirty = (element) => {
 export const preservesElement = (element) => !!element?.closest?.("[data-mcp-app-host]")
 
 /**
- * Installs the morph guards once per document, so a streamed re-render
- * morphs without clobbering local state or an app's frame.
+ * Installs the frame guard once per document, so a streamed re-render
+ * morphs without reloading an MCP App's frame. A surface's local state is
+ * Poetry's morph guard's work, installed with the core controllers.
  *
  * @param {Document} [doc] the document to guard
  * @returns {boolean} true when installed, false when absent or already guarded
@@ -91,9 +61,6 @@ export const preservesElement = (element) => !!element?.closest?.("[data-mcp-app
 export const installMorphStateGuard = (doc = globalThis.document) => {
   if (!doc || doc.__poetryA2uiMorphGuard) return false
   doc.__poetryA2uiMorphGuard = true
-  doc.addEventListener("turbo:before-morph-attribute", (event) => {
-    if (preservesLocalState(event.target, event.detail?.attributeName)) event.preventDefault()
-  })
   doc.addEventListener("turbo:before-morph-element", (event) => {
     if (preservesElement(event.target)) event.preventDefault()
   })

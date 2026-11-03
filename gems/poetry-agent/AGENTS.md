@@ -98,10 +98,11 @@ component contract. Two ship:
   the render runs inside `StableId.with_seed`, so two renders are
   byte-identical and morph pairs elements. Repeated instances of one
   class under one A2UI component MUST pass a `suffix:`. Surface updates
-  are `vreplace` with `method="morph"`; the runtime's morph guard keeps
-  local state (tab selection, dialog open state, expanded popups, dirty
-  controls) - extend `LOCAL_STATE` in `stream_actions.js` when a new
-  component slot holds local state.
+  are `vreplace` with `method="morph"`; Poetry's morph guard in core
+  (installed with the core controllers) keeps the local state the reader
+  changed (tab selection, dialog open state, expanded popups, edited
+  controls), and the runtime's own guard keeps an MCP App's frame - there
+  is no per-slot list to extend.
 - `Functions#define` takes `callers:` (`rendererOnly` default); only
   `agentOnly` / `rendererOrAgent` functions answer `callRendererFunction`
   (`Session#responses`).

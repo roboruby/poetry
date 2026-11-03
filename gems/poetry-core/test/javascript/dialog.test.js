@@ -55,6 +55,23 @@ describe("poetry--core--dialog", () => {
     expect(document.body.style.overflow).toBe("")
   })
 
+  it("closes when a form inside it submits successfully, and stays for a failure or an outside form", () => {
+    const dlg = document.getElementById("dlg")
+    dlg.insertAdjacentHTML("beforeend", `<form id="inside"><button>Save</button></form>`)
+    document.getElementById("root").insertAdjacentHTML("beforeend", `<form id="outside"><button>Other</button></form>`)
+    document.getElementById("trigger").click()
+    const submitEnd = (form, success) =>
+      form.dispatchEvent(new CustomEvent("turbo:submit-end", { bubbles: true, detail: { success } }))
+
+    submitEnd(document.getElementById("inside"), false)
+    submitEnd(document.getElementById("outside"), true)
+    expect(dlg.open).toBe(true)
+
+    submitEnd(document.getElementById("inside"), true)
+    expect(dlg.open).toBe(false)
+    expect(dlg.hasAttribute("data-closed")).toBe(true)
+  })
+
   it("open() and close() report the resulting state (what an agent tool answers with)", () => {
     const controller = application.getControllerForElementAndIdentifier(document.getElementById("root"), "poetry--core--dialog")
 
