@@ -240,6 +240,40 @@ module Poetry
             # => { "data-controller" => "cart", "data-action" => "keydown.esc->cart#log",
             #      "data-cart-target" => "row", "data-cart-sku-value" => "A1" }
           RUBY3
+          behavior_ruby: <<~RUBY3.strip,
+            # app/components/shortcut_list.rb: a list of your own, with Poetry's arrow-key focus
+            class ShortcutList < Poetry::Core::Component
+              use_stimulus do
+                on :root do
+                  behavior :roving_focus, orientation: :vertical, loop: true  # the wiring Tabs and Menubar declare
+                  controller "shortcuts" do                                    # yours, beside it
+                    register
+                    action :run, on: event(:roving_focus, :entry)              # as focus lands on an item
+                  end
+                end
+              end
+            end
+          RUBY3
+          behavior_js: <<~JS.strip,
+            // app/javascript/controllers/shortcuts_controller.js
+            import { Controller } from "@hotwired/stimulus"
+            import { useEscape } from "@poetry/controllers/behaviors/escape"
+            import { useListen } from "@poetry/controllers/behaviors/listen"
+            import { teardown } from "@poetry/controllers/helpers/scope"
+
+            export default class extends Controller {
+              connect() {
+                useEscape(this, () => this.close())                       // capture-phase Escape, IME cancels filtered
+                useListen(this, window, "resize", () => this.measure())   // removed for you, with everything else
+              }
+
+              disconnect() {
+                teardown(this)   // every listener, timer and portal this connect set up, newest first
+              }
+
+              // run(event), close() and measure() are yours
+            }
+          JS
           extend_js: <<~JS.strip,
             // app/javascript/controllers/index.js
             import { application } from "controllers/application"
@@ -271,6 +305,15 @@ module Poetry
             end
           RUBY3
         }
+      end
+
+      # The Where State Lives guide's one excerpt: an option per tier.
+      def state_guide_snippet
+        <<~ERB.strip
+          <%= poetry_calendar(name: "event[on]", selected: @event.on) %>             <%# durable: the record, through a real input %>
+          <%= poetry_collapsible(open: params[:details] == "1") do |panel| %>        <%# addressable: the URL opens it %>
+          <%= poetry_sidebar(open: cookies[:sidebar_state] != "false") do |shell| %> <%# preference: the cookie's last choice %>
+        ERB
       end
 
       def theming_guide_snippets

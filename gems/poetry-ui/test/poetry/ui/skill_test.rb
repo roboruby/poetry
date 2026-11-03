@@ -36,6 +36,7 @@ module Poetry
         assert component.key?("references/anatomy.md")
         assert component.key?("references/documentation.md")
         assert component.key?("references/checklist.md")
+        assert component.key?("references/behaviors.md")
       end
 
       # The authoring skill's anatomy is the canonical section order -

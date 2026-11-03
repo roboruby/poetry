@@ -32,6 +32,9 @@ module Poetry
       def stimulus
       end
 
+      def where_state_lives
+      end
+
       def accessibility
       end
 
@@ -214,6 +217,7 @@ module Poetry
         when "testing" then DocsMarkdown.testing(guide_entry("testing"))
         when "i18n" then DocsMarkdown.i18n(guide_entry("i18n"))
         when "stimulus" then DocsMarkdown.stimulus(guide_entry("stimulus"))
+        when "where_state_lives" then DocsMarkdown.where_state_lives(guide_entry("where-state-lives"))
         when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
         when "caching" then DocsMarkdown.caching(guide_entry("caching"))
         when "uploads" then DocsMarkdown.uploads(guide_entry("uploads"))

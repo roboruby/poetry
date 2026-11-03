@@ -318,6 +318,12 @@
     "path": "/stimulus#declare"
   },
   {
+    "title": "4b. Compose a Poetry behavior into your controller",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#behaviors"
+  },
+  {
     "title": "5. Change what a Poetry controller does",
     "page": "Stimulus",
     "section": "docs",
@@ -334,6 +340,54 @@
     "page": "Stimulus",
     "section": "docs",
     "path": "/stimulus#tooling"
+  },
+  {
+    "title": "Where State Lives",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives"
+  },
+  {
+    "title": "Durable: the record and the form",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#durable"
+  },
+  {
+    "title": "Addressable: the URL",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#addressable"
+  },
+  {
+    "title": "Preference: a cookie, or localStorage before first paint",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#preference"
+  },
+  {
+    "title": "Template state, on a ReActionView host",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#template"
+  },
+  {
+    "title": "Transient: attributes on the element",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#transient"
+  },
+  {
+    "title": "Why there is no useState",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#usestate"
+  },
+  {
+    "title": "What a morph does to each tier",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#morph"
   },
   {
     "title": "Form Builder",

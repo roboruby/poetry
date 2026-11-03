@@ -98,6 +98,40 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_match "human_attribute_name", response.body
   end
 
+  test "the Stimulus guide composes a Poetry behavior into a host controller" do
+    get "/stimulus"
+
+    assert_response :success
+    assert_select "h2#behaviors"
+    assert_select "[data-slot=code-block-code]", text: /behavior :roving_focus, orientation: :vertical/
+    assert_select "[data-slot=code-block-code]", text: /useEscape\(this/
+    assert_select "[data-slot=code-block-code]", text: /teardown\(this\)/
+    assert_select "a[href=?]", where_state_lives_path
+
+    get "/stimulus.md"
+
+    assert_includes response.body, "4b. Compose a Poetry behavior"
+    assert_includes response.body, "teardown(this)"
+  end
+
+  test "the Where State Lives guide names the tiers and answers the useState question" do
+    get "/where-state-lives"
+
+    assert_response :success
+    assert_select "h1", "Where State Lives"
+    %w[durable addressable preference template transient usestate morph].each do |id|
+      assert_select "h2##{id}"
+    end
+    assert_select "[data-slot=code-block-code]", text: /cookies\[:sidebar_state\]/
+    assert_select "a[href=?]", herb_guide_path(anchor: "reactive-templates")
+    assert_select "a[href=?]", stimulus_path(anchor: "herb")
+
+    get "/where-state-lives.md"
+
+    assert_includes response.body, "Poetry has no `useState`"
+    assert_includes response.body, "data-turbo-permanent"
+  end
+
   test "the Herb guide says what is guaranteed and where reactive templates stop" do
     get "/herb"
 

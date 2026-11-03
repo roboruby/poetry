@@ -100,6 +100,20 @@ files against the manifest stamped at last bless.
   the manifest at CLASS LOAD, so declare `use_stimulus` before `tool`. The
   registry and llms-full list declared tools; `poetry check` carries the
   WebMCP rules; poetry-agent registers them at runtime.
+- A behavior (`Poetry::Core::Behavior`) is a named piece of client behavior
+  several components share, declared once: a module declares `behavior
+  :name, "description"`, `agent_rule`, `wiring` (a block run in the element
+  DSL with the caller's options) and `contributes`. A component uses it
+  with `behavior :name, **options` inside a `use_stimulus` element, where it
+  lands in declaration order beside the element's own controllers, or at
+  class level with `use_behavior :name` (a runtime behavior the JS activates
+  when a layer opens; `on:` for a wired one). Its rules lead the component's
+  agent rules; the registry, llms.txt, the skills and `describe_component`
+  list it. Core ships `roving_focus`, `popper`, `checked`, `file_drop`,
+  `focus_scope` and `dismissable`; another gem adds its namespace to
+  `Behavior.namespaces`, and a name two namespaces define raises. Poetry
+  behaviors are not Herb's client behaviors, which follow elements the
+  client adds and removes.
 
 ## Controller conventions
 

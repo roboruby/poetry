@@ -95,6 +95,9 @@ Part descriptions, agent rules, option and slot descriptions, and
 - No abbreviations that only make sense inside this codebase.
 - Agent rules are imperatives: what to do, what never to do, one rule
   per entry.
+- A behavior's `agent_rule` strings project verbatim too, into EVERY
+  component that uses the behavior, ahead of that component's own
+  `AGENT_RULES`: write the rule for the behavior, never for one consumer.
 
 ## What comments never contain
 

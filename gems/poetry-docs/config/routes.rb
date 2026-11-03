@@ -31,6 +31,7 @@ Poetry::Docs::Engine.routes.draw do
   get "testing" => "docs#testing", as: :testing
   get "i18n" => "docs#i18n", as: :i18n
   get "stimulus" => "docs#stimulus", as: :stimulus
+  get "where-state-lives" => "docs#where_state_lives", as: :where_state_lives
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching
   get "engines" => "docs#engines", as: :engines_guide

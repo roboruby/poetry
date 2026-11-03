@@ -1,0 +1,157 @@
+<% content_for :title, "Where State Lives" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Where State Lives") %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Where State Lives</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Poetry has no <code>useState</code>. Every state a component shows
+      lives in a place the server, <code>poetry:check</code>, your CSS and
+      the back button can see, and how long it must last picks the place.
+      Five tiers, each with the component that ships it.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="durable">Durable: the record and the form</h2>
+      <p>
+        The record is the truth and a component renders it: a Checkbox is
+        checked because the row says so, and it changes by submitting.
+        A <code>name:</code> makes any component a form participant
+        through a real native control: Calendar keeps a hidden input the
+        controller holds to the ISO date, Checkbox a visually hidden native
+        checkbox, RadioGroup one native radio per item. The native element
+        is the serialization truth, so what a test reads is what the server
+        receives, and the page after the submit renders from the record
+        again.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="addressable">Addressable: the URL</h2>
+      <p>
+        What a visitor should be able to share, bookmark and come back to
+        lives in the URL. <%= link_to "DataTable", data_table_guide_path %>'s
+        query, sort, direction and page are query parameters:
+        <code>State.from_params(params, sortable:)</code> reads them back
+        with the sort held to a whitelist, and the table renders inside a
+        <code>&lt;turbo-frame data-turbo-action="advance"&gt;</code>, so
+        each change is a history entry and the back button walks them.
+        Collapsible's rule for disclosure the URL controls: render
+        <code>open:</code> from params, and the same markup serves with
+        and without JavaScript.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="preference">Preference: a cookie, or localStorage before first paint</h2>
+      <p>
+        A choice that outlives the page and must be right at first paint.
+        Sidebar's controller persists the <code>sidebar_state</code> cookie
+        when the column collapses; pass
+        <code>open: cookies[:sidebar_state] != "false"</code> and the first
+        paint matches the last choice with no flash. The color scheme goes
+        the other way: <code>poetry_color_scheme_script</code>, rendered in
+        <code>&lt;head&gt;</code> before the stylesheets, reads
+        <code>poetry-color-scheme</code> from localStorage, or the OS
+        setting when nothing is stored, and sets <code>.dark</code> before
+        anything paints, so the server never needs to know. The rule is
+        which side has to act on the choice: a preference the server
+        renders is a cookie; one only the browser applies is localStorage,
+        read before paint.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: state_guide_snippet, language: "erb", label: "An option per tier") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="template">Template state, on a ReActionView host</h2>
+      <p>
+        An application on ReActionView has a tier between the URL and the
+        element: a template declares a state, the server renders its
+        default, and the browser owns it from there, for as long as the
+        page lasts. Its limit: a Poetry component is rendered by the
+        server, so a state read inside a component's block does not follow
+        the state, and a row built from components cannot be painted before
+        the server answers. Read the state beside the component, keep what
+        a row shows at once in plain markup, and send a change the server
+        may refuse through <%= link_to "poetry_optimistic_form", optimistic_forms_path %>.
+        The <%= link_to "Herb and ReActionView guide", herb_guide_path(anchor: "reactive-templates") %>
+        walks each case.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="transient">Transient: attributes on the element</h2>
+      <p>
+        Open, closed, checked, pressed, expanded, active: one vocabulary of
+        bare boolean attributes (<code>data-open</code>, never a
+        <code>data-state="open"</code> pair), written by
+        <code>setState(element, key)</code> from Poetry's state helper,
+        which sets the attribute, removes its counterparts and announces
+        the flip as a <code>poetry:state-change</code> event. The server
+        renders the first one (<code>open:</code>, <code>checked:</code>),
+        the controller flips it, your CSS styles off it,
+        <code>poetry:check</code> validates it, a test reads it, and a
+        controller of yours listens for the change. What a controller needs
+        between two calls and nobody else needs to see is a Stimulus value,
+        declared in the controllers manifest. Whichever layer wrote an
+        attribute owns it: never toggle <code>data-open</code> by hand on a
+        component whose controller does.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="usestate">Why there is no useState</h2>
+      <p>
+        Every tier above is a place the checker, the server and the back
+        button can see. A value held in a controller's memory is visible to
+        none of them: it cannot be rendered on the first paint, cannot be
+        validated statically, cannot be shared by a link, and goes when the
+        page does. So Poetry's controllers hold nothing that is not on the
+        element. Herb ships a <code>useState</code> of its own, from
+        <code>reactionview</code>, for controllers on a ReActionView host
+        that read template state; Poetry's controllers do not call that one
+        either, for the same reason, and yours may. The
+        <%= link_to "Stimulus guide", stimulus_path(anchor: "herb") %> says
+        how the two share a page.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="morph">What a morph does to each tier</h2>
+      <p>
+        A refresh under <code>turbo-refresh-method="morph"</code> keeps the
+        nodes the new page also has and syncs their attributes and form
+        values to what the server rendered. The durable, addressable and
+        preference tiers come back exactly, because the server rendered
+        them. Template state survives in the browser. Transient state does
+        not: an open dialog, a selected tab and an expanded collapsible
+        reset to the server's first state, and a half-typed input returns
+        to its value. Two answers today: render the state the page should
+        keep from a higher tier (<code>open:</code> from the URL,
+        <code>value:</code> from the record), or mark the element
+        <code>data-turbo-permanent</code> with an id, which a morph leaves
+        as it is. <%= link_to "Stable IDs", stable_ids_path(anchor: "morph") %>
+        covers what pairing a morph needs from you.
+      </p>
+    <% end %>
+  </section>
+</div>

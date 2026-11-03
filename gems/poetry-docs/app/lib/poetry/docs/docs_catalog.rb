@@ -47,9 +47,16 @@ module Poetry
         Entry.new(slug: "stimulus", title: "Stimulus", section: "docs", icon: :zap,
                   description: "Compose your own Stimulus controllers with Poetry's: data: keywords merge onto " \
                            "any root or slot, forty-two controllers dispatch namespaced events, your markup " \
-                           "drives Poetry's actions, use_stimulus declares wiring in a subclass, and a " \
-                           "re-registered identifier extends a controller in JavaScript - poetry:check and " \
-                           "the registration guard cover every rung."),
+                           "drives Poetry's actions, use_stimulus declares wiring in a subclass, a Poetry " \
+                           "behavior composes into your own controller, and a re-registered identifier " \
+                           "extends a controller in JavaScript - poetry:check and the registration guard " \
+                           "cover every rung."),
+        Entry.new(slug: "where-state-lives", title: "Where State Lives", section: "docs", icon: :"map-pin",
+                  description: "Poetry has no useState: every state a component shows lives where the " \
+                           "server, poetry:check, your CSS and the back button can see it. The tiers - " \
+                           "the record and the form, the URL, a cookie or localStorage, a reactive " \
+                           "template's state, attributes on the element - each with the component that " \
+                           "ships it, and what a Turbo morph does to each."),
         Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
                   description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
                                "fields - label, value, errors, aria, and validation attributes all derived " \
@@ -242,7 +249,7 @@ module Poetry
         # The sidebar's guide sections. Order within a section is the display
         # order; Agent stays last in AI Native while it is experimental.
         DOC_SECTIONS = {
-          "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
+          "Get Started" => %w[installation theming typography testing i18n stimulus where-state-lives editors api],
           "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
                            engines
                            herb],
