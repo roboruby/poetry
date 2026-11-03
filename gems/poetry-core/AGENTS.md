@@ -79,10 +79,10 @@ files against the manifest stamped at last bless.
   tolerant section walker). `DesignMd::Import` plans token overrides with
   WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
   L-walk, chroma held) and DROP-not-fabricate for the rest.
-- `Poetry::Core::DesignLint` — twenty-three deterministic design-slop
-  rules: nineteen on the Herb AST (ERB or plain HTML, the motion floor
-  among them), four on computed styles. Warnings name the fix; provenance
-  cited per rule.
+- `Poetry::Core::DesignLint` — twenty-seven deterministic design-slop
+  rules: twenty-three on the Herb AST (ERB or plain HTML, the motion floor
+  and the craft floor among them), four on computed styles. Warnings name
+  the fix; provenance cited per rule.
 
 ## Contracts
 

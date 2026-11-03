@@ -42,7 +42,7 @@ visual fragments under `themes/`.
   is more than 2px larger than its box (an unsized icon falls back to
   24px). The dialog family is shot opened as well as closed.
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
-  (`POETRY_CHECK_DESIGN=1` adds the 23 design-slop rules); `design:lint`
+  (`POETRY_CHECK_DESIGN=1` adds the 27 design-slop rules); `design:lint`
   runs design-slop over the gem's own templates and previews.
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the

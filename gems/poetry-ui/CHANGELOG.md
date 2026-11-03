@@ -4,6 +4,7 @@
 
 ### Added
 
+- The design skill's audit reference lists DesignLint's four craft-floor rules (undersized text, the blinking cursor, content hidden at rest, the radial halo) with their fixes.
 - `bin/rails poetry:prompt` prints the cold-start prompt for an assistant that has none of poetry's surfaces in front of it yet: verify the install, load the skills, the catalog, the five usage rules, check last. Pipe it to the clipboard and paste it as the first message; `poetry:install` ends on that offer.
 - The component skill's `references/behaviors.md`: how a component uses a behavior (`behavior :name` inside an element, `use_behavior` at class level, the `:option` form, `event(:behavior, :name)` for its events), the catalog of the shipped ones with their options and consumers, and how to declare and document one of your own; `SKILL.md` points the create and document verbs at it, and the documentation standard says a behavior's rules project verbatim into every component that uses it.
 - Trace (`poetry_trace`), shadcn@4.23.0's shape for the steps an agent takes: `with_step(title, icon:, description:, status:, href:)` is one line, and a step's block is detail it discloses (tool output, a reasoning summary) on the Collapsible contract, its panel animating over `--collapsible-panel-height`. `status: :running` shimmers the title (off under reduced motion), `:error` turns the line destructive, `:pending` dims it. Theme rules transcribed in the eight ports; the default theme takes nova's, the upstream default style.

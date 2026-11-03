@@ -17,7 +17,7 @@ with a clean `poetry:check` run AFTER the final edit, never before it.
 
 ## The design-lint rules (what each catches)
 
-Every finding names its fix in the message. The 23 rules:
+Every finding names its fix in the message. The 27 rules:
 
 - `card-in-card` - a Card nested in a Card; flatten to one containment level.
 - `icon-tile-over-heading` - the decorative icon-in-a-tile stacked above
@@ -57,6 +57,21 @@ Every finding names its fix in the message. The 23 rules:
   the heading or cut it (badge announcement pills are fine).
 - `oversized-h1` - display-size type (text-7xl+) carrying 40+ characters;
   shorten the headline or step the size down.
+- `undersized-ui-text` - functional text under the 11px legibility floor
+  (`text-[10px]`, an inline `font-size: 0.6rem`); UI text starts at
+  `text-xs`. Size the label up, or drop the tracked-caps treatment that
+  tempted the size.
+- `blinking-cursor` - an animated caret glyph or hairline bar after copy;
+  the fake-terminal typing tell. Cut it (a real caret belongs to a real
+  input).
+- `content-hidden-at-rest` - content at a bare `opacity-0` revealed by a
+  hover at most, or never (waiting for a script); keyboard, touch and a
+  failed script never see it. Render it visible, or reveal on
+  `focus-visible` and a state too.
+- `radial-halo` - a radial gradient, a zero-offset glow shadow
+  (`shadow-[0_0_40px_...]`) or a blurred, rounded, positioned color blob;
+  the neon hero tell. Use a flat token surface, the theme's `shadow-*`
+  steps, or one directional scrim over imagery.
 
 Motion floor (perception physics, theme-independent - they read the motion
 utilities an element carries):
@@ -88,7 +103,7 @@ Severity weights, fixed:
 - **High 5** - each `poetry:verify` failure (a class that never
   compiled: styling silently not applying).
 - **Medium 2** - each design-slop WARNING (`POETRY_CHECK_DESIGN=1`, the
-  twenty rules above).
+  rules above).
 - **Low 1** - each critique-checklist finding (the judgment items; name
   the surface for every one you count).
 
