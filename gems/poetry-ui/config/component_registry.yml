@@ -297,7 +297,7 @@ components:
     - description
     - footer
     - footer_size_sm
-    capsule: e5c1096d0fe6
+    capsule: 0b41c6cb993a
     controllers:
     - identifier: poetry--core--dialog
       targets:
@@ -4458,7 +4458,7 @@ components:
     - description
     - footer
     - close
-    capsule: c81409bd9b83
+    capsule: e67d2155d0f4
     controllers:
     - identifier: poetry--core--dialog
       targets:

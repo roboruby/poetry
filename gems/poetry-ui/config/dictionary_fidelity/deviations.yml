@@ -96,7 +96,9 @@ alert-dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -108,6 +110,7 @@ alert-dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
     alert-dialog-footer:
@@ -603,7 +606,9 @@ dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -614,6 +619,7 @@ dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
 drawer:

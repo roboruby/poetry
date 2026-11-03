@@ -39,6 +39,7 @@
 
 - The sidebar inset no longer grows to its content's width: `min-w-0` on the inset keeps a page wider than the space beside the column (a table with several columns, a chart, a `pre` of long lines) inside the window, scrolling in its own container instead of clipping its right edge. The app-shell block's stat cards carry `min-w-0` for the same reason inside their grid, and its header separator centers (`data-vertical:self-center`, since the component's own `data-vertical:self-stretch` pins a fixed-height one to the top).
 - CodeBlock's `wrap: true` wraps a token with no break point (a signed URL, minified JSON) instead of scrolling sideways: a line carries `min-w-0` under wrap, so the code element's one grid column no longer grows to the longest token. Numbered blocks already wrapped.
+- Dialog and AlertDialog panels declare `content-start`: the panel is a fit-content grid under the UA modal max-height, and WebKit before its April 2026 fix (bug 260461) stretched the auto rows into that max-height, so Safari opened a modal at full height with the body floating mid-panel. The rows stay at content size; nothing changes where there is no free space (#29).
 
 ## [0.1.13] - 2026-10-13
 
