@@ -535,6 +535,17 @@ module Poetry
                         "<head> before using poetry_optimistic_form (the Optimistic Forms guide)", :cyan
     end
 
+    # The cold start for an assistant that has none of this in front of it
+    # yet (a hosted agent, a teammate's editor before the skills landed):
+    # the prompt names the surfaces the install just wrote and ends on
+    # check, and the clipboard is one pipe away.
+    # @api private
+    def announce_prompt
+      say_status :note, "cold start: `bin/rails poetry:prompt | pbcopy` copies the prompt that points an " \
+                        "assistant without the skills or MCP server at poetry's workflow " \
+                        "(verify, catalog, usage rules, check last)", :cyan
+    end
+
     private
 
     # Whether this install vendors the reset floor: asked for now, or

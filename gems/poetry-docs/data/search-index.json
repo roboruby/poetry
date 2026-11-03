@@ -12,6 +12,18 @@
     "path": "/installation#install"
   },
   {
+    "title": "Hand it to an assistant",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#prompts"
+  },
+  {
+    "title": "Prompts to try",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#prompts-to-try"
+  },
+  {
     "title": "Installing into an app that already has CSS",
     "page": "Installation",
     "section": "docs",

@@ -115,6 +115,15 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the root llms.txt opens on the five usage rules and names the cold-start prompt" do
+    get "/llms.txt"
+
+    assert_response :success
+    assert_operator response.body.index("## Usage rules"), :<, response.body.index("## Guides")
+    Poetry::Core::LlmsText::USAGE_RULES.each { |rule| assert_includes response.body, "- #{rule}" }
+    assert_includes response.body, "bin/rails poetry:prompt"
+  end
+
   test "the agent-skills discovery index is a conformant RFC document" do
     get "/.well-known/agent-skills/index.json"
 

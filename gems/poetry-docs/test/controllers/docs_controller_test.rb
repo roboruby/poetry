@@ -263,6 +263,22 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=code-block-code]", text: /poetry:diff/
   end
 
+  test "the installation guide hands an assistant the cold-start prompt and four prompts to try" do
+    get "/installation"
+
+    assert_response :success
+    assert_select "h2#prompts", 1
+    assert_select "[data-slot=code-block-code]", text: /bin\/rails poetry:verify/, count: 1
+    assert_select "[data-slot=code-block-code]", text: /poetry:check` as your last step/, count: 4
+
+    get "/installation.md"
+
+    assert_response :success
+    assert_includes response.body, "## Hand it to an assistant"
+    assert_includes response.body, Poetry::Ui::Prompt.cold_start.rstrip
+    Poetry::Docs::Prompts::TO_TRY.each { |entry| assert_includes response.body, entry.text }
+  end
+
   test "a block page renders the real gem template and its exact source" do
     get "/blocks/data-index"
 

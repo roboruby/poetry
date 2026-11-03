@@ -34,6 +34,20 @@ module Poetry
         end
       end
 
+      def test_index_and_full_open_on_the_five_usage_rules
+        with_registry do |registry|
+          text = LlmsText.new(registry: registry)
+
+          assert_equal 5, LlmsText::USAGE_RULES.size
+          [text.index, text.full].each do |surface|
+            assert_operator surface.index("## Usage rules"), :<, surface.index("## Block")
+            LlmsText::USAGE_RULES.each { |rule| assert_includes surface, "- #{rule}" }
+          end
+
+          assert_match(/Check comes LAST/, LlmsText::USAGE_RULES.last)
+        end
+      end
+
       def test_full_lists_the_declared_tools
         with_registry do |registry|
           entry = { "class_name" => "Poetry::Ui::Tabs::Component", "styles" => [], "options" => [], "slots" => [],

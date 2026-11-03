@@ -397,7 +397,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 257
+          "line": 258
         },
         {
           "name": "block_components",
@@ -424,7 +424,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 384
+          "line": 385
         },
         {
           "name": "charts_registry",
@@ -436,7 +436,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 212
+          "line": 213
         },
         {
           "name": "committed_charts_registry",
@@ -448,7 +448,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 290
+          "line": 291
         },
         {
           "name": "committed_island_registry",
@@ -460,7 +460,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 310
+          "line": 311
         },
         {
           "name": "committed_motion_registry",
@@ -472,7 +472,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 300
+          "line": 301
         },
         {
           "name": "helper_names",
@@ -484,7 +484,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 108
+          "line": 109
         },
         {
           "name": "host_registry",
@@ -496,7 +496,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 202
+          "line": 203
         },
         {
           "name": "island_registry",
@@ -508,7 +508,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 234
+          "line": 235
         },
         {
           "name": "motion_registry",
@@ -520,7 +520,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 223
+          "line": 224
         },
         {
           "name": "recipe_items",
@@ -532,7 +532,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 160
+          "line": 161
         },
         {
           "name": "registry",
@@ -544,7 +544,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 121
+          "line": 122
         },
         {
           "name": "registry_blocks",
@@ -564,7 +564,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 358
+          "line": 359
         },
         {
           "name": "registry_descriptions",
@@ -576,7 +576,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 138
+          "line": 139
         },
         {
           "name": "registry_helpers",
@@ -596,7 +596,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 342
+          "line": 343
         },
         {
           "name": "registry_items",
@@ -608,7 +608,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 148
+          "line": 149
         },
         {
           "name": "root",
@@ -620,7 +620,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 92
+          "line": 93
         },
         {
           "name": "skill_files",
@@ -641,7 +641,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 177
+          "line": 178
         },
         {
           "name": "template_classes",
@@ -658,7 +658,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 98
+          "line": 99
         },
         {
           "name": "theme_owned_names",
@@ -683,7 +683,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 194
+          "line": 195
         }
       ],
       "constants": [
@@ -17536,6 +17536,34 @@
       "examples": [],
       "file": "app/components/poetry/ui/progress/style.rb",
       "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Prompt",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The cold-start prompt: the first message for an assistant that has\nnone of poetry's surfaces in front of it yet - no AGENTS.md section,\nno skill, no MCP server (a hosted agent, a teammate's editor before\n`poetry:skill` ran). It verifies the install, routes to the surfaces\nthe install wrote, carries the usage rules every llms.txt prints and\nends on check-LAST. One text: `bin/rails poetry:prompt` prints it\n(pipe it to the clipboard) and the docs site's Installation page\nshows it.",
+      "examples": [],
+      "file": "lib/poetry/ui/prompt.rb",
+      "methods": [
+        {
+          "name": "cold_start",
+          "scope": "class",
+          "group": null,
+          "signature": "cold_start",
+          "docstring": "The prompt text, ready to paste.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/prompt.rb",
+          "line": 17
+        }
+      ],
       "constants": []
     },
     {

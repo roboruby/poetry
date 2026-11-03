@@ -211,7 +211,7 @@ module Poetry
       def markdown_mirror
         case action_name
         when "index" then DocsMarkdown.site_index
-        when "installation" then Poetry::Docs.root.join("data/installation.md").read
+        when "installation" then DocsMarkdown.installation
         when "theming" then DocsMarkdown.theming(guide_entry("theming"))
         when "editors" then DocsMarkdown.editors(guide_entry("editors"))
         when "testing" then DocsMarkdown.testing(guide_entry("testing"))

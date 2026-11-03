@@ -14,6 +14,12 @@ module Poetry
     destination File.expand_path("../tmp/install-dest", __dir__)
     setup :prepare_destination
 
+    def test_the_install_ends_on_the_cold_start_prompt_offer
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "bin/rails poetry:prompt | pbcopy"
+    end
+
     def test_installs_tokens_theme_safelist_initializer_and_manifest
       run_generator
 

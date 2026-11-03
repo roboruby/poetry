@@ -61,6 +61,29 @@ module Poetry
           MD
         end
 
+        # The installation guide's mirror: the curated agent instructions in
+        # data/installation.md, then the prompts the page hands a human.
+        def installation
+          prompts = Prompts::TO_TRY.map { |entry| "**#{entry.title}**\n\n```text\n#{entry.text}\n```" }
+          <<~MD
+            #{Poetry::Docs.root.join("data/installation.md").read.rstrip}
+
+            ## Hand it to an assistant
+
+            `bin/rails poetry:prompt | pbcopy` copies the cold-start prompt for an assistant that has none of poetry's surfaces in front of it yet (no AGENTS.md section, no skill, no MCP server); paste it as the first message:
+
+            ```text
+            #{Prompts.cold_start.rstrip}
+            ```
+
+            ### Prompts to try
+
+            Four task prompts that teach the workflow by example: start from what the app already has, compose with the helpers, check last. Edit the paths to your own.
+
+            #{prompts.join("\n\n")}
+          MD
+        end
+
         # The editors guide's mirror.
         def editors(entry)
           <<~MD
@@ -429,6 +452,9 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
 
             > The documentation site for Poetry, an AI-native, Rails-first component library: accessible, themeable ViewComponents on semantic design tokens. Every page below also serves a markdown mirror - append `.md` to its URL or send `Accept: text/markdown`.
           MD
+          # The five usage rules first: the one-fetch agent that reads only
+          # this index still leaves with the doctrine.
+          out << Poetry::Core::LlmsText::USAGE_RULES_SECTION.chomp
           { "Guides" => DocsCatalog.docs, "Libraries" => DocsCatalog.libraries,
             "Icons" => DocsCatalog.icons, "Components" => DocsCatalog.components,
             "Charts" => DocsCatalog.charts, "Motion" => DocsCatalog.motion, "Blocks" => DocsCatalog.blocks,
@@ -441,7 +467,7 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
             - [Component catalog for agents](/poetry/llms.txt) and [full contracts + Stimulus wiring](/poetry/llms-full.txt)
             - [Registry index](/r/registry.json) - shadcn-schema items; install with `bin/rails g poetry:add <name>` or `npx shadcn add`
             - [Agent skills inventory](/.well-known/skills/index.json) with per-file serving, and the [discovery index](/.well-known/agent-skills/index.json) (agentskills.io schema 0.2.0, sha256 digests) - `npx skills add <origin>/agent-skills` installs from it
-            - [Agent install instructions](/installation.md)
+            - [Agent install instructions](/installation.md), and the cold-start prompt for an assistant without the skills or MCP server: `bin/rails poetry:prompt` in an installed app (the text is on the [Installation page](/installation#prompts))
             - [OpenAPI description](/openapi.json) and [API catalog](/.well-known/api-catalog)
           MD
           out.join("\n\n")

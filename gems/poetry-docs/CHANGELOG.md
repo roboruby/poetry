@@ -4,6 +4,8 @@
 
 ### Added
 
+- The root llms.txt opens on the five usage rules every llms surface prints (compose with the helpers, start from a block, forms on the builder, where state lives, check last) and lists the cold-start prompt among the machine-readable resources.
+- The Installation guide's "Hand it to an assistant" section: the cold-start prompt `bin/rails poetry:prompt` prints, for an assistant that has none of poetry's surfaces in front of it yet, and four prompts to try that teach the workflow by example; the markdown mirror carries both.
 - The Where State Lives guide (`/where-state-lives`): the tiers a component's state lives in - the record and the form, the URL, a cookie or localStorage, a reactive template's state on a ReActionView host, attributes on the element - each with the component that ships it, why Poetry's controllers call no `useState` (Herb's included), and what a Turbo morph does to each tier; with its markdown mirror.
 - The Stimulus guide's rung 4b, composing a Poetry behavior into your own controller: `behavior :roving_focus` on an element of your `use_stimulus` block in Ruby, with your controller reacting through `event(:roving_focus, :entry)`, and the functions under `@poetry/controllers/behaviors` set up in `connect()` and undone by `teardown(this)` in JavaScript; the mirror follows.
 - The MCP Apps guide (`/mcp-apps`): what an app is, serving a Poetry-rendered document as a `ui://` resource on the official `mcp` gem, answering tool calls with server-rendered fragments, the page's attributes and the bridge, the two asset strategies and what each host does with them, the host's theme and style variables, what the model sees, and how to try it in Claude Desktop; with its markdown mirror.
