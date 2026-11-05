@@ -207,8 +207,9 @@
         running server: the manifest is read at boot.
       </p>
       <p>
-        An <code>@poetry</code> name the gems do not ship is a community
-        item: <code>poetry:add</code> fetches it from this site, where every
+        An <code>@poetry</code> name the gems do not ship is a
+        <%= link_to "community item", community_path %>:
+        <code>poetry:add</code> fetches it from this site, where every
         one was reviewed and passed CI. Reviewed is not audited; read what
         you install. A community item adapted from another registry names its
         origin, license and copyright in <code>config/poetry_components.yml</code>,

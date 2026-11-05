@@ -696,6 +696,30 @@
     "path": "/recipes#skill-poetry-design"
   },
   {
+    "title": "Community",
+    "page": "Community",
+    "section": "docs",
+    "path": "/community"
+  },
+  {
+    "title": "How it works",
+    "page": "Community",
+    "section": "docs",
+    "path": "/community#how-it-works"
+  },
+  {
+    "title": "Reviewed, not audited",
+    "page": "Community",
+    "section": "docs",
+    "path": "/community#reviewed-not-audited"
+  },
+  {
+    "title": "Items",
+    "page": "Community",
+    "section": "docs",
+    "path": "/community#items"
+  },
+  {
     "title": "Page Agent",
     "page": "Page Agent",
     "section": "docs",

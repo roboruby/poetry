@@ -330,6 +330,71 @@ module Poetry
           ([ header(entry) ] + sections).join("\n\n") + "\n"
         end
 
+        # The Community page's mirror: how community items work, then the
+        # items this host serves, each linked to its own page.
+        def community(entry, items)
+          list = if items.any?
+            items.map { |item| "- [#{item.title}](/community/#{item.name}) (#{item.kind.downcase}): #{item.description} `#{item.install}`" }.join("\n")
+          else
+            "This site serves no community registry, so there is nothing to install from here."
+          end
+          <<~MD
+            #{header(entry)}
+
+            ## How it works
+
+            A community item is a component, a block or a restyle the gems do not ship. `bin/rails g poetry:add @poetry/<name>` fetches any `@poetry` name the gems do not know from this site and copies its files into the app, where they are the app's to edit; nothing overwrites them later. Poetry's own components come from the gems at runtime, so an item that composes a Button brings no copy of it. The install records the item's address, version and a digest of every file written in `config/poetry_components.yml`, and an item adapted from another library adds that library's license to the app's `THIRD_PARTY_NOTICES.md`.
+
+            ## Reviewed, not audited
+
+            A maintainer reviewed every item, and each one passes the registry's checks: it installs into a fresh app, `poetry:check` is clean there, and its demo renders in a browser without an error. Nobody audited the code for security: read what you install. Only permissive licenses are accepted.
+
+            ## Items
+
+            #{list}
+          MD
+        end
+
+        # One community item's mirror: what its page shows, from the same
+        # index entry.
+        def community_item(item)
+          out = [ "# #{item.title}", item.description,
+                  "A community #{item.kind.downcase}#{", version `#{item.version}`" if item.version}: reviewed and checked, not audited.",
+                  "## Install\n\n`#{item.install}`" ]
+          facts = []
+          facts << "Writes: #{item.files.map { |file| "`#{file}`" }.join(", ")}." if item.files.any?
+          facts << "Builds on: #{item.needs.join(", ")}." if item.needs.any?
+          facts << "Needs gems (reported, never installed for you): #{item.gems.join(", ")}." if item.gems.any?
+          facts << item.notes if item.notes
+          out << facts.join("\n\n") if facts.any?
+          if item.demo
+            usage = item.helper ? "Render it with `#{item.helper}`.\n\n" : ""
+            out << "## Example\n\n#{usage}```erb\n#{item.demo}\n```"
+          end
+          out << community_table("Options", %w[Option Type Default Description], item.options) do |option|
+            default = if option["required"] then "required"
+            elsif option.key?("default") then "`#{option["type"] == "symbol" ? ":#{option["default"]}" : option["default"].to_json}`"
+            else ""
+            end
+            [ "`#{option["name"]}:`", option["type"].presence || "any", default, option["description"].to_s ]
+          end
+          out << community_table("Style axes", %w[Axis Values Default], item.styles) do |style|
+            [ "`#{style["name"]}:`", Array(style["variants"]).map { |variant| "`:#{variant}`" }.join(", "),
+              style["default"] ? "`:#{style["default"]}`" : "" ]
+          end
+          out << community_table("Slots", %w[Writer Description], item.slots) do |slot|
+            [ "`with_#{slot["name"]}`", slot["description"].to_s ]
+          end
+          out << "## Usage rules\n\n#{item.agent_rules.map { |rule| "- #{rule}" }.join("\n")}" if item.agent_rules.any?
+          origins = item.origins.map do |origin|
+            "- Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), #{origin["repository"]}. " \
+              "License: #{origin["license"]}. #{origin["copyright"]}"
+          end
+          out << "## Origin and license\n\n" +
+                 (origins.any? ? origins.join("\n") : "An original community item: nothing in it was adapted from another library.")
+          out.compact.join("\n\n") + "\n"
+        end
+
         # The agent-skills catalog's mirror: the live projection, so the
         # mirror lists exactly what the discovery index serves. Commands carry
         # the requesting origin so they stay copy-pastable.
@@ -477,6 +542,15 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
 
         def header(entry)
           [ "# #{entry.title}", entry.description ].compact.join("\n\n")
+        end
+
+        # A titled markdown table of a community item's facts, or nil for none.
+        def community_table(title, columns, rows)
+          return nil if rows.empty?
+
+          lines = [ "| #{columns.join(" | ")} |", "| #{columns.map { "---" }.join(" | ")} |" ]
+          lines += rows.map { |row| "| #{yield(row).map { |cell| cell.gsub("|", "\\|") }.join(" | ")} |" }
+          "## #{title}\n\n#{lines.join("\n")}"
         end
 
         def install_note(entry)

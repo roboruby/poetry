@@ -53,6 +53,10 @@ Poetry::Docs::Engine.routes.draw do
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
+  # The community registry's pages: the index is a catalog page; an item's
+  # page exists where the host serves a community registry that lists it.
+  get "community" => "community#index", as: :community
+  get "community/:name" => "community#show", as: :community_item, constraints: { name: /[a-z0-9]+(-[a-z0-9]+)*/ }
   get "page-agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false
 
@@ -61,6 +65,8 @@ Poetry::Docs::Engine.routes.draw do
   get "r/registry.json" => "registry#index", as: :registry_index
   get "r/registries.json" => "registry#directory", as: :registry_directory
   get "r/community/registry.json" => "registry#community", as: :registry_community
+  get "r/community/screenshots/:file" => "registry#screenshot", as: :registry_community_screenshot, format: false,
+                                         constraints: { file: /[a-z0-9]+(-[a-z0-9]+)*\.webp/ }
   get "r/:name" => "registry#show", as: :registry_item, format: false,
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 

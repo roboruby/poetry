@@ -4,6 +4,7 @@
 
 ### Added
 
+- The Community pages: `/community` (a catalog page, under Get Started) explains community items and lists the ones the host's community registry describes, and `/community/<name>` is a page per item with its screenshot, the install command (`bin/rails g poetry:add @poetry/<name>`), the files it writes, its demo's source, and for a component its options, style axes, slots and usage rules, then every origin with its license. Both read the registry's index (`Poetry::Docs::CommunityRegistry`); no item's code runs in the docs host. `/r/community/screenshots/<name>.webp` serves a screenshot beside the index. Both pages mirror as markdown, and the sitemap lists the item pages. A host with no `community_registry` serves the index page with no items and no item pages. The dummy host reads the directory from `POETRY_COMMUNITY_REGISTRY`.
 - The Testing guide names `bin/rails poetry:audit` beside the check commands, in its markdown mirror too.
 - The root llms.txt opens on the five usage rules every llms surface prints (compose with the helpers, start from a block, forms on the builder, where state lives, check last) and lists the cold-start prompt among the machine-readable resources.
 - The Installation guide's "Hand it to an assistant" section: the cold-start prompt `bin/rails poetry:prompt` prints, for an assistant that has none of poetry's surfaces in front of it yet, and four prompts to try that teach the workflow by example; the markdown mirror carries both.

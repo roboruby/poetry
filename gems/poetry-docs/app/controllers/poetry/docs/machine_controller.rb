@@ -45,7 +45,10 @@ module Poetry
       # Absolute URLs derive from the request host - the site has no fixed
       # production domain, so nothing is hardcoded.
       def sitemap
-        urls = ([ "/", "/docs" ] + DocsCatalog.all.map(&:path)).map do |path|
+        # The community items' pages are the host's own: listed where the
+        # host serves a community registry, absent where it serves none.
+        community = CommunityRegistry.items.map { |item| "/community/#{item.name}" }
+        urls = ([ "/", "/docs" ] + DocsCatalog.all.map(&:path) + community).map do |path|
           "  <url><loc>#{request.base_url}#{path}</loc></url>"
         end
         xml = [ %(<?xml version="1.0" encoding="UTF-8"?>),

@@ -88,6 +88,10 @@ module Poetry
                                "template set, and screen slices (controller + view + system test, " \
                                "blocks pulled as dependencies) - installable with bin/rails g " \
                                "poetry:add <name> or any shadcn-compatible registry client."),
+        Entry.new(slug: "community", title: "Community", section: "docs", icon: :users,
+                  description: "Components, blocks and restyles beyond the gems, each reviewed and installed " \
+                               "by name with bin/rails g poetry:add @poetry/<name>: its screenshot, its " \
+                               "options, its origin and its license on a page of its own."),
         Entry.new(slug: "page-agent", title: "Page Agent", section: "docs", icon: :bot,
                   description: "The operator-register demo: this site embeds page-agent (pinned, " \
                                "opt-in, bring-your-own key) configured with Poetry's operator " \
@@ -249,7 +253,8 @@ module Poetry
         # The sidebar's guide sections. Order within a section is the display
         # order; Agent stays last in AI Native while it is experimental.
         DOC_SECTIONS = {
-          "Get Started" => %w[installation theming typography testing i18n stimulus where-state-lives editors api],
+          "Get Started" => %w[installation theming typography testing i18n stimulus where-state-lives editors api
+                              community],
           "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
                            engines
                            herb],

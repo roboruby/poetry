@@ -1,0 +1,96 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "poetry-community",
+  "homepage": "https://poetryui.com",
+  "items": [
+    {
+      "name": "editor-bundle",
+      "type": "registry:component",
+      "title": "Editor bundle",
+      "description": "A rich text editor carried as one module.",
+      "registryDependencies": [],
+      "dependencies": ["poetry-island"],
+      "files": [
+        { "path": "app/components/community/editor_bundle/component.rb", "target": "app/components/community/editor_bundle/component.rb" },
+        { "path": "app/javascript/community/islands/editor.js", "target": "app/javascript/community/islands/editor.js" }
+      ],
+      "meta": {
+        "community": true,
+        "source": {
+          "registry": "@tiptap", "item": "react", "url": "https://www.npmjs.com/package/@tiptap/react",
+          "repository": "https://github.com/ueberdosis/tiptap", "license": "MIT",
+          "copyright": "Copyright (c) 2025, Tiptap GmbH", "notice": "MIT License (Tiptap)"
+        },
+        "sources": [
+          {
+            "registry": "@tiptap", "item": "react", "url": "https://www.npmjs.com/package/@tiptap/react",
+            "repository": "https://github.com/ueberdosis/tiptap", "license": "MIT",
+            "copyright": "Copyright (c) 2025, Tiptap GmbH", "notice": "MIT License (Tiptap)"
+          },
+          {
+            "registry": "@react", "item": "react", "url": "javascript:alert(1)",
+            "repository": "https://github.com/facebook/react", "license": "MIT",
+            "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates.", "notice": "MIT License (React)"
+          }
+        ],
+        "version": "d64668e2da5d"
+      }
+    },
+    {
+      "name": "note-card",
+      "type": "registry:component",
+      "title": "Note card",
+      "description": "A note in a card, with its author and a pin.",
+      "registryDependencies": ["button"],
+      "dependencies": [],
+      "files": [
+        { "path": "app/components/community/note_card/component.rb", "target": "app/components/community/note_card/component.rb" },
+        { "path": "app/components/community/note_card/style.rb", "target": "app/components/community/note_card/style.rb" }
+      ],
+      "docs": "Restart a running server after the install.",
+      "meta": {
+        "community": true,
+        "source": {
+          "registry": "@acme", "item": "note", "url": "https://acme.dev/r/note.json",
+          "repository": "https://github.com/acme/ui", "license": "MIT",
+          "copyright": "Copyright (c) 2025 Acme", "notice": "MIT License\n\nPermission is hereby granted"
+        },
+        "version": "44204791b5d3",
+        "demo": "<%= community_note_card(body: \"Ship it\", author: \"Ada\") do |note| %>\n  <% note.with_pin { poetry_icon(name: :pin) } %>\n<% end %>",
+        "screenshot": { "path": "screenshots/note-card.webp", "width": 1344, "height": 176 },
+        "component": {
+          "helper": "community_note_card",
+          "options": [
+            { "name": "author", "type": "string", "description": "Who wrote the note." },
+            { "name": "body", "type": "string", "required": true, "description": "The note's text." },
+            { "name": "pinned", "type": "boolean", "default": false, "description": "Shows the note pinned." }
+          ],
+          "styles": [
+            { "name": "size", "type": "symbol", "variants": ["default", "sm"], "default": "default", "required": true }
+          ],
+          "slots": [
+            { "name": "pin", "many": false, "description": "The glyph a pinned note shows." }
+          ],
+          "agent_rules": ["body: is plain text; a note never renders HTML."]
+        }
+      }
+    },
+    {
+      "name": "quote-wall",
+      "type": "registry:block",
+      "title": "Quote wall",
+      "description": "Three customer quotes in a row.",
+      "registryDependencies": [],
+      "dependencies": [],
+      "files": [
+        { "path": "app/views/blocks/_quote_wall.html.erb", "target": "app/views/blocks/_quote_wall.html.erb" }
+      ],
+      "meta": {
+        "community": true,
+        "version": "0f1e2d3c4b5a",
+        "demo": "<%= render \"blocks/quote_wall\" %>"
+      }
+    },
+    { "name": "Not A Name", "type": "registry:component" }
+  ]
+}

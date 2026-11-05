@@ -43,9 +43,10 @@ module Poetry
       # @return [String, nil] the Beehiiv publication id
       attr_accessor :beehiiv_publication_id
       # The community registry's build output: a directory holding
-      # registry.json and one <name>.json per item. /r/<name>.json serves
-      # an item from it when the gems ship no item of that name; nil serves
-      # none.
+      # registry.json, one <name>.json per item and screenshots/.
+      # /r/<name>.json serves an item from it when the gems ship no item of
+      # that name, and the Community pages list what its index describes;
+      # nil serves none.
       # @return [Pathname, String, nil]
       attr_accessor :community_registry
     end
