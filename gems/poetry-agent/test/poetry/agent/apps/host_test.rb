@@ -8,10 +8,10 @@ require "faraday"
 
 module Poetry
   module Agent
-    # The host side of MCP Apps: a host over its servers, its client against
-    # Poetry's own MCP server in process, the caches, the visibility
-    # allowlist, the sandbox page with its policy, the RPC endpoint and the
-    # frame's data.
+    # The host side of MCP Apps: a host over its servers, the gem's client
+    # against Poetry's own MCP server in process (the in-process adapter),
+    # the caches, the visibility allowlist, the sandbox page with its
+    # policy, the RPC endpoint and the frame's data.
     class AppsHostTest < Minitest::Test
       ORIGIN = "https://chat.example"
       APPS = "https://apps.chat.example"
@@ -42,24 +42,29 @@ module Poetry
         end
       end
 
-      # The transport seam: the server's Rack app in process, recording every request's headers.
-      def post
+      # The transport: the server's Rack app in process behind a recorder of every request (its URL, body and
+      # headers), which refuses a token when told and answers nothing for a server that is down.
+      def customizer
         @posts = []
         app = MCP::HTTP.new(server)
-        lambda do |uri, body, headers|
-          @posts << { uri: uri.to_s, body: JSON.parse(body), headers: headers }
-          return [401, { "content-type" => "application/json" }, ""] if @reject && headers["Authorization"] == @reject
+        recorder = lambda do |env|
+          request = Rack::Request.new(env)
+          body = request.body.read
+          request.body.rewind
+          headers = env.select { |key, _| key.start_with?("HTTP_") }
+                       .to_h { |key, value| [key.delete_prefix("HTTP_").split("_").map(&:capitalize).join("-"), value] }
+          @posts << { uri: request.url, body: JSON.parse(body), headers: headers }
+          next [503, {}, [""]] if request.host == "down.example"
+          next [401, { "content-type" => "application/json" }, [""]] if @reject && headers["Authorization"] == @reject
 
-          env = { "CONTENT_TYPE" => "application/json", "HTTP_ACCEPT" => headers["Accept"], input: body }
-          env["HTTP_AUTHORIZATION"] = headers["Authorization"] if headers["Authorization"]
-          response = Rack::MockRequest.new(app).post("/", env)
-          [response.status, response.headers.to_h, response.body]
+          app.call(env)
         end
+        Apps::Host::InProcess.customizer(recorder)
       end
 
       def host(**)
         Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", headers: { "X-Shop" => "yes" } } },
-                       origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret", **).tap { |held| held.post = post }
+                       origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret", http_client_customizer: customizer, **)
       end
 
       # --- the registry and the client ---
@@ -69,11 +74,13 @@ module Poetry
         client = subject.client("shop", headers: { "Authorization" => "Bearer alice" })
 
         assert_predicate client, :connected?
-        assert_equal "poetry-agent", client.server_info["name"]
+        assert_equal "poetry-agent", client.server_info.dig("serverInfo", "name")
         assert_includes client.server_capabilities["extensions"].keys, ::MCP::Apps::EXTENSION_ID
         initialize = @posts.first
 
+        assert_equal "https://shop.example/mcp", initialize[:uri], "the request reaches the server's URL in process"
         assert_equal "initialize", initialize[:body]["method"]
+        assert_equal "poetry-agent", initialize[:body].dig("params", "clientInfo", "name")
         assert_equal({ "io.modelcontextprotocol/ui" => { "mimeTypes" => ["text/html;profile=mcp-app"] } },
                      initialize[:body].dig("params", "capabilities", "extensions"))
         assert_equal "yes", initialize[:headers]["X-Shop"], "the server's own headers ride every request"
@@ -82,30 +89,57 @@ module Poetry
         assert_raises(Apps::Host::Refused) { subject.server("other") }
       end
 
-      def test_the_client_reads_an_event_stream_answer_and_raises_the_server_s_error
-        answers = lambda do |_uri, body, _headers|
-          message = JSON.parse(body)
-          next [202, {}, ""] unless message["id"]
+      # A server's answer to the handshake.
+      HANDSHAKE = { "protocolVersion" => "2025-06-18", "capabilities" => {},
+                    "serverInfo" => { "name" => "x", "version" => "1" } }.freeze
 
-          frame = JSON.generate({ "jsonrpc" => "2.0", "id" => message["id"],
-                                  "result" => { "pong" => message["method"] } })
+      # A Rack app answering the handshake, then whatever the handler answers for the other requests.
+      def answering(handler)
+        lambda do |env|
+          message = JSON.parse(env["rack.input"].read)
+          next [202, {}, [""]] unless message["id"]
+          next handler.call(message, env) unless message["method"] == "initialize"
+
+          answer = { "jsonrpc" => "2.0", "id" => message["id"], "result" => HANDSHAKE }
+          [200, { "content-type" => "application/json" }, [JSON.generate(answer)]]
+        end
+      end
+
+      def host_over(rack_app)
+        Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp" } }, origin: ORIGIN, secret: "s3cret",
+                       http_client_customizer: Apps::Host::InProcess.customizer(rack_app))
+      end
+
+      def test_the_client_reads_an_event_stream_answer_keeps_the_session_and_raises_the_server_s_error
+        sessions = []
+        streaming = lambda do |env|
+          sessions << env["HTTP_MCP_SESSION_ID"]
+          message = JSON.parse(env["rack.input"].read)
+          next [202, {}, [""]] unless message["id"]
+
+          result = message["method"] == "initialize" ? HANDSHAKE : { "pong" => message["method"] }
+          frame = JSON.generate({ "jsonrpc" => "2.0", "id" => message["id"], "result" => result })
           [200, { "content-type" => "text/event-stream", "mcp-session-id" => "s1" },
-           "event: message\ndata: #{frame}\n\n"]
+           ["event: message\ndata: #{frame}\n\n"]]
         end
-        client = Apps::Host::Client.new(url: "https://sse.example/mcp", post: answers)
 
-        assert_equal({ "pong" => "ping" }, client.ping)
-        refusing = lambda do |_uri, body, _headers|
-          error = { "jsonrpc" => "2.0", "id" => JSON.parse(body)["id"],
-                    "error" => { "code" => -32_601, "message" => "nope" } }
-          [200, { "content-type" => "application/json" }, JSON.generate(error)]
-        end
-        error = assert_raises(Apps::Host::Client::Error) { Apps::Host::Client.new(url: "https://x.example/mcp", post: refusing).ping }
+        assert_equal({ "pong" => "ping" }, host_over(streaming).client("x").ping)
+        assert_equal [nil, "s1", "s1"], sessions, "the assigned session rides every request after the handshake"
+        refusing = answering(lambda do |message, _env|
+          error = { "jsonrpc" => "2.0", "id" => message["id"], "error" => { "code" => -32_601, "message" => "nope" } }
+          [200, { "content-type" => "application/json" }, [JSON.generate(error)]]
+        end)
+        error = assert_raises(::MCP::Client::ServerError) { host_over(refusing).client("x").ping }
 
         assert_equal(-32_601, error.code)
-        failing = ->(*) { [503, {}, ""] }
+        failing = ->(*) { [503, {}, [""]] }
+        error = assert_raises(::MCP::Client::RequestHandlerError) { host_over(failing).client("x") }
 
-        assert_raises(Apps::Host::Client::Error) { Apps::Host::Client.new(url: "https://x.example/mcp", post: failing).ping }
+        assert_equal :internal_error, error.error_type
+        unauthorized = ->(*) { [401, {}, [""]] }
+        error = assert_raises(::MCP::Client::RequestHandlerError) { host_over(unauthorized).client("x") }
+
+        assert_equal :unauthorized, error.error_type
       end
 
       # --- tools, visibility, resources, calls ---
@@ -270,6 +304,14 @@ module Poetry
                                                                               "HTTP_ORIGIN" => ORIGIN).status
         assert_equal 400, endpoint.post("/", { "HTTP_SEC_FETCH_SITE" => "same-origin", input: "nope" }).status
         assert_equal 405, endpoint.get("/").status
+        down = Apps::Host.new(servers: { "down" => { url: "https://down.example/mcp" } }, origin: ORIGIN,
+                              secret: "s3cret", http_client_customizer: customizer)
+        body = JSON.generate("server" => "down", "method" => "tools/call", "params" => { "name" => "x" })
+        response = Rack::MockRequest.new(down.rpc_app).post("/", "CONTENT_TYPE" => "application/json",
+                                                                 "HTTP_SEC_FETCH_SITE" => "same-origin", input: body)
+
+        assert_equal 502, response.status, "a server that cannot be reached is a bad gateway"
+        assert_equal(-32_000, JSON.parse(response.body).dig("error", "code"))
       end
 
       # --- credentials: a callable, the gem's OAuth client, the endpoint's context ---
@@ -282,7 +324,8 @@ module Poetry
         end
         subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", headers: { "X-Shop" => "yes" },
                                                         credentials: credentials } },
-                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret",
+                                 http_client_customizer: customizer)
 
         call = subject.call("shop", "show_plans", { "team_size" => 2 }, context: "alice")
 
@@ -330,7 +373,8 @@ module Poetry
                                       storage: ->(context, held) { stores[[context, held.id]] },
                                       http_client_customizer: ->(faraday) { faraday.adapter(:test, stubs) })
         subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", credentials: oauth } },
-                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret",
+                                 http_client_customizer: customizer)
 
         refute subject.authorized?("shop", context: "alice")
         error = assert_raises(Apps::Host::AuthorizationRequired) { subject.tools("shop", context: "alice") }
@@ -376,7 +420,8 @@ module Poetry
           { "Authorization" => "Bearer #{context}-token" }
         end
         subject = Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", credentials: credentials } },
-                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret").tap { |held| held.post = post }
+                                 origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret",
+                                 http_client_customizer: customizer)
         app = Apps::Host::RpcApp.new(subject, context: ->(env) { env["HTTP_X_USER"] })
         body = JSON.generate("server" => "shop", "method" => "tools/call", "params" => { "name" => "choose_plan" })
         request = lambda do |user|

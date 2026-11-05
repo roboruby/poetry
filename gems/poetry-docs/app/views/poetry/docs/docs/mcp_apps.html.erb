@@ -146,6 +146,10 @@
     constraints(host: "apps.chat.example") { mount host.sandbox_app => host.sandbox_path }   # /mcp-apps/sandbox
     mount host.rpc_app => host.rpc_path                                                      # /mcp-apps/rpc, same-origin only
 
+    # A server in this process (the app hosting its own): the gem's client runs on a Faraday adapter you name
+    host = Poetry::Agent::Apps::Host.new(servers: { "self" => { url: "https://chat.example/mcp" } }, origin: "https://chat.example",
+                                         http_client_customizer: Poetry::Agent::Apps::Host::InProcess.customizer(Rails.application))
+
     # In a view: the page calls a tool for the model, and renders the frame the controller fills
     call = host.call("shop", "show_plans", { "team_size" => 8 })
     tag.div(data: host.frame_data(call)) if call.app?
@@ -454,9 +458,9 @@
         The other direction: a Rails chat page showing the apps of the MCP servers
         its agent uses, as Claude shows yours. A <code>Poetry::Agent::Apps::Host</code>
         knows its servers by id (a URL and the headers it holds for each), reads
-        their tools and app resources through a small client of Poetry's own (raw,
-        so a tool's visibility and a resource's policy are read as declared, and
-        cached), calls a tool for the page, and answers an app's own requests
+        their tools and app resources through the <code>mcp</code> gem's client
+        (a tool's visibility and a resource's policy read from their
+        <code>_meta</code>, cached), calls a tool for the page, and answers an app's own requests
         through an allowlist (<code>tools/call</code>, <code>resources/read</code>,
         <code>ping</code>, a log line) and the visibility the server declared: a tool
         without <code>"app"</code> in its visibility is refused to the app, as the

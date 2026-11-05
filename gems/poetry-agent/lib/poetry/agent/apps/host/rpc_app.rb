@@ -54,8 +54,10 @@ module Poetry
             answer(401,
                    { "error" => { "code" => e.code, "message" => e.message,
                                   "data" => { "authorizationUrl" => e.url } } })
-          rescue Client::Error => e
-            answer(502, { "error" => { "code" => e.code, "message" => e.message } })
+          rescue ::MCP::Client::ServerError => e
+            answer(502, { "error" => { "code" => e.code || -32_000, "message" => e.message } })
+          rescue ::MCP::Client::RequestHandlerError, ::MCP::Client::ValidationError => e
+            answer(502, { "error" => { "code" => -32_000, "message" => e.message } })
           end
 
           private

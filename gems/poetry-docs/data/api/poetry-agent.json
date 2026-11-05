@@ -12062,7 +12062,7 @@
       "path": "Poetry::Agent::Apps::Host",
       "type": "class",
       "superclass": "Object",
-      "docstring": "The host side of MCP Apps: other servers' apps inside a Rails page.\nA host knows its servers (an id, a URL, the headers it holds for\nthem), reads their tools and app resources through its own client\n(cached), calls tools for the page, answers an app's own requests\nthrough an allowlist and the tool visibility the server declared,\nand serves the sandbox proxy page the app runs in, on a second\norigin by default, with the resource's policy as a header.\n\nThe browser half is the `poetry--agent--mcp-app-host` controller:\nit mounts the frame an app renders in, speaks the bridge, and sends\nthe app's requests to {RpcApp} (or a controller of the application's\nown that calls {#rpc} with the signed-in user's headers).",
+      "docstring": "The host side of MCP Apps: other servers' apps inside a Rails page.\nA host knows its servers (an id, a URL, the headers it holds for\nthem), reads their tools and app resources through the `mcp` gem's\nclient (cached), calls tools for the page, answers an app's own requests\nthrough an allowlist and the tool visibility the server declared,\nand serves the sandbox proxy page the app runs in, on a second\norigin by default, with the resource's policy as a header.\n\nThe browser half is the `poetry--agent--mcp-app-host` controller:\nit mounts the frame an app renders in, speaks the bridge, and sends\nthe app's requests to {RpcApp} (or a controller of the application's\nown that calls {#rpc} with the signed-in user's headers).",
       "examples": [
         {
           "title": "config/routes.rb",
@@ -12109,7 +12109,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 291
+          "line": 305
         },
         {
           "name": "authorization_url",
@@ -12142,7 +12142,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 245
+          "line": 259
         },
         {
           "name": "authorized?",
@@ -12175,7 +12175,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 232
+          "line": 246
         },
         {
           "name": "call",
@@ -12229,7 +12229,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 337
+          "line": 352
         },
         {
           "name": "clear_cache",
@@ -12246,14 +12246,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 465
+          "line": 480
         },
         {
           "name": "client",
           "scope": "instance",
           "group": null,
           "signature": "client(id, headers: {}, context: nil)",
-          "docstring": "A connected client for a server: the server's headers, the\ncontext's through the server's credentials, this request's.",
+          "docstring": "A connected client for a server, the `mcp` gem's: the server's\nheaders, the context's through the server's credentials, this\nrequest's; the handshake declares the ui extension.",
           "params": [
             {
               "name": "id",
@@ -12280,13 +12280,13 @@
           ],
           "return": {
             "types": [
-              "Client"
+              "::MCP::Client"
             ],
             "text": ""
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 221
+          "line": 229
         },
         {
           "name": "finish_authorization",
@@ -12326,7 +12326,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 262
+          "line": 276
         },
         {
           "name": "frame_data",
@@ -12367,13 +12367,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 445
+          "line": 460
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(servers:, origin:, sandbox_origin: nil, sandbox_path: \"/mcp-apps/sandbox\", # rubocop:disable Metrics/ParameterLists rpc_path: \"/mcp-apps/rpc\", secret: nil, cache: nil, name: \"poetry-agent\")",
+          "signature": "initialize(servers:, origin:, sandbox_origin: nil, sandbox_path: \"/mcp-apps/sandbox\", # rubocop:disable Metrics/ParameterLists rpc_path: \"/mcp-apps/rpc\", secret: nil, cache: nil, name: \"poetry-agent\", http_client_customizer: nil)",
           "docstring": "A host over its servers.",
           "params": [
             {
@@ -12434,6 +12434,14 @@
                 "String"
               ],
               "text": "the client name servers see"
+            },
+            {
+              "name": "http_client_customizer",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "a hook on the gem's Faraday connection to every server: an\nadapter ({InProcess.customizer} for a server in this process, a test adapter) or middleware"
             }
           ],
           "return": {
@@ -12444,7 +12452,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 188
+          "line": 192
         },
         {
           "name": "inline_sandbox_page",
@@ -12469,7 +12477,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 434
+          "line": 449
         },
         {
           "name": "model_visible?",
@@ -12509,7 +12517,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 302
+          "line": 316
         },
         {
           "name": "origin",
@@ -12526,7 +12534,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 156
+          "line": 158
         },
         {
           "name": "resource",
@@ -12573,7 +12581,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 315
+          "line": 329
         },
         {
           "name": "rpc",
@@ -12628,7 +12636,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 357
+          "line": 372
         },
         {
           "name": "rpc_app",
@@ -12645,7 +12653,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 426
+          "line": 441
         },
         {
           "name": "rpc_path",
@@ -12662,7 +12670,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 168
+          "line": 170
         },
         {
           "name": "sandbox_app",
@@ -12679,7 +12687,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 419
+          "line": 434
         },
         {
           "name": "sandbox_origin",
@@ -12697,7 +12705,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 160
+          "line": 162
         },
         {
           "name": "sandbox_path",
@@ -12714,7 +12722,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 164
+          "line": 166
         },
         {
           "name": "sandbox_token",
@@ -12754,7 +12762,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 389
+          "line": 404
         },
         {
           "name": "sandbox_url",
@@ -12795,7 +12803,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 412
+          "line": 427
         },
         {
           "name": "server",
@@ -12820,7 +12828,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 209
+          "line": 215
         },
         {
           "name": "servers",
@@ -12837,7 +12845,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 172
+          "line": 174
         },
         {
           "name": "tools",
@@ -12877,7 +12885,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 275
+          "line": 289
         },
         {
           "name": "verify_sandbox_token",
@@ -12903,7 +12911,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 399
+          "line": 414
         }
       ],
       "constants": [
@@ -12957,7 +12965,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 78
+          "line": 80
         },
         {
           "name": "initialize",
@@ -12989,7 +12997,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 70
+          "line": 72
         },
         {
           "name": "server",
@@ -13006,7 +13014,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 61
+          "line": 63
         },
         {
           "name": "url",
@@ -13023,7 +13031,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 65
+          "line": 67
         }
       ],
       "constants": [
@@ -13057,7 +13065,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 107
+          "line": 109
         },
         {
           "name": "input",
@@ -13074,7 +13082,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "input=",
@@ -13099,7 +13107,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "resource_uri",
@@ -13117,7 +13125,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "resource_uri=",
@@ -13144,7 +13152,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "result",
@@ -13161,7 +13169,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "result=",
@@ -13186,7 +13194,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "server",
@@ -13203,7 +13211,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "server=",
@@ -13228,7 +13236,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "tool",
@@ -13245,7 +13253,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "tool=",
@@ -13270,410 +13278,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 104
-        }
-      ],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Agent::Apps::Host::Client",
-      "type": "class",
-      "superclass": "Object",
-      "docstring": "The host's MCP client: JSON-RPC over Streamable HTTP on the standard\nlibrary, enough for what a host does (initialize with the ui\nextension, list tools, read a resource, call a tool, ping, log) and\nnothing more. Answers come as JSON or as an event stream, with or\nwithout a session; the raw results are kept, `_meta` included, which\nis what a host reads tool visibility and a resource's policy from.",
-      "examples": [
-        {
-          "title": "",
-          "text": "client = Client.new(url: \"https://shop.example/mcp\", headers: { \"Authorization\" => \"Bearer ...\" })\nclient.connect\nclient.tools.first[\"_meta\"]"
-        }
-      ],
-      "file": "lib/poetry/agent/apps/host/client.rb",
-      "methods": [
-        {
-          "name": "call_tool",
-          "scope": "instance",
-          "group": null,
-          "signature": "call_tool(name, arguments = {})",
-          "docstring": "A tool's result.",
-          "params": [
-            {
-              "name": "name",
-              "types": [
-                "String"
-              ],
-              "text": ""
-            },
-            {
-              "name": "arguments",
-              "types": [
-                "Hash"
-              ],
-              "text": ""
-            }
-          ],
-          "return": {
-            "types": [
-              "Hash"
-            ],
-            "text": "the `CallToolResult`"
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 125
-        },
-        {
-          "name": "connect",
-          "scope": "instance",
-          "group": null,
-          "signature": "connect",
-          "docstring": "The handshake: `initialize` with the ui extension declared, then\n`notifications/initialized`. Idempotent.",
-          "params": [],
-          "return": {
-            "types": [
-              "self"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 85
-        },
-        {
-          "name": "connected?",
-          "scope": "instance",
-          "group": null,
-          "signature": "connected?",
-          "docstring": "Whether the handshake happened.",
-          "params": [],
-          "return": {
-            "types": [
-              "Boolean"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 103
-        },
-        {
-          "name": "initialize",
-          "scope": "instance",
-          "group": null,
-          "signature": "initialize(url:, headers: {}, name: \"poetry-agent\", version: Poetry::Agent::VERSION, # rubocop:disable Metrics/ParameterLists open_timeout: 5, read_timeout: 30, post: nil)",
-          "docstring": "A client for one endpoint; nothing is sent until {#connect}.",
-          "params": [
-            {
-              "name": "url",
-              "types": [
-                "String"
-              ],
-              "text": "the MCP endpoint"
-            },
-            {
-              "name": "headers",
-              "types": [
-                "Hash{String => String}"
-              ],
-              "text": "headers on every request (a bearer token, say)"
-            },
-            {
-              "name": "name",
-              "types": [
-                "String"
-              ],
-              "text": "this client's name for the handshake"
-            },
-            {
-              "name": "version",
-              "types": [
-                "String"
-              ],
-              "text": "this client's version"
-            },
-            {
-              "name": "open_timeout",
-              "types": [
-                "Numeric"
-              ],
-              "text": "seconds to connect"
-            },
-            {
-              "name": "read_timeout",
-              "types": [
-                "Numeric"
-              ],
-              "text": "seconds to wait for an answer"
-            },
-            {
-              "name": "post",
-              "types": [
-                "#call",
-                "nil"
-              ],
-              "text": "the transport, `(uri, body, headers) -> [status, headers, body]`;\nthe standard library by default, a Rack app under test"
-            }
-          ],
-          "return": {
-            "types": [
-              "Client"
-            ],
-            "text": "a new instance of Client"
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 67
-        },
-        {
-          "name": "notify",
-          "scope": "instance",
-          "group": null,
-          "signature": "notify(method, params = nil)",
-          "docstring": "A notification, answered with nothing.",
-          "params": [
-            {
-              "name": "method",
-              "types": [
-                "String"
-              ],
-              "text": ""
-            },
-            {
-              "name": "params",
-              "types": [
-                "Hash",
-                "nil"
-              ],
-              "text": ""
-            }
-          ],
-          "return": {
-            "types": [
-              "void"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 159
-        },
-        {
-          "name": "ping",
-          "scope": "instance",
-          "group": null,
-          "signature": "ping",
-          "docstring": "A ping.",
-          "params": [],
-          "return": {
-            "types": [
-              "Hash"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 132
-        },
-        {
-          "name": "read_resource",
-          "scope": "instance",
-          "group": null,
-          "signature": "read_resource(uri)",
-          "docstring": "A resource's contents.",
-          "params": [
-            {
-              "name": "uri",
-              "types": [
-                "String"
-              ],
-              "text": ""
-            }
-          ],
-          "return": {
-            "types": [
-              "Array<Hash>"
-            ],
-            "text": "the contents items"
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 116
-        },
-        {
-          "name": "request",
-          "scope": "instance",
-          "group": null,
-          "signature": "request(method, params = nil)",
-          "docstring": "A request by method, answered with its result.",
-          "params": [
-            {
-              "name": "method",
-              "types": [
-                "String"
-              ],
-              "text": ""
-            },
-            {
-              "name": "params",
-              "types": [
-                "Hash",
-                "nil"
-              ],
-              "text": ""
-            }
-          ],
-          "return": {
-            "types": [
-              "Hash"
-            ],
-            "text": "the result"
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 140
-        },
-        {
-          "name": "server_capabilities",
-          "scope": "instance",
-          "group": null,
-          "signature": "server_capabilities",
-          "docstring": "The server's declared capabilities, after {#connect}.",
-          "params": [],
-          "return": {
-            "types": [
-              "Hash",
-              "nil"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 51
-        },
-        {
-          "name": "server_info",
-          "scope": "instance",
-          "group": null,
-          "signature": "server_info",
-          "docstring": "The server's name and version, after {#connect}.",
-          "params": [],
-          "return": {
-            "types": [
-              "Hash",
-              "nil"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 56
-        },
-        {
-          "name": "tools",
-          "scope": "instance",
-          "group": null,
-          "signature": "tools",
-          "docstring": "The tools, raw, `_meta` included.",
-          "params": [],
-          "return": {
-            "types": [
-              "Array<Hash>"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 108
-        }
-      ],
-      "constants": [
-        {
-          "name": "PROTOCOL_VERSION",
-          "value": "\"2025-06-18\"",
-          "docstring": "The protocol version the client asks for."
-        }
-      ]
-    },
-    {
-      "path": "Poetry::Agent::Apps::Host::Client::Error",
-      "type": "class",
-      "superclass": "StandardError",
-      "docstring": "A JSON-RPC error the server answered, or a transport failure.",
-      "examples": [],
-      "file": "lib/poetry/agent/apps/host/client.rb",
-      "methods": [
-        {
-          "name": "code",
-          "scope": "instance",
-          "group": null,
-          "signature": "code",
-          "docstring": "The JSON-RPC code, -32000 for a transport failure.",
-          "params": [],
-          "return": {
-            "types": [
-              "Integer"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 28
-        },
-        {
-          "name": "http_status",
-          "scope": "instance",
-          "group": null,
-          "signature": "http_status",
-          "docstring": "The HTTP status the server answered, when the failure was one (a 401 wants fresh credentials).",
-          "params": [],
-          "return": {
-            "types": [
-              "Integer",
-              "nil"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 32
-        },
-        {
-          "name": "initialize",
-          "scope": "instance",
-          "group": null,
-          "signature": "initialize(message, code: -32_000, http_status: nil)",
-          "docstring": "Names the failure and its code.",
-          "params": [
-            {
-              "name": "message",
-              "types": [
-                "String"
-              ],
-              "text": "the server's message, or the transport's"
-            },
-            {
-              "name": "code",
-              "types": [
-                "Integer"
-              ],
-              "text": "the JSON-RPC code"
-            },
-            {
-              "name": "http_status",
-              "types": [
-                "Integer",
-                "nil"
-              ],
-              "text": "the HTTP status, for a refused request"
-            }
-          ],
-          "return": {
-            "types": [
-              "Error"
-            ],
-            "text": "a new instance of Error"
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/apps/host/client.rb",
-          "line": 38
+          "line": 106
         }
       ],
       "constants": []
@@ -13785,6 +13390,110 @@
           "name": "UNSAFE",
           "value": "/[;\\r\\n'\" ]/",
           "docstring": "Characters a domain may not carry: a `;` or a newline would start\na directive, a quote a keyword, a space a second source."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Apps::Host::InProcess",
+      "type": "class",
+      "superclass": "Faraday::Adapter",
+      "docstring": "A Faraday adapter that sends the host's requests into a Rack app in\nthis process: for a host whose server is the application itself\n(the docs site hosts its own app) and for tests. No socket; the\nserver sees the request it would see over the network (the method,\nthe URL's scheme and host, the headers, the body).",
+      "examples": [
+        {
+          "title": "A host over the application's own server",
+          "text": "Poetry::Agent::Apps::Host.new(\n  servers: { \"self\" => { url: \"https://chat.example/mcp\" } }, origin: \"https://chat.example\",\n  http_client_customizer: Poetry::Agent::Apps::Host::InProcess.customizer(Rails.application)\n)"
+        }
+      ],
+      "file": "lib/poetry/agent/apps/host/in_process.rb",
+      "methods": [
+        {
+          "name": "customizer",
+          "scope": "class",
+          "group": null,
+          "signature": "customizer(rack_app)",
+          "docstring": "The customizer a host takes for a Rack app: it sets this adapter on the gem's connection.",
+          "params": [
+            {
+              "name": "rack_app",
+              "types": [
+                "#call"
+              ],
+              "text": "the Rack application the requests go into"
+            }
+          ],
+          "return": {
+            "types": [
+              "Proc"
+            ],
+            "text": "for `http_client_customizer:`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/in_process.rb",
+          "line": 29
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "Runs the request through the Rack app and saves its answer as the response.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Faraday::Env"
+              ],
+              "text": "the request"
+            }
+          ],
+          "return": {
+            "types": [
+              "Faraday::Response"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/in_process.rb",
+          "line": 47
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(app, rack_app)",
+          "docstring": "The adapter over a Rack app.",
+          "params": [
+            {
+              "name": "app",
+              "types": [
+                "#call"
+              ],
+              "text": "the rest of the Faraday stack (Faraday passes it)"
+            },
+            {
+              "name": "rack_app",
+              "types": [
+                "#call"
+              ],
+              "text": "the Rack application"
+            }
+          ],
+          "return": {
+            "types": [
+              "InProcess"
+            ],
+            "text": "a new instance of InProcess"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host/in_process.rb",
+          "line": 38
+        }
+      ],
+      "constants": [
+        {
+          "name": "BARE_HEADERS",
+          "value": "%w[CONTENT_TYPE CONTENT_LENGTH].freeze",
+          "docstring": "The request headers Rack names without the `HTTP_` prefix."
         }
       ]
     },
@@ -14125,7 +13834,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 43
+          "line": 45
         },
         {
           "name": "initialize",
@@ -14157,7 +13866,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 48
+          "line": 50
         }
       ],
       "constants": []
@@ -14185,7 +13894,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "html=",
@@ -14210,7 +13919,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "ui",
@@ -14227,7 +13936,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "ui=",
@@ -14252,7 +13961,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "uri",
@@ -14269,7 +13978,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "uri=",
@@ -14294,7 +14003,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 95
+          "line": 97
         }
       ],
       "constants": []
@@ -14497,7 +14206,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "credentials=",
@@ -14526,7 +14235,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "headers",
@@ -14543,7 +14252,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "headers=",
@@ -14568,7 +14277,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "id",
@@ -14585,7 +14294,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "id=",
@@ -14610,7 +14319,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "url",
@@ -14627,7 +14336,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "url=",
@@ -14652,7 +14361,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 88
+          "line": 90
         }
       ],
       "constants": []
@@ -14680,7 +14389,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 136
+          "line": 138
         },
         {
           "name": "fetch",
@@ -14712,7 +14421,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 124
+          "line": 126
         },
         {
           "name": "initialize",
@@ -14729,7 +14438,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 113
+          "line": 115
         }
       ],
       "constants": []

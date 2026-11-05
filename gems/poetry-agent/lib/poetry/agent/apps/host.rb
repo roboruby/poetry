@@ -5,7 +5,9 @@ require "securerandom"
 require "active_support"
 require "active_support/message_verifier"
 require_relative "host/csp"
-require_relative "host/client"
+require "mcp"
+require "mcp/client"
+require_relative "host/in_process"
 require_relative "host/sandbox"
 require_relative "host/rpc_app"
 require_relative "host/oauth"
@@ -15,8 +17,8 @@ module Poetry
     module Apps
       # The host side of MCP Apps: other servers' apps inside a Rails page.
       # A host knows its servers (an id, a URL, the headers it holds for
-      # them), reads their tools and app resources through its own client
-      # (cached), calls tools for the page, answers an app's own requests
+      # them), reads their tools and app resources through the `mcp` gem's
+      # client (cached), calls tools for the page, answers an app's own requests
       # through an allowlist and the tool visibility the server declared,
       # and serves the sandbox proxy page the app runs in, on a second
       # origin by default, with the resource's policy as a header.
@@ -185,8 +187,11 @@ module Poetry
         # @param secret [String, nil] what signs the sandbox tokens; the application's secret key base by default
         # @param cache [#fetch, nil] a store answering `fetch(key, expires_in:) { }`; a {Store} by default
         # @param name [String] the client name servers see
+        # @param http_client_customizer [#call, nil] a hook on the gem's Faraday connection to every server: an
+        #   adapter ({InProcess.customizer} for a server in this process, a test adapter) or middleware
         def initialize(servers:, origin:, sandbox_origin: nil, sandbox_path: "/mcp-apps/sandbox", # rubocop:disable Metrics/ParameterLists
-                       rpc_path: "/mcp-apps/rpc", secret: nil, cache: nil, name: "poetry-agent")
+                       rpc_path: "/mcp-apps/rpc", secret: nil, cache: nil, name: "poetry-agent",
+                       http_client_customizer: nil)
           @servers = servers.to_h do |id, config|
             [id.to_s, Server.new(id: id.to_s, url: config.fetch(:url) { config.fetch("url") },
                                  headers: (config[:headers] || config["headers"] || {}).to_h,
@@ -198,6 +203,7 @@ module Poetry
           @rpc_path = rpc_path
           @cache = cache || Store.new
           @name = name
+          @http_client_customizer = http_client_customizer
           @verifier = ActiveSupport::MessageVerifier.new(secret || default_secret, serializer: JSON)
         end
 
@@ -210,18 +216,26 @@ module Poetry
           @servers.fetch(id.to_s) { raise Refused, "unknown server: #{id}" }
         end
 
-        # A connected client for a server: the server's headers, the
-        # context's through the server's credentials, this request's.
+        # A connected client for a server, the `mcp` gem's: the server's
+        # headers, the context's through the server's credentials, this
+        # request's; the handshake declares the ui extension.
         #
         # @param id [String]
         # @param headers [Hash] headers for this request over the rest
         # @param context [Object, nil] what the server's credentials turn into headers (the signed-in person)
-        # @return [Client]
+        # @return [::MCP::Client]
         # @raise [AuthorizationRequired] when the credentials want the person sent to authorize first
+        # @raise [::MCP::Client::RequestHandlerError] when the server refuses the handshake or cannot be reached
         def client(id, headers: {}, context: nil)
           held = server(id)
           merged = held.headers.merge(credential_headers(held, context)).merge(headers.to_h)
-          Client.new(url: held.url, headers: merged, name: @name, post: @post).connect
+          transport = ::MCP::Client::HTTP.new(url: held.url, headers: merged, &@http_client_customizer)
+          # The `initialize` handshake outright (the extension is declared there, SEP-2133); the gem's
+          # default probes `server/discover` first, one request more per client against every server.
+          ::MCP::Client.new(transport: transport).tap do |client|
+            client.connect(client_info: { name: @name, version: Poetry::Agent::VERSION }, mode: :legacy,
+                           capabilities: { extensions: Apps.capabilities.to_h[:extensions] })
+          end
         end
 
         # Whether the context holds credentials for the server (true for a server without credentials).
@@ -275,9 +289,9 @@ module Poetry
         def tools(id, headers: {}, context: nil)
           @cache.fetch("poetry/apps/host/tools/#{id}", expires_in: TOOLS_TTL) do
             with_client(id, headers: headers, context: context, &:tools).map do |tool|
-              ui = tool.dig("_meta", "ui") || tool.dig("_meta", :ui) || {}
-              { name: tool["name"], description: tool["description"], input_schema: tool["inputSchema"],
-                resource_uri: ui["resourceUri"] || ui[:resourceUri], visibility: ui["visibility"] || ui[:visibility] }
+              ui = tool.meta.to_h["ui"] || {}
+              { name: tool.name, description: tool.description, input_schema: tool.input_schema,
+                resource_uri: ui["resourceUri"], visibility: ui["visibility"] }
             end
           end
         end
@@ -314,7 +328,8 @@ module Poetry
         # @raise [Refused] for a resource that is not an app
         def resource(id, uri, headers: {}, context: nil)
           @cache.fetch("poetry/apps/host/resource/#{id}/#{uri}", expires_in: RESOURCES_TTL) do
-            contents = with_client(id, headers: headers, context: context) { |client| client.read_resource(uri) }.first
+            read = with_client(id, headers: headers, context: context) { |client| client.read_resource(uri: uri) }
+            contents = read.first
             raise Refused.new("no resource at #{uri}", code: -32_002) unless contents
 
             mime = contents["mimeType"].to_s
@@ -339,7 +354,7 @@ module Poetry
 
           tool = tools(id, context: context).find { |held| held[:name] == name }
           result = with_client(id, headers: headers, context: context) do |client|
-            client.call_tool(name, arguments || {})
+            client.call_tool(name: name, arguments: arguments || {})["result"]
           end
           Call.new(server: id.to_s, tool: name, input: arguments || {}, result: result,
                    resource_uri: tool[:resource_uri])
@@ -367,11 +382,11 @@ module Poetry
             raise Refused, "not a tool an app may call: #{name}" unless app_callable?(id, name, context: context)
 
             with_client(id, headers: headers, context: context) do |client|
-              client.call_tool(name, params["arguments"] || {})
+              client.call_tool(name: name, arguments: params["arguments"] || {})["result"]
             end
           when "resources/read"
             contents = with_client(id, headers: headers, context: context) do |client|
-              client.read_resource(params["uri"].to_s)
+              client.read_resource(uri: params["uri"].to_s)
             end
             { "contents" => contents }
           when "ping" then {}
@@ -466,10 +481,6 @@ module Poetry
           @cache.clear if @cache.respond_to?(:clear)
         end
 
-        # The transport seam for tests: a callable `(uri, body, headers) -> [status, headers, body]`.
-        # @api private
-        attr_writer :post
-
         private
 
         # The context's headers through the server's credentials: an object answering `headers`, a callable,
@@ -486,9 +497,9 @@ module Poetry
         # after the credentials refreshed, else the person is sent to authorize.
         def with_client(id, headers:, context:)
           yield client(id, headers: headers, context: context)
-        rescue Client::Error => e
+        rescue ::MCP::Client::RequestHandlerError => e
           held = server(id)
-          raise unless e.http_status == 401 && held.credentials.respond_to?(:refresh)
+          raise unless e.error_type == :unauthorized && held.credentials.respond_to?(:refresh)
           return yield client(id, headers: headers, context: context) if held.credentials.refresh(context, held)
           raise unless held.credentials.respond_to?(:authorization_url)
 
