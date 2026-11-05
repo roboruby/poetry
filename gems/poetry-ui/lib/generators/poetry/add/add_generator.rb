@@ -20,7 +20,9 @@ module Poetry
   # recursively and writes in topo order, poetry components satisfy at
   # RUNTIME (the gem provides them - no copy), targets are
   # traversal-checked, and gem dependencies are REPORTED, never installed.
-  # Every install records provenance in the manifest. An @poetry name the
+  # Every install records provenance in the manifest; an item from a
+  # registry also records the version it states and a digest of each file
+  # it wrote, what the app's copy started from. An @poetry name the
   # gems do not ship is a community item, fetched from poetryui.com (or the
   # manifest's community: template); a port also lands its origin's
   # license in the host's THIRD_PARTY_NOTICES.md.
@@ -142,7 +144,34 @@ module Poetry
       pin_community_modules(plan)
       report(plan)
       credit_origins(plan)
-      record_in_manifest(plan.manifest)
+      record_in_manifest(plan.manifest) { |entry, recorded| installed(entry, recorded) }
+    end
+
+    # An item's record as the app now holds it. The plan's entry names the
+    # version the item states and the digest of every file it ships; the
+    # record takes a file's digest when the app's copy matches the item's
+    # (written just now, or the same already), and the version once every
+    # file does. A file the app keeps in another form (an edit this run
+    # skipped) keeps the digest on record, so each digest names what that
+    # file was copied from, and a reinstall (the file deleted and added
+    # again, or --force) moves the record to the item as it stands now.
+    # A name another source installed keeps its record.
+    def installed(entry, recorded)
+      return recorded unless recorded.nil? || (recorded.is_a?(Hash) && recorded["source"] == entry["source"])
+
+      shipped = entry.fetch("files", {})
+      matched = shipped.select { |target, digest| digest_at(target) == digest }
+      return entry if matched.size == shipped.size
+
+      kept = recorded || entry.except("version", "files")
+      files = (kept["files"] || {}).merge(matched)
+      files.any? ? kept.merge("files" => files) : kept
+    end
+
+    # The digest of the app's file at a target, nil when there is none.
+    def digest_at(target)
+      path = File.join(destination_root, target)
+      Poetry::Core::RegistryInstaller.digest(File.binread(path)) if File.file?(path)
     end
 
     # Each port's origins, licenses and copyrights in the host's notices,
@@ -307,11 +336,15 @@ module Poetry
       config.is_a?(Hash) ? config : {}
     end
 
-    # Records entries in a manifest section, keeping existing ones.
+    # Records entries in a manifest section, keeping existing ones; a block
+    # decides the record instead, from the entry and the one on record.
     def record_in_manifest(entries, section: "components")
       manifest = manifest_config
       manifest[section] = {} unless manifest[section].is_a?(Hash)
-      entries.each { |name, record| manifest[section][name] ||= record }
+      entries.each do |name, record|
+        recorded = manifest[section][name]
+        manifest[section][name] = block_given? ? yield(record, recorded) : (recorded || record)
+      end
       create_file MANIFEST, YAML.dump(manifest), force: true
     end
 

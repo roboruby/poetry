@@ -301,6 +301,113 @@ module Poetry
       end
     end
 
+    # -- the record: version and digests -------------------------------------
+
+    CARD = "app/components/community/note_card/component.rb"
+    STYLE = "app/components/community/note_card/style.rb"
+
+    def note_card(version, body)
+      { "name" => "note-card", "type" => "registry:component",
+        "meta" => { "community" => true, "version" => version },
+        "files" => [{ "path" => CARD, "content" => "# card #{body}\n" },
+                    { "path" => STYLE, "content" => "# style #{body}\n" }] }
+    end
+
+    def digest(content)
+      Poetry::Core::RegistryInstaller.digest(content)
+    end
+
+    def recorded(name)
+      YAML.safe_load_file(File.join(destination_root, "config/poetry_components.yml"),
+                          permitted_classes: [Date]).dig("components", name)
+    end
+
+    def test_the_manifest_records_the_items_version_and_a_digest_of_each_file_written
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      prepare_remote_fixtures
+
+      run_generator %w[@poetry/note-card ./items/fancy-widget.json]
+
+      assert_equal "aaa111", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style one\n") }, recorded("note-card")["files"])
+      widget = recorded("fancy-widget")
+      stylesheet = "app/assets/tailwind/poetry/community/fancy-widget.css"
+
+      assert_nil widget["version"], "an item that states no version records none"
+      assert_equal ["app/components/acme/fancy_widget/component.rb", stylesheet], widget["files"].keys
+      assert_equal digest(File.binread(File.join(destination_root, stylesheet))), widget["files"][stylesheet]
+    end
+
+    def test_a_rerun_that_skips_an_edited_file_keeps_what_the_record_says_it_was_copied_from
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      File.write(File.join(destination_root, CARD), "# customized\n")
+      write_fixture("note-card", note_card("bbb222", "two"))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "# customized\n", File.read(File.join(destination_root, CARD))
+      assert_equal "aaa111", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style one\n") }, recorded("note-card")["files"])
+    end
+
+    def test_a_file_deleted_and_added_again_records_the_item_it_now_comes_from
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      write_fixture("note-card", note_card("bbb222", "two"))
+      FileUtils.rm(File.join(destination_root, STYLE))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "# style two\n", File.read(File.join(destination_root, STYLE))
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+      assert_equal "aaa111", recorded("note-card")["version"], "the version moves once every file matches the item"
+
+      FileUtils.rm(File.join(destination_root, CARD))
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "bbb222", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card two\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+    end
+
+    def test_force_takes_the_current_item_and_moves_the_record
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      File.write(File.join(destination_root, CARD), "# customized\n")
+      write_fixture("note-card", note_card("bbb222", "two"))
+
+      run_generator %w[@poetry/note-card --force]
+
+      assert_equal "# card two\n", File.read(File.join(destination_root, CARD))
+      assert_equal "bbb222", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card two\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+    end
+
+    def test_a_record_from_before_digests_gains_them_only_for_files_that_match_the_item
+      prepare_community("components" => { "note-card" => { "source" => "@poetry/note-card", "community" => true } })
+      write_fixture("note-card", note_card("bbb222", "two"))
+      FileUtils.mkdir_p(File.join(destination_root, File.dirname(CARD)))
+      File.write(File.join(destination_root, CARD), "# card one\n")
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal({ "source" => "@poetry/note-card", "community" => true,
+                     "files" => { STYLE => digest("# style two\n") } }, recorded("note-card"))
+    end
+
+    def test_a_name_another_source_installed_keeps_its_record
+      prepare_community("components" => { "note-card" => { "version" => "0.1.0" } })
+      write_fixture("note-card", note_card("aaa111", "one"))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal({ "version" => "0.1.0" }, recorded("note-card"))
+    end
+
     def test_an_unknown_bare_name_points_at_the_community_address
       error = assert_raises(ArgumentError) { run_generator %w[phone-mockup] }
 

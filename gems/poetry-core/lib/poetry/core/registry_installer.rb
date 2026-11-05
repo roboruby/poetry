@@ -39,6 +39,13 @@ module Poetry
       # One file write of the plan.
       Write = Struct.new(:target, :content, :item, keyword_init: true)
 
+      # The digest a file is recorded and compared by: SHA-256, hex.
+      # @param content [String] the file's content
+      # @return [String]
+      def self.digest(content)
+        Digest::SHA256.hexdigest(content)
+      end
+
       # An installer over a client, writing under the destination root.
       # @param client [RegistryClient] resolves remote addresses to items
       # @param local_components [Enumerable<String>] kebab names the
@@ -136,30 +143,47 @@ module Poetry
       def build_plan(state)
         order = topo_order(state)
         items = order.map { |name| state[:items][name] }
+        writes = collect_writes(state, order)
         Plan.new(
-          writes: collect_writes(state, order),
+          writes: writes,
           css_writes: items.filter_map { |item| css_write(item) },
           entry_lines: items.filter_map { |item| entry_line(item) },
           gem_satisfied: state[:gem_satisfied].sort,
           block_installs: state[:block_installs].sort,
           gem_deps: missing_gem_deps(items),
           docs: items.filter_map { |item| item["docs"] },
-          manifest: order.to_h { |name| [name, manifest_entry(state, name)] },
+          manifest: order.to_h { |name| [name, manifest_entry(state, name, writes)] },
           provenance: order.map { |name| provenance(state, name) }
         )
       end
 
       # The manifest record: the address, and for a community item or a
       # port, that and the origin it credits (`origins`, a list, when a
-      # bundle credits several).
-      def manifest_entry(state, name)
+      # bundle credits several); then the version the item states and the
+      # digest of every file it writes, the item as it stood at install.
+      def manifest_entry(state, name, writes)
         record = provenance(state, name)
         entry = { "source" => record.address }
         entry["community"] = true if record.community
         origins = record.origins.map { |origin| origin.except("notice") }
         entry["origin"] = origins.first if origins.one?
         entry["origins"] = origins if origins.size > 1
-        entry
+        entry.merge(revision(state[:items][name], writes))
+      end
+
+      # The version an item states (meta.version, any text or number, kept
+      # as text) and the digest of each file it writes, by target, its
+      # stylesheet included. An item that states no version records none.
+      def revision(item, writes)
+        stated = (item["meta"] || {})["version"]
+        files = writes.select { |write| write.item == item["name"] }
+                      .to_h { |write| [write.target, self.class.digest(write.content)] }
+        css = css_write(item)
+        files[css[:path]] = self.class.digest(css[:content]) if css
+        revision = {}
+        revision["version"] = stated.to_s if stated.is_a?(Numeric) || (stated.is_a?(String) && !stated.empty?)
+        revision["files"] = files if files.any?
+        revision
       end
 
       # The item's provenance: meta.sources (several origins, an island's
