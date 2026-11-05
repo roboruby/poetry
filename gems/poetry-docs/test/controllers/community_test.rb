@@ -15,6 +15,13 @@ class CommunityTest < ActionDispatch::IntegrationTest
     Poetry::Docs.config.community_registry = nil
   end
 
+  def with_demos(address)
+    Poetry::Docs.config.community_demos = address
+    yield
+  ensure
+    Poetry::Docs.config.community_demos = nil
+  end
+
   test "the index lists every item the registry describes, each linked to its page" do
     with_registry do
       get community_path
@@ -109,6 +116,63 @@ class CommunityTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "with a demos address, an item's page lays a frame for its demo over the screenshot" do
+    with_registry do
+      with_demos("https://demos.example/") do
+        get community_item_path("note-card")
+
+        assert_response :success
+        assert_select "figure[data-controller='community-demo'][data-community-demo-url-value=?]", "https://demos.example/items/note-card/"
+        assert_select "figure[data-action=?]", "turbo:before-morph-element->community-demo#keep"
+        assert_select "figure [data-community-demo-target=box] img[data-community-demo-target=shot]", 1
+        assert_select "figure [data-community-demo-target=box] iframe[data-community-demo-target=frame][title=?]", "Note card, running" do |frames|
+          assert_equal "allow-scripts allow-same-origin allow-forms", frames.first["sandbox"]
+          assert_nil frames.first["src"], "the controller loads the demo, so a page that runs no script keeps its screenshot"
+          assert_includes frames.first["class"].split, "invisible"
+        end
+        assert_select "figcaption [data-community-demo-target=still]", /A screenshot of the demo/
+        assert_select "figcaption [data-community-demo-target=live][hidden]", /The demo, running.*served from demos\.example, apart from this site/m
+      end
+    end
+  end
+
+  test "another port is another origin, and the address's path is not part of it" do
+    with_registry do
+      with_demos("http://www.example.com:4120/anywhere") do
+        get community_item_path("note-card")
+
+        assert_select "figure[data-community-demo-url-value=?]", "http://www.example.com:4120/items/note-card/"
+      end
+    end
+  end
+
+  test "a page frames nothing at the site's own origin, for an address that is not a web address, or with no screenshot" do
+    with_registry do
+      get community_item_path("note-card")
+
+      assert_select "iframe", 0
+      assert_select "figure[data-controller]", 0
+      assert_select "figure img", 1
+
+      [ "http://www.example.com", "http://www.example.com:80/demos", "HTTP://WWW.EXAMPLE.COM", "http://user@www.example.com",
+        "javascript:alert(1)", "//demos.example", "demos.example", "ftp://demos.example", "http://", "http://bad host", "  " ].each do |address|
+        with_demos(address) do
+          get community_item_path("note-card")
+
+          assert_response :success
+          assert_select "iframe", 0, "#{address.inspect} must not be framed"
+          assert_select "figure img", 1
+        end
+      end
+      with_demos("https://demos.example") do
+        get community_item_path("quote-wall")
+
+        assert_response :success
+        assert_select "iframe", 0, "the frame stands in the screenshot's box; an item with none has no frame"
+      end
+    end
+  end
+
   test "an unknown item, and any item on a host with no registry, is a 404" do
     with_registry do
       get "/community/absent"
@@ -168,6 +232,15 @@ class CommunityTest < ActionDispatch::IntegrationTest
       assert_includes response.body, "| `with_pin` | The glyph a pinned note shows. |"
       assert_includes response.body, "```erb\n<%= community_note_card(body: \"Ship it\", author: \"Ada\") do |note| %>"
       assert_includes response.body, "- Adapted from @acme/note (https://acme.dev/r/note.json), https://github.com/acme/ui. License: MIT. Copyright (c) 2025 Acme"
+      assert_no_match(/The demo runs at/, response.body)
+      with_demos("https://demos.example") do
+        get "/community/note-card.md"
+
+        assert_includes response.body, "\n\nThe demo runs at https://demos.example/items/note-card/\n\n"
+        get "/community/quote-wall.md"
+
+        assert_no_match(/The demo runs at/, response.body)
+      end
       get "/community/quote-wall.md"
 
       assert_includes response.body, "An original community item"

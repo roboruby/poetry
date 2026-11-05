@@ -9,4 +9,7 @@ Poetry::Docs.configure do |config|
   # The community registry's build output, to see the Community pages
   # here: POETRY_COMMUNITY_REGISTRY=../../../../../poetry-ports/public/r
   config.community_registry = ENV["POETRY_COMMUNITY_REGISTRY"].presence
+  # The address its saved demos are served from, to see them run on an
+  # item's page: POETRY_COMMUNITY_DEMOS=http://127.0.0.1:4120
+  config.community_demos = ENV["POETRY_COMMUNITY_DEMOS"].presence
 end

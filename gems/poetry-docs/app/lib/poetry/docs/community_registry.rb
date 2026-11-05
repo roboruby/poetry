@@ -119,6 +119,28 @@ module Poetry
         def find(name)
           items.find { |item| item.name == name }
         end
+
+        # Where an item's saved demo runs, or nil: the configured demos
+        # address, when it is a web address at another origin than
+        # +apart_from+ (the docs site's own). The frame an item's page
+        # loads it into lets the demo's scripts run, which is safe only
+        # while the two origins differ.
+        def demo_url(name, apart_from:)
+          demos = origin(Poetry::Docs.config.community_demos)
+          "#{demos}/items/#{name}/" if demos && demos != origin(apart_from)
+        end
+
+        private
+
+        # scheme://host[:port] of a web address, or nil.
+        def origin(address)
+          uri = URI.parse(address.to_s.strip)
+          return nil unless uri.is_a?(URI::HTTP) && uri.host.present?
+
+          "#{uri.scheme}://#{uri.host.downcase}#{":#{uri.port}" unless uri.port == uri.default_port}"
+        rescue URI::InvalidURIError
+          nil
+        end
       end
     end
   end

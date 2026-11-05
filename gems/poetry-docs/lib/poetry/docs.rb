@@ -49,6 +49,14 @@ module Poetry
       # nil serves none.
       # @return [Pathname, String, nil]
       attr_accessor :community_registry
+      # The address the community registry's saved demos are served from:
+      # each item's demo as a static page, at /items/<name>/ on a host of
+      # their own. An item's page then runs the demo in a frame, in its
+      # screenshot's place. The address must be another origin than the
+      # docs site's, because the frame lets the demo's scripts run; a demo
+      # at the site's own origin is never framed. nil shows the screenshot.
+      # @return [String, nil]
+      attr_accessor :community_demos
     end
 
     # @return [Configuration]

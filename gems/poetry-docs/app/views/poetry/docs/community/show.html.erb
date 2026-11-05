@@ -9,7 +9,7 @@
 <% end %>
 <% web = %r{\Ahttps?://} %>
 
-<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-10 wrap-break-word">
   <header class="flex flex-col gap-3">
     <h1 class="text-3xl font-semibold tracking-tight"><%= @item.title %></h1>
     <p class="max-w-2xl text-muted-foreground"><%= @item.description %></p>
@@ -23,16 +23,30 @@
   </header>
 
   <% if (shot = @item.screenshot) %>
-    <figure class="flex flex-col gap-2">
-      <div class="w-fit max-w-full overflow-hidden rounded-xl border">
+    <%# With a demos address the frame is loaded over the screenshot and
+        takes its place once the demo answers (community_demo_controller);
+        the screenshot keeps the box's width, the demo sets its height. %>
+    <% live = @demo_url ? { controller: "community-demo", community_demo_url_value: @demo_url,
+                            action: "turbo:before-morph-element->community-demo#keep" } : {} %>
+    <%= tag.figure class: "flex flex-col gap-2", data: live do %>
+      <div class="relative w-fit max-w-full overflow-hidden rounded-xl border" data-community-demo-target="box">
         <%= image_tag registry_community_screenshot_path(file: File.basename(shot["path"])),
                       alt: "#{@item.title}, as its demo renders", width: shot["width"].to_i / 2, height: shot["height"].to_i / 2,
-                      class: "h-auto max-w-full" %>
+                      class: "h-auto max-w-full", data: { community_demo_target: "shot" } %>
+        <% if @demo_url %>
+          <iframe class="invisible absolute inset-0 size-full" title="<%= @item.title %>, running"
+                  sandbox="allow-scripts allow-same-origin allow-forms" data-community-demo-target="frame"></iframe>
+        <% end %>
       </div>
       <figcaption class="text-sm text-muted-foreground">
-        A screenshot of the demo below, taken by the registry's build in the light scheme.
+        <span data-community-demo-target="still">A screenshot of the demo below, taken by the registry's build in the light scheme.</span>
+        <% if @demo_url %>
+          <span hidden data-community-demo-target="live">
+            The demo, running in Poetry's default style; its source is below. It is served from <%= URI(@demo_url).host %>, apart from this site.
+          </span>
+        <% end %>
       </figcaption>
-    </figure>
+    <% end %>
   <% end %>
 
   <section class="flex flex-col gap-3">
@@ -79,7 +93,7 @@
       <h2 class="text-lg font-medium" id="example">Example</h2>
       <% if @item.helper %>
         <p class="max-w-2xl text-muted-foreground">
-          Render it with <code class="text-foreground"><%= @item.helper %></code>. This is the demo in the screenshot:
+          Render it with <code class="text-foreground"><%= @item.helper %></code>. This is the demo's source:
         </p>
       <% end %>
       <%= poetry_code_block(code: @item.demo, language: "erb", label: "Demo", wrap: true) %>

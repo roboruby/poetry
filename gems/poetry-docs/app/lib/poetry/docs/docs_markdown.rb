@@ -357,7 +357,7 @@ module Poetry
 
         # One community item's mirror: what its page shows, from the same
         # index entry.
-        def community_item(item)
+        def community_item(item, demo_url: nil)
           out = [ "# #{item.title}", item.description,
                   "A community #{item.kind.downcase}#{", version `#{item.version}`" if item.version}: reviewed and checked, not audited.",
                   "## Install\n\n`#{item.install}`" ]
@@ -371,6 +371,7 @@ module Poetry
             usage = item.helper ? "Render it with `#{item.helper}`.\n\n" : ""
             out << "## Example\n\n#{usage}```erb\n#{item.demo}\n```"
           end
+          out << "The demo runs at #{demo_url}" if demo_url
           out << community_table("Options", %w[Option Type Default Description], item.options) do |option|
             default = if option["required"] then "required"
             elsif option.key?("default") then "`#{option["type"] == "symbol" ? ":#{option["default"]}" : option["default"].to_json}`"
