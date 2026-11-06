@@ -9,6 +9,11 @@
 <% web = %r{\Ahttps?://} %>
 
 <div class="flex flex-col gap-10 wrap-break-word">
+  <p class="text-sm">
+    <%= link_to community_path, class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground", data: { community_back: true } do %>
+      <%= poetry_icon(name: :"arrow-left", class: "size-3.5") %> All components
+    <% end %>
+  </p>
   <header class="flex flex-col gap-3">
     <h1 class="text-3xl font-semibold tracking-tight"><%= @item.title %></h1>
     <p class="max-w-2xl text-muted-foreground"><%= @item.description %></p>

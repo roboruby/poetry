@@ -1,0 +1,64 @@
+<%# The list a search and its filters leave: how many, the filters in
+    force with a way out of each, the order, and the items.
+    Locals: browse, path, heading, lead, item_path (a callable from an
+    item to its page; the engine's by default). %>
+<% link = ->(changes) { query = browse.params_for(changes).to_query; query.empty? ? path : "#{path}?#{query}" } %>
+<% item_path = local_assigns[:item_path] || ->(item) { poetry_docs.community_item_path(item.name) } %>
+<div class="flex flex-col gap-6" data-community-results>
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= heading %></h1>
+    <% if local_assigns[:lead] %><p class="max-w-2xl text-muted-foreground"><%= lead %></p><% end %>
+  </header>
+
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+    <%# On a phone the filters are in the sidebar's drawer; this opens it. %>
+    <% if content_for?(:community_sidebar) %>
+      <%= poetry_button(variant: :outline, size: :sm, class: "md:hidden",
+                        data: { community_filters_toggle: true,
+                                action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) }) do %>
+        <%= poetry_icon(name: :"sliders-horizontal") %> Filters<%= " (#{browse.chosen.size})" if browse.chosen.any? %>
+      <% end %>
+    <% end %>
+    <h2 id="items" class="text-sm font-medium" data-community-count>
+      <%= browse.narrowed? ? "#{browse.count} of #{browse.total}" : browse.total %>
+      <%= browse.total == 1 ? "item" : "items" %>
+    </h2>
+    <% if browse.narrowed? %>
+      <ul class="flex flex-wrap items-center gap-2" aria-label="Filters in force">
+        <% if browse.query %>
+          <li><%= link_to link.call("q" => nil), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
+            &ldquo;<%= browse.query %>&rdquo; <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Clear the search</span>
+          <% end %></li>
+        <% end %>
+        <% browse.chosen.each do |param, value| %>
+          <li><%= link_to link.call(param => nil), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
+            <%= browse.label_for(param, value) %> <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Remove this filter</span>
+          <% end %></li>
+        <% end %>
+        <li><%= link_to "Clear all", path, class: "text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground" %></li>
+      </ul>
+    <% end %>
+    <p class="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+      Sort:
+      <% browse.sorts.each do |key, label| %>
+        <%= link_to label, link.call("sort" => (key == browse.sorts.keys.first ? nil : key)), rel: "nofollow",
+                    aria: { current: ("true" if browse.sort == key) },
+                    class: (browse.sort == key ? "font-medium text-foreground" : "underline-offset-4 hover:underline") %>
+      <% end %>
+    </p>
+  </div>
+
+  <% if browse.items.any? %>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <% browse.items.each do |item| %>
+        <%= render "poetry/docs/community/card", item: item, href: item_path.call(item) %>
+      <% end %>
+    </div>
+  <% elsif browse.total.zero? %>
+    <p class="max-w-2xl text-muted-foreground">This site serves no community registry, so there is nothing to install from here.</p>
+  <% else %>
+    <p class="max-w-2xl text-muted-foreground">
+      Nothing matches. <%= link_to "Clear the search and the filters", path, class: "text-foreground underline underline-offset-4" %>.
+    </p>
+  <% end %>
+</div>

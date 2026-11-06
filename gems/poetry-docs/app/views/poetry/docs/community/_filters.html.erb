@@ -1,0 +1,43 @@
+<%# The Community sidebar: the search, then each filter with its choices
+    and how many items each would give. Every choice is a link, so the
+    address holds the whole state and nothing here needs a script. A
+    chosen choice links to the list without it.
+    Locals: browse (CommunityBrowse, or a host's own with its readers),
+    path (the list's address), noun (what the list holds). %>
+<% link = ->(changes) { query = browse.params_for(changes).to_query; query.empty? ? path : "#{path}?#{query}" } %>
+<div class="flex flex-col gap-6 px-2 pb-6 pt-2" data-community-filters>
+  <%= form_with url: path, method: :get, html: { role: "search", class: "flex flex-col gap-2" } do %>
+    <% browse.params_for("q" => nil).each do |param, value| %>
+      <%= hidden_field_tag param, value, id: nil %>
+    <% end %>
+    <label for="community-search" class="text-xs font-medium text-sidebar-foreground/70">Search</label>
+    <div class="flex items-center gap-2">
+      <%= poetry_input(type: "search", name: "q", value: browse.query, id: "community-search",
+                       placeholder: "Search #{local_assigns.fetch(:noun, "components")}", class: "h-8") %>
+      <%= poetry_button(type: "submit", variant: :outline, size: :"icon-sm", label: "Search") { poetry_icon(name: :search) } %>
+    </div>
+  <% end %>
+  <% browse.facets.each do |facet| %>
+    <section aria-labelledby="filter-<%= facet.param %>" data-filter="<%= facet.param %>">
+      <h2 id="filter-<%= facet.param %>" class="text-xs font-medium text-sidebar-foreground/70"><%= facet.label %></h2>
+      <ul class="mt-1.5 flex flex-col gap-0.5">
+        <% facet.options.each do |option| %>
+          <li>
+            <%= link_to link.call(facet.param => (option.selected ? nil : option.value)), rel: "nofollow",
+                        aria: { current: ("true" if option.selected) },
+                        class: class_names("flex items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors",
+                                           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                           option.selected ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground" : "text-sidebar-foreground") do %>
+              <span class="min-w-0 flex-1 truncate"><%= option.label %></span>
+              <% if option.selected %>
+                <%= poetry_icon(name: :x, class: "size-3.5 shrink-0") %><span class="sr-only">Remove this filter</span>
+              <% else %>
+                <span class="shrink-0 text-xs tabular-nums text-sidebar-foreground/60"><%= option.count %></span>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>

@@ -58,13 +58,11 @@ class CommunitySectionTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the sidebar has a Community group, open on a component's page" do
-    with_registry do
-      get community_item_path("note-card")
+  test "the docs sidebar has a Community group, open on the section's guides" do
+    get "/community-items"
 
-      assert_response :success
-      assert_select "[data-slot=collapsible][data-open] [data-slot=sidebar-menu-button][href='/community']", minimum: 1
-    end
+    assert_response :success
+    assert_select "[data-slot=collapsible][data-open] [data-slot=sidebar-menu-button][href='/community']", minimum: 1
   end
 
   test "the browser's address leads to the index, which lists every item" do

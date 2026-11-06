@@ -75,6 +75,14 @@ module Poetry
         # does not say.
         def javascript = JAVASCRIPT[meta["javascript"]]
 
+        # The JavaScript an item brings, as the registry states it
+        # ("none", "stimulus", "island"); nil where it does not say.
+        def javascript_level = meta["javascript"].presence
+
+        # The library a port came from, by its key ("acme" for @acme);
+        # nil for an item made for Poetry.
+        def library = origins.first&.dig("registry").to_s.delete_prefix("@").presence
+
         # What the item looks like whatever theme the app wears.
         def traits = Array(meta["traits"]).map(&:to_s)
 

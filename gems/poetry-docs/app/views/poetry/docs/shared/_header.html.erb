@@ -1,0 +1,48 @@
+<%# The site's header: the sidebar's trigger (or, on a page with no
+    sidebar, the way home), the breadcrumb, the nav, search, the style
+    and theme controls and the project's links. The docs layout and the
+    Community layout both draw it. %>
+<header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
+  <% if local_assigns.fetch(:sidebar, true) %>
+    <%= poetry_sidebar_trigger %>
+  <% else %>
+    <%= link_to poetry_docs.root_path, "aria-label": "Poetry home", class: "mr-2 flex items-center gap-2 text-sm font-semibold" do %>
+      <%= poetry_icon(name: :feather, class: "size-4 shrink-0") %> poetry
+    <% end %>
+  <% end %>
+  <%# The breadcrumb takes what the controls leave and stays on one
+      line: the trail keeps its width and the current page gives way
+      with an ellipsis, so a long title never wraps under the header. %>
+  <div class="hidden min-w-0 flex-1 overflow-hidden lg:block [&_ol]:flex-nowrap [&_li]:shrink-0 [&_li:last-child]:min-w-0
+              [&_li:last-child]:shrink [&_[data-slot=breadcrumb-page]]:block [&_[data-slot=breadcrumb-page]]:min-w-0
+              [&_[data-slot=breadcrumb-page]]:truncate"><%= yield :breadcrumb %></div>
+  <div class="ml-auto flex items-center gap-2">
+    <%= render "poetry/docs/shared/site_nav" %>
+    <%# The palette lists every page plus the search index headings (a
+        thousand items) and depends on nothing in the request, so it is
+        cached whole; its ids are random per render and stay unique. %>
+    <% cache [ "docs", "search-palette", Poetry::Ui::VERSION, Poetry::Docs::SearchIndex.digest ] do %>
+      <%= render "poetry/docs/shared/search" %>
+    <% end %>
+    <%# The theme switcher is itself styled by the theme it switches, so
+        its native-select width would otherwise track each theme's font/
+        padding and jump on change. class: "w-full" overrides the
+        component's w-fit wrapper so the select fills this fixed w-28 -
+        a stable-width control, no horizontal jump between themes. %>
+    <div data-controller="style" data-action="change->style#apply" class="w-28">
+      <label for="style-switcher" class="sr-only">Component style</label>
+      <%= poetry_native_select(name: "style", id: "style-switcher", class: "w-full",
+                               options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
+                               selected: "default") %>
+    </div>
+    <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
+                      data: { action: "click->theme#toggle" }) do %>
+      <%= poetry_icon(name: :sun, class: "dark:hidden") %>
+      <%= poetry_icon(name: :moon, class: "hidden dark:block") %>
+    <% end %>
+    <%# The appearance controls (style, light/dark) on one side of the
+        divider, the project links on the other. %>
+    <%= poetry_separator(orientation: :vertical, class: "mx-1 h-5") %>
+    <%= render "poetry/docs/shared/project_links" %>
+  </div>
+</header>

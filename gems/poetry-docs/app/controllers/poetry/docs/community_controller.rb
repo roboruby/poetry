@@ -10,9 +10,14 @@ module Poetry
     class CommunityController < ApplicationController
       include MarkdownMirror
 
+      # The Community section is a place of its own, outside the docs: its
+      # pages wear its layout, with the search and the filters where the
+      # docs have their nav.
+      layout "poetry/docs/community"
+
       def index
         @entry = entry
-        @items = CommunityRegistry.items
+        @browse = CommunityBrowse.new(CommunityRegistry.items, params)
       end
 
       def show

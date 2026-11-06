@@ -64,6 +64,11 @@ module Poetry
       # section's pages itself sets true.
       # @return [Boolean, nil]
       attr_writer :community_section
+      # The Community section's tabs a host adds beside Components, each a
+      # title and a path, for the pages the host serves there itself
+      # ([ [ "Libraries", "/community/libraries" ] ]).
+      # @return [Array<Array(String, String)>]
+      attr_writer :community_tabs
       # The host's own pages for the sitemap, beside the engine's: paths
       # ("/community/libraries/acme"), or anything that answers `call`
       # with them, asked on each request.
@@ -82,6 +87,8 @@ module Poetry
       def community_section?
         @community_section.nil? ? CommunityRegistry.items.any? : @community_section == true
       end
+
+      def community_tabs = Array(@community_tabs)
 
       def stylesheet = @stylesheet || "poetry_docs"
 

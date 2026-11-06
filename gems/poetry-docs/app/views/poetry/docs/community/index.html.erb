@@ -4,14 +4,15 @@
     <% crumb.with_item("Community") %>
   <% end %>
 <% end %>
+<% content_for :community_sidebar do %>
+  <%= render "poetry/docs/community/filters", browse: @browse, path: community_path %>
+<% end %>
 
-<div class="flex flex-col gap-10">
-  <header class="flex flex-col gap-2">
-    <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
-    <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
-  </header>
+<div class="flex flex-col gap-8">
+  <%= render "poetry/docs/community/results", browse: @browse, path: community_path,
+             heading: @entry.title, lead: @entry.description %>
 
-  <section class="flex flex-col gap-3">
+  <section class="flex flex-col gap-3 border-t pt-6">
     <%= poetry_code_block(code: "bin/rails g poetry:add @poetry/<name>", language: "plaintext", label: "Install") %>
     <p class="max-w-2xl text-sm text-muted-foreground">
       The files land in your app and are yours to edit. A maintainer reviewed every item and each
@@ -21,31 +22,5 @@
       <%= link_to "Publishing components", community_publishing_path, class: "text-foreground underline underline-offset-4" %>
       covers serving your own.
     </p>
-  </section>
-
-  <section class="flex flex-col gap-4">
-    <h2 class="text-lg font-medium" id="items">Items</h2>
-    <% if @items.any? %>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <% @items.each do |item| %>
-          <%= poetry_card do |card| %>
-            <% card.with_title { link_to(item.title, community_item_path(item.name), class: "underline-offset-4 hover:underline") } %>
-            <% card.with_description { item.description } %>
-            <% card.with_action { poetry_badge(variant: :outline) { item.kind } } %>
-            <% if (shot = item.screenshot) %>
-              <%= link_to community_item_path(item.name), class: "block overflow-hidden rounded-md border", tabindex: -1, aria: { hidden: true } do %>
-                <%= image_tag registry_community_screenshot_path(file: File.basename(shot["path"])),
-                              alt: "", loading: "lazy", width: shot["width"].to_i / 2, height: shot["height"].to_i / 2,
-                              class: "aspect-video w-full bg-white object-contain" %>
-              <% end %>
-            <% end %>
-          <% end %>
-        <% end %>
-      </div>
-    <% else %>
-      <p class="max-w-2xl text-muted-foreground">
-        This site serves no community registry, so there is nothing to install from here.
-      </p>
-    <% end %>
   </section>
 </div>

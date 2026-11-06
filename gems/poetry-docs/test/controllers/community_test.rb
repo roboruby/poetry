@@ -29,7 +29,7 @@ class CommunityTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_select "h1", "Community components"
-      assert_select "[data-slot=card]", 3
+      assert_select "[data-community-card]", 3
       assert_select "a[href=?]", "/community/components/note-card", text: "Note card"
       assert_select "a[href=?]", "/community/components/quote-wall", text: "Quote wall"
       assert_select "img[src=?][width='672'][height='88']", "/r/community/screenshots/note-card.webp"
@@ -42,7 +42,7 @@ class CommunityTest < ActionDispatch::IntegrationTest
     get community_path
 
     assert_response :success
-    assert_select "[data-slot=card]", 0
+    assert_select "[data-community-card]", 0
     assert_select "p", /serves no community registry/
   end
 
@@ -320,7 +320,7 @@ class CommunityTest < ActionDispatch::IntegrationTest
         assert_response :not_found
         get community_path
 
-        assert_select "[data-slot=card]", 1
+        assert_select "[data-community-card]", 1
       end
     end
   end
@@ -332,7 +332,7 @@ class CommunityTest < ActionDispatch::IntegrationTest
         get community_path
 
         assert_response :success
-        assert_select "[data-slot=card]", 0
+        assert_select "[data-community-card]", 0
       end
       detail(dir, { "name" => "phone-mockup" })
       File.write(File.join(dir, "about/another-name.json"), JSON.generate({ "name" => "phone-mockup" }))
