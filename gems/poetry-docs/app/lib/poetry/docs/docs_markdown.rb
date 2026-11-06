@@ -448,6 +448,9 @@ module Poetry
           facts << "Writes: #{item.files.map { |file| "`#{file}`" }.join(", ")}." if item.files.any?
           facts << "Builds on: #{item.needs.join(", ")}." if item.needs.any?
           facts << "Needs gems (reported, never installed for you): #{item.gems.join(", ")}." if item.gems.any?
+          facts << "Restyles Poetry's #{item.restyles}: the app's views keep calling its helper." if item.restyles
+          facts << "Brings #{item.javascript}." if item.javascript
+          facts << "Looks: #{item.traits.map { |trait| trait.tr("-", " ") }.join(", ")}." if item.traits.any?
           facts << item.notes if item.notes
           out << facts.join("\n\n") if facts.any?
           if item.demo

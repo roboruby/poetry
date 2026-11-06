@@ -123,6 +123,17 @@ module Poetry
       assert_equal before, read(MANIFEST)
     end
 
+    def test_a_version_that_moved_with_no_file_changed_moves_the_record
+      install
+      publish(first.merge("meta" => { "version" => "1.1" }))
+
+      output = run_generator
+
+      assert_match(/current\s+pricing-table - 1\.1 \(no file changed since 1\): the registry has nothing newer/, output)
+      assert_equal "1.1", record["version"]
+      assert_equal "class One\nend\n", read(COMPONENT)
+    end
+
     def test_a_file_the_item_dropped_is_named_and_never_deleted
       install
       publish(item("2", { COMPONENT => "class Two\nend\n" }))

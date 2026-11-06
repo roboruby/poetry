@@ -66,6 +66,20 @@ module Poetry
           shot if shot.is_a?(Hash) && shot["path"].to_s.match?(SCREENSHOT)
         end
 
+        # How an item's JavaScript level reads on its page.
+        JAVASCRIPT = { "none" => "no JavaScript of its own", "stimulus" => "a Stimulus controller",
+                       "island" => "a client island" }.freeze
+
+        # The JavaScript an item brings, in words; nil where the index
+        # does not say.
+        def javascript = JAVASCRIPT[meta["javascript"]]
+
+        # What the item looks like whatever theme the app wears.
+        def traits = Array(meta["traits"]).map(&:to_s)
+
+        # The Poetry component a restyle changes the look of.
+        def restyles = meta["restyles"].presence
+
         def helper = component["helper"].presence
 
         # Required first, then by name.
@@ -116,8 +130,25 @@ module Poetry
           []
         end
 
+        # An item for its own page: the index's entry with the item's
+        # detail laid over it. The index is slim, what a list needs; the
+        # registry keeps the rest per item (about/<name>.json): its files,
+        # its notes, its demo, its origins in full and a component's
+        # facts. An index that carries everything (an older build) needs
+        # no detail, and an item with none shows what the index says.
         def find(name)
-          items.find { |item| item.name == name }
+          item = items.find { |candidate| candidate.name == name }
+          detail = item && about(name)
+          detail ? Item.new(item.entry.deep_merge(detail)) : item
+        end
+
+        # An item's detail, or nil where the registry keeps none.
+        def about(name)
+          path = file("about/#{name}.json")
+          detail = path && JSON.parse(path.read)
+          detail if detail.is_a?(Hash)
+        rescue JSON::ParserError
+          nil
         end
 
         # Where an item's saved demo runs, or nil: the configured demos

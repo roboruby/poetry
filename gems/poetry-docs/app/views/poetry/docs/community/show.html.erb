@@ -77,6 +77,24 @@
         <% end %>
       </div>
     <% end %>
+    <% if @item.restyles %>
+      <p class="text-sm text-muted-foreground" data-fact="restyles">
+        Restyles Poetry's
+        <%= link_to @item.restyles, component_path(@item.restyles), class: "text-foreground underline underline-offset-4" %>:
+        your views keep calling its helper.
+      </p>
+    <% end %>
+    <% if @item.javascript %>
+      <p class="text-sm text-muted-foreground" data-fact="javascript">Brings <%= @item.javascript %>.</p>
+    <% end %>
+    <% if @item.traits.any? %>
+      <div class="flex flex-wrap items-center gap-2" data-fact="traits">
+        <span class="text-sm text-muted-foreground">Looks:</span>
+        <% @item.traits.each do |trait| %>
+          <%= poetry_badge(variant: :outline) { trait.tr("-", " ") } %>
+        <% end %>
+      </div>
+    <% end %>
     <% if @item.notes %>
       <p class="max-w-2xl text-sm text-muted-foreground"><%= @item.notes %></p>
     <% end %>

@@ -62,10 +62,7 @@ module Poetry
     def update_item(name, record)
       current, plan = current_item(name, record)
       drift = drift_of(record, current)
-      unless drift.update?
-        return say_status(:current, "#{name} - #{record["version"] || "installed"}: the registry has nothing newer",
-                          :green)
-      end
+      return up_to_date(name, record, current, plan, drift) unless drift.update?
 
       say_status :update, "#{name} - #{record["version"] || "no version on record"} to " \
                           "#{current["version"] || "the registry's item"}", :green
@@ -77,6 +74,17 @@ module Poetry
       end
     rescue Poetry::Core::RegistryClient::Error => e
       say_status :error, "#{name} - could not ask #{record["source"]}: #{e.message}", :red
+    end
+
+    # Nothing to take. Where every file is the registry's and only the
+    # version it states moved (its description changed, say), the record
+    # takes the new version, so the next report names it.
+    def up_to_date(name, record, current, plan, drift)
+      moved = drift.changes.empty? && current["version"] && current["version"] != record["version"]
+      record_in_manifest(plan.manifest) { |entry, recorded| installed(entry, recorded) } if moved
+      version = record["version"] || "installed"
+      version = "#{current["version"]} (no file changed since #{record["version"] || "the install"})" if moved
+      say_status :current, "#{name} - #{version}: the registry has nothing newer", :green
     end
 
     # One file of an item into the app. A file the app has not edited

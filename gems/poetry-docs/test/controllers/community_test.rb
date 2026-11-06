@@ -253,6 +253,77 @@ class CommunityTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "serves no community registry"
   end
 
+  # A slim index with the item's detail beside it, as the registry builds
+  # them now.
+  def slim_registry(dir)
+    index = { "items" => [
+      { "name" => "acme-pricing-table", "type" => "registry:component", "title" => "Pricing table",
+        "description" => "Plans side by side.", "registryDependencies" => %w[button card], "dependencies" => [],
+        "meta" => { "community" => true, "version" => "1.3.0", "javascript" => "stimulus", "traits" => %w[animated device-frame],
+                    "source" => { "registry" => "@acme", "item" => "pricing-table", "license" => "MIT" } } },
+      { "name" => "acme-card", "type" => "registry:style", "title" => "Acme cards", "description" => "A restyle.",
+        "registryDependencies" => %w[card], "meta" => { "community" => true, "javascript" => "none", "restyles" => "card" } }
+    ] }
+    about = { "name" => "acme-pricing-table", "files" => [ { "target" => "app/components/community/acme_pricing_table/component.rb" } ],
+              "docs" => "Pass plans: as an array.",
+              "meta" => { "demo" => "<%= acme_pricing_table(plans: @plans) %>",
+                          "source" => { "registry" => "@acme", "item" => "pricing-table", "license" => "MIT",
+                                        "repository" => "https://github.com/acme/ui", "copyright" => "Copyright (c) 2026 Acme" },
+                          "component" => { "helper" => "acme_pricing_table",
+                                           "options" => [ { "name" => "plans", "type" => "array", "required" => true } ] } } }
+    File.write(File.join(dir, "registry.json"), JSON.generate(index))
+    FileUtils.mkdir_p(File.join(dir, "about"))
+    File.write(File.join(dir, "about/acme-pricing-table.json"), JSON.generate(about))
+  end
+
+  test "an item's page lays its detail over the slim index, and says what it brings and how it looks" do
+    Dir.mktmpdir do |dir|
+      slim_registry(dir)
+      with_registry(dir) do
+        get community_item_path("acme-pricing-table")
+
+        assert_response :success
+        assert_select "h1", "Pricing table"
+        assert_select "pre", text: /acme_pricing_table\(plans: @plans\)/
+        assert_select "code", "acme_pricing_table"
+        assert_select "section:has(#install) li", "app/components/community/acme_pricing_table/component.rb"
+        assert_includes response.body, "Copyright (c) 2026 Acme"
+        assert_select "[data-fact=javascript]", "Brings a Stimulus controller."
+        assert_select "[data-fact=traits] [data-slot=badge]", 2
+        assert_select "[data-fact=traits]", text: /device frame/
+        assert_select "[data-fact=restyles]", 0
+        get "/community/components/acme-pricing-table.md"
+
+        assert_includes response.body, "Brings a Stimulus controller."
+        assert_includes response.body, "Looks: animated, device frame."
+      end
+    end
+  end
+
+  test "a restyle's page names the Poetry component it restyles, and an item with no detail shows what the index says" do
+    Dir.mktmpdir do |dir|
+      slim_registry(dir)
+      with_registry(dir) do
+        get community_item_path("acme-card")
+
+        assert_response :success
+        assert_select "h1", "Acme cards"
+        assert_select "[data-fact=restyles] a[href='/components/card']", "card"
+        assert_select "[data-fact=javascript]", "Brings no JavaScript of its own."
+        get community_path
+
+        assert_select "a[href=?]", "/community/components/acme-pricing-table", text: "Pricing table"
+      end
+      File.write(File.join(dir, "about/acme-pricing-table.json"), "{ not json")
+      with_registry(dir) do
+        get community_item_path("acme-pricing-table")
+
+        assert_response :success
+        assert_select "h1", "Pricing table"
+      end
+    end
+  end
+
   test "an index that does not parse, or an older one that says less, serves what it can" do
     Dir.mktmpdir do |dir|
       File.write(File.join(dir, "registry.json"), "{ not json")
