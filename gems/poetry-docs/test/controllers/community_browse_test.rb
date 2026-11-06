@@ -342,6 +342,17 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
         <%= render "poetry/docs/community/install_note" %>
       ERB
     end
+
+    # A list of something else than items: the host names what it holds
+    # and draws each entry's card itself.
+    def things
+      browse = PagedBrowse.new(Poetry::Docs::CommunityBrowse.new(Poetry::Docs::CommunityRegistry.items, params))
+      render inline: <<~ERB, locals: { browse: browse }, layout: true
+        <% content_for(:community_sidebar) { render "poetry/docs/community/filters", browse: browse, path: "/community/things", noun: "libraries" } %>
+        <%= render "poetry/docs/community/results", browse: browse, path: "/community/things", heading: "Things", noun: "libraries",
+                   card: ->(entry) { tag.article(entry.title, data: { thing: entry.name }) } %>
+      ERB
+    end
   end
 
   test "a host's list in pages gets a pager that keeps the filters, and shares the install note" do
@@ -363,6 +374,20 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
       assert_select "[data-heading-filter=fresh] a[href=?]", "/community/paged?fresh=new&type=component", text: /New this week\s+3/
       assert_select "[data-community-filters] [data-filter=fresh]", 0, "a heading's filter is not in the sidebar"
       assert_select "[data-community-filters] [data-filter=type]", 1
+    end
+    with_routing do |routes|
+      routes.draw do
+        get "/community/things" => "community_browse_test/paged#things"
+        mount Poetry::Docs::Engine => "/"
+      end
+
+      get "/community/things", params: { type: "component" }
+
+      assert_select "[data-community-count]", text: /2 of 4\s+libraries/
+      assert_select "input[type=search][placeholder='Search libraries']", 1
+      assert_select "nav[aria-label='Pages of libraries']", 1
+      assert_select "article[data-thing]", 2, "the host's own card for each entry"
+      assert_select "[data-community-card]", 0
     end
     get community_path
 
