@@ -214,6 +214,22 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the sidebar ends with the way out of every filter, where one is in force; the search and the order stay" do
+    get community_path
+
+    assert_select "[data-filter-clear]", 0, "nothing to clear"
+    get community_path(q: "card")
+
+    assert_select "[data-filter-clear]", 0, "a search alone is not a filter"
+    get community_path(q: "card", type: "component", library: "acme beta", sort: "library")
+
+    assert_select "[data-community-filters] > [data-filter-clear]:last-child a[href=?]", "/community?q=card&sort=library",
+                  text: /Clear all filters/
+    get community_path(javascript: "none")
+
+    assert_select "[data-filter-clear] a[href='/community']", 1
+  end
+
   test "a long filter shows its first choices with the chosen one, and all of them once opened" do
     many
     get community_path

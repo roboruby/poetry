@@ -8,7 +8,8 @@
     dialog: its choices are picked there, the chosen ones first, and the
     list is fetched when the dialog opens; the sidebar shows how many are
     chosen, never which. A filter that sits in the list's heading is not
-    drawn here.
+    drawn here. Under the last line, where a filter is in force, is the
+    way out of them all.
     Locals: browse (CommunityBrowse, or a host's own with its readers),
     path (the list's address), noun (what the list holds). %>
 <% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
@@ -101,4 +102,18 @@
       <% end %>
     <% end %>
   </div>
+  <%# The way out of every filter at once, drawn where one is in force.
+      The search and the order stay: they are not filters, and the search
+      has its own way out among the filters in force. It keeps to the foot
+      of the sidebar's view where open groups make the list longer than
+      the screen. %>
+  <% held = browse.facets.select { |facet| facet.options.any?(&:selected) } %>
+  <% if held.any? %>
+    <div class="sticky bottom-0 -mx-2 bg-sidebar px-2 py-2" data-filter-clear>
+      <%= poetry_button(variant: :outline, size: :sm, class: "w-full", rel: "nofollow",
+                        href: address.call(browse.params_for(held.to_h { |facet| [ facet.param, nil ] }))) do %>
+        <%= poetry_icon(name: :x) %> Clear all filters
+      <% end %>
+    </div>
+  <% end %>
 </div>
