@@ -64,7 +64,6 @@ class RegistryControllerTest < ActionDispatch::IntegrationTest
   end
   test "community items serve where the gems ship no item of that name" do
     Dir.mktmpdir do |dir|
-      File.write(File.join(dir, "registry.json"), JSON.generate({ "name" => "poetry-community", "items" => [ { "name" => "phone-mockup" } ] }))
       File.write(File.join(dir, "phone-mockup.json"), JSON.generate({ "name" => "phone-mockup", "type" => "registry:component" }))
       File.write(File.join(dir, "button.json"), JSON.generate({ "name" => "button", "type" => "registry:lib" }))
       Poetry::Docs.config.community_registry = dir
@@ -76,9 +75,6 @@ class RegistryControllerTest < ActionDispatch::IntegrationTest
       get "/r/button.json"
 
       assert_equal "registry:component", JSON.parse(response.body)["type"], "the gems' item wins"
-      get "/r/community/registry.json"
-
-      assert_equal [ "phone-mockup" ], JSON.parse(response.body)["items"].map { it["name"] }
       get "/r/absent.json"
 
       assert_response :not_found
@@ -87,9 +83,16 @@ class RegistryControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "no community registry configured serves none" do
-    get "/r/community/registry.json"
+  test "the community registry has no index to serve" do
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, "registry.json"), JSON.generate({ "items" => [] }))
+      Poetry::Docs.config.community_registry = dir
 
-    assert_response :not_found
+      get "/r/community/registry.json"
+
+      assert_response :not_found
+    ensure
+      Poetry::Docs.config.community_registry = nil
+    end
   end
 end

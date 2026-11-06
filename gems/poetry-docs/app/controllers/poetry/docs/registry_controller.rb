@@ -3,8 +3,7 @@
 #
 #   /r/registry.json     the index (shadcn registry.json shape)
 #   /r/:name.json        one full item, file content embedded
-#   /r/community/registry.json   the community items' index
-#   /r/community/screenshots/:name.webp   an item's screenshot, beside the index
+#   /r/community/screenshots/:name.webp   a community item's screenshot
 #   /r/registries.json   the public namespace directory - the client's
 #                        auto-resolution source for unconfigured @namespaces;
 #                        carries the verified field the installer's trust
@@ -34,16 +33,7 @@ module Poetry
         render json: path.read
       end
 
-      # The community index, as its build wrote it.
-      def community
-        path = CommunityRegistry.file("registry.json")
-        return head :not_found unless path
-
-        render json: path.read
-      end
-
-      # An item's screenshot, at the address its index entry names
-      # relative to the index.
+      # A community item's screenshot, at the address its detail names.
       def screenshot
         path = CommunityRegistry.file("screenshots/#{params[:file]}")
         return head :not_found unless path

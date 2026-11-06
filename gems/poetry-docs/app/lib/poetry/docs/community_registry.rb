@@ -15,8 +15,9 @@ module Poetry
       SCREENSHOT = %r{\Ascreenshots/[a-z0-9]+(-[a-z0-9]+)*\.webp\z}
       KINDS = { "registry:block" => "Block", "registry:style" => "Restyle", "registry:lib" => "Library" }.freeze
 
-      # One item of the index. Every reader answers for an index that says
-      # less (an older build): a missing fact is nil or empty, never a raise.
+      # One item, from its detail file. Every reader answers for a file
+      # that says less (an older build): a missing fact is nil or empty,
+      # never a raise.
       class Item
         attr_reader :entry
 
@@ -117,36 +118,32 @@ module Poetry
           path if path.to_s.start_with?("#{dir}/") && path.file?
         end
 
-        # The index's items, in its order. An index that does not parse
-        # serves none.
+        # The items, by name: one for each detail file the registry keeps
+        # (about/<name>.json), which holds what a list and the item's own
+        # page show of it. The registry has no index of them. A file that
+        # does not parse, or that is not about the item it is named for,
+        # is left out. The files are read once for a directory as it
+        # stands, and again when one of them changes.
         def items
-          path = file("registry.json")
-          return [] unless path
+          dir = root&.join("about")
+          return [] unless dir&.directory?
 
-          index = JSON.parse(path.read)
-          entries = index.is_a?(Hash) ? Array(index["items"]) : []
-          entries.select { |entry| entry.is_a?(Hash) && entry["name"].to_s.match?(NAME) }.map { |entry| Item.new(entry) }
-        rescue JSON::ParserError
-          []
+          paths = dir.glob("*.json").sort
+          stamp = paths.map { |path| [ path.to_s, path.mtime, path.size ] }
+          return @items if @stamp == stamp
+
+          @stamp = stamp
+          @items = paths.filter_map { |path| item_at(path) }
         end
 
-        # An item for its own page: the index's entry with the item's
-        # detail laid over it. The index is slim, what a list needs; the
-        # registry keeps the rest per item (about/<name>.json): its files,
-        # its notes, its demo, its origins in full and a component's
-        # facts. An index that carries everything (an older build) needs
-        # no detail, and an item with none shows what the index says.
         def find(name)
-          item = items.find { |candidate| candidate.name == name }
-          detail = item && about(name)
-          detail ? Item.new(item.entry.deep_merge(detail)) : item
+          items.find { |item| item.name == name }
         end
 
-        # An item's detail, or nil where the registry keeps none.
-        def about(name)
-          path = file("about/#{name}.json")
-          detail = path && JSON.parse(path.read)
-          detail if detail.is_a?(Hash)
+        # The item a detail file is about, or nil.
+        def item_at(path)
+          entry = JSON.parse(path.read)
+          Item.new(entry) if entry.is_a?(Hash) && entry["name"].to_s.match?(NAME) && entry["name"] == path.basename(".json").to_s
         rescue JSON::ParserError
           nil
         end

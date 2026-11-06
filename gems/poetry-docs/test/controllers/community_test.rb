@@ -2,7 +2,8 @@ require "test_helper"
 require "tmpdir"
 
 # The Community pages: the index (a catalog page) and a page per item,
-# both read from the community registry's index. The fixture registry
+# both read from the detail files the community registry keeps, one per
+# item (about/<name>.json). The fixture registry
 # holds a port with a component's facts and a screenshot, an original
 # block, and a bundle that credits two origins.
 class CommunityTest < ActionDispatch::IntegrationTest
@@ -253,32 +254,30 @@ class CommunityTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "serves no community registry"
   end
 
-  # A slim index with the item's detail beside it, as the registry builds
-  # them now.
-  def slim_registry(dir)
-    index = { "items" => [
-      { "name" => "acme-pricing-table", "type" => "registry:component", "title" => "Pricing table",
-        "description" => "Plans side by side.", "registryDependencies" => %w[button card], "dependencies" => [],
-        "meta" => { "community" => true, "version" => "1.3.0", "javascript" => "stimulus", "traits" => %w[animated device-frame],
-                    "source" => { "registry" => "@acme", "item" => "pricing-table", "license" => "MIT" } } },
-      { "name" => "acme-card", "type" => "registry:style", "title" => "Acme cards", "description" => "A restyle.",
-        "registryDependencies" => %w[card], "meta" => { "community" => true, "javascript" => "none", "restyles" => "card" } }
-    ] }
-    about = { "name" => "acme-pricing-table", "files" => [ { "target" => "app/components/community/acme_pricing_table/component.rb" } ],
-              "docs" => "Pass plans: as an array.",
-              "meta" => { "demo" => "<%= acme_pricing_table(plans: @plans) %>",
-                          "source" => { "registry" => "@acme", "item" => "pricing-table", "license" => "MIT",
-                                        "repository" => "https://github.com/acme/ui", "copyright" => "Copyright (c) 2026 Acme" },
-                          "component" => { "helper" => "acme_pricing_table",
-                                           "options" => [ { "name" => "plans", "type" => "array", "required" => true } ] } } }
-    File.write(File.join(dir, "registry.json"), JSON.generate(index))
+  # A registry as its build writes it: a detail file per item, no index.
+  def detail(dir, entry)
     FileUtils.mkdir_p(File.join(dir, "about"))
-    File.write(File.join(dir, "about/acme-pricing-table.json"), JSON.generate(about))
+    File.write(File.join(dir, "about/#{entry.fetch("name")}.json"), JSON.generate(entry))
   end
 
-  test "an item's page lays its detail over the slim index, and says what it brings and how it looks" do
+  def built_registry(dir)
+    detail(dir, { "name" => "acme-pricing-table", "type" => "registry:component", "title" => "Pricing table",
+                  "description" => "Plans side by side.", "registryDependencies" => %w[button card], "dependencies" => [],
+                  "files" => [ { "target" => "app/components/community/acme_pricing_table/component.rb" } ],
+                  "docs" => "Pass plans: as an array.",
+                  "meta" => { "community" => true, "version" => "1.3.0", "javascript" => "stimulus", "traits" => %w[animated device-frame],
+                              "demo" => "<%= acme_pricing_table(plans: @plans) %>",
+                              "source" => { "registry" => "@acme", "item" => "pricing-table", "license" => "MIT",
+                                            "repository" => "https://github.com/acme/ui", "copyright" => "Copyright (c) 2026 Acme" },
+                              "component" => { "helper" => "acme_pricing_table",
+                                               "options" => [ { "name" => "plans", "type" => "array", "required" => true } ] } } })
+    detail(dir, { "name" => "acme-card", "type" => "registry:style", "title" => "Acme cards", "description" => "A restyle.",
+                  "registryDependencies" => %w[card], "meta" => { "community" => true, "javascript" => "none", "restyles" => "card" } })
+  end
+
+  test "an item's page says what it brings and how it looks, from its detail file" do
     Dir.mktmpdir do |dir|
-      slim_registry(dir)
+      built_registry(dir)
       with_registry(dir) do
         get community_item_path("acme-pricing-table")
 
@@ -300,9 +299,9 @@ class CommunityTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a restyle's page names the Poetry component it restyles, and an item with no detail shows what the index says" do
+  test "a restyle's page names the Poetry component it restyles, and a detail file that does not parse is no item" do
     Dir.mktmpdir do |dir|
-      slim_registry(dir)
+      built_registry(dir)
       with_registry(dir) do
         get community_item_path("acme-card")
 
@@ -318,22 +317,25 @@ class CommunityTest < ActionDispatch::IntegrationTest
       with_registry(dir) do
         get community_item_path("acme-pricing-table")
 
-        assert_response :success
-        assert_select "h1", "Pricing table"
+        assert_response :not_found
+        get community_path
+
+        assert_select "[data-slot=card]", 1
       end
     end
   end
 
-  test "an index that does not parse, or an older one that says less, serves what it can" do
+  test "a registry with no detail files lists nothing, and a detail that says little serves what it can" do
     Dir.mktmpdir do |dir|
-      File.write(File.join(dir, "registry.json"), "{ not json")
+      File.write(File.join(dir, "registry.json"), JSON.generate({ "items" => [ { "name" => "phone-mockup" } ] }))
       with_registry(dir) do
         get community_path
 
         assert_response :success
         assert_select "[data-slot=card]", 0
       end
-      File.write(File.join(dir, "registry.json"), JSON.generate({ "items" => [ { "name" => "phone-mockup" } ] }))
+      detail(dir, { "name" => "phone-mockup" })
+      File.write(File.join(dir, "about/another-name.json"), JSON.generate({ "name" => "phone-mockup" }))
       with_registry(dir) do
         get community_item_path("phone-mockup")
 
