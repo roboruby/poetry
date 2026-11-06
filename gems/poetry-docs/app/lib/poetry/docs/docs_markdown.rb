@@ -372,11 +372,38 @@ module Poetry
 
             ## What the install records
 
-            `config/poetry_components.yml` gains an entry per item: the address it came from, the version it stated and a SHA-256 digest of each file written. An item adapted from another library records its origin (registry, item, repository, license, copyright), and the install adds that license to `THIRD_PARTY_NOTICES.md`.
+            `config/poetry_components.yml` gains an entry per item: the address it came from, the version it stated and a SHA-256 digest of each file written. An item adapted from another library records its origin (registry, item, repository, license, copyright), and the install adds that license to `THIRD_PARTY_NOTICES.md`. The record is what lets an update tell the app's edits from the registry's changes: see [Updating community items](/community-updates).
 
             ## Reviewed, not audited
 
             A maintainer reviewed every item, and each passes the registry's checks: it installs into a fresh app, `poetry:check` is clean there, and its demo renders in a browser without an error. Nobody audited the code for security: read what you install. Only permissive licenses are accepted.
+          MD
+        end
+
+        # The Updating community items guide's mirror.
+        def community_updates(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## See what changed
+
+            The install recorded a digest of every file as it was written. `bin/rails g poetry:diff` compares each file with that record and with the registry's item as it stands now, so it tells an edit made in the app (`edited here`) from a change the registry made (`changed in the registry`), and names a file that is both, one that is `new in the registry` and one that is `no longer part of the item`. It prints and never writes. `--offline` asks no registry and reports the edits alone; a registry that does not answer is named and the edits are still reported.
+
+            ## Update
+
+            `bin/rails g poetry:update` brings every item installed from a registry to its current version; a name updates one (`bin/rails g poetry:update acme-pricing-table`). A file the app has not edited is replaced with the registry's. A file the app edited is kept: quietly when the registry's is unchanged, and named in the report when the registry changed it too. A file new in the item is written, and one the item dropped is named, never deleted. `--force` replaces the edited files too.
+
+            ## The record follows the files
+
+            In `config/poetry_components.yml` a replaced file takes the new digest and a kept file keeps the digest it was installed with. The item's version moves once every file is the registry's, so until then `poetry:diff` still names the file that was kept.
+
+            ## Taking a change into a file you edited
+
+            Commit, run `bin/rails g poetry:update <name> --force`, and read `git diff`: it shows the registry's version against the edit, and `git restore -p` puts back the parts to keep.
+
+            ## Copies of Poetry's own components
+
+            A component copied from the gems (`bin/rails g poetry:add button`) is reported by the same `poetry:diff` against what the installed gems ship; `poetry:update` leaves those alone.
           MD
         end
 

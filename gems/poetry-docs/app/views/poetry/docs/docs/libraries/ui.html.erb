@@ -221,10 +221,12 @@
         An item from a registry is recorded with the version it states and
         a SHA-256 digest of each file <code>poetry:add</code> wrote, under
         <code>version:</code> and <code>files:</code>: what your copy
-        started from, whatever you change later. To take an item's
-        current files, delete the ones you want replaced and add it again,
-        or add it with <code>--force</code>, which replaces every file of
-        the item, your edits included. The record moves with the files.
+        started from, whatever you change later. <code>poetry:diff</code>
+        reports each file against that record and against the registry's
+        item now, and <code>poetry:update</code> replaces the files you
+        have not edited and keeps the ones you have;
+        <%= link_to "Updating community items", community_updates_path %>
+        has the detail. The record moves with the files.
       </p>
     <% end %>
   </section>

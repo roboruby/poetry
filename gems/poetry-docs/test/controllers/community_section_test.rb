@@ -113,6 +113,25 @@ class CommunityGuidesTest < ActionDispatch::IntegrationTest
     assert_select "a[href='https://github.com/roboruby/poetry/issues']"
   end
 
+  test "Updating community items covers the report, the update, the record and merging an edit" do
+    get "/community-updates"
+
+    assert_response :success
+    assert_select "h1", "Updating community items"
+    %w[see-what-changed update the-record merging-an-edit gem-components].each { |id| assert_select "h2##{id}" }
+    assert_select "pre", text: /bin\/rails g poetry:diff/
+    assert_select "pre", text: /update  acme-pricing-table - 1\.2\.0 to 1\.3\.0/
+    assert_select "pre", text: /kept  .*style\.rb - edited here, and changed in the registry/
+    assert_select "li", text: /dropped from the item\s+is named in the report, never deleted/
+    get "/community-updates.md"
+
+    assert_response :success
+    assert_includes response.body, "## The record follows the files"
+    get "/community-items"
+
+    assert_select "a[href='/community-updates']", minimum: 1
+  end
+
   test "both guides mirror as markdown, and the index points at them" do
     get "/community-items.md"
 
@@ -136,6 +155,7 @@ class CommunityGuidesTest < ActionDispatch::IntegrationTest
     get "/community-items"
 
     assert_select "[data-slot=sidebar-menu-button][href='/community-items']", minimum: 1
+    assert_select "[data-slot=sidebar-menu-button][href='/community-updates']", minimum: 1
     assert_select "[data-slot=sidebar-menu-button][href='/community-publishing']", minimum: 1
   end
 end

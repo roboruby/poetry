@@ -26,6 +26,9 @@ module Poetry
       def community_items
       end
 
+      def community_updates
+      end
+
       def community_publishing
       end
 
@@ -240,6 +243,7 @@ module Poetry
         when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug.tr('-', '_')}", icon_entry)
         when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
         when "community_items" then DocsMarkdown.community_items(guide_entry("community-items"))
+        when "community_updates" then DocsMarkdown.community_updates(guide_entry("community-updates"))
         when "community_publishing" then DocsMarkdown.community_publishing(guide_entry("community-publishing"))
         when "agent" then DocsMarkdown.agent(guide_entry("page-agent"))
         when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)

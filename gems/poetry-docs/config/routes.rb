@@ -54,6 +54,7 @@ Poetry::Docs::Engine.routes.draw do
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
   get "community-items" => "docs#community_items", as: :community_items
+  get "community-updates" => "docs#community_updates", as: :community_updates
   get "community-publishing" => "docs#community_publishing", as: :community_publishing
   # The Community section: the index is a catalog page, and a component's
   # page exists where the host serves a community registry that lists it.

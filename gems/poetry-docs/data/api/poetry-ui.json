@@ -144,7 +144,7 @@
       "path": "Poetry::DiffGenerator",
       "type": "class",
       "superclass": "Rails::Generators::Base",
-      "docstring": "`rails g poetry:diff` - the copy-in upgrade report. poetry's\nthree ownership tiers upgrade differently: gem-owned code rides\n`bundle update`, the vendored css set rides a `poetry:install` re-run,\nand copy-ins are app-OWNED - nothing may rewrite them. This generator\ncloses the loop on that third tier: it reads the provenance\nmanifest (config/poetry_components.yml) and reports, file by file, where\nthe app's copies stand against what the installed gems ship NOW.\nRead-only by contract - it prints, it never writes; `poetry:add`\nre-run is the (skip-if-exists) way to pick up newly-shipped files.",
+      "docstring": "`rails g poetry:diff` - the copy-in upgrade report. poetry's\nthree ownership tiers upgrade differently: gem-owned code rides\n`bundle update`, the vendored css set rides a `poetry:install` re-run,\nand copy-ins are app-OWNED - nothing may rewrite them. This generator\ncloses the loop on that third tier: it reads the provenance\nmanifest (config/poetry_components.yml) and reports, file by file, where\nthe app's copies stand against what the installed gems ship NOW.\nRead-only by contract - it prints, it never writes; `poetry:add`\nre-run is the (skip-if-exists) way to pick up newly-shipped files.\n\nAn item installed from a registry is reported against its install\nrecord (the digest of each file as it was written) and against the\nregistry's item now, so the report tells an edit made here from a\nchange made there; `poetry:update` takes the second. `--offline`\nleaves the registry unasked and reports the edits alone.",
       "examples": [
         {
           "title": "",
@@ -165,6 +165,11 @@
           "docstring": "The ownership header poetry:block stamps on copy (stripped before\ncomparing, like the gem template's own poetry:block header)."
         },
         {
+          "name": "COMMUNITY",
+          "value": "\"https://poetryui.com/r/{name}.json\"",
+          "docstring": "Where @poetry names the gems do not ship come from."
+        },
+        {
           "name": "COMPONENT_ROOT",
           "value": "\"app/components/poetry/ui\"",
           "docstring": "Where component copy-ins land in the host app."
@@ -172,7 +177,7 @@
         {
           "name": "MANIFEST",
           "value": "\"config/poetry_components.yml\"",
-          "docstring": "The copy-in provenance manifest poetry:add records into."
+          "docstring": "The copy-in provenance manifest poetry:install seeds."
         }
       ]
     },
@@ -326,6 +331,27 @@
           "name": "THEME_HEADER",
           "value": "%r{\\A/\\* poetry ([a-z0-9-]+) theme\\b}",
           "docstring": "Every shipped fragment opens with `/* poetry <name> theme` - the sniff\nreads the slot's first line back so a plain re-run keeps the theme."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::RegistryPlanning",
+      "type": "module",
+      "superclass": null,
+      "docstring": "What the generators that reach a registry share: the app's manifest,\nthe names the installed gems provide, the install plan for an\naddress, and the digest of a file the app holds. poetry:add installs\nfrom a plan, poetry:diff reads one, poetry:update installs from one\nwith another rule for a file that exists.",
+      "examples": [],
+      "file": "lib/generators/poetry/registry_planning.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "COMMUNITY",
+          "value": "\"https://poetryui.com/r/{name}.json\"",
+          "docstring": "Where @poetry names the gems do not ship come from."
+        },
+        {
+          "name": "MANIFEST",
+          "value": "\"config/poetry_components.yml\"",
+          "docstring": "The copy-in provenance manifest poetry:install seeds."
         }
       ]
     },
@@ -24745,6 +24771,21 @@
           "docstring": "The WebMCP tool-name grammar: 1-128 ASCII alphanumerics, `_`,\n`-`, `.` (declarative forms register their full name directly)."
         }
       ]
+    },
+    {
+      "path": "Poetry::UpdateGenerator",
+      "type": "class",
+      "superclass": "Poetry::AddGenerator",
+      "docstring": "`rails g poetry:update [item ...]` - brings the items installed from\na registry to the registry's current version without losing an edit.\nThe install record holds a digest of every file as it was written,\nso the generator knows which files the app changed since:\n\n- a file the app has not edited is replaced with the registry's;\n- a file the app edited is kept, and named, when the registry's\n  differs; `--force` replaces it too;\n- a file the item gained is written, and one it dropped is named,\n  never deleted.\n\nThe record moves with the files: a replaced file takes the new\ndigest, a kept one keeps the digest it was installed with, and the\nitem's version moves once every file is the registry's. With no\nname it updates every registry item on record. `poetry:diff` shows\nthe same comparison without writing.",
+      "examples": [
+        {
+          "title": "",
+          "text": "bin/rails g poetry:update\nbin/rails g poetry:update acme-pricing-table"
+        }
+      ],
+      "file": "lib/generators/poetry/update/update_generator.rb",
+      "methods": [],
+      "constants": []
     }
   ]
 }

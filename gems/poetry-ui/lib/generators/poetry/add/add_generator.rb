@@ -3,6 +3,7 @@
 require "rails/generators"
 require "yaml"
 require_relative "../block/block_generator"
+require_relative "../registry_planning"
 
 module Poetry
   # `rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier
@@ -30,6 +31,8 @@ module Poetry
   # @example
   #   bin/rails g poetry:add button
   class AddGenerator < Rails::Generators::Base
+    include RegistryPlanning
+
     argument :addresses, type: :array,
                          banner: "Component|@registry/item|https://…/item.json|./item.json ..."
 
@@ -37,8 +40,6 @@ module Poetry
     # registry items emit the same map as registryDependencies).
     DEPENDENCIES = Poetry::Ui::COMPONENT_DEPENDENCIES
 
-    # The copy-in provenance manifest poetry:install seeds.
-    MANIFEST = "config/poetry_components.yml"
     # The host's Tailwind entry stylesheet (for @source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
     # Where an item's Stimulus controllers land; a write here refreshes the
@@ -49,8 +50,6 @@ module Poetry
     COMMUNITY_MODULES_DIR = "app/javascript/community/"
     # The pin that serves app/javascript/community as community/*.
     COMMUNITY_PIN = %(pin_all_from "app/javascript/community", under: "community")
-    # Where @poetry names the gems do not ship come from.
-    COMMUNITY = "https://poetryui.com/r/{name}.json"
     # The host's credits for the ports it installed.
     NOTICES = "THIRD_PARTY_NOTICES.md"
 
@@ -136,8 +135,14 @@ module Poetry
     # -- the remote path ----------------------------------------------------
 
     def install_remote(remote)
-      plan = build_plan(remote)
-      plan.writes.each { |write| create_file write.target, write.content, skip: true }
+      install_plan(build_plan(remote))
+    end
+
+    # Everything a plan asks for: the files, the blocks, the stylesheets,
+    # the controllers manifest, the pins, the report, the credits and the
+    # record.
+    def install_plan(plan)
+      plan.writes.each { |write| place(write.target, write.content) }
       plan.block_installs.each { |name| install_block(name) }
       apply_css(plan)
       refresh_controllers_manifest(plan)
@@ -168,10 +173,10 @@ module Poetry
       files.any? ? kept.merge("files" => files) : kept
     end
 
-    # The digest of the app's file at a target, nil when there is none.
-    def digest_at(target)
-      path = File.join(destination_root, target)
-      Poetry::Core::RegistryInstaller.digest(File.binread(path)) if File.file?(path)
+    # One file of an item into the app: written where there is none, and
+    # left alone where there is one. poetry:update decides otherwise.
+    def place(target, content)
+      create_file target, content, skip: true
     end
 
     # Each port's origins, licenses and copyrights in the host's notices,
@@ -235,23 +240,9 @@ module Poetry
                  :green
     end
 
-    # The install plan for remote addresses through the registry client.
-    def build_plan(remote)
-      config = manifest_config
-      client = Poetry::Core::RegistryClient.new(
-        registries: config["registries"] || {}, directory: config["directory"],
-        community: config["community"] || COMMUNITY,
-        base_dir: destination_root
-      )
-      Poetry::Core::RegistryInstaller.new(
-        client: client, destination_root: destination_root,
-        local_components: gem_components, local_blocks: gem_blocks
-      ).plan(remote)
-    end
-
     # Writes the plan's stylesheets and adds their import lines to the Tailwind entry.
     def apply_css(plan)
-      plan.css_writes.each { |css| create_file css[:path], css[:content], skip: true }
+      plan.css_writes.each { |css| place(css[:path], css[:content]) }
       return if plan.entry_lines.empty?
 
       unless File.exist?(File.join(destination_root, TAILWIND_ENTRY))
@@ -301,39 +292,6 @@ module Poetry
     # The recipe names the gem ships.
     def gem_recipes
       @gem_recipes ||= Poetry::Ui.recipe_items.names
-    end
-
-    # The gems' own item names (kebab), read boot-free from the committed
-    # registries - what "provided at runtime" means on this host.
-    def gem_components
-      @gem_components ||= gem_item_sources.flat_map do |root, prefix|
-        registry = YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH))
-        (registry["components"] || {}).keys.map { |path| path.delete_prefix(prefix).tr("/", "_").tr("_", "-") }
-      end
-    end
-
-    # The block names the gem ships.
-    def gem_blocks
-      @gem_blocks ||= begin
-        registry = YAML.safe_load_file(Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH))
-        (registry["blocks"] || {}).keys
-      end
-    end
-
-    # The gem roots and path prefixes that provide items.
-    def gem_item_sources
-      sources = [[Poetry::Ui.root, "poetry/ui/"]]
-      sources << [Poetry::Charts.root, "poetry/charts/"] if defined?(Poetry::Charts::Engine)
-      sources
-    end
-
-    # The manifest as a hash, empty when absent. The overrides ledger
-    # writes `created:` as a bare YAML date, so the load permits Date
-    # (the design task does the same).
-    def manifest_config
-      path = File.join(destination_root, MANIFEST)
-      config = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
-      config.is_a?(Hash) ? config : {}
     end
 
     # Records entries in a manifest section, keeping existing ones; a block

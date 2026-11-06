@@ -750,6 +750,42 @@
     "path": "/community-items#reviewed-not-audited"
   },
   {
+    "title": "Updating community items",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates"
+  },
+  {
+    "title": "See what changed",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#see-what-changed"
+  },
+  {
+    "title": "Update",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#update"
+  },
+  {
+    "title": "The record follows the files",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#the-record"
+  },
+  {
+    "title": "Taking a change into a file you edited",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#merging-an-edit"
+  },
+  {
+    "title": "Copies of Poetry's own components",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#gem-components"
+  },
+  {
     "title": "Publishing components",
     "page": "Publishing components",
     "section": "docs",

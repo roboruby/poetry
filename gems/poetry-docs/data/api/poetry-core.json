@@ -7158,6 +7158,152 @@
       ]
     },
     {
+      "path": "Poetry::Core::RegistryDrift",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Where an app's copy of a registry item stands: each file the install\nrecord names, and each file the registry's item names now, against\nthe file the app holds. The record carries a digest of every file as\nit was installed (RegistryInstaller's manifest entry), which is what\ntells an edit made in the app from a change made in the registry.",
+      "examples": [
+        {
+          "title": "",
+          "text": "drift = Poetry::Core::RegistryDrift.new(recorded: record[\"files\"], current: entry[\"files\"]) do |target|\n  digest_of(target)\nend\ndrift.files   # => { \"app/components/acme/chart/component.rb\" => :upstream }\ndrift.update? # => true"
+        }
+      ],
+      "file": "lib/poetry/core/registry_drift.rb",
+      "methods": [
+        {
+          "name": "asked?",
+          "scope": "instance",
+          "group": null,
+          "signature": "asked?",
+          "docstring": "Whether the registry was asked for the item as it stands now.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 55
+        },
+        {
+          "name": "changes",
+          "scope": "instance",
+          "group": null,
+          "signature": "changes",
+          "docstring": "The files that are not as installed, with their states.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Symbol}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 71
+        },
+        {
+          "name": "edited?",
+          "scope": "instance",
+          "group": null,
+          "signature": "edited?",
+          "docstring": "Whether the app changed a file since it was installed.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 65
+        },
+        {
+          "name": "files",
+          "scope": "instance",
+          "group": null,
+          "signature": "files",
+          "docstring": "The state of each file the record or the registry's item names.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Symbol}"
+            ],
+            "text": "a key of STATES, by target"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 33
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(recorded:, current: nil, &digest_at)",
+          "docstring": "Compares the app's files with the record and, when given, with the\nregistry's item now.",
+          "params": [
+            {
+              "name": "recorded",
+              "types": [
+                "Hash{String => String}",
+                "nil"
+              ],
+              "text": "the digest of each file\nas installed, by target, from the install record"
+            },
+            {
+              "name": "current",
+              "types": [
+                "Hash{String => String}",
+                "nil"
+              ],
+              "text": "the digest of each file\nof the registry's item now; nil when the registry was not asked"
+            }
+          ],
+          "return": {
+            "types": [
+              "RegistryDrift"
+            ],
+            "text": "a new instance of RegistryDrift"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 44
+        },
+        {
+          "name": "update?",
+          "scope": "instance",
+          "group": null,
+          "signature": "update?",
+          "docstring": "Whether the registry's item has something this copy lacks.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 59
+        }
+      ],
+      "constants": [
+        {
+          "name": "STATES",
+          "value": "{\n  same: \"as installed\",\n  edited: \"edited here\",\n  missing: \"missing here\",\n  upstream: \"changed in the registry\",\n  both: \"changed in the registry, and edited here\",\n  added: \"new in the registry\",",
+          "docstring": "What each state says of a file, for a report."
+        },
+        {
+          "name": "UPDATES",
+          "value": "%i[upstream both added missing].freeze",
+          "docstring": "The states an update has something to do about."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Core::RequiresAny",
       "type": "module",
       "superclass": null,

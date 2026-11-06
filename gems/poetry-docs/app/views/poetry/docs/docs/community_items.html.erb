@@ -124,7 +124,9 @@
         file written, which is what your copy started from whatever you change
         later. An item adapted from another library also records its origin, and
         the install adds that library's license to your
-        <code>THIRD_PARTY_NOTICES.md</code>.
+        <code>THIRD_PARTY_NOTICES.md</code>. The record is what lets
+        <%= link_to "an update", community_updates_path %> tell your edits from
+        the registry's changes.
       </p>
     <% end %>
     <%= poetry_code_block(code: record_source, language: "yaml", label: "The record") %>
