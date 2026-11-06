@@ -12,8 +12,11 @@ module Poetry
     # which suits a registry of hundreds. A host with a larger catalog
     # answers the same questions from its own store and hands the Community
     # pages an object with these readers: `items`, `count`, `total`,
-    # `query`, `narrowed?`, `facets` (of Facet and Option), `chosen`,
-    # `sorts`, `sort`, `params_for` and `label_for`.
+    # `query`, `narrowed?`, `facets` (of Facet and Option), `choices` (of
+    # Choice), `toggled`, `picker`, `sorts`, `sort` and `params_for`.
+    #
+    # A filter takes one choice, and the library takes several
+    # (`?library=acme+beta`): an item passes when it came from any of them.
     #
     # @example
     #   browse = Poetry::Docs::CommunityBrowse.new(CommunityRegistry.items, q: "chart", type: "block")
@@ -21,9 +24,13 @@ module Poetry
     #   browse.facets.first.options.map { |option| [ option.label, option.count ] }
     class CommunityBrowse
       # One filter: the parameter it sets, its heading, the choices shown,
-      # how many more there are than shown, and whether it is open (all
-      # its choices shown because the address asks).
-      Facet = Struct.new(:param, :label, :options, :more, :open, keyword_init: true)
+      # how many more there are than shown, whether it is open (all its
+      # choices shown because the address asks), and whether its choices
+      # are picked in a dialog (it has too many for the sidebar, which
+      # then shows the chosen ones and the way to the dialog).
+      Facet = Struct.new(:param, :label, :options, :more, :open, :picker, keyword_init: true)
+      # One choice in force: the filter, its value and how it reads.
+      Choice = Struct.new(:param, :value, :label, keyword_init: true)
       # One choice of a filter: its value in the address, how it reads,
       # how many items it would give, and whether it is the one chosen.
       Option = Struct.new(:value, :label, :count, :selected, keyword_init: true)
@@ -44,8 +51,21 @@ module Poetry
       }.freeze
       # The orders a list can take.
       SORTS = { "name" => "Name", "library" => "Library" }.freeze
-      # How many choices a filter shows before "Show all".
+      # The filters that take several choices at once.
+      MULTIPLE = %w[library].freeze
+      # How many choices a filter shows before "Show all", and how many a
+      # filter that takes several lists before its dialog takes over.
       LIMIT = 10
+
+      # The values an address gives a filter that takes several: one text
+      # with spaces between them (an address shows them as "+", and no
+      # value holds one) or commas, or a list as a form's checkboxes send
+      # one.
+      # @param raw [String, Array<String>, nil]
+      # @return [Array<String>]
+      def self.listed(raw)
+        Array(raw).flat_map { |part| part.to_s.split(/[\s,]+/) }.compact_blank.uniq
+      end
 
       # The choices of a filter to show: every one when the filter is open
       # or short, else the first LIMIT with the chosen one kept in view.
@@ -61,7 +81,9 @@ module Poetry
 
       # @return [String, nil] the search, as typed
       attr_reader :query
-      # @return [Hash{String => String}] the choice made in each filter that has one
+      # The choice made in each filter that has one; a list for a filter
+      # that takes several.
+      # @return [Hash{String => String, Array<String>}]
       attr_reader :chosen
       # @return [String] a key of SORTS
       attr_reader :sort
@@ -71,10 +93,14 @@ module Poetry
       # @param items [Array<CommunityRegistry::Item>] the whole catalog
       # @param params [Hash, ActionController::Parameters] the address's parameters
       def initialize(items, params = {})
-        value = ->(key) { (params[key.to_s] || params[key.to_sym]).to_s.strip.presence }
+        raw = ->(key) { params[key.to_s] || params[key.to_sym] }
+        value = ->(key) { raw.call(key).to_s.strip.presence }
         @all = items
         @query = value.call(:q)
-        @chosen = FILTERS.keys.filter_map { |param| [ param, value.call(param) ] if value.call(param) }.to_h
+        @chosen = FILTERS.keys.filter_map do |param|
+          picked = MULTIPLE.include?(param) ? self.class.listed(raw.call(param)).presence : value.call(param)
+          [ param, picked ] if picked
+        end.to_h
         @sort = SORTS.key?(value.call(:sort)) ? value.call(:sort) : "name"
         @open = value.call(:more) if FILTERS.key?(value.call(:more))
       end
@@ -100,31 +126,63 @@ module Poetry
       # Each filter with the choices the catalog has for it. A choice's
       # count is what choosing it would give under the search and the
       # other filters, so a count never promises items that are not there.
-      # A filter with one choice and none chosen tells nothing and is left
+      # A filter stays while it has a choice to offer, even one, so the
+      # sidebar holds still as the list changes; one with none is left
       # out. A long filter shows its first choices, and all of them once
-      # the address opens it (`?more=library`).
+      # the address opens it (`?more=needs`). A long filter that takes
+      # several is picked in a dialog: it shows the chosen ones.
       # @return [Array<Facet>]
       def facets
-        @facets ||= FILTERS.filter_map do |param, (label, _)|
-          counts = narrowed(chosen.except(param)).flat_map { |item| values(item, param) }.tally
-          options = counts.sort_by { |value, count| [ -count, value ] }.map do |value, count|
-            Option.new(value: value, label: label_for(param, value), count: count, selected: chosen[param] == value)
-          end
-          next unless options.size > 1 || chosen.key?(param)
+        @facets ||= FILTERS.keys.filter_map do |param|
+          options = options_for(param)
+          next if options.empty?
 
-          shown = self.class.shown(options, open: open == param)
-          Facet.new(param: param, label: label, options: shown, more: options.size - shown.size, open: open == param)
+          picker = MULTIPLE.include?(param) && options.size > LIMIT
+          shown = picker ? options.select(&:selected) : self.class.shown(options, open: open == param)
+          Facet.new(param: param, label: FILTERS.fetch(param).first, options: shown, more: options.size - shown.size,
+                    open: open == param, picker: picker)
         end
       end
 
+      # Every choice of a filter, for the dialog a long one is picked in;
+      # nil for a name that is no filter.
+      # @param param [String]
+      # @return [Array<Option>, nil]
+      def picker(param)
+        options_for(param) if FILTERS.key?(param.to_s)
+      end
+
+      # The choices in force, one for each value: what the chips show.
+      # @return [Array<Choice>]
+      def choices
+        chosen.flat_map do |param, value|
+          Array(value).map { |one| Choice.new(param: param, value: one, label: label_for(param, one)) }
+        end
+      end
+
+      # The address's parameters with one choice turned: taken where it is
+      # not in force, let go where it is. A filter that takes several
+      # keeps its other choices.
+      # @param param [String]
+      # @param value [String]
+      # @return [Hash{String => String}]
+      def toggled(param, value)
+        return params_for(param => (chosen[param] == value ? nil : value)) unless MULTIPLE.include?(param)
+
+        held = Array(chosen[param])
+        params_for(param => (held.include?(value) ? held - [ value ] : held + [ value ]))
+      end
+
       # The address's parameters with some of them changed: a value sets
-      # one, nil takes it away. What a filter's link, a chip and the
-      # search's hidden fields are made of.
-      # @param changes [Hash{String, Symbol => String, nil}]
+      # one, nil takes it away, and a list is written with spaces between
+      # its values. What a filter's link, a chip and the search's hidden
+      # fields are made of.
+      # @param changes [Hash{String, Symbol => String, Array<String>, nil}]
       # @return [Hash{String => String}]
       def params_for(changes = {})
         base = { "q" => query, "sort" => (sort unless sort == "name"), "more" => open }.merge(chosen)
-        base.merge(changes.transform_keys(&:to_s)).compact
+        base.merge(changes.transform_keys(&:to_s))
+            .transform_values { |value| value.is_a?(Array) ? value.join(" ").presence : value }.compact
       end
 
       # How a filter's value reads.
@@ -142,10 +200,25 @@ module Poetry
 
       private
 
-      # The catalog under the search and the given choices.
+      # Every choice of a filter with what choosing it would give, the
+      # most items first. A choice in force that gives nothing stays, to
+      # be taken off.
+      def options_for(param)
+        @options ||= {}
+        @options[param] ||= begin
+          counts = narrowed(chosen.except(param)).flat_map { |item| values(item, param) }.tally
+          Array(chosen[param]).each { |value| counts[value] ||= 0 }
+          counts.sort_by { |value, count| [ -count, value ] }.map do |value, count|
+            Option.new(value: value, label: label_for(param, value), count: count, selected: Array(chosen[param]).include?(value))
+          end
+        end
+      end
+
+      # The catalog under the search and the given choices: an item passes
+      # a filter when it answers the choice, or any of several.
       def narrowed(choices)
         @all.select do |item|
-          matches?(item) && choices.all? { |param, value| values(item, param).include?(value) }
+          matches?(item) && choices.all? { |param, value| values(item, param).intersect?(Array(value)) }
         end
       end
 

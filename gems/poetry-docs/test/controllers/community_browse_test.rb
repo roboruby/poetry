@@ -46,7 +46,7 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "header a[href='/agent-skills']", minimum: 1
     assert_select "[data-slot=sidebar] [data-community-filters]", 1
-    assert_select "[data-sidebar-sections-section-param]", 0, "the docs' nav is not here"
+    assert_select "[data-slot=sidebar] a[href='/installation']", 0, "the docs' nav is not here"
     assert_select "[data-community-tabs] a[aria-current=page]", "Components"
     assert_select "[data-community-tabs] a[href='/community-items']", "Guide"
     assert_equal %w[acme-hero-01 acme-pricing-table beta-card note-pad].sort, cards.sort
@@ -142,25 +142,103 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_select "a[data-community-back][href='/community/components']", text: /All components/
   end
 
-  test "a long filter shows its first choices with the chosen one, and all of them once opened" do
-    many = (1..14).map do |n|
-      { "name" => "lib#{n}-card", "type" => "registry:component", "title" => "Card #{n}",
-        "meta" => { "javascript" => "none", "source" => { "registry" => format("@lib%02d", n), "item" => "card" } } }
-    end
-    many.each { |entry| File.write(File.join(@dir, "about/#{entry["name"]}.json"), JSON.generate(entry)) }
+  test "the filters are groups, closed until one holds a choice or the visitor opened it" do
     get community_path
 
-    assert_equal 10, css_select("[data-filter=library] li").size
-    assert_select "[data-filter=library] a[data-filter-more][href=?]", "/community?more=library", text: "Show all 17"
-    get community_path, params: { library: "lib14" }
+    assert_select "[data-filter] button[aria-expanded=true]", 0
+    assert_select "[data-filter=type] button[aria-expanded=false]", text: /Type/
+    get community_path, params: { library: "acme" }
 
-    assert_equal 11, css_select("[data-filter=library] li").size, "the chosen library stays in view"
-    assert_select "[data-filter=library] a[aria-current=true]", text: /@lib14/
-    get community_path, params: { more: "library" }
+    assert_select "[data-filter=library] button[aria-expanded=true] [data-filter-picked]", text: /1/
+    assert_select "[data-filter=type] button[aria-expanded=false]", 1
+    cookies[:docs_sidebar] = { "community:library" => false, "community:type" => true }.to_json
+    get community_path, params: { library: "acme" }
 
-    assert_equal 17, css_select("[data-filter=library] li").size
-    assert_select "[data-filter=library] a[data-filter-more][href='/community']", "Show fewer"
-    assert_select "[data-filter=type] a[href=?]", "/community?more=library&type=component", 1, "a choice keeps the filter open"
+    assert_select "[data-filter=library] button[aria-expanded=false]", 1, "a group the visitor closed stays closed"
+    assert_select "[data-filter=type] button[aria-expanded=true]", 1, "and one they opened stays open"
+    assert_select "[data-filter=type] button[data-action*='sidebar-sections#remember'][data-sidebar-sections-section-param='community:type']", 1
+    assert_select "body[data-controller~='sidebar-sections']", 1
+  end
+
+  test "the library takes several: an item from any of them is listed, and each has its own way out" do
+    get community_path, params: { library: "acme" }
+
+    assert_equal %w[acme-hero-01 acme-pricing-table], cards.sort
+    assert_select "[data-filter=library] a[href=?]", "/community?library=acme+beta", text: /@beta/
+    assert_select "[data-filter=library] a[aria-current=true][href='/community']", text: /@acme/
+    get "/community?library=acme+beta"
+
+    assert_equal %w[acme-hero-01 acme-pricing-table beta-card], cards.sort
+    assert_select "[data-community-count]", text: /3 of 4/
+    assert_select "ul[aria-label='Filters in force'] a[href=?]", "/community?library=beta", text: /@acme/
+    assert_select "ul[aria-label='Filters in force'] a[href=?]", "/community?library=acme", text: /@beta/
+    assert_select "[data-filter=library] [data-filter-picked]", text: /2/
+    assert_select "[data-filter=type] a[href=?]", "/community?library=acme+beta&type=block", 1
+    assert_select "form[role=search] input[type=hidden][name=library][value='acme beta']", 1
+    get community_path, params: { library: %w[acme poetry] }
+
+    assert_equal %w[acme-hero-01 acme-pricing-table note-pad], cards.sort, "a field per ticked box reads the same"
+    get community_path, params: { library: "beta,poetry" }
+
+    assert_equal %w[beta-card note-pad], cards.sort
+  end
+
+  # Enough items for a filter to be long: fourteen libraries, each
+  # building on a component of its own.
+  def many
+    (1..14).each do |n|
+      entry = { "name" => "lib#{n}-card", "type" => "registry:component", "title" => "Card #{n}", "registryDependencies" => [ "part-#{n}" ],
+                "meta" => { "javascript" => "none", "source" => { "registry" => format("@lib%02d", n), "item" => "card" } } }
+      File.write(File.join(@dir, "about/#{entry["name"]}.json"), JSON.generate(entry))
+    end
+  end
+
+  test "a long filter shows its first choices with the chosen one, and all of them once opened" do
+    many
+    get community_path
+
+    assert_equal 10, css_select("[data-filter=needs] li").size
+    assert_select "[data-filter=needs] a[data-filter-more][href=?]", "/community?more=needs", text: "Show all 16"
+    get community_path, params: { needs: "part-9" }
+
+    assert_equal 11, css_select("[data-filter=needs] li").size, "the chosen one stays in view"
+    assert_select "[data-filter=needs] a[aria-current=true]", text: /part 9/
+    get community_path, params: { more: "needs" }
+
+    assert_equal 16, css_select("[data-filter=needs] li").size
+    assert_select "[data-filter=needs] a[data-filter-more][href='/community']", "Show fewer"
+    assert_select "[data-filter=type] a[href=?]", "/community?more=needs&type=component", 1, "a choice keeps the filter open"
+  end
+
+  test "a long filter that takes several is picked in a dialog, which fetches its list when it opens" do
+    many
+    get "/community?library=lib03+lib07&type=component"
+
+    assert_equal %w[lib3-card lib7-card], cards.sort
+    assert_equal 2, css_select("[data-filter=library] li").size, "the sidebar shows the chosen ones"
+    assert_select "[data-filter=library] li a[href=?]", "/community?library=lib07&type=component", text: /@lib03/
+    assert_select "[data-filter=library] button[data-filter-picker=library]", text: /Choose more\s+16/
+    assert_select "[data-filter=library] dialog turbo-frame#community-picker-library[loading=lazy][src=?]",
+                  "/community?library=lib03+lib07&pick=library&type=component"
+    assert_select "[data-filter=library] dialog [data-community-picker-target=row]", 0, "the list is not in the page"
+    get "/community?library=lib03+lib07&pick=library&type=component", headers: { "Turbo-Frame" => "community-picker-library" }
+
+    assert_response :success
+    refute_includes response.body, "<html", "the dialog's body comes without the page around it"
+    assert_select "turbo-frame#community-picker-library form[action='/community'][data-controller='community-picker'][data-turbo-frame=_top]", 1
+    assert_select "form input[type=hidden][name=type][value=component]", 1
+    assert_select "form input[type=hidden][name=library][disabled]", 1
+    assert_select "[data-community-picker-target=row]", 16
+    assert_equal %w[lib03 lib07], css_select("input[type=checkbox][name='library[]'][checked]").map { _1["value"] }
+    assert_select "[data-community-picker-target=row][data-text='@lib05'] label", text: /@lib05\s+1/
+    assert_select "[data-community-picker-target=summary]", text: /2 chosen/
+    get "/community?pick=library"
+
+    assert_includes response.body, "<html", "where no script runs the list is a page of its own"
+    assert_select "[data-community-picker-target=row]", 17
+    get "/community?pick=widgets"
+
+    assert_select "[data-community-card]", 18, "a name that is no filter picks nothing"
   end
 
   # A host's own page in the section, through Poetry::Docs::CommunityLayout.
@@ -256,6 +334,23 @@ class CommunityBrowseStateTest < ActiveSupport::TestCase
     assert_equal({}, Poetry::Docs::CommunityBrowse.new(items, more: "widgets").params_for, "only a filter can be opened")
   end
 
+  test "the choices in force, and the address with one of them turned" do
+    browse = Poetry::Docs::CommunityBrowse.new(items, library: "acme beta", type: "component")
+
+    assert_equal({ "type" => "component", "library" => %w[acme beta] }, browse.chosen)
+    assert_equal [ %w[type component Component], %w[library acme @acme], %w[library beta @beta] ],
+                 browse.choices.map { |choice| [ choice.param, choice.value, choice.label ] }
+    assert_equal({ "type" => "component", "library" => "beta" }, browse.toggled("library", "acme"))
+    assert_equal({ "type" => "component", "library" => "acme beta poetry" }, browse.toggled("library", "poetry"))
+    assert_equal({ "library" => "acme beta" }, browse.toggled("type", "component"))
+    assert_equal({ "type" => "block", "library" => "acme beta" }, browse.toggled("type", "block"))
+    assert_equal({ "type" => "component" }, Poetry::Docs::CommunityBrowse.new(items, library: "acme", type: "component").toggled("library", "acme"))
+    assert_equal %w[acme beta], Poetry::Docs::CommunityBrowse.listed([ "acme,beta", " acme " ])
+    assert_equal [ [ "acme", 1 ], [ "poetry", 1 ], [ "beta", 0 ] ], browse.picker("library").map { |option| [ option.value, option.count ] },
+                 "every library among the components, and the chosen one that has none"
+    assert_nil browse.picker("widgets")
+  end
+
   test "an unknown order is the name's, a filter nothing answers gives nothing, and a blank one is no filter" do
     assert_equal "name", Poetry::Docs::CommunityBrowse.new(items, sort: "stars").sort
     assert_empty Poetry::Docs::CommunityBrowse.new(items, type: "widget").items
@@ -265,12 +360,14 @@ class CommunityBrowseStateTest < ActiveSupport::TestCase
     refute_predicate browse, :narrowed?
   end
 
-  test "a filter with one choice and none chosen is left out" do
-    one = items.select { |item| item.library == "acme" }
-    facets = Poetry::Docs::CommunityBrowse.new(one).facets.map(&:param)
+  test "a filter stays while it has a choice, even one, and a choice that gives nothing stays to be taken off" do
+    pad = items.select { |item| item.name == "note-pad" }
+    browse = Poetry::Docs::CommunityBrowse.new(pad)
 
-    refute_includes facets, "library"
-    assert_includes facets, "type"
-    assert_includes Poetry::Docs::CommunityBrowse.new(one, library: "acme").facets.map(&:param), "library"
+    assert_equal %w[type library javascript], browse.facets.map(&:param), "no looks and nothing built on: those two are left out"
+    assert_equal [ [ "Made for Poetry", 1 ] ], browse.facets.second.options.map { |option| [ option.label, option.count ] }
+    off = Poetry::Docs::CommunityBrowse.new(pad, trait: "animated").facets.find { |facet| facet.param == "trait" }
+
+    assert_equal [ [ "animated", 0, true ] ], off.options.map { |option| [ option.label, option.count, option.selected ] }
   end
 end

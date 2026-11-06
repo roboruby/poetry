@@ -15,9 +15,15 @@ module Poetry
       # docs have their nav.
       layout "poetry/docs/community"
 
+      # The browser, or with ?pick=<filter> that filter's every choice:
+      # the body of the dialog the sidebar opens (a frame), and a page of
+      # its own where no script runs.
       def index
         @entry = entry
         @browse = CommunityBrowse.new(CommunityRegistry.items, params)
+        return unless @browse.picker(params[:pick].to_s)
+
+        turbo_frame_request? ? render(:pick, layout: false) : render(:pick)
       end
 
       def show

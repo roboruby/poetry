@@ -8,8 +8,9 @@
       header and the section's tabs on every page, and where the page has
       filters (content_for :community_sidebar), a sidebar that holds them
       in the place the docs give their nav. A page with none, a
-      component's own, is drawn at full width. %>
-  <body data-controller="theme" class="min-h-screen bg-background text-foreground antialiased">
+      component's own, is drawn at full width. The sidebar's groups are
+      remembered open or closed as the docs' nav sections are. %>
+  <body data-controller="theme sidebar-sections" class="min-h-screen bg-background text-foreground antialiased">
     <% if content_for?(:community_sidebar) %>
       <%= poetry_sidebar(open: cookies[:sidebar_state] != "false") do |shell| %>
         <% shell.with_nav do %>

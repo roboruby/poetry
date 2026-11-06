@@ -2,8 +2,10 @@
     force with a way out of each, the order, the items, and a pager where
     the browser gives its list in pages (it answers `page` and `pages`).
     Locals: browse, path, heading, lead, item_path (a callable from an
-    item to its page; the engine's by default). %>
-<% link = ->(changes) { query = browse.params_for(changes).to_query; query.empty? ? path : "#{path}?#{query}" } %>
+    item to its page; the engine's by default), above (optional: what a
+    host shows between the filters in force and the items). %>
+<% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
+<% link = ->(changes) { address.call(browse.params_for(changes)) } %>
 <% item_path = local_assigns[:item_path] || ->(item) { poetry_docs.community_item_path(item.name) } %>
 <div class="flex flex-col gap-6" data-community-results>
   <header class="flex flex-col gap-2">
@@ -17,7 +19,7 @@
       <%= poetry_button(variant: :outline, size: :sm, class: "md:hidden",
                         data: { community_filters_toggle: true,
                                 action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) }) do %>
-        <%= poetry_icon(name: :"sliders-horizontal") %> Filters<%= " (#{browse.chosen.size})" if browse.chosen.any? %>
+        <%= poetry_icon(name: :"sliders-horizontal") %> Filters<%= " (#{browse.choices.size})" if browse.choices.any? %>
       <% end %>
     <% end %>
     <h2 id="items" class="text-sm font-medium" data-community-count>
@@ -31,9 +33,9 @@
             &ldquo;<%= browse.query %>&rdquo; <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Clear the search</span>
           <% end %></li>
         <% end %>
-        <% browse.chosen.each do |param, value| %>
-          <li><%= link_to link.call(param => nil), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
-            <%= browse.label_for(param, value) %> <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Remove this filter</span>
+        <% browse.choices.each do |choice| %>
+          <li><%= link_to address.call(browse.toggled(choice.param, choice.value)), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
+            <%= choice.label %> <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Remove this filter</span>
           <% end %></li>
         <% end %>
         <li><%= link_to "Clear all", path, class: "text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground" %></li>
@@ -48,6 +50,8 @@
       <% end %>
     </p>
   </div>
+
+  <%= local_assigns[:above] %>
 
   <% if browse.items.any? %>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
