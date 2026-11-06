@@ -98,6 +98,12 @@ namespace :poetry_docs do
   end
 
   namespace :css do
+    desc "Build the docs stylesheet with the host app's own view folders added (config.stylesheet_sources), for host pages in the docs layout"
+    task host: :environment do
+      path = Poetry::Docs::HostStylesheet.build(root: Rails.root)
+      puts "wrote #{path.relative_path_from(Rails.root)} (#{path.size} bytes)"
+    end
+
     desc "Fail when the committed stylesheet differs from a fresh build"
     task :verify do
       root = Poetry::Docs.root
@@ -122,3 +128,12 @@ namespace :poetry_docs do
     end
   end
 end
+
+# A host that names stylesheet sources gets its docs stylesheet built with
+# the rest of its assets.
+namespace :poetry_docs do
+  task css_for_host: :environment do
+    Rake::Task["poetry_docs:css:host"].invoke if Poetry::Docs.config.stylesheet_sources.any?
+  end
+end
+Rake::Task["assets:precompile"].enhance([ "poetry_docs:css_for_host" ]) if Rake::Task.task_defined?("assets:precompile")

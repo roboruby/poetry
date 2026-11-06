@@ -1,8 +1,7 @@
 <% content_for :title, @entry.title %>
 <% content_for :breadcrumb do %>
   <%= poetry_breadcrumb do |crumb| %>
-    <% crumb.with_item("Docs", href: introduction_path) %>
-    <% crumb.with_item(@entry.title) %>
+    <% crumb.with_item("Community") %>
   <% end %>
 <% end %>
 
@@ -13,32 +12,14 @@
   </header>
 
   <section class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium" id="how-it-works">How it works</h2>
-    <p class="max-w-2xl text-muted-foreground">
-      A community item is a component, a block or a restyle the gems do not ship.
-      <code class="text-foreground">poetry:add</code> takes any
-      <code class="text-foreground">@poetry</code> name the gems do not know from this site and
-      copies its files into your app, where they are yours to edit; nothing overwrites them later.
-      Poetry's own components come from the gems at runtime, so an item that composes a Button
-      brings no copy of it.
-    </p>
     <%= poetry_code_block(code: "bin/rails g poetry:add @poetry/<name>", language: "plaintext", label: "Install") %>
     <p class="max-w-2xl text-sm text-muted-foreground">
-      The install records where each item came from in
-      <code class="text-foreground">config/poetry_components.yml</code>, with its version and a
-      digest of every file written, and an item adapted from another library adds that library's
-      license to your <code class="text-foreground">THIRD_PARTY_NOTICES.md</code>.
-    </p>
-  </section>
-
-  <section class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium" id="reviewed-not-audited">Reviewed, not audited</h2>
-    <p class="max-w-2xl text-muted-foreground">
-      A maintainer reviewed every item, and each one passes the registry's checks: it installs
-      into a fresh app, <code class="text-foreground">poetry:check</code> is clean there, and its
-      demo renders in a browser without an error. Nobody audited the code for security, so read
-      what you install, as you would any code you copy. An item adapted from another library
-      names its origin and license on its page; only permissive licenses are accepted.
+      The files land in your app and are yours to edit. A maintainer reviewed every item and each
+      passes the registry's checks; nobody audited the code, so read what you install.
+      <%= link_to "Using community items", community_items_path, class: "text-foreground underline underline-offset-4" %>
+      covers installing and using one, and
+      <%= link_to "Publishing components", community_publishing_path, class: "text-foreground underline underline-offset-4" %>
+      covers serving your own.
     </p>
   </section>
 

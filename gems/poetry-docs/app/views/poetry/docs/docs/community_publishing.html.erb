@@ -1,0 +1,148 @@
+<% content_for :title, "Publishing components" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Publishing components") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag.
+  registries_source = <<~CODE
+    # config/poetry_components.yml, in the app that installs
+    registries:
+      "@acme": "https://acme.dev/r/{name}.json"
+  CODE
+  add_source = <<~CODE
+    bin/rails g poetry:add @acme/pricing-table                     # by name, once the app names the registry
+    bin/rails g poetry:add https://acme.dev/r/pricing-table.json   # by address, with nothing configured
+    bin/rails g poetry:add ./registry/pricing-table.json           # a local file, while you write it
+  CODE
+  private_source = <<~CODE
+    registries:
+      "@acme":
+        url: "https://acme.dev/r/{name}.json"
+        headers:
+          Authorization: "Bearer ${ACME_TOKEN}"
+  CODE
+  item_source = <<~CODE
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "pricing-table",
+      "type": "registry:component",
+      "title": "Pricing table",
+      "description": "Plans side by side, the recommended one marked.",
+      "registryDependencies": ["card", "button"],
+      "files": [
+        {
+          "path": "app/components/acme/pricing_table/component.rb",
+          "target": "app/components/acme/pricing_table/component.rb",
+          "content": "..."
+        }
+      ],
+      "meta": { "version": "1.2.0" }
+    }
+  CODE
+  helper_source = <<~CODE
+    module Acme
+      module PricingTable
+        class Component < Poetry::Core::Component
+          helper :acme_pricing_table
+        end
+      end
+    end
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Publishing components</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Serve your own components from a registry at your own address. Any
+      Poetry app can install from it by name.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="your-own-registry">A registry at your own address</h2>
+      <p>
+        A registry is an address that answers with one JSON document per item.
+        Nothing else is required: a folder of files behind any web server is a
+        registry. An app that wants to install from it by name adds one line,
+        the address with <code>{name}</code> where the item's name goes:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: registries_source, language: "yaml", label: "Naming a registry") %>
+    <%= poetry_code_block(code: add_source, language: "shell", label: "Installing from it") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        A registry is fetched over https; plain http is allowed for localhost
+        only. An item may be up to 1 MB, and a request follows three redirects
+        at most.
+      </p>
+      <h2 id="private">A private registry</h2>
+      <p>
+        A registry behind a token takes headers. A secret is never written in
+        the file: the value names an environment variable, and the install
+        fails with a clear message when it is not set.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: private_source, language: "yaml", label: "Headers from the environment") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-item">The item</h2>
+      <p>
+        An item is a JSON object in the registry-item format. Its
+        <code>type</code> is <code>registry:component</code>,
+        <code>registry:block</code> or <code>registry:style</code>. Each entry of
+        <code>files</code> carries the file's content and the path it is written
+        to in the installing app. <code>registryDependencies</code> names the
+        Poetry components it builds on, which the gems provide, or other items by
+        address, which install with it. <code>dependencies</code> names gems,
+        which are reported and never installed. <code>css</code> holds rules a
+        class cannot express, keyframes for instance.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: item_source, language: "json", label: "pricing-table.json") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Every item this site serves is such a document: read one at
+        <code>/r/&lt;name&gt;.json</code>.
+      </p>
+      <h2 id="names-and-helpers">Names and helpers</h2>
+      <p>
+        Keep your items under a module and a folder of your own;
+        <code>Community::</code> belongs to the Poetry registry. A component
+        declares the view helper that renders it, and Poetry refuses to start
+        when that name is one Rails, Poetry or the app already has, or one two
+        components declare. A prefix of your own keeps your helpers clear of all
+        three.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: helper_source, language: "ruby", label: "A component's helper") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="versions">Versions</h2>
+      <p>
+        State a version in <code>meta.version</code> and change it when the item
+        changes. The installing app records it beside a digest of each file it
+        wrote, so it can tell later what its copy started from.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-poetry-registry">The Poetry registry</h2>
+      <p>
+        The items under <code>@poetry</code> are added by Poetry's maintainers
+        today. Each one is reviewed, installs into a fresh app, passes
+        <code>poetry:check</code> there, and renders its demo in a browser
+        without an error. Submissions from outside open later. Until then, a
+        component you would like to see there is welcome as a suggestion on
+        <%= link_to "the project's issues", "https://github.com/roboruby/poetry/issues" %>.
+      </p>
+    <% end %>
+  </section>
+</div>

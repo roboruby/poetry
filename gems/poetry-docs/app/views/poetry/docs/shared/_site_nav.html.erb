@@ -6,6 +6,7 @@
                      poetry_docs.agent_skills_path => "AI Native", poetry_docs.mcp_path => "AI Native" } %>
 <%= tag.div(class: "hidden lg:block", data: sidebar_opener(section_links)) do %>
   <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
+    <% nav.with_link("Community", href: poetry_docs.community_path) if Poetry::Docs.config.community_section? %>
     <% nav.with_item("Get Started", value: "start") do %>
       <div class="grid w-64 gap-1">
         <%= poetry_navigation_menu_link(href: poetry_docs.introduction_path) { "Introduction" } %>

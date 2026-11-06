@@ -47,8 +47,9 @@ module Poetry
       def sitemap
         # The community items' pages are the host's own: listed where the
         # host serves a community registry, absent where it serves none.
-        community = CommunityRegistry.items.map { |item| "/community/#{item.name}" }
-        urls = ([ "/", "/docs" ] + DocsCatalog.all.map(&:path) + community).map do |path|
+        community = CommunityRegistry.items.map { |item| "/community/components/#{item.name}" }
+        paths = [ "/", "/docs" ] + DocsCatalog.all.map(&:path) + community + Poetry::Docs.config.host_sitemap_paths
+        urls = paths.uniq.map do |path|
           "  <url><loc>#{request.base_url}#{path}</loc></url>"
         end
         xml = [ %(<?xml version="1.0" encoding="UTF-8"?>),

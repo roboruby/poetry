@@ -27,10 +27,10 @@ class CommunityTest < ActionDispatch::IntegrationTest
       get community_path
 
       assert_response :success
-      assert_select "h1", "Community"
+      assert_select "h1", "Community components"
       assert_select "[data-slot=card]", 3
-      assert_select "a[href=?]", "/community/note-card", text: "Note card"
-      assert_select "a[href=?]", "/community/quote-wall", text: "Quote wall"
+      assert_select "a[href=?]", "/community/components/note-card", text: "Note card"
+      assert_select "a[href=?]", "/community/components/quote-wall", text: "Quote wall"
       assert_select "img[src=?][width='672'][height='88']", "/r/community/screenshots/note-card.webp"
       assert_select "pre", text: %r{bin/rails g poetry:add @poetry/<name>}
       assert_no_match(/Not A Name/, response.body, "an entry whose name is not a registry name is left out")
@@ -55,7 +55,7 @@ class CommunityTest < ActionDispatch::IntegrationTest
     bare = headings.call
 
     with_registry { assert_equal bare, headings.call }
-    assert_equal %w[how-it-works reviewed-not-audited items], bare
+    assert_equal %w[items], bare
   end
 
   test "a port's page shows its install, screenshot, example, options, slots, rules and origin" do
@@ -175,11 +175,11 @@ class CommunityTest < ActionDispatch::IntegrationTest
 
   test "an unknown item, and any item on a host with no registry, is a 404" do
     with_registry do
-      get "/community/absent"
+      get "/community/components/absent"
 
       assert_response :not_found
     end
-    get "/community/note-card"
+    get "/community/components/note-card"
 
     assert_response :not_found
   end
@@ -207,13 +207,13 @@ class CommunityTest < ActionDispatch::IntegrationTest
     with_registry do
       get "/sitemap.xml"
 
-      assert_includes response.body, "/community/note-card</loc>"
-      assert_includes response.body, "/community/quote-wall</loc>"
+      assert_includes response.body, "/community/components/note-card</loc>"
+      assert_includes response.body, "/community/components/quote-wall</loc>"
     end
     get "/sitemap.xml"
 
     assert_includes response.body, "/community</loc>"
-    assert_no_match(%r{/community/[a-z-]+</loc>}, response.body)
+    assert_no_match(%r{/community/components/[a-z-]+</loc>}, response.body)
   end
 
   test "both pages mirror as markdown" do
@@ -222,8 +222,8 @@ class CommunityTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_equal "text/markdown", response.media_type
-      assert_includes response.body, "- [Note card](/community/note-card) (component): A note in a card, with its author and a pin. `bin/rails g poetry:add @poetry/note-card`"
-      get "/community/note-card.md"
+      assert_includes response.body, "- [Note card](/community/components/note-card) (component): A note in a card, with its author and a pin. `bin/rails g poetry:add @poetry/note-card`"
+      get "/community/components/note-card.md"
 
       assert_response :success
       assert_includes response.body, "`bin/rails g poetry:add @poetry/note-card`"
@@ -234,17 +234,17 @@ class CommunityTest < ActionDispatch::IntegrationTest
       assert_includes response.body, "- Adapted from @acme/note (https://acme.dev/r/note.json), https://github.com/acme/ui. License: MIT. Copyright (c) 2025 Acme"
       assert_no_match(/The demo runs at/, response.body)
       with_demos("https://demos.example") do
-        get "/community/note-card.md"
+        get "/community/components/note-card.md"
 
         assert_includes response.body, "\n\nThe demo runs at https://demos.example/items/note-card/\n\n"
-        get "/community/quote-wall.md"
+        get "/community/components/quote-wall.md"
 
         assert_no_match(/The demo runs at/, response.body)
       end
-      get "/community/quote-wall.md"
+      get "/community/components/quote-wall.md"
 
       assert_includes response.body, "An original community item"
-      get "/community/absent.md"
+      get "/community/components/absent.md"
 
       assert_response :not_found
     end

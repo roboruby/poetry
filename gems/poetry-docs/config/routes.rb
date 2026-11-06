@@ -53,10 +53,16 @@ Poetry::Docs::Engine.routes.draw do
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
-  # The community registry's pages: the index is a catalog page; an item's
+  get "community-items" => "docs#community_items", as: :community_items
+  get "community-publishing" => "docs#community_publishing", as: :community_publishing
+  # The Community section: the index is a catalog page, and a component's
   # page exists where the host serves a community registry that lists it.
+  # A host with a section of its own (a browser, a libraries directory)
+  # draws those routes ahead of the mount; here the browser's address
+  # leads to the index, which lists every item.
   get "community" => "community#index", as: :community
-  get "community/:name" => "community#show", as: :community_item, constraints: { name: /[a-z0-9]+(-[a-z0-9]+)*/ }
+  get "community/components" => redirect("/community")
+  get "community/components/:name" => "community#show", as: :community_item, constraints: { name: /[a-z0-9]+(-[a-z0-9]+)*/ }
   get "page-agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false
 

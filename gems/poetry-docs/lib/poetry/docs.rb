@@ -57,6 +57,40 @@ module Poetry
       # at the site's own origin is never framed. nil shows the screenshot.
       # @return [String, nil]
       attr_accessor :community_demos
+      # Whether the site has a Community section, which puts Community in
+      # the top nav: true or false as the host says, and otherwise whether
+      # the community registry lists an item. A host that serves the
+      # section's pages itself sets true.
+      # @return [Boolean, nil]
+      attr_writer :community_section
+      # The host's own pages for the sitemap, beside the engine's: paths
+      # ("/community/libraries/acme"), or anything that answers `call`
+      # with them, asked on each request.
+      # @return [Array<String>, #call, nil]
+      attr_accessor :sitemap_paths
+      # The stylesheet the layouts link. A host whose own pages wear the
+      # docs layout builds the engine's stylesheet again with its view
+      # folders added (rake poetry_docs:css:host) and names the result.
+      # @return [String]
+      attr_writer :stylesheet
+      # The host's folders whose classes the host stylesheet carries, as
+      # paths from the host's root ("app/views/community").
+      # @return [Array<String>]
+      attr_writer :stylesheet_sources
+
+      def community_section?
+        @community_section.nil? ? CommunityRegistry.items.any? : @community_section == true
+      end
+
+      def stylesheet = @stylesheet || "poetry_docs"
+
+      def stylesheet_sources = Array(@stylesheet_sources)
+
+      # The host's sitemap paths, resolved.
+      # @return [Array<String>]
+      def host_sitemap_paths
+        Array(sitemap_paths.respond_to?(:call) ? sitemap_paths.call : sitemap_paths).map(&:to_s)
+      end
     end
 
     # @return [Configuration]

@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="<%= image_path("poetry_docs/icon.png") %>">
 
     <%# The engine's built stylesheet (rake poetry_docs:css) and its own JavaScript graph. %>
-    <%= stylesheet_link_tag "poetry_docs", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag Poetry::Docs.config.stylesheet, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags "poetry_docs/application" %>
   </head>
 
@@ -82,6 +82,7 @@
           <% [["Get Started", :rocket, nil, Poetry::Docs::DocsCatalog.doc_sections["Get Started"]],
               ["Advanced", :layers, nil, Poetry::Docs::DocsCatalog.doc_sections["Advanced"]],
               ["AI Native", :sparkles, nil, Poetry::Docs::DocsCatalog.doc_sections["AI Native"]],
+              ["Community", :users, "/community", Poetry::Docs::DocsCatalog.doc_sections["Community"]],
               ["Libraries", :"library-big", "/libraries", Poetry::Docs::DocsCatalog.libraries],
               ["Icons", :shapes, "/icons", Poetry::Docs::DocsCatalog.icons],
               ["Components", :component, "/components", Poetry::Docs::DocsCatalog.components],
@@ -161,7 +162,12 @@
       <% shell.with_inset do %>
         <header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
           <%= poetry_sidebar_trigger %>
-          <div class="hidden truncate lg:block"><%= yield :breadcrumb %></div>
+          <%# The breadcrumb takes what the controls leave and stays on one
+              line: the trail keeps its width and the current page gives way
+              with an ellipsis, so a long title never wraps under the header. %>
+          <div class="hidden min-w-0 flex-1 overflow-hidden lg:block [&_ol]:flex-nowrap [&_li]:shrink-0 [&_li:last-child]:min-w-0
+                      [&_li:last-child]:shrink [&_[data-slot=breadcrumb-page]]:block [&_[data-slot=breadcrumb-page]]:min-w-0
+                      [&_[data-slot=breadcrumb-page]]:truncate"><%= yield :breadcrumb %></div>
           <div class="ml-auto flex items-center gap-2">
             <%= render "poetry/docs/shared/site_nav" %>
             <%# The palette lists every page plus the search index headings (a

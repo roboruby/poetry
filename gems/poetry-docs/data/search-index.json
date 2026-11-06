@@ -696,28 +696,100 @@
     "path": "/recipes#skill-poetry-design"
   },
   {
-    "title": "Community",
-    "page": "Community",
+    "title": "Community components",
+    "page": "Community components",
     "section": "docs",
     "path": "/community"
   },
   {
-    "title": "How it works",
-    "page": "Community",
+    "title": "Items",
+    "page": "Community components",
     "section": "docs",
-    "path": "/community#how-it-works"
+    "path": "/community#items"
+  },
+  {
+    "title": "Using community items",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items"
+  },
+  {
+    "title": "What a community item is",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#what-they-are"
+  },
+  {
+    "title": "Install",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#install"
+  },
+  {
+    "title": "Use it",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#use"
+  },
+  {
+    "title": "How items are named",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#names"
+  },
+  {
+    "title": "What the install records",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#record"
   },
   {
     "title": "Reviewed, not audited",
-    "page": "Community",
+    "page": "Using community items",
     "section": "docs",
-    "path": "/community#reviewed-not-audited"
+    "path": "/community-items#reviewed-not-audited"
   },
   {
-    "title": "Items",
-    "page": "Community",
+    "title": "Publishing components",
+    "page": "Publishing components",
     "section": "docs",
-    "path": "/community#items"
+    "path": "/community-publishing"
+  },
+  {
+    "title": "A registry at your own address",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#your-own-registry"
+  },
+  {
+    "title": "A private registry",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#private"
+  },
+  {
+    "title": "The item",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#the-item"
+  },
+  {
+    "title": "Names and helpers",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#names-and-helpers"
+  },
+  {
+    "title": "Versions",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#versions"
+  },
+  {
+    "title": "The Poetry registry",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#the-poetry-registry"
   },
   {
     "title": "Page Agent",

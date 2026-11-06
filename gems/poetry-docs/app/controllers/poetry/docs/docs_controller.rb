@@ -23,6 +23,12 @@ module Poetry
       def editors
       end
 
+      def community_items
+      end
+
+      def community_publishing
+      end
+
       def testing
       end
 
@@ -233,6 +239,8 @@ module Poetry
         when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
         when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug.tr('-', '_')}", icon_entry)
         when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
+        when "community_items" then DocsMarkdown.community_items(guide_entry("community-items"))
+        when "community_publishing" then DocsMarkdown.community_publishing(guide_entry("community-publishing"))
         when "agent" then DocsMarkdown.agent(guide_entry("page-agent"))
         when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)
         when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))

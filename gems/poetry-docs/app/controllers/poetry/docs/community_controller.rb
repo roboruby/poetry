@@ -1,7 +1,7 @@
 module Poetry
   module Docs
     # The Community pages: the index (/community, a catalog page) and a
-    # page per item (/community/:name), both read from the community
+    # page per item (/community/components/:name), both read from the community
     # registry's index. The item pages sit outside the catalog - the items
     # are a host's configuration, and the catalog, the sidebar and the
     # committed search index are the same on every host. Where the host

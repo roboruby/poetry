@@ -330,28 +330,84 @@ module Poetry
           ([ header(entry) ] + sections).join("\n\n") + "\n"
         end
 
-        # The Community page's mirror: how community items work, then the
-        # items this host serves, each linked to its own page.
+        # The Community page's mirror: where the guides are, then the items
+        # this host serves, each linked to its own page.
         def community(entry, items)
           list = if items.any?
-            items.map { |item| "- [#{item.title}](/community/#{item.name}) (#{item.kind.downcase}): #{item.description} `#{item.install}`" }.join("\n")
+            items.map { |item| "- [#{item.title}](/community/components/#{item.name}) (#{item.kind.downcase}): #{item.description} `#{item.install}`" }.join("\n")
           else
             "This site serves no community registry, so there is nothing to install from here."
           end
           <<~MD
             #{header(entry)}
 
-            ## How it works
-
-            A community item is a component, a block or a restyle the gems do not ship. `bin/rails g poetry:add @poetry/<name>` fetches any `@poetry` name the gems do not know from this site and copies its files into the app, where they are the app's to edit; nothing overwrites them later. Poetry's own components come from the gems at runtime, so an item that composes a Button brings no copy of it. The install records the item's address, version and a digest of every file written in `config/poetry_components.yml`, and an item adapted from another library adds that library's license to the app's `THIRD_PARTY_NOTICES.md`.
-
-            ## Reviewed, not audited
-
-            A maintainer reviewed every item, and each one passes the registry's checks: it installs into a fresh app, `poetry:check` is clean there, and its demo renders in a browser without an error. Nobody audited the code for security: read what you install. Only permissive licenses are accepted.
+            Install one with `bin/rails g poetry:add @poetry/<name>`. The files land in the app and are the app's to edit. A maintainer reviewed every item and each passes the registry's checks; nobody audited the code. [Using community items](/community-items) covers installing and using one, and [Publishing components](/community-publishing) covers serving your own.
 
             ## Items
 
             #{list}
+          MD
+        end
+
+        # The Using community items guide's mirror.
+        def community_items(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## What a community item is
+
+            A community item is a component, a block or a restyle the gems do not ship. `bin/rails g poetry:add @poetry/<name>` copies its files into the app, where they are the app's to read and edit; nothing overwrites them later. Poetry's own components come from the gems at runtime, so an item that composes a Button brings no copy of it. [Community components](/community) lists every item.
+
+            ## Install
+
+            `bin/rails g poetry:add @poetry/acme-pricing-table`. A component lands in `app/components/community/<name>/` (class, template, style, preview), its Stimulus controller in `app/javascript/controllers/community/`, a block as one partial at `app/views/blocks/_<name>.html.erb`, and a restyle or an item's own keyframes as one stylesheet in `app/assets/tailwind/poetry/community/` with its import line added to the Tailwind entry. An item with a controller rewrites `config/controllers_manifest.json`: commit it and restart a running server. Gems an item needs are reported, never installed.
+
+            ## Use it
+
+            A component renders through a helper named after the item (`acme_pricing_table(plans: @plans)`), with the options its page lists. A block is a partial to adapt in place (`render "blocks/acme_hero_01"`). A restyle changes the look of a Poetry component and nothing else: its class on a wrapper, or on `body`, and the component inside takes the new look while the views keep calling the Poetry helper.
+
+            ## How items are named
+
+            An item adapted from another library is named for that library and for the library's own name for the item: `@acme`'s `pricing-table` is `acme-pricing-table`, installed as `@poetry/acme-pricing-table`, rendered by `acme_pricing_table`, in the class `Community::AcmePricingTable::Component`. An item written for Poetry has a plain name and a helper that begins with `community_`.
+
+            ## What the install records
+
+            `config/poetry_components.yml` gains an entry per item: the address it came from, the version it stated and a SHA-256 digest of each file written. An item adapted from another library records its origin (registry, item, repository, license, copyright), and the install adds that license to `THIRD_PARTY_NOTICES.md`.
+
+            ## Reviewed, not audited
+
+            A maintainer reviewed every item, and each passes the registry's checks: it installs into a fresh app, `poetry:check` is clean there, and its demo renders in a browser without an error. Nobody audited the code for security: read what you install. Only permissive licenses are accepted.
+          MD
+        end
+
+        # The Publishing components guide's mirror.
+        def community_publishing(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## A registry at your own address
+
+            A registry is an address that answers with one JSON document per item; a folder of files behind any web server is one. An app installs from it by name once `config/poetry_components.yml` names it under `registries:`, as `"@acme": "https://acme.dev/r/{name}.json"`; then `bin/rails g poetry:add @acme/pricing-table`. A full address (`https://acme.dev/r/pricing-table.json`) or a local file (`./registry/pricing-table.json`) installs with nothing configured. A registry is fetched over https (http for localhost only), an item may be up to 1 MB, and a request follows three redirects at most.
+
+            ## A private registry
+
+            An entry may be `url:` and `headers:`. A secret is never written in the file: a header value names an environment variable (`Authorization: "Bearer ${ACME_TOKEN}"`), and the install fails with a clear message when it is not set.
+
+            ## The item
+
+            An item is a JSON object in the registry-item format: `name`, `type` (`registry:component`, `registry:block` or `registry:style`), `title`, `description`, `files` (each with its content and the path it is written to), `registryDependencies` (the Poetry components it builds on, or other items by address), `dependencies` (gems, reported and never installed), `css` (rules a class cannot express) and `meta.version`. Every item this site serves is such a document at `/r/<name>.json`.
+
+            ## Names and helpers
+
+            Keep items under a module and a folder of your own; `Community::` belongs to the Poetry registry. A component declares its view helper (`helper :acme_pricing_table`), and Poetry refuses to start when that name is one Rails, Poetry or the app already has, or one two components declare.
+
+            ## Versions
+
+            State a version in `meta.version` and change it when the item changes. The installing app records it beside a digest of each file it wrote.
+
+            ## The Poetry registry
+
+            The items under `@poetry` are added by Poetry's maintainers today: each is reviewed, installs into a fresh app, passes `poetry:check` there and renders its demo without an error. Submissions from outside open later; until then a suggestion is welcome on the project's issues, https://github.com/roboruby/poetry/issues.
           MD
         end
 

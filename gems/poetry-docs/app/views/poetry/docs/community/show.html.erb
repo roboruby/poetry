@@ -2,7 +2,6 @@
 <% content_for :description, @item.description %>
 <% content_for :breadcrumb do %>
   <%= poetry_breadcrumb do |crumb| %>
-    <% crumb.with_item("Docs", href: introduction_path) %>
     <% crumb.with_item("Community", href: community_path) %>
     <% crumb.with_item(@item.title) %>
   <% end %>
