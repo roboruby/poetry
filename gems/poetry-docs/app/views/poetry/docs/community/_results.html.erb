@@ -3,7 +3,9 @@
     the browser gives its list in pages (it answers `page` and `pages`).
     Locals: browse, path, heading, lead, item_path (a callable from an
     item to its page; the engine's by default), above (optional: what a
-    host shows between the filters in force and the items). %>
+    host shows between the filters in force and the items). A filter
+    that sits in the heading (Facet#heading) is drawn beside the order:
+    "All", then its choices. %>
 <% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
 <% link = ->(changes) { address.call(browse.params_for(changes)) } %>
 <% item_path = local_assigns[:item_path] || ->(item) { poetry_docs.community_item_path(item.name) } %>
@@ -41,7 +43,22 @@
         <li><%= link_to "Clear all", path, class: "text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground" %></li>
       </ul>
     <% end %>
-    <p class="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+    <div class="ml-auto flex flex-wrap items-center gap-x-6 gap-y-2">
+    <% browse.facets.select(&:heading).each do |facet| %>
+      <p class="flex items-center gap-2 text-xs text-muted-foreground" data-heading-filter="<%= facet.param %>">
+        <%= facet.label %>:
+        <% none = facet.options.none?(&:selected) %>
+        <%= link_to "All", link.call(facet.param => nil), rel: "nofollow", aria: { current: ("true" if none) },
+                    class: (none ? "font-medium text-foreground" : "underline-offset-4 hover:underline") %>
+        <% facet.options.each do |option| %>
+          <%= link_to address.call(browse.toggled(facet.param, option.value)), rel: "nofollow", aria: { current: ("true" if option.selected) },
+                      class: (option.selected ? "font-medium text-foreground" : "underline-offset-4 hover:underline") do %>
+            <%= option.label %> <span class="tabular-nums opacity-70"><%= option.count %></span>
+          <% end %>
+        <% end %>
+      </p>
+    <% end %>
+    <p class="flex items-center gap-2 text-xs text-muted-foreground">
       Sort:
       <% browse.sorts.each do |key, label| %>
         <%= link_to label, link.call("sort" => (key == browse.sorts.keys.first ? nil : key)), rel: "nofollow",
@@ -49,6 +66,7 @@
                     class: (browse.sort == key ? "font-medium text-foreground" : "underline-offset-4 hover:underline") %>
       <% end %>
     </p>
+    </div>
   </div>
 
   <%= local_assigns[:above] %>

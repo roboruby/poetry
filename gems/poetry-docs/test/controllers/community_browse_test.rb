@@ -37,7 +37,14 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
   def cards = css_select("[data-community-card]").map { |card| card["data-community-card"] }
 
   def options(param)
-    css_select("[data-filter=#{param}] a").to_h { |a| [ a.at_css("span").text.strip, a.css("span").last.text.strip ] }
+    css_select("[data-filter=#{param}] li a").to_h { |a| [ a.at_css("span").text.strip, a.css("span").last.text.strip ] }
+  end
+
+  # The dialog's list for a filter, as the frame the dialog fetches: each
+  # line's label and count, in order.
+  def picked(param, **params)
+    get community_path(params.merge(pick: param)), headers: { "Turbo-Frame" => "community-picker-#{param}" }
+    css_select("[data-community-picker-target=row]").map { |row| row.at_css("label").text.split.join(" ") }
   end
 
   test "the section wears its own layout: the site's header, its tabs, and the filters where the docs have their nav" do
@@ -58,10 +65,12 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     get community_path
 
     assert_equal({ "Component" => "2", "Block" => "1", "Restyle" => "1" }, options("type"))
-    assert_equal({ "@acme" => "2", "@beta" => "1", "Made for Poetry" => "1" }, options("library"))
     assert_equal({ "None of its own" => "3", "Stimulus controller" => "1" }, options("javascript"))
     assert_equal({ "animated" => "2", "gradient" => "1" }, options("trait"))
     assert_equal({ "button" => "2", "card" => "2" }, options("needs"))
+    assert_equal %w[type javascript trait needs library], css_select("[data-filter]").map { _1["data-filter"] }, "the library is the last line"
+    assert_empty options("library"), "its choices are in its dialog, not the sidebar"
+    assert_equal [ "@acme 2", "@beta 1", "Made for Poetry 1" ], picked("library")
   end
 
   test "a filter narrows the list, the counts follow, and the chosen one links back out" do
@@ -70,12 +79,13 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_equal %w[acme-hero-01 acme-pricing-table], cards.sort
     assert_select "[data-community-count]", text: /2 of 4/
     assert_equal({ "Component" => "1", "Block" => "1" }, options("type"))
-    assert_select "[data-filter=library] a[aria-current=true][href='/community']", text: /@acme/
+    assert_select "[data-filter=library] li", 0, "the chosen library is not in the sidebar"
+    assert_select "[data-filter=library] [data-filter-picked]", text: /1/
     assert_select "[aria-label='Filters in force'] a[href='/community']", text: /@acme/
     get community_path(library: "acme", type: "block")
 
     assert_equal %w[acme-hero-01], cards
-    assert_select "[data-filter=library] a[aria-current=true][href='/community?type=block']"
+    assert_select "[aria-label='Filters in force'] a[href=?]", "/community?type=block", text: /@acme/
     get community_path(javascript: "stimulus")
 
     assert_equal %w[acme-pricing-table], cards
@@ -147,25 +157,36 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-filter] button[aria-expanded=true]", 0
     assert_select "[data-filter=type] button[aria-expanded=false]", text: /Type/
-    get community_path, params: { library: "acme" }
+    get community_path, params: { trait: "animated" }
 
-    assert_select "[data-filter=library] button[aria-expanded=true] [data-filter-picked]", text: /1/
+    assert_select "[data-filter=trait] button[aria-expanded=true] [data-filter-picked]", text: /1/
     assert_select "[data-filter=type] button[aria-expanded=false]", 1
-    cookies[:docs_sidebar] = { "community:library" => false, "community:type" => true }.to_json
-    get community_path, params: { library: "acme" }
+    cookies[:docs_sidebar] = { "community:trait" => false, "community:type" => true }.to_json
+    get community_path, params: { trait: "animated" }
 
-    assert_select "[data-filter=library] button[aria-expanded=false]", 1, "a group the visitor closed stays closed"
+    assert_select "[data-filter=trait] button[aria-expanded=false]", 1, "a group the visitor closed stays closed"
     assert_select "[data-filter=type] button[aria-expanded=true]", 1, "and one they opened stays open"
     assert_select "[data-filter=type] button[data-action*='sidebar-sections#remember'][data-sidebar-sections-section-param='community:type']", 1
     assert_select "body[data-controller~='sidebar-sections']", 1
+  end
+
+  test "the library is one line that opens its dialog: no group, and nothing of what is chosen but how many" do
+    get "/community?library=acme+beta"
+
+    assert_select "[data-filter=library] [data-slot=collapsible]", 0
+    assert_select "[data-filter=library] button[data-filter-picker=library][data-action*='dialog#open']", text: /Library\s+2/
+    assert_select "[data-filter=library] li", 0
+    assert_select "[data-filter=library] dialog turbo-frame#community-picker-library[loading=lazy][src=?]", "/community?library=acme+beta&pick=library"
+    assert_select "[data-filter=library] dialog [data-community-picker-target=row]", 0, "the list is not in the page"
+    get community_path
+
+    assert_select "[data-filter=library] button[data-filter-picker=library] [data-filter-picked]", 0
   end
 
   test "the library takes several: an item from any of them is listed, and each has its own way out" do
     get community_path, params: { library: "acme" }
 
     assert_equal %w[acme-hero-01 acme-pricing-table], cards.sort
-    assert_select "[data-filter=library] a[href=?]", "/community?library=acme+beta", text: /@beta/
-    assert_select "[data-filter=library] a[aria-current=true][href='/community']", text: /@acme/
     get "/community?library=acme+beta"
 
     assert_equal %w[acme-hero-01 acme-pricing-table beta-card], cards.sort
@@ -210,18 +231,15 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_select "[data-filter=type] a[href=?]", "/community?more=needs&type=component", 1, "a choice keeps the filter open"
   end
 
-  test "a long filter that takes several is picked in a dialog, which fetches its list when it opens" do
+  test "the dialog's list is fetched when it opens, with the chosen ones first" do
     many
-    get "/community?library=lib03+lib07&type=component"
+    get "/community?library=lib07+lib03&type=component"
 
     assert_equal %w[lib3-card lib7-card], cards.sort
-    assert_equal 2, css_select("[data-filter=library] li").size, "the sidebar shows the chosen ones"
-    assert_select "[data-filter=library] li a[href=?]", "/community?library=lib07&type=component", text: /@lib03/
-    assert_select "[data-filter=library] button[data-filter-picker=library]", text: /Choose more\s+16/
+    assert_select "ul[aria-label='Filters in force'] a[href=?]", "/community?library=lib03&type=component", text: /@lib07/
     assert_select "[data-filter=library] dialog turbo-frame#community-picker-library[loading=lazy][src=?]",
-                  "/community?library=lib03+lib07&pick=library&type=component"
-    assert_select "[data-filter=library] dialog [data-community-picker-target=row]", 0, "the list is not in the page"
-    get "/community?library=lib03+lib07&pick=library&type=component", headers: { "Turbo-Frame" => "community-picker-library" }
+                  "/community?library=lib07+lib03&pick=library&type=component"
+    get "/community?library=lib07+lib03&pick=library&type=component", headers: { "Turbo-Frame" => "community-picker-library" }
 
     assert_response :success
     refute_includes response.body, "<html", "the dialog's body comes without the page around it"
@@ -230,11 +248,19 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_select "form input[type=hidden][name=library][disabled]", 1
     assert_select "[data-community-picker-target=row]", 16
     assert_equal %w[lib03 lib07], css_select("input[type=checkbox][name='library[]'][checked]").map { _1["value"] }
+    lines = css_select("[data-community-picker-target=list] > li")
+
+    assert_equal %w[@lib03 @lib07], lines.first(2).map { _1["data-text"] }, "the chosen ones are first"
+    assert_equal %w[true true], lines.first(2).map { _1["data-pinned"] }
+    assert_nil lines[3]["data-pinned"]
+    assert_equal "rule", lines[2]["data-community-picker-target"], "with a rule under them"
+    assert_select "[data-community-picker-target=rule]", 1
     assert_select "[data-community-picker-target=row][data-text='@lib05'] label", text: /@lib05\s+1/
     assert_select "[data-community-picker-target=summary]", text: /2 chosen/
     get "/community?pick=library"
 
     assert_includes response.body, "<html", "where no script runs the list is a page of its own"
+    assert_select "[data-community-picker-target=rule]", 0, "none chosen, no rule"
     assert_select "[data-community-picker-target=row]", 17
     get "/community?pick=widgets"
 
@@ -275,12 +301,18 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # A host's browser that gives its list in pages: the engine's own state
-  # with the two readers a paged list answers.
+  # A host's browser that gives its list in pages and has a filter in the
+  # list's heading: the engine's own state with the two readers a paged
+  # list answers and one more facet.
   class PagedBrowse < SimpleDelegator
     def page = 2
 
     def pages = 3
+
+    def facets
+      newness = Poetry::Docs::CommunityBrowse::Option.new(value: "new", label: "New this week", count: 3, selected: false)
+      super + [ Poetry::Docs::CommunityBrowse::Facet.new(param: "fresh", label: "Show", options: [ newness ], more: 0, heading: true) ]
+    end
   end
 
   class PagedController < ActionController::Base
@@ -289,6 +321,7 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     def index
       browse = PagedBrowse.new(Poetry::Docs::CommunityBrowse.new(Poetry::Docs::CommunityRegistry.items, params))
       render inline: <<~ERB, locals: { browse: browse }, layout: true
+        <% content_for(:community_sidebar) { render "poetry/docs/community/filters", browse: browse, path: "/community/paged" } %>
         <%= render "poetry/docs/community/results", browse: browse, path: "/community/paged", heading: "Paged" %>
         <%= render "poetry/docs/community/install_note" %>
       ERB
@@ -309,10 +342,16 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
       assert_select "nav[aria-label='Pages of components'] a[href=?]", "/community/paged?page=3&type=component", minimum: 1
       assert_select "nav[aria-label='Pages of components'] [aria-current=page]", "2"
       assert_select "[data-community-install-note] a[href='/community-items']", "Using community items"
+      assert_select "[data-heading-filter=fresh]", text: /Show:/
+      assert_select "[data-heading-filter=fresh] a[aria-current=true][href=?]", "/community/paged?type=component", text: "All"
+      assert_select "[data-heading-filter=fresh] a[href=?]", "/community/paged?fresh=new&type=component", text: /New this week\s+3/
+      assert_select "[data-community-filters] [data-filter=fresh]", 0, "a heading's filter is not in the sidebar"
+      assert_select "[data-community-filters] [data-filter=type]", 1
     end
     get community_path
 
     assert_select "nav[aria-label='Pages of components']", 0, "the engine's own list is whole"
+    assert_select "[data-heading-filter]", 0, "and has no filter in its heading"
     assert_select "[data-community-install-note]", 1
   end
 end
@@ -346,8 +385,9 @@ class CommunityBrowseStateTest < ActiveSupport::TestCase
     assert_equal({ "type" => "block", "library" => "acme beta" }, browse.toggled("type", "block"))
     assert_equal({ "type" => "component" }, Poetry::Docs::CommunityBrowse.new(items, library: "acme", type: "component").toggled("library", "acme"))
     assert_equal %w[acme beta], Poetry::Docs::CommunityBrowse.listed([ "acme,beta", " acme " ])
-    assert_equal [ [ "acme", 1 ], [ "poetry", 1 ], [ "beta", 0 ] ], browse.picker("library").map { |option| [ option.value, option.count ] },
-                 "every library among the components, and the chosen one that has none"
+    assert_equal [ [ "acme", 1 ], [ "beta", 0 ], [ "poetry", 1 ] ], browse.picker("library").map { |option| [ option.value, option.count ] },
+                 "the chosen ones first, even one that has nothing here, then the rest"
+    assert_equal [ true, %w[acme beta] ], browse.facets.last.then { |facet| [ facet.picker, facet.options.map(&:value) ] }
     assert_nil browse.picker("widgets")
   end
 
@@ -364,8 +404,9 @@ class CommunityBrowseStateTest < ActiveSupport::TestCase
     pad = items.select { |item| item.name == "note-pad" }
     browse = Poetry::Docs::CommunityBrowse.new(pad)
 
-    assert_equal %w[type library javascript], browse.facets.map(&:param), "no looks and nothing built on: those two are left out"
-    assert_equal [ [ "Made for Poetry", 1 ] ], browse.facets.second.options.map { |option| [ option.label, option.count ] }
+    assert_equal %w[type javascript library], browse.facets.map(&:param), "no looks and nothing built on: those two are left out"
+    assert_equal [ [ "None of its own", 1 ] ], browse.facets.second.options.map { |option| [ option.label, option.count ] }
+    assert_equal [ [ "Made for Poetry", 1 ] ], browse.picker("library").map { |option| [ option.label, option.count ] }
     off = Poetry::Docs::CommunityBrowse.new(pad, trait: "animated").facets.find { |facet| facet.param == "trait" }
 
     assert_equal [ [ "animated", 0, true ] ], off.options.map { |option| [ option.label, option.count, option.selected ] }

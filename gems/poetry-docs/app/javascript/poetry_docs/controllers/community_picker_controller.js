@@ -1,15 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The list a long Community filter is picked from (the libraries, in the
+// The list a Community filter is picked from (the libraries, in the
 // dialog the sidebar opens). The server renders every choice with a box
-// to tick; this narrows the list as the search is typed, keeps the count
+// to tick, the chosen ones first with a rule under them; this narrows
+// the list as the search is typed (the rule goes while it is), keeps the count
 // of ticked boxes, and on submit sends the ticked values as one field
 // with spaces between them, so the address reads ?library=acme+beta.
 // Where no script runs
 // the form still works: it sends a field per ticked box, which the
 // browser's state reads the same.
 export default class extends Controller {
-  static targets = ["search", "row", "box", "empty", "summary", "joined"]
+  static targets = ["search", "row", "box", "empty", "summary", "joined", "rule"]
 
   connect() {
     this.count()
@@ -25,6 +26,7 @@ export default class extends Controller {
       if (match) shown += 1
     }
     this.emptyTarget.hidden = shown > 0
+    for (const rule of this.ruleTargets) rule.hidden = words.length > 0
   }
 
   count() {

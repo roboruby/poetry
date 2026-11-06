@@ -17,6 +17,9 @@ module Poetry
     #
     # A filter takes one choice, and the library takes several
     # (`?library=acme+beta`): an item passes when it came from any of them.
+    # The library is the sidebar's last line and opens a dialog its
+    # choices are picked in; the chosen ones show among the filters in
+    # force, not in the sidebar.
     #
     # @example
     #   browse = Poetry::Docs::CommunityBrowse.new(CommunityRegistry.items, q: "chart", type: "block")
@@ -25,10 +28,12 @@ module Poetry
     class CommunityBrowse
       # One filter: the parameter it sets, its heading, the choices shown,
       # how many more there are than shown, whether it is open (all its
-      # choices shown because the address asks), and whether its choices
-      # are picked in a dialog (it has too many for the sidebar, which
-      # then shows the chosen ones and the way to the dialog).
-      Facet = Struct.new(:param, :label, :options, :more, :open, :picker, keyword_init: true)
+      # choices shown because the address asks), whether its choices are
+      # picked in a dialog (the sidebar then has one line for it, which
+      # opens the dialog; `options` are the chosen ones), and whether it
+      # sits in the list's heading, beside the order, instead of the
+      # sidebar (a host's own, such as how new an item is).
+      Facet = Struct.new(:param, :label, :options, :more, :open, :picker, :heading, keyword_init: true)
       # One choice in force: the filter, its value and how it reads.
       Choice = Struct.new(:param, :value, :label, keyword_init: true)
       # One choice of a filter: its value in the address, how it reads,
@@ -39,10 +44,10 @@ module Poetry
       # the heading, and how an item answers (one value or several).
       FILTERS = {
         "type" => [ "Type", ->(item) { item.kind.downcase } ],
-        "library" => [ "Library", ->(item) { item.library || "poetry" } ],
         "javascript" => [ "JavaScript", ->(item) { item.javascript_level } ],
         "trait" => [ "Looks", ->(item) { item.traits } ],
-        "needs" => [ "Builds on", ->(item) { item.needs } ]
+        "needs" => [ "Builds on", ->(item) { item.needs } ],
+        "library" => [ "Library", ->(item) { item.library || "poetry" } ]
       }.freeze
       # How a value reads where its own spelling does not.
       LABELS = {
@@ -51,10 +56,9 @@ module Poetry
       }.freeze
       # The orders a list can take.
       SORTS = { "name" => "Name", "library" => "Library" }.freeze
-      # The filters that take several choices at once.
+      # The filters that take several choices at once, picked in a dialog.
       MULTIPLE = %w[library].freeze
-      # How many choices a filter shows before "Show all", and how many a
-      # filter that takes several lists before its dialog takes over.
+      # How many choices a filter shows before "Show all".
       LIMIT = 10
 
       # The values an address gives a filter that takes several: one text
@@ -129,27 +133,28 @@ module Poetry
       # A filter stays while it has a choice to offer, even one, so the
       # sidebar holds still as the list changes; one with none is left
       # out. A long filter shows its first choices, and all of them once
-      # the address opens it (`?more=needs`). A long filter that takes
-      # several is picked in a dialog: it shows the chosen ones.
+      # the address opens it (`?more=needs`). A filter that takes several
+      # is picked in a dialog: its facet holds the chosen ones.
       # @return [Array<Facet>]
       def facets
         @facets ||= FILTERS.keys.filter_map do |param|
           options = options_for(param)
           next if options.empty?
 
-          picker = MULTIPLE.include?(param) && options.size > LIMIT
+          picker = MULTIPLE.include?(param)
           shown = picker ? options.select(&:selected) : self.class.shown(options, open: open == param)
           Facet.new(param: param, label: FILTERS.fetch(param).first, options: shown, more: options.size - shown.size,
                     open: open == param, picker: picker)
         end
       end
 
-      # Every choice of a filter, for the dialog a long one is picked in;
-      # nil for a name that is no filter.
+      # Every choice of a filter, for the dialog it is picked in: the
+      # chosen ones first, then the rest, each by what it would give. nil
+      # for a name that is no filter.
       # @param param [String]
       # @return [Array<Option>, nil]
       def picker(param)
-        options_for(param) if FILTERS.key?(param.to_s)
+        options_for(param).partition(&:selected).flatten if FILTERS.key?(param.to_s)
       end
 
       # The choices in force, one for each value: what the chips show.

@@ -3,9 +3,12 @@
     closed until it holds a choice or the visitor opens it, and an opened
     or closed group is remembered (the sidebar-sections cookie, as the
     docs' nav). Every choice is a link, so the address holds the whole
-    state. A long filter shows its first choices and a link to the rest;
-    one that takes several and has many (the library) is picked in a
-    dialog, whose list is fetched when it opens.
+    state. A long filter shows its first choices and a link to the rest.
+    A filter that takes several (the library) is one line that opens a
+    dialog: its choices are picked there, the chosen ones first, and the
+    list is fetched when the dialog opens; the sidebar shows how many are
+    chosen, never which. A filter that sits in the list's heading is not
+    drawn here.
     Locals: browse (CommunityBrowse, or a host's own with its readers),
     path (the list's address), noun (what the list holds). %>
 <% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
@@ -25,27 +28,51 @@
     </div>
   <% end %>
   <div class="flex flex-col gap-0.5">
-    <% browse.facets.each do |facet| %>
+    <% line = "h-auto w-full justify-start gap-2 px-2 py-1.5 text-sm font-medium text-sidebar-foreground " \
+              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" %>
+    <% browse.facets.reject(&:heading).each do |facet| %>
       <% picked = facet.options.count(&:selected) %>
-      <% key = "community:#{facet.param}" %>
-      <% noun = facet.label.downcase %>
-      <%= poetry_collapsible(open: (states.key?(key) ? states[key] == true : picked.positive?),
-                             class: "group/collapsible", data: { filter: facet.param }) do |group| %>
-        <% group.with_trigger(variant: :ghost, size: :sm,
-                              class: "h-auto w-full justify-start gap-2 px-2 py-1.5 text-sm font-medium " \
-                                     "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                              data: { action: "click->sidebar-sections#remember", sidebar_sections_section_param: key }) do %>
-          <span><%= facet.label %></span>
-          <% if picked.positive? %>
-            <span class="rounded-full bg-sidebar-accent px-1.5 text-xs tabular-nums text-sidebar-accent-foreground" data-filter-picked>
-              <%= picked %><span class="sr-only"> chosen</span>
-            </span>
-          <% end %>
-          <%= poetry_icon(name: :"chevron-right",
-                          class: "ml-auto size-3.5 shrink-0 transition-transform duration-200 group-data-[open]/collapsible:rotate-90") %>
+      <% thing = facet.label.downcase %>
+      <% badge = capture do %>
+        <% if picked.positive? %>
+          <span class="rounded-full bg-sidebar-accent px-1.5 text-xs tabular-nums text-sidebar-accent-foreground" data-filter-picked>
+            <%= picked %><span class="sr-only"> chosen</span>
+          </span>
         <% end %>
-        <div class="flex flex-col gap-1 pb-2 pl-2 pt-1">
-          <% if facet.options.any? %>
+      <% end %>
+      <% if facet.picker %>
+        <% picker = address.call(browse.params_for("pick" => facet.param)) %>
+        <div data-filter="<%= facet.param %>">
+          <%= poetry_dialog(content_class: "sm:max-w-lg") do |dialog| %>
+            <% dialog.with_trigger(variant: :ghost, size: :sm, class: line, data: { filter_picker: facet.param }) do %>
+              <span><%= facet.label %></span>
+              <%= badge %>
+              <%= poetry_icon(name: :ellipsis, class: "ml-auto size-3.5 shrink-0") %><span class="sr-only">Opens a list to choose from</span>
+            <% end %>
+            <% dialog.with_title { "Choose #{thing.pluralize}" } %>
+            <% dialog.with_description { "Tick any number. The list shows what came from any of them." } %>
+            <%# min-w-0: the dialog is a grid, and a grid item is as wide as
+                its widest line unless told it may be narrower; on a phone
+                the list's longest name would push the dialog's content
+                past its edge. %>
+            <%= turbo_frame_tag "community-picker-#{facet.param}", src: picker, loading: :lazy, target: "_top", class: "block min-w-0" do %>
+              <p class="py-6 text-center text-sm text-muted-foreground">Loading…</p>
+            <% end %>
+          <% end %>
+          <noscript><%= link_to "Choose #{thing.pluralize}", picker, rel: "nofollow", class: "px-2 text-xs underline underline-offset-4" %></noscript>
+        </div>
+      <% else %>
+        <% key = "community:#{facet.param}" %>
+        <%= poetry_collapsible(open: (states.key?(key) ? states[key] == true : picked.positive?),
+                               class: "group/collapsible", data: { filter: facet.param }) do |group| %>
+          <% group.with_trigger(variant: :ghost, size: :sm, class: line,
+                                data: { action: "click->sidebar-sections#remember", sidebar_sections_section_param: key }) do %>
+            <span><%= facet.label %></span>
+            <%= badge %>
+            <%= poetry_icon(name: :"chevron-right",
+                            class: "ml-auto size-3.5 shrink-0 transition-transform duration-200 group-data-[open]/collapsible:rotate-90") %>
+          <% end %>
+          <div class="flex flex-col gap-1 pb-2 pl-2 pt-1">
             <ul class="flex flex-col gap-0.5">
               <% facet.options.each do |option| %>
                 <li>
@@ -62,36 +89,15 @@
                 </li>
               <% end %>
             </ul>
-          <% end %>
-          <% if facet.picker %>
-            <% picker = address.call(browse.params_for("pick" => facet.param)) %>
-            <%= poetry_dialog(content_class: "sm:max-w-lg") do |dialog| %>
-              <% dialog.with_trigger(variant: :outline, size: :sm, class: "w-full justify-between font-normal",
-                                     data: { filter_picker: facet.param }) do %>
-                <span><%= picked.zero? ? "Any #{noun}" : "Choose more" %></span>
-                <span class="flex items-center gap-1 text-xs tabular-nums text-muted-foreground">
-                  <%= facet.options.size + facet.more %><%= poetry_icon(name: :"chevron-right", class: "size-3.5") %>
-                </span>
-              <% end %>
-              <% dialog.with_title { "Choose #{noun.pluralize}" } %>
-              <% dialog.with_description { "Tick any number. The list shows what came from any of them." } %>
-              <%# min-w-0: the dialog is a grid, and a grid item is as wide as
-                  its widest line unless told it may be narrower; on a phone
-                  the list's longest name would push the dialog's content
-                  past its edge. %>
-              <%= turbo_frame_tag "community-picker-#{facet.param}", src: picker, loading: :lazy, target: "_top", class: "block min-w-0" do %>
-                <p class="py-6 text-center text-sm text-muted-foreground">Loading…</p>
-              <% end %>
+            <% if facet.more.to_i.positive? %>
+              <%= link_to "Show all #{facet.options.size + facet.more}", link.call("more" => facet.param), rel: "nofollow",
+                          data: { filter_more: true }, class: "inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
+            <% elsif facet.open %>
+              <%= link_to "Show fewer", link.call("more" => nil), rel: "nofollow",
+                          data: { filter_more: true }, class: "inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
             <% end %>
-            <noscript><%= link_to "Choose #{noun.pluralize}", picker, rel: "nofollow", class: "px-2 text-xs underline underline-offset-4" %></noscript>
-          <% elsif facet.more.to_i.positive? %>
-            <%= link_to "Show all #{facet.options.size + facet.more}", link.call("more" => facet.param), rel: "nofollow",
-                        data: { filter_more: true }, class: "inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
-          <% elsif facet.open %>
-            <%= link_to "Show fewer", link.call("more" => nil), rel: "nofollow",
-                        data: { filter_more: true }, class: "inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
   </div>

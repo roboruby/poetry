@@ -1,7 +1,8 @@
-<%# The list a long filter is picked from, inside the dialog the sidebar
-    opens (and, where no script runs, as a page of its own): every
-    choice with a box to tick, a search that narrows the list as it is
-    typed, and the button that shows the result. The form sends the
+<%# The list a filter is picked from, inside the dialog the sidebar opens
+    (and, where no script runs, as a page of its own): every choice with
+    a box to tick, the chosen ones first with a rule under them, a search
+    that narrows the list as it is typed, and the button that shows the
+    result. The form sends the
     ticked values as one field where a script runs, and as a field per
     box where none does; the browser's state reads either.
     Locals: browse, param (the filter), options (every choice), path
@@ -23,8 +24,12 @@
                      data: { community_picker_target: "search", action: "input->community-picker#narrow" }) %>
     <%= local_assigns[:header] %>
     <ul class="-mx-2 flex max-h-[50vh] min-h-24 flex-col gap-0.5 overflow-y-auto px-2" data-community-picker-target="list">
-      <% options.each do |option| %>
-        <li data-community-picker-target="row" data-text="<%= option.label.downcase %>">
+      <% pinned = options.count(&:selected) %>
+      <% options.each_with_index do |option, index| %>
+        <% if index == pinned && pinned.positive? %>
+          <li aria-hidden="true" class="my-1 border-t" data-community-picker-target="rule"></li>
+        <% end %>
+        <%= tag.li data: { community_picker_target: "row", text: option.label.downcase, pinned: (true if option.selected) } do %>
           <label class="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-accent has-checked:bg-accent">
             <%= check_box_tag "#{param}[]", option.value, option.selected, id: nil, class: "size-4 shrink-0 accent-primary",
                               data: { community_picker_target: "box", action: "change->community-picker#count" } %>
@@ -35,7 +40,7 @@
               <span class="shrink-0 text-xs tabular-nums text-muted-foreground"><%= option.count %></span>
             <% end %>
           </label>
-        </li>
+        <% end %>
       <% end %>
     </ul>
     <p hidden class="py-4 text-center text-sm text-muted-foreground" data-community-picker-target="empty">Nothing matches.</p>
