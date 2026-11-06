@@ -48,6 +48,36 @@
       return { unmount: () => editor.destroy() }
     }
   CODE
+  react_source = <<~'CODE'
+    // islands/editor.jsx - the source, outside app/javascript so the importmap never serves it
+    import { createRoot } from "react-dom/client"
+    import { EditorContent, useEditor } from "@tiptap/react"
+    import StarterKit from "@tiptap/starter-kit"
+
+    function Editor({ input, focus }) {
+      const editor = useEditor({
+        extensions: [StarterKit],
+        content: input.value,
+        autofocus: focus,
+        // the form reads the hidden input
+        onUpdate: ({ editor }) => { input.value = editor.getHTML() }
+      })
+      return <EditorContent editor={editor} />
+    }
+
+    export function mount(element, props) {
+      const root = createRoot(element)
+      root.render(<Editor input={props.input} focus={props.focus} />)
+      return { unmount: () => root.unmount() }
+    }
+  CODE
+  react_build_source = <<~'CODE'
+    npm install --save-dev esbuild react react-dom @tiptap/react @tiptap/starter-kit
+
+    # once, and again when islands/editor.jsx changes; commit the file it writes
+    npx esbuild islands/editor.jsx --bundle --format=esm --minify --jsx=automatic \
+      --define:process.env.NODE_ENV='"production"' --outfile=app/javascript/islands/editor.js
+  CODE
   check_source = <<~CODE
     # config/importmap.rb - poetry:install adds the islands line; a library the module imports needs its own pin
     pin_all_from "app/javascript/islands", under: "islands"
@@ -155,6 +185,37 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="react">A React island</h2>
+      <p>
+        A widget that exists only as a React component mounts the same way:
+        <code>mount</code> creates a root in the element and renders into it,
+        and <code>unmount</code> unmounts the root. The importmap serves files
+        as they are, so it cannot serve JSX or find an npm package. The
+        component is built once into one module with React inside, and that file
+        is committed under <code>app/javascript/islands/</code>. The app gains no
+        bundler: nothing builds on deploy, and the build runs again only when the
+        island's source changes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: react_source, language: "jsx", label: "The source") %>
+    <%= poetry_code_block(code: react_build_source, language: "shell", label: "The build") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The form above renders it unchanged: <code>import: "islands/editor"</code>
+        now names the built file, and the editor writes its HTML to
+        <code>props.input</code> on every change. This editor builds to about
+        620 KB, 195 KB compressed, most of it React and the editor's engine. A
+        page loads it only when the island connects. Each built module carries
+        its own copy of what it bundles, so two React islands on one page load
+        React twice. The file keeps the license comments the build finds, which
+        here are React's; a library that marks none needs its license kept
+        beside the file.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <h2 id="lifecycle">The Turbo lifecycle, handled once</h2>
       <ul>
         <li><strong>Mount on connect, unmount on disconnect.</strong> A visit away tears the island down and releases what it held; a visit back mounts it again.</li>
@@ -167,7 +228,7 @@
         <code>import:</code> is an importmap specifier the host pins, and
         <code>poetry check</code> warns when <code>config/importmap.rb</code> does
         not. A library the module imports needs its own pin, or the module is built
-        once with the library inside, the way a community island arrives.
+        once with the library inside, as the React island above is.
       </p>
     <% end %>
     <%= poetry_code_block(code: check_source, language: "shell", label: "Pins and the check") %>

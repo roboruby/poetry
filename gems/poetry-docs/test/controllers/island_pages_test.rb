@@ -10,7 +10,10 @@ class IslandPagesTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "Islands"
-    %w[what-it-is install contract modes form lifecycle check when-not].each { |id| assert_select "h2##{id}" }
+    %w[what-it-is install contract modes form react lifecycle check when-not].each { |id| assert_select "h2##{id}" }
+    # The React island, worked through: its source and the one build.
+    assert_select "pre", text: /createRoot\(element\)/
+    assert_select "pre", text: %r{npx esbuild islands/editor\.jsx --bundle --format=esm}
     assert_select "[data-slot=island][data-poetry--island--island-import-value='poetry_docs/islands/clock']" \
                   "[data-poetry--island--island-mode-value=fill]", 1
     assert_select "[data-slot=island][data-poetry--island--island-mode-value=flow] > " \
@@ -26,6 +29,7 @@ class IslandPagesTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "poetry_island"
     assert_includes response.body, "mount(element, props)"
     assert_includes response.body, "island-import-unpinned"
+    assert_includes response.body, "npx esbuild islands/editor.jsx --bundle"
   end
 
   test "the API reference documents the island gem's Ruby and JavaScript" do

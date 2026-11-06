@@ -7938,6 +7938,12 @@
     "path": "/libraries/island#form"
   },
   {
+    "title": "A React island",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#react"
+  },
+  {
     "title": "The Turbo lifecycle, handled once",
     "page": "Islands",
     "section": "libraries",
