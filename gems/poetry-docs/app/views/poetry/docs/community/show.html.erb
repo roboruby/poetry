@@ -10,7 +10,9 @@
 
 <div class="flex flex-col gap-10 wrap-break-word">
   <p class="text-sm">
-    <%= link_to community_path, class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground", data: { community_back: true } do %>
+    <%# The way back is the tab this page is under: the engine's index, or
+        the list a host serves in its place. %>
+    <%= link_to (community_tab&.last || community_path), class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground", data: { community_back: true } do %>
       <%= poetry_icon(name: :"arrow-left", class: "size-3.5") %> All components
     <% end %>
   </p>
@@ -106,7 +108,7 @@
     <p class="max-w-2xl text-sm text-muted-foreground">
       The files are yours once they land, and a second run never overwrites them. This item was
       reviewed and passes the registry's checks; it was not audited, so read what you install.
-      <%= link_to "How community items work", community_path(anchor: "how-it-works"), class: "underline underline-offset-4" %>.
+      <%= link_to "How community items work", community_items_path, class: "underline underline-offset-4" %>.
     </p>
   </section>
 

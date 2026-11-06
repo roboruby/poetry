@@ -129,12 +129,38 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
     assert_select "a[data-community-back][href='/community']", text: /All components/
   end
 
-  test "a host adds its own tabs to the section" do
-    Poetry::Docs.config.community_tabs = [ [ "Libraries", "/community/libraries" ], [ "What's new", "/community/new" ] ]
+  test "a host that serves the section names its tabs, and a page is under the longest path its own begins with" do
+    Poetry::Docs.config.community_tabs = [ [ "Overview", "/community" ], [ "Components", "/community/components" ],
+                                           [ "Libraries", "/community/libraries" ] ]
     get community_path
 
-    assert_equal [ "Components", "Libraries", "What's new", "Guide" ], css_select("[data-community-tabs] a").map { _1.text.strip }
+    assert_equal %w[Overview Components Libraries Guide], css_select("[data-community-tabs] a").map { _1.text.strip }
+    assert_select "[data-community-tabs] a[aria-current=page]", "Overview"
+    get community_item_path("acme-pricing-table")
+
     assert_select "[data-community-tabs] a[aria-current=page]", "Components"
+    assert_select "a[data-community-back][href='/community/components']", text: /All components/
+  end
+
+  test "a long filter shows its first choices with the chosen one, and all of them once opened" do
+    many = (1..14).map do |n|
+      { "name" => "lib#{n}-card", "type" => "registry:component", "title" => "Card #{n}",
+        "meta" => { "javascript" => "none", "source" => { "registry" => format("@lib%02d", n), "item" => "card" } } }
+    end
+    many.each { |entry| File.write(File.join(@dir, "about/#{entry["name"]}.json"), JSON.generate(entry)) }
+    get community_path
+
+    assert_equal 10, css_select("[data-filter=library] li").size
+    assert_select "[data-filter=library] a[data-filter-more][href=?]", "/community?more=library", text: "Show all 17"
+    get community_path, params: { library: "lib14" }
+
+    assert_equal 11, css_select("[data-filter=library] li").size, "the chosen library stays in view"
+    assert_select "[data-filter=library] a[aria-current=true]", text: /@lib14/
+    get community_path, params: { more: "library" }
+
+    assert_equal 17, css_select("[data-filter=library] li").size
+    assert_select "[data-filter=library] a[data-filter-more][href='/community']", "Show fewer"
+    assert_select "[data-filter=type] a[href=?]", "/community?more=library&type=component", 1, "a choice keeps the filter open"
   end
 
   # A host's own page in the section, through Poetry::Docs::CommunityLayout.
@@ -151,7 +177,7 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
   end
 
   test "a host's page wears the section's layout, under its own tab, with or without a sidebar" do
-    Poetry::Docs.config.community_tabs = [ [ "Libraries", "/community/libraries" ] ]
+    Poetry::Docs.config.community_tabs = [ [ "Components", "/community" ], [ "Libraries", "/community/libraries" ] ]
     with_routing do |routes|
       routes.draw do
         get "/community/libraries" => "community_browse_test/libraries#index"
@@ -170,6 +196,47 @@ class CommunityBrowseTest < ActionDispatch::IntegrationTest
       assert_select "[data-slot=sidebar] [data-host-filters]", "Library filters"
     end
   end
+
+  # A host's browser that gives its list in pages: the engine's own state
+  # with the two readers a paged list answers.
+  class PagedBrowse < SimpleDelegator
+    def page = 2
+
+    def pages = 3
+  end
+
+  class PagedController < ActionController::Base
+    include Poetry::Docs::CommunityLayout
+
+    def index
+      browse = PagedBrowse.new(Poetry::Docs::CommunityBrowse.new(Poetry::Docs::CommunityRegistry.items, params))
+      render inline: <<~ERB, locals: { browse: browse }, layout: true
+        <%= render "poetry/docs/community/results", browse: browse, path: "/community/paged", heading: "Paged" %>
+        <%= render "poetry/docs/community/install_note" %>
+      ERB
+    end
+  end
+
+  test "a host's list in pages gets a pager that keeps the filters, and shares the install note" do
+    with_routing do |routes|
+      routes.draw do
+        get "/community/paged" => "community_browse_test/paged#index"
+        mount Poetry::Docs::Engine => "/"
+      end
+
+      get "/community/paged", params: { type: "component" }
+
+      assert_response :success
+      assert_select "nav[aria-label='Pages of components'] a[href=?]", "/community/paged?type=component", minimum: 1
+      assert_select "nav[aria-label='Pages of components'] a[href=?]", "/community/paged?page=3&type=component", minimum: 1
+      assert_select "nav[aria-label='Pages of components'] [aria-current=page]", "2"
+      assert_select "[data-community-install-note] a[href='/community-items']", "Using community items"
+    end
+    get community_path
+
+    assert_select "nav[aria-label='Pages of components']", 0, "the engine's own list is whole"
+    assert_select "[data-community-install-note]", 1
+  end
 end
 
 # CommunityBrowse on its own: the state an address holds.
@@ -185,6 +252,8 @@ class CommunityBrowseStateTest < ActiveSupport::TestCase
     assert_equal({ "q" => "card", "sort" => "library", "type" => "block" }, browse.params_for("type" => "block"))
     assert_equal({ "sort" => "library", "type" => "component" }, browse.params_for("q" => nil))
     assert_equal({}, Poetry::Docs::CommunityBrowse.new(items).params_for)
+    assert_equal({ "more" => "library" }, Poetry::Docs::CommunityBrowse.new(items, more: "library").params_for)
+    assert_equal({}, Poetry::Docs::CommunityBrowse.new(items, more: "widgets").params_for, "only a filter can be opened")
   end
 
   test "an unknown order is the name's, a filter nothing answers gives nothing, and a blank one is no filter" do

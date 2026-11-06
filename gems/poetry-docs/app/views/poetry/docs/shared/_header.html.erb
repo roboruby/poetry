@@ -41,8 +41,9 @@
       <%= poetry_icon(name: :moon, class: "hidden dark:block") %>
     <% end %>
     <%# The appearance controls (style, light/dark) on one side of the
-        divider, the project links on the other. %>
-    <%= poetry_separator(orientation: :vertical, class: "mx-1 h-5") %>
+        divider, the project links on the other. A phone has no room for
+        the divider: with it the header is 2 px wider than the screen. %>
+    <%= poetry_separator(orientation: :vertical, class: "mx-1 hidden h-5 sm:block") %>
     <%= render "poetry/docs/shared/project_links" %>
   </div>
 </header>

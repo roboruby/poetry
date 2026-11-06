@@ -1,10 +1,10 @@
-<%# The Community section's tabs: Components, the tabs a host adds for the
-    pages it serves there itself, and the way to the guides. The tab a
-    page is under is the longest path its own begins with. %>
-<% tabs = [ [ "Components", poetry_docs.community_path ] ] + Poetry::Docs.config.community_tabs %>
-<% current = tabs.select { |_, path| request.path == path || request.path.start_with?("#{path}/") }.max_by { |_, path| path.size } %>
+<%# The Community section's tabs (the engine's one, or the ones a host
+    names for the pages it serves there itself), and the way to the
+    guides. The tab a page is under is the longest path its own begins
+    with. %>
+<% current = community_tab %>
 <nav aria-label="Community" data-community-tabs class="mb-8 flex items-center gap-1 overflow-x-auto border-b">
-  <% tabs.each do |title, path| %>
+  <% community_tabs.each do |title, path| %>
     <% active = current && current.last == path %>
     <%= link_to title, path, aria: { current: ("page" if active) },
                 class: class_names("-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors",

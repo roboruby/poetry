@@ -1,0 +1,14 @@
+<%# Under a list of community items: the command that installs one, what
+    installing means, and the guides. A host's own list draws it too, so
+    the links go through the engine's mount. %>
+<section class="flex flex-col gap-3 border-t pt-6" data-community-install-note>
+  <%= poetry_code_block(code: "bin/rails g poetry:add @poetry/<name>", language: "plaintext", label: "Install") %>
+  <p class="max-w-2xl text-sm text-muted-foreground">
+    The files land in your app and are yours to edit. A maintainer reviewed every item and each
+    passes the registry's checks; nobody audited the code, so read what you install.
+    <%= link_to "Using community items", poetry_docs.community_items_path, class: "text-foreground underline underline-offset-4" %>
+    covers installing and using one, and
+    <%= link_to "Publishing components", poetry_docs.community_publishing_path, class: "text-foreground underline underline-offset-4" %>
+    covers serving your own.
+  </p>
+</section>

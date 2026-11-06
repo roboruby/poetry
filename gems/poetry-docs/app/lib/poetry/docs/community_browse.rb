@@ -12,15 +12,18 @@ module Poetry
     # which suits a registry of hundreds. A host with a larger catalog
     # answers the same questions from its own store and hands the Community
     # pages an object with these readers: `items`, `count`, `total`,
-    # `query`, `facets`, `chosen`, `sorts`, `sort` and `params_for`.
+    # `query`, `narrowed?`, `facets` (of Facet and Option), `chosen`,
+    # `sorts`, `sort`, `params_for` and `label_for`.
     #
     # @example
     #   browse = Poetry::Docs::CommunityBrowse.new(CommunityRegistry.items, q: "chart", type: "block")
     #   browse.items.map(&:name)
     #   browse.facets.first.options.map { |option| [ option.label, option.count ] }
     class CommunityBrowse
-      # One filter: the parameter it sets, its heading, and its choices.
-      Facet = Struct.new(:param, :label, :options, keyword_init: true)
+      # One filter: the parameter it sets, its heading, the choices shown,
+      # how many more there are than shown, and whether it is open (all
+      # its choices shown because the address asks).
+      Facet = Struct.new(:param, :label, :options, :more, :open, keyword_init: true)
       # One choice of a filter: its value in the address, how it reads,
       # how many items it would give, and whether it is the one chosen.
       Option = Struct.new(:value, :label, :count, :selected, keyword_init: true)
@@ -41,6 +44,20 @@ module Poetry
       }.freeze
       # The orders a list can take.
       SORTS = { "name" => "Name", "library" => "Library" }.freeze
+      # How many choices a filter shows before "Show all".
+      LIMIT = 10
+
+      # The choices of a filter to show: every one when the filter is open
+      # or short, else the first LIMIT with the chosen one kept in view.
+      # A host's own browser cuts its filters the same way.
+      # @param options [Array<Option>] every choice, in order
+      # @param open [Boolean] whether the address asks for them all
+      # @return [Array<Option>]
+      def self.shown(options, open:)
+        return options if open || options.size <= LIMIT
+
+        options.first(LIMIT) | options.select(&:selected)
+      end
 
       # @return [String, nil] the search, as typed
       attr_reader :query
@@ -48,6 +65,8 @@ module Poetry
       attr_reader :chosen
       # @return [String] a key of SORTS
       attr_reader :sort
+      # @return [String, nil] the filter whose choices are all shown
+      attr_reader :open
 
       # @param items [Array<CommunityRegistry::Item>] the whole catalog
       # @param params [Hash, ActionController::Parameters] the address's parameters
@@ -57,6 +76,7 @@ module Poetry
         @query = value.call(:q)
         @chosen = FILTERS.keys.filter_map { |param| [ param, value.call(param) ] if value.call(param) }.to_h
         @sort = SORTS.key?(value.call(:sort)) ? value.call(:sort) : "name"
+        @open = value.call(:more) if FILTERS.key?(value.call(:more))
       end
 
       # The items the search and every filter leave, in the chosen order.
@@ -81,7 +101,8 @@ module Poetry
       # count is what choosing it would give under the search and the
       # other filters, so a count never promises items that are not there.
       # A filter with one choice and none chosen tells nothing and is left
-      # out.
+      # out. A long filter shows its first choices, and all of them once
+      # the address opens it (`?more=library`).
       # @return [Array<Facet>]
       def facets
         @facets ||= FILTERS.filter_map do |param, (label, _)|
@@ -89,7 +110,10 @@ module Poetry
           options = counts.sort_by { |value, count| [ -count, value ] }.map do |value, count|
             Option.new(value: value, label: label_for(param, value), count: count, selected: chosen[param] == value)
           end
-          Facet.new(param: param, label: label, options: options) if options.size > 1 || chosen.key?(param)
+          next unless options.size > 1 || chosen.key?(param)
+
+          shown = self.class.shown(options, open: open == param)
+          Facet.new(param: param, label: label, options: shown, more: options.size - shown.size, open: open == param)
         end
       end
 
@@ -99,7 +123,7 @@ module Poetry
       # @param changes [Hash{String, Symbol => String, nil}]
       # @return [Hash{String => String}]
       def params_for(changes = {})
-        base = { "q" => query, "sort" => (sort unless sort == "name") }.merge(chosen)
+        base = { "q" => query, "sort" => (sort unless sort == "name"), "more" => open }.merge(chosen)
         base.merge(changes.transform_keys(&:to_s)).compact
       end
 

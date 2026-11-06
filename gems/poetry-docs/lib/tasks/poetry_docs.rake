@@ -130,10 +130,12 @@ namespace :poetry_docs do
 end
 
 # A host that names stylesheet sources gets its docs stylesheet built with
-# the rest of its assets.
+# the rest of its assets, and before its tests, whose pages link it.
 namespace :poetry_docs do
   task css_for_host: :environment do
     Rake::Task["poetry_docs:css:host"].invoke if Poetry::Docs.config.stylesheet_sources.any?
   end
 end
-Rake::Task["assets:precompile"].enhance([ "poetry_docs:css_for_host" ]) if Rake::Task.task_defined?("assets:precompile")
+%w[assets:precompile test:prepare].each do |name|
+  Rake::Task[name].enhance([ "poetry_docs:css_for_host" ]) if Rake::Task.task_defined?(name)
+end

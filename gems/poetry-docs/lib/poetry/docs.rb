@@ -64,9 +64,12 @@ module Poetry
       # section's pages itself sets true.
       # @return [Boolean, nil]
       attr_writer :community_section
-      # The Community section's tabs a host adds beside Components, each a
-      # title and a path, for the pages the host serves there itself
-      # ([ [ "Libraries", "/community/libraries" ] ]).
+      # The Community section's tabs, each a title and a path, where a host
+      # serves the section's pages itself and so names them all, in order
+      # ([ [ "Components", "/community/components" ], [ "Libraries",
+      # "/community/libraries" ] ]). Left unset, the section has the
+      # engine's one tab: Components, at its own index. A component's page
+      # leads back to the tab it is under.
       # @return [Array<Array(String, String)>]
       attr_writer :community_tabs
       # The host's own pages for the sitemap, beside the engine's: paths

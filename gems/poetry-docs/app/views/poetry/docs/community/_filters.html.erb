@@ -1,7 +1,8 @@
 <%# The Community sidebar: the search, then each filter with its choices
     and how many items each would give. Every choice is a link, so the
     address holds the whole state and nothing here needs a script. A
-    chosen choice links to the list without it.
+    chosen choice links to the list without it. A long filter shows its
+    first choices, and a link opens the rest.
     Locals: browse (CommunityBrowse, or a host's own with its readers),
     path (the list's address), noun (what the list holds). %>
 <% link = ->(changes) { query = browse.params_for(changes).to_query; query.empty? ? path : "#{path}?#{query}" } %>
@@ -38,6 +39,13 @@
           </li>
         <% end %>
       </ul>
+      <% if facet.more.to_i.positive? %>
+        <%= link_to "Show all #{facet.options.size + facet.more}", link.call("more" => facet.param), rel: "nofollow",
+                    data: { filter_more: true }, class: "mt-1 inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
+      <% elsif facet.open %>
+        <%= link_to "Show fewer", link.call("more" => nil), rel: "nofollow",
+                    data: { filter_more: true }, class: "mt-1 inline-block px-2 text-xs text-sidebar-foreground/70 underline underline-offset-4 hover:text-sidebar-foreground" %>
+      <% end %>
     </section>
   <% end %>
 </div>

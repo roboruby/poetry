@@ -9,7 +9,8 @@ module Poetry
     # its filters in `content_for :community_sidebar`; a page with none is
     # drawn at full width. Like HostLayout, the layout reaches the engine's
     # routes through its mount proxy, so the host mounts the engine under
-    # its default name, `poetry_docs`.
+    # its default name, `poetry_docs`. A host that serves the section's
+    # pages names its tabs in `config.community_tabs`.
     #
     # @example A host page in the Community section
     #   class LibrariesController < ApplicationController
@@ -24,7 +25,7 @@ module Poetry
 
       included do
         layout "poetry/docs/community"
-        helper Poetry::Docs::PageMetaHelper, Poetry::Docs::DocsHelper
+        helper Poetry::Docs::PageMetaHelper, Poetry::Docs::DocsHelper, Poetry::Docs::CommunityHelper
       end
     end
   end

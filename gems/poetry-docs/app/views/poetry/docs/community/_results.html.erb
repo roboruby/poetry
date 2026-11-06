@@ -1,5 +1,6 @@
 <%# The list a search and its filters leave: how many, the filters in
-    force with a way out of each, the order, and the items.
+    force with a way out of each, the order, the items, and a pager where
+    the browser gives its list in pages (it answers `page` and `pages`).
     Locals: browse, path, heading, lead, item_path (a callable from an
     item to its page; the engine's by default). %>
 <% link = ->(changes) { query = browse.params_for(changes).to_query; query.empty? ? path : "#{path}?#{query}" } %>
@@ -54,6 +55,10 @@
         <%= render "poetry/docs/community/card", item: item, href: item_path.call(item) %>
       <% end %>
     </div>
+    <% if browse.respond_to?(:pages) && browse.pages > 1 %>
+      <%= poetry_pagination(current: browse.page, total: browse.pages, label: "Pages of components",
+                            path: ->(page) { link.call("page" => (page unless page == 1)) }) %>
+    <% end %>
   <% elsif browse.total.zero? %>
     <p class="max-w-2xl text-muted-foreground">This site serves no community registry, so there is nothing to install from here.</p>
   <% else %>
