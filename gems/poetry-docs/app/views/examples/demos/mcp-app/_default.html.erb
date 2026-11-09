@@ -13,7 +13,7 @@
 <div class="grid w-full gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" data-controller="mcp-app-demo"
      data-action="poetry:mcp-app-host:connect->mcp-app-demo#connected poetry:mcp-app-host:message->mcp-app-demo#message poetry:mcp-app-host:context->mcp-app-demo#context poetry:mcp-app-host:display-mode->mcp-app-demo#displayMode poetry:mcp-app-host:authorize->mcp-app-demo#authorize poetry:mcp-app-host:trace->mcp-app-demo#trace">
   <div class="flex flex-col gap-4">
-    <%= form_with url: request.path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do |form| %>
+    <%= form_with url: request.path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do %>
       <%= poetry_field(id: "mcp-app-team-size", label_text: "Team size", class: "w-32") do |field| %>
         <%= poetry_input(type: "number", name: "team_size", value: team_size, min: 1, **field.control_attributes.transform_keys(&:to_sym)) %>
       <% end %>
