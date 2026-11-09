@@ -319,7 +319,7 @@ jobs:
           working-directory: gems/poetry-docs
       - name: Install each gem's own bundle (the reference export runs inside it)
         run: |
-          for gem in poetry-core poetry-ui poetry-charts poetry-agent poetry-simple_form poetry-extract; do
+          for gem in poetry-core poetry-ui poetry-charts poetry-motion poetry-island poetry-agent poetry-simple_form poetry-extract; do
             (cd "../$gem" && bundle install --quiet)
           done
       - name: Regenerate the reference data, the skills, the search index and the stylesheet

@@ -104,4 +104,4 @@ poetry-core/app/javascript/poetry/core/vendor/floating_ui_core.js 841fb4d53b49e1
 poetry-core/app/javascript/poetry/core/vendor/floating_ui_dom.js f3777930622536624919a226f4431b700168796b7375f7c1259743b575fa3a35
 poetry-core/app/javascript/poetry/core/vendor/floating_ui_utils.js 9161ac321b35d301f13ba2bae41252737812df1f1a18f1fdeb9103738b1c346c
 poetry-core/app/javascript/poetry/core/vendor/floating_ui_utils_dom.js 2290e57449c5f0f3c518f520c27d1168d90bfac106297f8f1d8d06c570947d1a
-tailwindcss-ruby 4.3.3
+tailwindcss-ruby 4.3.4
