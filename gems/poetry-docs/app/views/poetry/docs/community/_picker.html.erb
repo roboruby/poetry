@@ -9,6 +9,7 @@
     (the list's address), row (optional: a callable that draws a
     choice's line in place of its label and count), header (optional:
     what stands over the list, a line naming a host's columns). %>
+<%# locals: (browse:, param:, options:, path:, row: nil, header: nil, result: "components") %>
 <% noun = (browse.facets.find { |facet| facet.param == param }&.label || param).downcase %>
 <%= turbo_frame_tag "community-picker-#{param}" do %>
   <%= form_with url: path, method: :get,
@@ -22,7 +23,7 @@
     <%= poetry_input(type: "search", placeholder: "Search #{options.size} #{noun.pluralize(options.size)}", autocomplete: "off",
                      aria: { label: "Search #{noun.pluralize}" },
                      data: { community_picker_target: "search", action: "input->community-picker#narrow" }) %>
-    <%= local_assigns[:header] %>
+    <%= header %>
     <ul class="-mx-2 flex max-h-[50vh] min-h-24 flex-col gap-0.5 overflow-y-auto px-2" data-community-picker-target="list">
       <% pinned = options.count(&:selected) %>
       <% options.each_with_index do |option, index| %>
@@ -33,7 +34,7 @@
           <label class="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-accent has-checked:bg-accent">
             <%= check_box_tag "#{param}[]", option.value, option.selected, id: nil, class: "size-4 shrink-0 accent-primary",
                               data: { community_picker_target: "box", action: "change->community-picker#count" } %>
-            <% if local_assigns[:row] %>
+            <% if row %>
               <%= row.call(option) %>
             <% else %>
               <span class="min-w-0 flex-1 truncate"><%= option.label %></span>
@@ -49,7 +50,7 @@
         <%= options.count(&:selected) %> chosen
       </span>
       <%= poetry_button(type: "button", variant: :ghost, size: :sm, data: { action: "community-picker#clear" }) { "Clear" } %>
-      <%= poetry_button(type: "submit", size: :sm, class: "ml-auto") { "Show #{local_assigns.fetch(:result, "components")}" } %>
+      <%= poetry_button(type: "submit", size: :sm, class: "ml-auto") { "Show #{result}" } %>
     </div>
   <% end %>
 <% end %>

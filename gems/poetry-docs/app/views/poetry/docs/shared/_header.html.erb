@@ -2,8 +2,9 @@
     sidebar, the way home), the breadcrumb, the nav, search, the style
     and theme controls and the project's links. The docs layout and the
     Community layout both draw it. %>
+<%# locals: (sidebar: true) %>
 <header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
-  <% if local_assigns.fetch(:sidebar, true) %>
+  <% if sidebar %>
     <%= poetry_sidebar_trigger %>
   <% else %>
     <%= link_to poetry_docs.root_path, "aria-label": "Poetry home", class: "mr-2 flex items-center gap-2 text-sm font-semibold" do %>

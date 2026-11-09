@@ -12,6 +12,7 @@
     way out of them all.
     Locals: browse (CommunityBrowse, or a host's own with its readers),
     path (the list's address), noun (what the list holds). %>
+<%# locals: (browse:, path:, noun: "components") %>
 <% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
 <% link = ->(changes) { address.call(browse.params_for(changes)) } %>
 <% states = sidebar_section_states %>
@@ -24,7 +25,7 @@
     <label for="community-search" class="text-xs font-medium text-sidebar-foreground/70">Search</label>
     <div class="flex items-center gap-2">
       <%= poetry_input(type: "search", name: "q", value: browse.query, id: "community-search",
-                       placeholder: "Search #{local_assigns.fetch(:noun, "components")}", class: "h-8") %>
+                       placeholder: "Search #{noun}", class: "h-8") %>
       <%= poetry_button(type: "submit", variant: :outline, size: :"icon-sm", label: "Search") { poetry_icon(name: :search) } %>
     </div>
   <% end %>

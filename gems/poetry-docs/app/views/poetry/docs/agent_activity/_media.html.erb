@@ -3,7 +3,8 @@
     image as its picture, anything else as a file chip that opens it.
     Parts carry no alt text, so pictures are decorative and the chip's
     title names them. %>
-<%= poetry_attachment_group(class: class_names("items-start", local_assigns[:class])) do %>
+<%# locals: (parts:, group_class: nil) %>
+<%= poetry_attachment_group(class: class_names("items-start", group_class)) do %>
   <% parts.each do |part| %>
     <% media = Poetry::Docs::AgentActivity.media(part) %>
     <% if media.kind == :image %>

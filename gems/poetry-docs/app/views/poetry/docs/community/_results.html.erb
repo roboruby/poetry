@@ -9,14 +9,17 @@
     entries are not items), empty (optional: what the page says where
     there is nothing at all to list). A filter that sits in the heading
     (Facet#heading) is drawn beside the order: "All", then its choices. %>
-<% noun = local_assigns.fetch(:noun, "items") %>
+<%# locals: (browse:, path:, heading:, lead: nil, item_path: nil, above: nil, noun: nil, card: nil, empty: "This site serves no community registry, so there is nothing to install from here.") %>
+<%# Two defaults, kept from the first version: the count calls them items and the pager calls them components; a host that passes noun: names both. %>
+<% pager_noun = noun || "components" %>
+<% noun ||= "items" %>
 <% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
 <% link = ->(changes) { address.call(browse.params_for(changes)) } %>
-<% item_path = local_assigns[:item_path] || ->(item) { poetry_docs.community_item_path(item.name) } %>
+<% item_path ||= ->(item) { poetry_docs.community_item_path(item.name) } %>
 <div class="flex flex-col gap-6" data-community-results>
   <header class="flex flex-col gap-2">
     <h1 class="text-3xl font-semibold tracking-tight"><%= heading %></h1>
-    <% if local_assigns[:lead] %><p class="max-w-2xl text-muted-foreground"><%= lead %></p><% end %>
+    <% if lead %><p class="max-w-2xl text-muted-foreground"><%= lead %></p><% end %>
   </header>
 
   <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -73,20 +76,20 @@
     </div>
   </div>
 
-  <%= local_assigns[:above] %>
+  <%= above %>
 
   <% if browse.items.any? %>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <% browse.items.each do |item| %>
-        <%= local_assigns[:card] ? card.call(item) : render("poetry/docs/community/card", item: item, href: item_path.call(item)) %>
+        <%= card ? card.call(item) : render("poetry/docs/community/card", item: item, href: item_path.call(item)) %>
       <% end %>
     </div>
     <% if browse.respond_to?(:pages) && browse.pages > 1 %>
-      <%= poetry_pagination(current: browse.page, total: browse.pages, label: "Pages of #{local_assigns.fetch(:noun, "components")}",
+      <%= poetry_pagination(current: browse.page, total: browse.pages, label: "Pages of #{pager_noun}",
                             path: ->(page) { link.call("page" => (page unless page == 1)) }) %>
     <% end %>
   <% elsif browse.total.zero? %>
-    <p class="max-w-2xl text-muted-foreground"><%= local_assigns.fetch(:empty, "This site serves no community registry, so there is nothing to install from here.") %></p>
+    <p class="max-w-2xl text-muted-foreground"><%= empty %></p>
   <% else %>
     <p class="max-w-2xl text-muted-foreground">
       Nothing matches. <%= link_to "Clear the search and the filters", path, class: "text-foreground underline underline-offset-4" %>.

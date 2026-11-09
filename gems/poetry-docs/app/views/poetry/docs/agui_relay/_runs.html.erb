@@ -3,6 +3,7 @@
     activity as its A2UI surface, as an MCP App's frame when this page hosts
     the app's server, as the fallback step when it does not (the result's
     text, under the tool's words), or as its JSON. %>
+<%# locals: (message:, stopped:, surface_errors: {}, transcript: nil) %>
 <% Poetry::Docs::AgentActivity.runs(message.parts).each_with_index do |run, index| %>
   <% case run.kind %>
   <% when :text %>
@@ -14,7 +15,7 @@
     <% if part[:kind] == :activity && part[:activity_type] == "a2ui-surface" %>
       <%= render "poetry/docs/agui_relay/surface", content: part[:content], errors: surface_errors %>
     <% elsif Poetry::Agent::Apps::Activity.activity?(part) %>
-      <% tool = Poetry::Docs::AgentActivity.app_tool(local_assigns[:transcript], message) %>
+      <% tool = Poetry::Docs::AgentActivity.app_tool(transcript, message) %>
       <% activity = Poetry::Agent::Apps::Activity.from(part[:content]) %>
       <% host = Poetry::Docs::McpAppShowcase.host(request.base_url) %>
       <% if activity.resource_uri && activity.server_id && host.servers.key?(activity.server_id) %>

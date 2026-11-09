@@ -1,4 +1,5 @@
 <%# poetry:block title="Action bar" description="Bulk actions over a selectable table: a selection-driven floating bar with the live count, the actions, and clear - shown while rows are selected, Escape clears, focus never steals." keywords="bulk, selection, batch, actions, action bar, selected, archive, delete rows, multi-select, table actions" %>
+<%# locals: (rows: nil) %>
 <%# ActionBar is a BLOCK, not a component: the bar
     is plain markup wired to two small engines - the data_table's
     selectable: engine dispatches selection-change, and the bar's
@@ -9,7 +10,7 @@
     sample actions for your bulk endpoints: the checkboxes are real form
     values (selected_ids[]), so a wrapping form_with posts them as-is. %>
 <% invoice = Struct.new(:id, :number, :customer, :amount) %>
-<% rows = local_assigns[:rows] || [
+<% rows ||= [
      invoice.new(1, "INV-001", "Acme", "$250.00"),
      invoice.new(2, "INV-002", "Globex", "$1,150.00"),
      invoice.new(3, "INV-003", "Initech", "$420.00")

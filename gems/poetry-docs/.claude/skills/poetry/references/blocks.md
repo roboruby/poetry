@@ -15,6 +15,7 @@ Bulk actions over a selectable table: a selection-driven floating bar with the l
 Composes: button, data_table, icon. Generate: `bin/rails g poetry:block action-bar`.
 Source (adapt freely - the sample content is meant to be replaced):
 
+<%# locals: (rows: nil) %>
 <%# ActionBar is a BLOCK, not a component: the bar
     is plain markup wired to two small engines - the data_table's
     selectable: engine dispatches selection-change, and the bar's
@@ -25,7 +26,7 @@ Source (adapt freely - the sample content is meant to be replaced):
     sample actions for your bulk endpoints: the checkboxes are real form
     values (selected_ids[]), so a wrapping form_with posts them as-is. %>
 <% invoice = Struct.new(:id, :number, :customer, :amount) %>
-<% rows = local_assigns[:rows] || [
+<% rows ||= [
      invoice.new(1, "INV-001", "Acme", "$250.00"),
      invoice.new(2, "INV-002", "Globex", "$1,150.00"),
      invoice.new(3, "INV-003", "Initech", "$420.00")
@@ -425,6 +426,7 @@ A multi-step flow header: numbered step indicators with connectors and completed
 Composes: button, card, icon. Generate: `bin/rails g poetry:block stepper`.
 Source (adapt freely - the sample content is meant to be replaced):
 
+<%# locals: (step: nil) %>
 <%# Stepper is a BLOCK, not a component: neither shadcn nor Base UI
     ships one, so the pattern lives here as copy-in source - adapt the
     steps freely; nothing hides behind an API. The server owns step state:
@@ -433,7 +435,7 @@ Source (adapt freely - the sample content is meant to be replaced):
     flow, swap the query param for your wizard's own routes/model state
     and the final action for a form submit. %>
 <% steps = ["Shipping", "Payment", "Review"] %>
-<% step = (local_assigns[:step] || params[:step] || 2).to_i.clamp(1, steps.length) %>
+<% step = (step || params[:step] || 2).to_i.clamp(1, steps.length) %>
 <% panels = {
      1 => ["Shipping", "Step 1 of 3 - where this order lands.",
            "Address fields mount here; this panel is the step's content slot."],

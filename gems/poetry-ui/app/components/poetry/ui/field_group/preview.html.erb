@@ -1,9 +1,10 @@
 <%# Shared template for the FieldGroup previews: default stacks wired
     quartet fields around a separator; choices: packs horizontal
     checkbox rows (the tighter run the variant exists for). %>
+<%# locals: (component:, choices: false, container_class: nil, error: nil) %>
 <div class="w-96 p-4">
   <%= render component do %>
-    <% if local_assigns[:choices] %>
+    <% if choices %>
       <%= render Poetry::Ui::Field::Component.new(id: "field-group-preview-disks", label_text: "Hard disks",
                                                   orientation: :horizontal) do |field| %>
         <%= render Poetry::Ui::Checkbox::Component.new(name: "disks", checked: true,

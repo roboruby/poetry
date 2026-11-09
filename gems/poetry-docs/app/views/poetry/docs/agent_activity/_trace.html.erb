@@ -6,9 +6,10 @@
     the note saying so), or its error in a destructive one. The ids (the trace's, and each block's off it) keep
     the disclosures and their names stable across the row's re-renders,
     and a replay byte-identical. %>
+<%# locals: (parts:, id:, stopped: false) %>
 <%= poetry_trace(id: id) do |trace| %>
   <% parts.each_with_index do |part, position| %>
-    <% step = Poetry::Docs::AgentActivity.step(part, stopped: local_assigns[:stopped] || false) %>
+    <% step = Poetry::Docs::AgentActivity.step(part, stopped: stopped) %>
     <% options = { icon: step.icon, status: step.status, description: step.description, open: step.open || false } %>
     <% if step.detail.nil? %>
       <% trace.with_step(step.title, **options) %>

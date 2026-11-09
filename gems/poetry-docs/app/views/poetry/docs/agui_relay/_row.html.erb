@@ -6,7 +6,7 @@
     that stopped before its end (cancelled, or a stream the page stopped
     reading), waiting calls read stopped and the last turn says so, as
     they do inside a subagent that has ended. %>
-<% transcript = local_assigns[:transcript] %>
+<%# locals: (message:, version:, transcript: nil, surface_errors: {}) %>
 <% stopped = %i[cancelled truncated].include?(transcript&.run&.dig(:status)) %>
 <div id="row-<%= message.id %>" data-version="<%= version %>">
   <% if message.role == "user" %>
@@ -15,13 +15,13 @@
         <% text = message.parts.select { |part| part[:kind] == :text }.map { |part| part[:text] }.join %>
         <%= poetry_bubble { text } if text.present? %>
         <% media = message.parts.select { |part| part[:kind] == :media }.map { |part| part[:part] } %>
-        <%= render "poetry/docs/agent_activity/media", parts: media, class: "justify-end" if media.any? %>
+        <%= render "poetry/docs/agent_activity/media", parts: media, group_class: "justify-end" if media.any? %>
       </div>
     <% end %>
   <% else %>
     <%= poetry_message do %>
       <div class="flex min-w-0 flex-col gap-2">
-        <% runs = { message: message, stopped: stopped, surface_errors: local_assigns[:surface_errors] || {},
+        <% runs = { message: message, stopped: stopped, surface_errors: surface_errors,
                     transcript: transcript } %>
         <% if message.subagent_run_id %>
           <% record = transcript&.subagent(message.subagent_run_id) %>
