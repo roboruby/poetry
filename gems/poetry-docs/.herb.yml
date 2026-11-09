@@ -3,7 +3,7 @@
 #
 # Rules are version-gated: a newer linter never enables new rules here
 # until `version` is bumped deliberately (bump + re-lint in one change).
-version: 0.11.0
+version: 0.11.2
 
 framework: actionview
 # Every template is gated to compile under Herb::Engine (HerbCompileTest),
@@ -23,11 +23,6 @@ linter:
     # teaches: inside the block the builder is what the name means.
     actionview-no-helper-shadowing:
       enabled: false
-    # A form inside a block helper (`<%= poetry_sheet do %><%= form_with
-    # ... %>`) is reported as nested in another form - marcoroth/herb#2708.
-    # Switch the rule back on when it lands.
-    html-no-nested-forms:
-      enabled: false
     # The form examples carry their model inline, class and all, so the
     # sample a reader copies is whole.
     erb-no-method-definitions:
@@ -37,7 +32,14 @@ linter:
     # (docs/extras/<section>/_<slug>), guarded by lookup_context.exists?.
     actionview-no-dynamic-partial-path:
       exclude:
-        - "app/views/docs/page.html.erb"
+        - "app/views/poetry/docs/docs/page.html.erb"
+    # Two links take a URL that is already a string, one from a local the
+    # template built, one from an icon set's reader; the rule reads a bare
+    # expression as a record to route.
+    actionview-no-implicit-polymorphic-url:
+      exclude:
+        - "app/views/poetry/docs/community/_filters.html.erb"
+        - "app/views/poetry/docs/docs/icons/_icon_set.html.erb"
     # The demo compositions and the pagination examples are controller-fed
     # (ExampleData prepares their state); the ivars ARE the demo's state,
     # not a partial contract to tighten.

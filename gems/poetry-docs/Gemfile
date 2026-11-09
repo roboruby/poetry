@@ -39,6 +39,6 @@ gem "rake", "~> 13.0"
 gem "minitest"
 gem "bundler-audit", require: false
 gem "rubocop-rails-omakase", require: false
-gem "herb", "~> 0.11.0", require: false # poetry:check's parser and the herb:compile gate
+gem "herb", "~> 0.11.2", require: false # poetry:check's parser and the herb:compile gate
 gem "tailwindcss-ruby" # rake poetry_docs:css builds the committed stylesheet
 gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
