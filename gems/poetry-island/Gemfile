@@ -26,6 +26,7 @@ gem "rubocop-yard", require: false
 
 gem "simplecov", require: false
 gem "yard", require: false
+gem "bundler-audit", require: false
 
 group :test do
   # The importmap gate boots the real pins.

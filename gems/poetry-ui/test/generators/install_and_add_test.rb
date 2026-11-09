@@ -557,7 +557,7 @@ module Poetry
         spec.name = "actionview"
         spec.version = herb ? "8.2.0" : "8.1.0"
         real.runtime_dependencies.each do |dependency|
-          spec.add_dependency dependency.name, dependency.requirement unless dependency.name == "herb"
+          spec.add_dependency dependency.name, *dependency.requirement.as_list unless dependency.name == "herb"
         end
         spec.add_dependency "herb", ">= 0.10" if herb
       end
