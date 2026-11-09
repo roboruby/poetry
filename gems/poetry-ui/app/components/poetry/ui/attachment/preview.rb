@@ -14,10 +14,13 @@ module Poetry
           end
         end
 
-        # The whole-chip trigger control (download/open affordance).
+        # The whole-chip trigger control (download/open affordance): its
+        # text is for screen readers, the chip is the visible control.
         def with_trigger
           render_component do |attachment|
-            attachment.with_trigger(tag: :a, href: "/files/report.pdf") { "Download" }
+            attachment.with_trigger(tag: :a, href: "/files/report.pdf") do
+              '<span class="sr-only">Download quarterly-report.pdf</span>'.html_safe
+            end
             attachment.with_media { icon(:file) }
             attachment.with_title { "quarterly-report.pdf" }
             attachment.with_description { "1.2 MB" }
@@ -29,6 +32,16 @@ module Poetry
             attachment.with_media { icon(:file) }
             attachment.with_title { "photo.png" }
             attachment.with_description { "uploading…" }
+          end
+        end
+
+        # The progress slot under the title, as an uploader draws it.
+        def uploading_with_progress
+          render_component(state: :uploading, size: :sm) do |attachment|
+            attachment.with_media { icon(:file) }
+            attachment.with_title { "photo.png" }
+            attachment.with_description { "2.4 MB" }
+            attachment.with_progress(value: 42, label: "Uploading photo.png")
           end
         end
 

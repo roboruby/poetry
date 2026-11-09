@@ -35,7 +35,6 @@ poetry_components:
   list:
   - autocomplete
   - clipboard-text
-  - code-block
   - data-table
   - date-field
   - date-picker
@@ -97,7 +96,9 @@ alert-dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -109,6 +110,7 @@ alert-dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
     alert-dialog-footer:
@@ -157,9 +159,12 @@ attachment:
     list:
     - attachment-group
   poetry_slots:
-    reason: attachment-status is poetry's upload-state readout.
+    reason: attachment-status is poetry's upload-state readout; attachment-progress
+      is the progress slot the FileInput uploader fills (a slim Progress under the
+      title).
     list:
     - attachment-status
+    - attachment-progress
   slots:
     attachment:
       reason: 'State vocabulary: poetry names the attribute differently (documented
@@ -349,6 +354,45 @@ checkbox:
         it only while checked).
       added:
       - data-unchecked:invisible
+code-block:
+  slots:
+    code-block-code:
+      reason: Poetry highlights on the server - rouge's token classes colored through
+        the theme's seven --syntax-* vars (the source colors tokens inline from its client
+        highlighter).
+      added:
+      - "[&_:is(.c,.ch,.cd,.cm,.cp,.cpf,.c1,.cs)]:text-(--syntax-comment)"
+      - "[&_:is(.k,.kd,.kn,.kp,.kr,.kt,.kv)]:text-(--syntax-keyword)"
+      - "[&_:is(.kc,.l,.ld,.m,.mb,.mf,.mh,.mi,.il,.mo,.mx)]:text-(--syntax-constant)"
+      - "[&_:is(.na,.nt,.sr)]:text-(--syntax-markup)"
+      - "[&_:is(.nb,.nc,.no,.nn)]:text-(--syntax-entity)"
+      - "[&_:is(.nd,.nf,.fm)]:text-(--syntax-function)"
+      - "[&_:is(.s,.sa,.sc,.dl,.sd,.s2,.se,.sh,.sx,.s1,.ss)]:text-(--syntax-string)"
+      - "[&_:is(.sb,.bp,.ne,.nl,.py,.nv,.vc,.vg,.vi,.vm,.o,.ow)]:text-(--syntax-constant)"
+    code-block-content:
+      reason: The source writes counter-reset inline on every block; poetry carries the
+        default in the class and writes the inline style only for start_line:, so a block
+        that starts at 1 needs no style attribute.
+      added:
+      - "[counter-reset:line]"
+    code-block-copy-button:
+      reason: The copy button is a composed poetry Button, so its root carries Button's
+        own structural classes (the source's Button carries the same; only the hook
+        is the copy button's).
+      added:
+      - "[&_svg]:pointer-events-none"
+      - items-center
+      - justify-center
+      - outline-none
+      - shrink-0
+      - transition-all
+    code-block-line:
+      reason: Under wrap the source's lone grid column sizes to a line's longest token, so
+        a token with no break point (a signed URL, minified JSON) widens the block past
+        its frame and it scrolls sideways anyway; min-w-0 lets the line shrink to the
+        column and the token break.
+      added:
+      - in-data-wrap:min-w-0
 combobox:
   missing_slots:
     reason: combobox-collection is Base UI's virtualization wrapper; the source clears
@@ -562,7 +606,9 @@ dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -573,6 +619,7 @@ dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
 drawer:
@@ -1177,6 +1224,12 @@ sidebar:
       - outline-hidden
       - shrink-0
       - transition-[margin,opacity]
+    sidebar-inset:
+      reason: 'A flex item''s minimum width is its content''s: without min-w-0 a wide
+        table, chart or pre in the page widens the inset past the window and clips
+        its right edge instead of scrolling.'
+      added:
+      - min-w-0
     sidebar-menu-action:
       reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
         not carry them (its element relies on a composed child or a primitive default),
@@ -1438,3 +1491,12 @@ radio-group:
     - radio-group-card-content
     - radio-group-card-description
     - radio-group-card-title
+trace:
+  slots:
+    trace-icon:
+      reason: The disclosure's chevron is a trace icon too. The source passes its turn as
+        a className where TraceCollapsibleTrigger renders it; poetry carries the turn on
+        its own dictionary element, so the slot's classes include it.
+      added:
+      - group-aria-expanded/trace-collapsible-trigger:rotate-90
+      - transition-transform

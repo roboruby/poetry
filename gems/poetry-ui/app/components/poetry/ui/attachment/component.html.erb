@@ -1,10 +1,11 @@
 <%= element_tag(:div, **root_attributes) do %>
   <%= trigger %>
   <%= media %>
-  <% if title? || description? %>
+  <% if title? || description? || progress? %>
     <div data-slot="attachment-content" class="<%= css(:content) %>">
       <% if title? %><span data-slot="attachment-title" class="<%= css(:title) %>"><%= title %></span><% end %>
       <% if description? %><span data-slot="attachment-description" class="<%= css(:description) %>"><%= description %></span><% end %>
+      <%= progress %>
     </div>
   <% end %>
   <%= content %>

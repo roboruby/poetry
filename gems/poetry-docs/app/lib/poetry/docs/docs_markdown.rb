@@ -61,6 +61,29 @@ module Poetry
           MD
         end
 
+        # The installation guide's mirror: the curated agent instructions in
+        # data/installation.md, then the prompts the page hands a human.
+        def installation
+          prompts = Prompts::TO_TRY.map { |entry| "**#{entry.title}**\n\n```text\n#{entry.text}\n```" }
+          <<~MD
+            #{Poetry::Docs.root.join("data/installation.md").read.rstrip}
+
+            ## Hand it to an assistant
+
+            `bin/rails poetry:prompt | pbcopy` copies the cold-start prompt for an assistant that has none of poetry's surfaces in front of it yet (no AGENTS.md section, no skill, no MCP server); paste it as the first message:
+
+            ```text
+            #{Prompts.cold_start.rstrip}
+            ```
+
+            ### Prompts to try
+
+            Four task prompts that teach the workflow by example: start from what the app already has, compose with the helpers, check last. Edit the paths to your own.
+
+            #{prompts.join("\n\n")}
+          MD
+        end
+
         # The editors guide's mirror.
         def editors(entry)
           <<~MD
@@ -76,7 +99,7 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            Poetry apps test at the cheapest tier that can catch the bug, so a failing test names the fix. Lint first: `bin/rails poetry:check` validates ERB against the component registry and controllers manifest without rendering - components, options, variants, and Stimulus controllers, actions, targets, and typed values, hand-written or through a Poetry helper's `data:` keywords (`POETRY_CHECK_JSON=1` for CI, `POETRY_CHECK_DESIGN=1` adds design warnings). It also compiles the templates beside your components under Herb, which `bin/rails herb:check` never reaches: Rails checks views, Poetry checks components (`herb-compile`, an error when the app renders through Herb and a warning until then). Wiring tests render a view and assert `data-slot` parts, ARIA, form participants, and Stimulus wiring, never Tailwind classes. For real interaction, `include Poetry::Ui::Testing` in a system test: `poetry_select`, `poetry_combobox`, `poetry_dropdown_menu`, and `poetry_dialog` drive components through real keyboard and pointer sequences (`via: :keyboard` or `:mouse`) and assert the public attribute contract; `assert_poetry_controllers_registered` guards the page: every Poetry controller present must be registered on the Stimulus application, since Stimulus never errors on an unknown identifier and one failed import silently takes the whole graph down. Refresh the safelist before any browser pass. In an application that compiles with Herb's slots, `Poetry::Core::SlotMarkers.strip(html)` returns the markup the template wrote, without the markers and the parked branches (the Herb and ReActionView guide, /herb).
+            Poetry apps test at the cheapest tier that can catch the bug, so a failing test names the fix. Lint first: `bin/rails poetry:check` validates ERB against the component registry and controllers manifest without rendering - components, options, variants, and Stimulus controllers, actions, targets, and typed values, hand-written or through a Poetry helper's `data:` keywords (`POETRY_CHECK_JSON=1` for CI, `POETRY_CHECK_DESIGN=1` adds design warnings; `bin/rails poetry:audit` inventories the whole app into `.poetry/audit/`: declared axes used, raw colors and font sizes, findings, partials nothing renders, routes and edges, with an HTML report). It also compiles the templates beside your components under Herb, which `bin/rails herb:check` never reaches: Rails checks views, Poetry checks components (`herb-compile`, an error when the app renders through Herb and a warning until then). Wiring tests render a view and assert `data-slot` parts, ARIA, form participants, and Stimulus wiring, never Tailwind classes. For real interaction, `include Poetry::Ui::Testing` in a system test: `poetry_select`, `poetry_combobox`, `poetry_dropdown_menu`, and `poetry_dialog` drive components through real keyboard and pointer sequences (`via: :keyboard` or `:mouse`) and assert the public attribute contract; `assert_poetry_controllers_registered` guards the page: every Poetry controller present must be registered on the Stimulus application, since Stimulus never errors on an unknown identifier and one failed import silently takes the whole graph down. Refresh the safelist before any browser pass. In an application that compiles with Herb's slots, `Poetry::Core::SlotMarkers.strip(html)` returns the markup the template wrote, without the markers and the parked branches (the Herb and ReActionView guide, /herb).
           MD
         end
 
@@ -85,7 +108,16 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            Poetry's behavior is Stimulus, declared per component through `use_stimulus`, so yours composes with it. 1. Attach: every helper and slot setter takes `data:` (`class:`, `id:`, `aria:` too) and the root merges it - Stimulus keys concatenate, never replace - so `poetry_dialog(data: { controller: "cart", action: "keydown.esc->cart#log", cart_sku_value: "A1" })` renders `data-controller="cart poetry--core--dialog"` with your action and value beside Poetry's; a wrapper `<div data-controller="cart">` works as plain Stimulus scope. 2. Listen: 42 of 52 controllers dispatch namespaced events (`poetry:tabs:change`, `poetry:combobox:select`, `poetry:calendar:change`, ...) on the root or any ancestor; portaled overlay content still reaches the original position through the portal bridge; Dialog dispatches nothing of its own (state is `data-open`, plus the native `cancel`/`close`). 3. Drive: any element inside a component's scope may call its actions (`data: { action: "click->poetry--core--dialog#close" }` on a Cancel button); from outside use the trigger slot or WebMCP; an action added to a composed trigger (`with_trigger(data: { action: ... })`) runs after the component's own toggle, so it reads the state the toggle leaves. 4. Declare: subclass the component and `use_stimulus { on :root, extend: true { controller("cart") { register; action :log, on: "keydown.esc"; value :sku } } }` - Symbols resolve against the manifest (validated at class load), Strings are yours verbatim, `extend: true` appends, redeclaring replaces; `stimulus_attributes("cart") { |cart| ... }` is the escape hatch for dynamic wiring. 5. Extend: `import DialogController from "@poetry/controllers/dialog_controller"`, subclass it, and `application.register("poetry--core--dialog", Subclass)` after `registerPoetryControllers` - the later registration wins; the manifest still describes the base (a new action name on the same identifier reads as unknown to `poetry:check`), a `disconnect()` of your own calls `super.disconnect()` (the base tears its per-connect scope down there), and you own the upgrade drift. Every rung is checked: `bin/rails poetry:check` validates identifiers, actions, targets, and typed values in attributes and `data:` keywords; the registrar warns once per unregistered Poetry identifier; `assert_poetry_controllers_registered` (Poetry::Ui::Testing) asserts it; `poetry:editor` lists Poetry's identifiers for the Stimulus language server so it keeps checking yours. Beside Herb's reactive templates: a controller of yours can read and write template state with `useState` from `reactionview`, any `data-herb-*` action goes through `data:` on a Poetry helper, and Poetry's own controllers do not call `useState` (the Herb and ReActionView guide, /herb).
+            Poetry's behavior is Stimulus, declared per component through `use_stimulus`, so yours composes with it. 1. Attach: every helper and slot setter takes `data:` (`class:`, `id:`, `aria:` too) and the root merges it - Stimulus keys concatenate, never replace - so `poetry_dialog(data: { controller: "cart", action: "keydown.esc->cart#log", cart_sku_value: "A1" })` renders `data-controller="cart poetry--core--dialog"` with your action and value beside Poetry's; a wrapper `<div data-controller="cart">` works as plain Stimulus scope. 2. Listen: 42 of 52 controllers dispatch namespaced events (`poetry:tabs:change`, `poetry:combobox:select`, `poetry:calendar:change`, ...) on the root or any ancestor; portaled overlay content still reaches the original position through the portal bridge; Dialog dispatches nothing of its own (state is `data-open`, plus the native `cancel`/`close`). 3. Drive: any element inside a component's scope may call its actions (`data: { action: "click->poetry--core--dialog#close" }` on a Cancel button); from outside use the trigger slot or WebMCP; an action added to a composed trigger (`with_trigger(data: { action: ... })`) runs after the component's own toggle, so it reads the state the toggle leaves. 4. Declare: subclass the component and `use_stimulus { on :root, extend: true { controller("cart") { register; action :log, on: "keydown.esc"; value :sku } } }` - Symbols resolve against the manifest (validated at class load), Strings are yours verbatim, `extend: true` appends, redeclaring replaces; `stimulus_attributes("cart") { |cart| ... }` is the escape hatch for dynamic wiring. 4b. Compose a Poetry behavior: in Ruby, `behavior :roving_focus, orientation: :vertical, loop: true` on an element of your own `use_stimulus` block gives your list the arrow-key focus Tabs and Menubar carry (the same controller, values, events and agent rules; the registry, llms.txt and your component's page list it), and your controller beside it reacts with `action :run, on: event(:roving_focus, :entry)`; in JavaScript, the functions under `@poetry/controllers/behaviors` (`useEscape`, `useListen`, `usePortal`, `useInterval`, `useScrollLock`, `useMeasure`, `useInView`, ...) are what Poetry's controllers are built from - set up in `connect()`, undone newest first by the one line `teardown(this)` (from `@poetry/controllers/helpers/scope`) in `disconnect()`; a behavior returns a handle and never assigns methods onto your controller. Poetry behaviors are not Herb's client behaviors, which follow elements the client adds and removes. 5. Extend: `import DialogController from "@poetry/controllers/dialog_controller"`, subclass it, and `application.register("poetry--core--dialog", Subclass)` after `registerPoetryControllers` - the later registration wins; the manifest still describes the base (a new action name on the same identifier reads as unknown to `poetry:check`), a `disconnect()` of your own calls `super.disconnect()` (the base tears its per-connect scope down there), and you own the upgrade drift. Every rung is checked: `bin/rails poetry:check` validates identifiers, actions, targets, and typed values in attributes and `data:` keywords; the registrar warns once per unregistered Poetry identifier; `assert_poetry_controllers_registered` (Poetry::Ui::Testing) asserts it; `poetry:editor` lists Poetry's identifiers for the Stimulus language server so it keeps checking yours. Beside Herb's reactive templates: a controller of yours can read and write template state with `useState` from `reactionview`, any `data-herb-*` action goes through `data:` on a Poetry helper, and Poetry's own controllers do not call `useState` (the Herb and ReActionView guide, /herb).
+          MD
+        end
+
+        # The Where State Lives guide's mirror.
+        def where_state_lives(entry)
+          <<~MD
+            #{header(entry)}
+
+            Poetry has no `useState`: every state a component shows lives where the server, `poetry:check`, your CSS and the back button can see it, and how long it must last picks the place. Durable: the record and the form - a component renders the row, and `name:` makes any component a form participant through a real native control (Calendar's hidden input held to the ISO date, Checkbox's visually hidden native checkbox, RadioGroup's one native radio per item), so what a test reads is what the server receives and the page after the submit renders from the record again. Addressable: the URL - DataTable's `q`, `sort`, `dir` and `page` are query parameters (`State.from_params(params, sortable:)` holds the sort to a whitelist) inside a `<turbo-frame data-turbo-action="advance">`, so each change is a history entry; Collapsible renders `open:` from params and the same markup serves with and without JavaScript. Preference: a cookie the server reads (Sidebar persists `sidebar_state`; pass `open: cookies[:sidebar_state] != "false"` so the first paint matches) or localStorage read before first paint (`poetry_color_scheme_script` in `<head>` applies `.dark` from `poetry-color-scheme`, or the OS setting, before the stylesheets) - a preference the server renders is a cookie, one only the browser applies is localStorage. Template state, on a ReActionView host: a template declares a state, the server renders its default and the browser owns it for the life of the page; a Poetry component is rendered by the server, so a state read inside a component's block does not follow the state and a row built from components cannot be painted before the server answers (the Herb and ReActionView guide, /herb). Transient: attributes on the element - one vocabulary of bare boolean attributes (`data-open`, never a `data-state="open"` pair) written by `setState(element, key)`, which removes the counterparts and dispatches `poetry:state-change`; the server renders the first one (`open:`, `checked:`), the controller flips it, your CSS styles off it, `poetry:check` validates it, a test reads it; what a controller needs between two calls and nobody else sees is a Stimulus value; whichever layer wrote an attribute owns it. Why no `useState`: a value held in a controller's memory cannot be rendered on the first paint, validated statically, shared by a link, or found by the back button, so Poetry's controllers hold nothing that is not on the element - Herb's `useState` (from `reactionview`, for your controllers on a ReActionView host) included, for the same reason; yours may call it. A refresh under `turbo-refresh-method="morph"` keeps the nodes the new page also has and syncs their attributes and form values to what the server rendered: the durable, addressable and preference tiers come back exactly, template state survives in the browser, and transient state survives through Poetry's morph guard - a state attribute the client changed since the render is client-owned until the next full render and the morph leaves exactly that attribute alone (the selected tab, the open dialog, the expanded collapsible, a form control whose value differs from the rendered one), while everything the client never touched follows the server; a dialog whose own form submits successfully closes first, overlays still close before a restoration snapshot, a component without a stable id is replaced with its state, and `data-turbo-permanent` with an id remains the answer for a subtree a morph must not touch.
           MD
         end
 
@@ -105,20 +137,37 @@ module Poetry
           MD
         end
 
+        # The Uploads guide's mirror.
+        def uploads(entry)
+          <<~MD
+            #{header(entry)}
+
+            FileInput's dropzone (`variant: :dropzone`) takes files by drop, the native picker and, with `paste: true`, a paste; `overlay: true` makes the whole page the target behind a fixed drop surface, `directory: true` walks dropped folders, `camera: :environment` opens a camera on mobile. Limits are options the zone enforces at intake, with react-dropzone's rejection codes and translated messages under a `role=alert` list: `accept:`, `max_size:`, `min_size:` (bytes) and `max_files:`; with active_storage_validations loaded, `form.file_input` reads the attribute's validators for them. Every selected file is an Attachment chip cloned from a server-rendered template, with `preview: true` showing image thumbnails.
+
+            Direct uploads: `direct_upload: true` puts Rails' endpoint on the input (`direct_upload_url:` names another, an authenticated subclass's route). The default `upload: :on_submit` is Rails' own flow - `@rails/activestorage` uploads at submit and the chips follow its `direct-upload:*` events; `upload: :immediate` uploads each file as it lands through the `direct_upload` behavior, with real progress, cancel, retry and remove, the form posting the signed ids the uploads leave as hidden inputs and holding its submit while anything is in flight. Both load `@rails/activestorage` through the importmap: `poetry:install` adds the pin and `ActiveStorage.start()` when Active Storage is in the app, and `poetry:check` warns (`direct-upload-unpinned`) when the pin is missing and errors (`upload-immediate-without-direct-upload`) on an immediate zone with no endpoint.
+
+            Rendering attachments: `poetry_attachment_for(attachment, variant: :thumb, download: true)` and `poetry_attachments_for(record.photos)` render Active Storage attachments as chips through their lifecycle, reading only public API - `processing` until the blob is analyzed and the variant processed (`processed?`, public from Rails 8.2; earlier Rails processes lazily on request), `done` with the representation as the media or an icon by content type, `error` when an image was analyzed without dimensions, which is what an unprocessable file leaves behind, with Hot Cell and without it. `Poetry::Ui::AttachmentBroadcasts` opts a model in (`broadcasts_attachment_updates_for :photos, variant: :thumb`) and replaces a chip over Turbo Streams when the attachment is created, its blob's analysis lands or a variant record is written; the page subscribes with `turbo_stream_from record, :attachments`.
+
+            Hot Cell: Basecamp's sidecar runs Active Storage's analyzers, transformers and previewers outside the app (Rails 8.2, `config.active_storage.variant_processor` as a class). Nothing in Poetry processes a byte, so the chips need no change; the cell's permanent failure records an analysis without dimensions, which the chip shows as the error state, and its transient failures retry while the chip shows processing. Render variants through `process: :later` (8.2) or `preprocessed: true` so the cell's round trip never sits inside a request, and map the cell's failure classes in `config.action_dispatch.rescue_responses` for lazily processed representation requests.
+
+            Security: a direct-upload blob keeps the client's content type until it is attached, so `accept` and the size limits are advisory; validate on the model (active_storage_validations, with `spoofing_protection` for byte-level checks), keep Rails' direct uploads route off with `config.active_storage.draw_direct_upload_route = false` (Rails 8.2) unless a form needs it, authenticate a `DirectUploadsController` subclass and point `direct_upload_url:` at it, and purge unattached blobs on a schedule. Turbo: the queue aborts in-flight uploads when its controller disconnects; Hotwire Native presents the native picker and has no drag and drop, so `camera:` is the mobile affordance.
+          MD
+        end
+
         # The Herb and ReActionView guide's mirror.
         def herb(entry)
           <<~MD
             #{header(entry)}
 
-            Rails 8.2 compiles HTML templates through Herb under its framework defaults (`config.action_view.erb_implementation = :herb`), and Action View depends on the `herb` gem, so `poetry:install` adds no line for it there; the `:erubi` switch is also the answer where Herb's extension cannot load (ruby.wasm, a bundled runtime without compiled extensions), and Poetry's templates compile under both engines. Poetry guarantees, each as a gate in its own pipeline: every template the gems ship compiles with every validator Herb ships, each one fatal, and the compiled Ruby checked; the unit suite and the behaviour tier pass on Rails main in a host that compiles through Herb; they pass three more times under ReActionView with nothing rescued (as the engine, with slots in server mode, with slots in client mode); a component renders the same markup, with the slot markers added when slots are on. Versions: Herb 0.11, ReActionView 0.6. Reactive templates are experimental upstream.
+            Rails 8.2 compiles HTML templates through Herb under its framework defaults (`config.action_view.erb_implementation = :herb`), and Action View depends on the `herb` gem, so `poetry:install` adds no line for it there; the `:erubi` switch is also the answer where Herb's extension cannot load (ruby.wasm, a bundled runtime without compiled extensions), and Poetry's templates compile under both engines. Poetry guarantees, each as a gate in its own pipeline: every template the gems ship compiles with every validator Herb ships, each one fatal, and the compiled Ruby checked; the unit suite and the behaviour tier pass on Rails main in a host that compiles through Herb; they pass three more times under ReActionView with nothing rescued (as the engine, with slots in server mode, with slots in client mode); a component renders the same markup, with the slot markers added when slots are on. Versions: Herb 0.11.2, ReActionView 0.6.1. Reactive templates are experimental upstream.
 
             Your components: Rails checks views, Poetry checks components. `bin/rails herb:check` walks the view paths and never reaches a template under `app/components`; `bin/rails poetry:check` compiles those the same way (`herb-compile`, an error when the app renders through Herb, a warning until then). Build elements through `element_tag(root_tag, **root_attributes)` and hand `tag.attributes` its hash as an argument, never a splat: with slots on, Action View's own tag helpers are resolved ahead of the render, a splat's attributes are dropped and a tag name held in a variable stops the template compiling (`element-tag` warning). Keep `format` off a component's options, styles and slots: Rails reads that name off what it renders as the template's format, and from 8.2 every render in a view asks (`renderable-reader`, a warning before 8.2 and an error from it; a class that defines `format` itself and reads the value under another name is fine).
 
             ReActionView settings: `intercept_erb`, `external_template_mode` (`:fallback`, `:skip`, `:compile`) and `slots` all leave Poetry components rendering the same; `slots` compiles templates from gems too. `debug_mode` wraps what your own templates output in a `display: contents` span, which breaks sibling selectors such as `peer-*` in a component of yours; Poetry's templates are not wrapped. In a test that compares markup under slots, `Poetry::Core::SlotMarkers.strip(html)` takes the markers off.
 
-            Reactive templates with Poetry components: a Poetry component is rendered by the server, so the browser cannot build one and cannot change what a component's block reads. A form with `data-herb-into` takes Poetry components (`poetry_input`, `poetry_button`, in a plain form or `form_with`); declare at least one state in its template; keep what a new row shows at once, and any branch that follows a state, in plain markup; keep partials out of `form_with`. Any `data-herb-*` action goes through `data:` on a Poetry helper; read the state beside the component, not inside its block. A change the server may refuse is not put back by a reactive template: use `poetry_optimistic_form`, which answers a refusal with a refresh. Poetry's controllers do not call `useState`; yours can.
+            Reactive templates with Poetry components: a Poetry component is rendered by the server, so the browser cannot build one and cannot change what a component's block reads. A form with `data-herb-into` takes Poetry components (`poetry_input`, `poetry_button`, in a plain form or `form_with`); declare at least one state in its template; keep what a new row shows at once, and any branch that follows a state, in plain markup; a partial inside `form_with` needs Herb 0.11.2 (ReActionView 0.6.1). Any `data-herb-*` action goes through `data:` on a Poetry helper; read the state beside the component, not inside its block. A change the server may refuse is not put back by a reactive template: use `poetry_optimistic_form`, which answers a refusal with a refresh. Poetry's controllers do not call `useState`; yours can.
 
-            Open upstream on 2026-09-29: herb 2737, 2738, 2708 and 1111; reactionview 185, 179 and 180; view_component 2717.
+            Upstream on 2026-11-09. Open: herb 2737 and 2738 (fixes proposed), 2772, 2773 and 1111; reactionview 185, 180 and 188; view_component 2717. Fixed: herb 2708 in Herb 0.11.1, reactionview 179 in Herb 0.11.2 (ReActionView 0.6.1).
           MD
         end
 
@@ -159,7 +208,7 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            Poetry's agent surface is a standard stdio MCP server, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. The server also answers POST JSON-RPC over HTTP (`mount Poetry::Agent::MCP::HTTP.new => "/mcp"` - this site serves it at /mcp), the same surface for in-page bridges. Editor configuration lives on the Editors page.
+            Poetry's agent surface is a standard stdio MCP server on the official `mcp` gem, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design; the gem speaks JSON-RPC, negotiates the protocol version and validates every call's arguments against the tool's schema. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. The server also answers POST JSON-RPC over HTTP, the gem's Streamable HTTP transport in its stateless JSON mode (`mount Poetry::Agent::MCP::HTTP.new => "/mcp"` - this site serves it at /mcp; `allowed_origins:` admits other origins), the same surface for in-page bridges; `Poetry::Agent::MCP::Server#mcp` is the gem's server, open to a host's own tools. With `auth:` (a `Poetry::Agent::MCP::Auth`) the mount is a protected resource under MCP's authorization specification (the MCP Apps guide, Per-user authorization). Editor configuration lives on the Editors page.
           MD
         end
 
@@ -187,9 +236,19 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            AG-UI is the event protocol between an agent backend and a user-facing application: a run streams `RUN_STARTED`, text and reasoning deltas, tool calls with their arguments and results, shared state (`STATE_SNAPSHOT` / `STATE_DELTA`, RFC 6902), activities, and `RUN_FINISHED` - which may carry an interrupt the user answers before the next run. poetry-agent is the Rails CLIENT of that protocol (`Poetry::Agent::AGUI`): `Client.new(url:, headers:).run(input) { |event| ... }` runs an agent endpoint and yields its events; `Transcript.new(client_tools: [...])` folds them into chat-shaped messages whose `parts` are `{ kind: :text | :reasoning | :tool | :activity }` (tool parts carry `:loading`, `:awaiting_client`, `:done`, `:error`), plus `state`, `interrupts`, `pending_client_tools`, and `messages_for_input` for the next run; `Relay.new(transcript:, render:, container:, append_render:, morph: true)` turns every change into a Turbo Stream - an append into your MessageScroller on a message's first appearance, a versioned morphing replace (`vreplace`, `data-version`) after, so an out-of-order SSE delivery never paints an older frame over a newer one.
+            AG-UI is the event protocol between an agent backend and a user-facing application: a run streams `RUN_STARTED`, text and reasoning deltas, tool calls with their arguments and results, shared state (`STATE_SNAPSHOT` / `STATE_DELTA`, RFC 6902), activities, and `RUN_FINISHED` - which may carry an interrupt the user answers before the next run. poetry-agent is the Rails CLIENT of that protocol (`Poetry::Agent::AGUI`): `Client.new(url:, headers:).run(input, pipeline:) { |event| ... }` runs an agent endpoint and yields its events once a `Pipeline` has checked them against AG-UI 1.0 (it answers the pipeline); `RunInput.build` declares `protocolVersion: "1.0"` and takes messages whose content is text or a list of content parts (text, image, audio, video, document); `Transcript.new(client_tools: [...])` folds the events into chat-shaped messages (a reasoning message is its own message, role `reasoning`) whose `parts` are `{ kind: :text | :reasoning | :tool | :media | :activity }` (tool parts carry `:loading`, `:awaiting_client`, `:done`, `:error`, `:denied`, and read their answer as `output`; text and reasoning parts carry `:streaming` until they close, then `:done`), plus `state` (`state=` seeds the state the host sends), `interrupts`, `runs` (every run on the stream, a cancelled one `:cancelled`, one the host stopped reading `:truncated` through `transcript.truncate`; each with `usage` and `pending_tool_call_ids`), `subagents` / `subagent(id)` (name, parent, status `:running` / `:finished` / `:suspended` / `:error`, outcome), `pending_client_tools`, and `messages_for_input` for the next run (everything but activity messages, tool arguments as they streamed, each tool result right after the call it answers, metadata, and encrypted reasoning returned unmodified to the agent that issued it). A tool result is a message of its own in the transcript but not among the `messages` a page renders; metadata merges into what each event builds (`Message#metadata`, a tool part's `metadata`), key by key, the last write winning; a message a subagent built carries `Message#subagent_run_id`; `Relay.new(transcript:, render:, container:, append_render:, morph: true, remove_targets:)` turns every change into a Turbo Stream (a remove when a snapshot drops a row the page shows) - an append into your MessageScroller on a message's first appearance, a versioned morphing replace (`vreplace`, `data-version`) after, so an out-of-order SSE delivery never paints an older frame over a newer one.
 
-            The host recipe: an `ActionController::Live` action sets `Content-Type: text/event-stream`, builds `RunInput.build(thread_id:, messages: [RunInput.user_message(text)], tools:)`, runs the client, and writes `TurboStream.sse(html)` for each stream `relay.apply(event)` returns; the page holds `poetry_message_scroller` plus a `<turbo-stream-source src=...>` pointing at that action; a row partial renders `message.parts`. Frontend tools: a rendered component's declared WebMCP tools become the agent's tools through `Poetry::Agent::AGUI.tool_descriptor("sections", definition)` (names like `poetry.sections.set_value`); when the agent calls one, `relay.client_tool_streams(continue_url:)` appends a bridge element and the `poetry--agent--agui-client-tool` controller executes the call through the registrar (no WebMCP browser needed) and POSTs `{ toolCallId, name, content, error }` to your continue endpoint, which calls `transcript.resolve_client_tool(id, content)` and starts the next run from `transcript.messages_for_input`. Interrupts: `transcript.interrupted?` and `transcript.interrupts` (id, reason, message) render a decision form; the next run carries `resume: [RunInput.resume_entry(id, status: "approved")]`. A2UI surfaces arrive inside the stream as `ACTIVITY_SNAPSHOT` events with `activityType: "a2ui-surface"`: `Poetry::Agent::A2UI::Session.new.apply_activity(part[:content])` folds them and the renderer draws them as forms whose action feeds the next run as `forwarded_props:` (see the A2UI Surfaces guide). Script the agent during development (the AG-UI Relay demo's `AguiReplay`) so every stream replays byte-identical; `relay.mark_seen(ids)` tells the relay which rows the page already rendered. Setup: `gem "poetry-agent"` and `registerPoetryAgent(application)` beside `registerPoetryControllers` - the same runtime installs the versioned replace action and the morph guard.
+            What the client checks: `Poetry::Agent::AGUI::Pipeline.new(mode: :strict, on_warning:, middleware: [], max_protocol_version: nil)` runs every event through the order AG-UI 1.0 fixes - retired shapes from older agents converted with a warning, your middleware, anything the protocol does not describe stripped with a warning, a string outside a closed set it names (a message role, an encrypted value's subtype) included, the event or entry going where that field is required (a malformed known field, a value of the wrong type among them, fails the run), chunk events expanded to their start/content/end form, then the run lifecycle verified (nothing continued that never opened, nothing open at `RUN_FINISHED`, no run inside a run). `Transcript#apply` takes only what a pipeline delivers and raises `ArgumentError` naming the pipeline for a chunk or retired event. `Client#run` holds a strict pipeline unless given one, enforces the outgoing input before sending (`pipeline.outgoing(input)`), and fails the run on a frame that is not JSON; a `Relay` fed by the client takes `pipeline: nil`, one fed from anywhere else keeps the strict pipeline it holds by default. A rejection raises `ProtocolError` (`stage` :transport, :enforcement, :expansion or :verification; `kind`; `events`, what the same push delivered before it, which the client and relay hand on first). Warnings are `ProtocolWarning` (`kind`, `message`), never silent: `on_warning:` or `pipeline.warnings`; a state or activity patch that does not apply leaves things as they were and lands in `transcript.warnings`. `pipeline.truncated?` reads true for a stream that broke off without `RUN_FINISHED`, which is never invented: stop reading a run by leaving `client.run`'s block (`break`, an exception, or `Thread#raise` for a quiet agent), which closes the connection, then `transcript.truncate` (a relay with its own pipeline does it in `finish`); a run the agent cancels finishes with the cancelled outcome instead. `mode: :lenient` (development against a non-conformant agent) drops the offending event with a warning, admits a well-formed run boundary over what the run left open, reads snake_case keys with a warning, and never runs a damaged call (a tool call that lost an event never finishes). `max_protocol_version: "0.0.57"` (or "0.0.39") installs that era's conversions both ways and leaves `protocolVersion` out of the input, each loss named in a warning; nil treats the agent as current.
+
+            The host recipe: an `ActionController::Live` action sets `Content-Type: text/event-stream`, records the user's turn with `transcript.add_message(RunInput.user_message(text))`, builds `RunInput.build(thread_id:, messages: transcript.messages_for_input, tools:)`, runs the client with a pipeline whose `on_warning:` logs, feeds each verified event to a `Relay.new(..., pipeline: nil)`, and writes `TurboStream.sse(html)` for each stream `relay.apply(event)` returns; the page holds `poetry_message_scroller` plus a `<turbo-stream-source src=...>` pointing at that action; a row partial renders `message.parts`: text in a `poetry_bubble`, each run of reasoning and tool parts as one `poetry_trace` (a step per part, the part's state its `status:` and its words, the output in a `poetry_code_block(size: :sm)`). Frontend tools: a rendered component's declared WebMCP tools become the agent's tools through `Poetry::Agent::AGUI.tool_descriptor("sections", definition)` (names like `poetry.sections.set_value`); when the agent calls one, `relay.client_tool_streams(continue_url:)` appends a bridge element and the `poetry--agent--agui-client-tool` controller executes the call through the registrar (no WebMCP browser needed) and POSTs `{ toolCallId, name, content, error }` to your continue endpoint, which calls `transcript.resolve_client_tool(id, content)` and starts the next run from `transcript.messages_for_input`. A tool with consequences asks the person first: declare it `{ name:, confirm: true }` in `client_tools:` and pass `client_tool_streams(approval: ->(pending) { html })`, a prompt whose buttons carry `data-action="poetry--agent--agui-client-tool#approve"` and `...#deny`; Deny posts `{ toolCallId, name, declined: true }`, answered with `transcript.decline_client_tool(id)`, so the agent hears it was declined and the part reads `:denied`. Interrupts: `transcript.interrupted?` and `transcript.interrupts` (id, reason, message) render a decision form; the next run carries `RunInput.build(..., interrupts: transcript.interrupts, resume: [RunInput.resume_entry(id, status: "resolved", payload: { "approved" => true })])` (AG-UI 1.0 has two statuses: `resolved`, the answer in the payload, and `cancelled`; any other status raises; with `interrupts:` given, `build` raises `ProtocolError` for an open interrupt the list leaves out - omission is not cancellation - and for an answer to one whose `expiresAt` has passed, which can only be cancelled). An integration that signals an interrupt the pre-1.0 way (a `CUSTOM` `on_interrupt` event beside a plain finish) gets a named warning: configure it to end the run with the interrupt outcome. A2UI surfaces arrive inside the stream as `ACTIVITY_SNAPSHOT` events with `activityType: "a2ui-surface"`: `Poetry::Agent::A2UI::Session.new.apply_activity(part[:content])` folds them and the renderer draws them as forms whose action feeds the next run as `forwarded_props:` (see the A2UI Surfaces guide). AG-UI's MCP Apps middleware sends a tool's app the same way, as an `mcp-apps` activity (the tool's MCP result, the app's `resourceUri`, the server and the input), which `Poetry::Agent::Apps::Activity.from(part[:content])` reads; showing the app is a host's work Poetry does not do yet, so the fallback renders `activity.text` in a `poetry_trace` step that says the app was not shown (the model read that same text). Script the agent during development (the AG-UI Relay demo's `AguiReplay`) so every stream replays byte-identical; `relay.mark_seen(ids)` tells the relay which rows the page already rendered. Setup: `gem "poetry-agent"` and `registerPoetryAgent(application)` beside `registerPoetryControllers` - the same runtime installs the versioned replace action and the MCP App frame guard, and Poetry's morph guard in core keeps the state the reader changed across a morph.
+          MD
+        end
+
+        def mcp_apps(entry)
+          <<~MD
+            #{header(entry)}
+
+            MCP Apps is the MCP extension (SEP-1865, `io.modelcontextprotocol/ui`) through which a tool ships its own page, which a host such as Claude, ChatGPT, VS Code or Cursor shows in a sandboxed frame inside its chat. Poetry ships the author's side: `Poetry::Agent::Apps` on the official `mcp` gem. A `Document` is one `ui://` resource - `Document.new(uri: "ui://shop/plans", name: "plans", template: "apps/plans", origin: "https://shop.example")` renders the template through a controller's renderer (Action Controller's base one by default, with Poetry's helpers; `Poetry::Agent::Apps.renderer = ApplicationController` or `renderer:` per document names your own) inside the engine's layout, a complete page whose head links your stylesheets and importmap from `origin` (declared in the resource's `_meta.ui.csp` lists, so the asset pipeline and Poetry's controllers run inside the host's sandbox unchanged) or, with `assets: :inline`, carries the compiled stylesheet and the bridge in the page; `origin: :request` reads the origin of the request being served. Wire the server with the gem: `MCP::Server.new(capabilities: Poetry::Agent::Apps.capabilities, resources: [document.resource])`, `server.resources_read_handler(&Poetry::Agent::Apps.reader(document))`, and `define_tool(name:, meta: document.tool_meta)` for the model's tools (`document.tool_meta(visibility: ["app"])` for one only the page may call); `Poetry::Agent::MCP::Server#apps(document)` serves documents beside Poetry's own coding-agent roster. A tool answers with `Poetry::Agent::Apps.result(text:, data:, fragments:)`: the text block for the model, `data` as `structuredContent` (what Claude's model reads), and fragments in `_meta` - `Apps.fragment("plans", partial: "apps/plans/table", locals: {...})` renders a partial for the element whose `data-mcp-region` is `plans` (actions replace, append, prepend, remove) - which the bridge applies and which stay out of the model's context. The page is a template: render its regions once with a skeleton, and let each result fill them. The host's panel is narrow and the host owns its width: few columns, prose cells that wrap (the theme's table cells do not), and no card of the page's own when the document asks the host for a border with `prefers_border: true`. The bridge, `@poetry/agent/mcp_app`, is written from the specification with no SDK: `ui/initialize`, the tool's input and result, `tools/call` from `data-mcp-tool` buttons and forms (`data-mcp-args` or the form's fields), `ui/message` from `data-mcp-message`, `ui/open-link` from `data-mcp-link`, size reports, the host's theme as `.dark`, and the host's style variables mapped onto Poetry's tokens (`host_styles: :structural` by default - backgrounds, text, borders, fonts, with Poetry's accents kept - or `:all` or `:none`); `window.poetryMcpApp` exposes `call`, `message`, `openLink`, `updateModelContext` and `requestDisplayMode`, and the document hears `poetry:mcp-app:connect`, `:input`, `:result`, `:fragments`, `:context` and `:error`. Try it on the MCP App demo (a host simulator over this site's own `/mcp`), or in Claude Desktop through `mcp-remote` against `/mcp`. `rake mcp_apps:verify` holds the vendored specification and wire schema to their manifest, and `rake upstream:watch` reports what moved upstream since the pins (the AG-UI repository's schema, corpus and middlewares, the vendored A2UI and MCP Apps material, the `mcp` gem), a report rather than a gate. When an AG-UI agent reaches your server through AG-UI's MCP Apps middleware, a tool's result arrives in the stream as an `mcp-apps` activity, which `Poetry::Agent::Apps::Activity` reads and the AG-UI relay's fallback shows as a Trace step with the result's text. Per-user authorization: `Poetry::Agent::MCP::Auth.new(resource:, authorization_servers:, scopes:, verifier:)` wires the resource server on the gem's stack (the protected resource metadata, served at `auth.well_known_path` by `auth.metadata_app`; the 401 challenge naming it; the token's verification by a callable over your own tokens answering `{ subject:, scopes:, expires_at: }` or nil, or by the gem's verifiers as `{ jwt: { jwks_uri: } }` or `{ introspection: { ... } }`), `HTTP.new(server, auth:)` takes it, and `Auth.current` is the request's token in tools and templates; Poetry issues no tokens. Lazy authorization: `protected_tools:` names the tools that need the person, and the mount answers the handshake, the list and the other tools without a token, challenging only a protected tool's call (401 with the document's address, 403 for a narrow token) so Claude signs the person in there and retries; the challenge is the HTTP status, never a tool error inside a 200. The authorization server is your app or an identity provider: every host needs PKCE S256, RFC 8414 or OpenID Connect discovery, and a client id by dynamic client registration or a client ID metadata document, so Doorkeeper needs two small controllers (the metadata, the registration) beside `force_pkce`. The host side: `Poetry::Agent::Apps::Host.new(servers:, origin:, sandbox_origin:)` knows its servers (a URL and headers each), reads their tools and app resources through the `mcp` gem's client (cached; `http_client_customizer:` takes a Faraday adapter or middleware, `Host::InProcess.customizer(Rails.application)` for a server in the same process), calls a tool for the page (`host.call(server, tool, arguments)`), answers an app's own requests (`host.rpc`, or `host.rpc_app` mounted same-origin) through the allowlist and the declared visibility, and serves the sandbox proxy page (`host.sandbox_app` on a second origin under a host constraint, the resource's policy as a header, signed tokens) or runs an inline mode without one; `tag.div(data: host.frame_data(call))` renders the frame the `poetry--agent--mcp-app-host` controller fills (the bridge's host half from the spec: initialize with the page's theme and tokens, input and result, the app's requests, resizing, links confirmed, page events for messages and model context), and the runtime keeps the frame through the relay's morphs. Three display modes (inline, fullscreen, pip): the frame stays put so the app never reloads; a document declares what it handles (`display_modes:`), the page what it offers (`display-modes-value`), and either side may ask (`requestDisplayMode` or a `data-mcp-display-mode` button in the app, the controller's `setDisplayMode` on the page; the page may change the mode on `poetry:mcp-app-host:display-mode`). Per-user credentials: a server's `credentials:` turns the `context:` a call passes (the signed-in person) into headers - a callable of your own, or `Poetry::Agent::Apps::Host::OAuth`, the `mcp` gem's OAuth client (discovery, a client ID metadata document or dynamic registration, PKCE, refresh) over a storage your app supplies per person and server (the gem's storage interface; an ActiveRecord row); the first call raises `AuthorizationRequired` with the URL, `host.frame_data(call, context:)` reads the app's resource as that person too (its policy travels in the sandbox token), `host.finish_authorization(server, context:, params:)` in the callback finishes it, `RpcApp.new(host, context:)` learns the person from the request, and the frame announces an authorization the endpoint asks for as `poetry:mcp-app-host:authorize`. The AG-UI relay renders the frame for an `mcp-apps` activity when the host knows the server.
           MD
         end
 
@@ -197,9 +256,9 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            A2UI is the declarative generative-UI format: an agent emits a flat component list against a catalog the client owns, and the client renders it with its own components. Poetry ships both halves. The catalog: `Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)` projects the component registry into an A2UI v1.0 catalog document (`to_h` for a JSON endpoint, `inline` for a middleware) - this site serves it at /a2ui/catalog.json - and the spec's basic catalog is mapped onto the library too (Text as a Markdown subset, Row / Column / List as flex, Card, Tabs, Modal as Dialog, Button, TextField as Field + Input, CheckBox, ChoicePicker as a radio group / checkboxes / a Combobox when filterable, Slider, DateTimeInput, Image, Icon, Video, AudioPlayer, Divider as Separator). The renderer: `Session.new` folds the envelope (`createSurface`, `updateComponents`, `updateDataModel`, `deleteSurface`; `apply(message)` returns the changed surface ids, `session.errors` the renderer-to-agent messages to send back - a dangling child reference is not one, streaming delivers children later); `Renderer.new(surface, view: view_context, action_url:).call` renders a surface as a form whose bound inputs are named `a2ui[values][<pointer>]` and whose agent actions are submit buttons (no `action_url` renders a plain container; `renderer.warnings` lists what could not render - an agent's mistake never raises); `Streams.new(session:, container:, render:)` delivers every change as a Turbo Stream - append on first appearance, a morphing versioned replace after, remove on delete - for an `ActionController::Live` action behind a `<turbo-stream-source>`.
+            A2UI is the declarative generative-UI format: an agent emits a flat component list against a catalog the client owns, and the client renders it with its own components. Poetry ships both halves. The catalog: `Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)` projects the component registry into an A2UI catalog document per version (`to_h(version: "1.0")` or `to_h(version: "v0.9")` for a JSON endpoint, `inline(version:)` for a middleware) - this site serves them at /a2ui/v1_0/catalog.json and /a2ui/v0_9/catalog.json - and the spec's basic catalog is mapped onto the library too (Text as a Markdown subset, Row / Column / List as flex, Card, Tabs, Modal as Dialog, Button, TextField as Field + Input, CheckBox, ChoicePicker as a radio group / checkboxes / a Combobox when filterable, Slider, DateTimeInput, Image, Icon, Video, AudioPlayer, Divider as Separator). The renderer: `Session.new` folds the envelope (`createSurface`, `updateComponents`, `updateDataModel`, `deleteSurface`; `apply(message)` returns the changed surface ids, `session.errors` the renderer-to-agent messages to send back - a dangling child reference is not one, streaming delivers children later); `Renderer.new(surface, view: view_context, action_url:).call` renders a surface as a form whose bound inputs are named `a2ui[values][<pointer>]` and whose agent actions are submit buttons (no `action_url` renders a plain container; `renderer.warnings` lists what could not render - an agent's mistake never raises); `Streams.new(session:, container:, render:)` delivers every change as a Turbo Stream - append on first appearance, a morphing versioned replace after, remove on delete - for an `ActionController::Live` action behind a `<turbo-stream-source>`. Versions: v0.9 and v1.0 run side by side, each surface speaking the version of the message that created it, and every message names its version (v1.0's is the bare `"1.0"`, its earlier `"v1.0"` accepted); v1.0 binds with `{ "@path" }` and calls with `{ "@call" }` (a plain `path` key is data there, a literal `@` key is doubled), v0.9 with `path` and `call`, and what the session sends carries the surface's version. Catalogs bind per version (the basic catalog under its v1.0 and v0.9 ids, Poetry's under `Catalog::DEFAULT_ID` and `Catalog::V0_9_ID`); a surface naming a catalog the session does not hold is refused unless `Session.new(fallback_catalog:)` names one, and on v1.0 a component or call may name its own `catalogId`. A catalog's composition rules (`allowedParents`, `allowedChildren`) hold in every mode, and `allow_orphans: false` or `allow_dangling_references: false` refuse outside strict mode what streaming would otherwise leave incomplete. `Session.new(strict: true)` refuses an update whole unless the surface keeps its root, references only components it holds and reaches each from the root, within the spec's nesting limits, with pointer paths, identifier ids and function names, declared functions, and holds every message to its version's schema (the specification's own) with the surface's catalogs plugged in, a binding of your own taking part through `document`; leave it off for streaming agents. `session.capabilities` lists the catalogs held per version (`inline: true` adds their definitions), `session.renderer_data_model(version:)` the models of surfaces that send theirs, and `session.status` the AG-UI middleware's building status.
 
-            Actions: the endpoint calls `session.action(surface_id:, source:, values:)` with the submitted `a2ui` params; a valid action carries the spec's `action` message (`to_h`) and its AG-UI placement (`forwarded_props`, with the data model when the surface asked for `sendDataModel`), an invalid one carries `errors` by component key - re-render the surface with `errors:` and answer 422 as a Turbo Stream. Checks run twice: `Surface#failures` on the server (the failures render under their controls) and the `poetry--agent--a2ui-surface` controller in the browser as the user types (a button whose own checks fail is disabled, a failing input turns invalid and its error slot fills; unknown functions pass in the browser and are judged by the server). Functions: `Functions.basic` implements the basic catalog's set - `formatString` interpolation (`${/path}`, `${name(arg: value)}`, nested blocks), `formatNumber`, `formatCurrency`, `formatDate` (TR35 patterns), `pluralize`, the validators `required` / `regex` / `length` / `numeric` / `email`, `and` / `or` / `not`, `openUrl` - and `@index` inside templates; `Functions.basic.define(name, description:, returns:, params:, required:, callers:) { |args, evaluator| ... }` adds your own, and a function declared `callers: "rendererOrAgent"` answers an agent's `callRendererFunction` (`session.responses`). State survives updates: every rendered component carries a render-stable key, replaces morph, and the runtime's guard keeps tab selection, dialog state, expanded popups, and edited controls; pass `morph: false` to swap instead. Transports: over AG-UI the messages arrive as `a2ui-surface` activities (`session.apply_activity(content)`); over HTTP they are whatever your agent returns; over MCP they sit inside an `application/a2ui+json` resource - extract and `apply_all`. Setup: `gem "poetry-agent"` and `registerPoetryAgent(application)`.
+            Actions: the endpoint calls `session.action(surface_id:, source:, values:)` with the submitted `a2ui` params; a valid action carries the spec's `action` message (`to_h`) and its AG-UI placement (`forwarded_props`, with the data model when the surface asked for `sendDataModel`), an invalid one carries `errors` by component key - re-render the surface with `errors:` and answer 422 as a Turbo Stream; a `functionCall` action runs on the renderer instead (`action.local?`), nothing goes to the agent and the surface's data may have changed, so re-render it. Checks run twice: `Surface#failures` on the server (the failures render under their controls) and the `poetry--agent--a2ui-surface` controller in the browser as the user types (a button whose own checks fail is disabled from the start; an input's message and invalid state appear once the user has edited it, a button's reason once any input is edited; until then the server's rendering stands, including the failures of a rejected action, and a failure on a function the browser does not know stands until the server judges it again; a streamed re-render keeps the edited inputs and judges them again after the morph). Functions: `Functions.basic` implements the basic catalog's set - `formatString` interpolation (`${/path}`, `${name(arg: value)}`, nested blocks), `formatNumber`, `formatCurrency`, `formatDate` (TR35 patterns), `pluralize`, the validators `required` / `regex` / `length` / `numeric` / `email`, `and` / `or` / `not`, `openUrl` - and `@index` inside templates; `Functions.basic.define(name, description:, returns:, params:, required:, callers:) { |args, evaluator| ... }` adds your own, and a function declared `callers: "rendererOrAgent"` answers an agent's `callRendererFunction` (`session.responses`) in the surface the call names, or in an isolated empty model when it names none. State survives updates: every rendered component carries a render-stable key, replaces morph, and Poetry's morph guard keeps the tab selection, dialog state and expanded popups the reader changed and the controls they edited; pass `morph: false` to swap instead. Transports: over AG-UI the messages arrive as `a2ui-surface` activities (`session.apply_activity(content)`); over HTTP they are whatever your agent returns; over MCP they sit inside an `application/a2ui+json` resource - extract and `apply_all`. Setup: `gem "poetry-agent"` and `registerPoetryAgent(application)`.
           MD
         end
 
@@ -238,6 +297,22 @@ module Poetry
         end
 
 
+        def library_motion(entry)
+          <<~MD
+            #{header(entry)}
+
+            poetry-motion adds animated effects on top of Poetry: #{DocsCatalog.motion.map { |e| e.title.downcase }.join(", ")}. The server renders every effect's finished state, so the page reads right before any script runs, in print and under reduced motion; motion is enhancement on top. The animation engine (the framework-free `motion` package, about 28 KB gzipped) is pinned without preload and loads only when an element asks for it, so a page without motion elements never fetches it, and a CSS-only effect like the marquee never does either. One motion policy decides reduced motion once (the user's setting, or `data-motion="reduce"` or `"full"` on `<html>`), reads the `--motion-duration-*`, `--motion-ease-*` and `--motion-spring-*` tokens, returns animated elements to their finished state before Turbo caches a page, and keeps layout animation out of a Turbo visit transition. Ten behaviors (`useAnimate`, `useSpring`, `useStagger`, `useScrollValue`, `usePointer`, `useFrame`, `useLayout`, `useDrag`, `useGesture`, `useCanvas`) compose into your own controllers and tear down with `teardown(this)`. No spring, pointer input, scroll link or interruption means a CSS keyframe, not poetry-motion. Install with `gem "poetry-motion"` plus `bin/rails g poetry:install --motion`.
+          MD
+        end
+
+        def library_island(entry)
+          <<~MD
+            #{header(entry)}
+
+            poetry-island is the declared exception to "state lives on the server and the URL": `poetry_island` renders a bounded client mount inside server-rendered HTML for a widget whose state changes many times a second (an editor, a canvas, a map, a 3D scene); everything else stays a component with a Stimulus behavior. The block is the shell, what the page shows before the module mounts and whenever it cannot. `import:` names an importmap specifier whose module exports `mount(element, props)` and returns `{ unmount, update? }`; `props:` serializes to a JSON script the module mounts with, plus `input` (the hidden input `name:` renders inside the island) and `focus` (true when the shell had focus); `mode: :fill` paints the shell's box and `mode: :flow` takes its place. One Stimulus controller handles the Turbo lifecycle for every island: mount on connect, unmount on disconnect, a morph refresh keeps the island and hands it the server's new props through `update`, a cached snapshot's dead root is cleared, a preview shows the shell, and a failed import or mount leaves the shell and dispatches `poetry--island--island:error`. No framework and no bundler ship with the gem: a plain module, a vendored kernel or a bundle built once all mount the same way. A React component becomes an island by building it once into one module with React inside (`npx esbuild islands/editor.jsx --bundle --format=esm --minify --jsx=automatic --define:process.env.NODE_ENV='"production"' --outfile=app/javascript/islands/editor.js`), committed under `app/javascript/islands/`: its `mount` creates a root in the element and renders into it, its `unmount` unmounts the root, nothing builds on deploy, and each built module carries its own copy of what it bundles. `poetry check` warns (`island-import-unpinned`) when `config/importmap.rb` does not pin the import. Install with `gem "poetry-island"` plus `bin/rails g poetry:install`, which registers the controller and pins `app/javascript/islands/` as `islands/*`.
+          MD
+        end
+
         # The recipes guide's mirror: the live projection, so the mirror lists
         # exactly what /r/ serves.
         def recipes(entry)
@@ -253,6 +328,158 @@ module Poetry
             RECIPE
           end
           ([ header(entry) ] + sections).join("\n\n") + "\n"
+        end
+
+        # The Community page's mirror: where the guides are, then the items
+        # this host serves, each linked to its own page.
+        def community(entry, items)
+          list = if items.any?
+            items.map { |item| "- [#{item.title}](/community/components/#{item.name}) (#{item.kind.downcase}): #{item.description} `#{item.install}`" }.join("\n")
+          else
+            "This site serves no community registry, so there is nothing to install from here."
+          end
+          <<~MD
+            #{header(entry)}
+
+            Install one with `bin/rails g poetry:add @poetry/<name>`. The files land in the app and are the app's to edit. A maintainer reviewed every item and each passes the registry's checks; nobody audited the code. [Using community items](/community-items) covers installing and using one, and [Publishing components](/community-publishing) covers serving your own.
+
+            ## Items
+
+            #{list}
+          MD
+        end
+
+        # The Using community items guide's mirror.
+        def community_items(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## What a community item is
+
+            A community item is a component, a block or a restyle the gems do not ship. `bin/rails g poetry:add @poetry/<name>` copies its files into the app, where they are the app's to read and edit; nothing overwrites them later. Poetry's own components come from the gems at runtime, so an item that composes a Button brings no copy of it. [Community components](/community) lists every item.
+
+            ## Install
+
+            `bin/rails g poetry:add @poetry/acme-pricing-table`. A component lands in `app/components/community/<name>/` (class, template, style, preview), its Stimulus controller in `app/javascript/controllers/community/`, a block as one partial at `app/views/blocks/_<name>.html.erb`, and a restyle or an item's own keyframes as one stylesheet in `app/assets/tailwind/poetry/community/` with its import line added to the Tailwind entry. An item with a controller rewrites `config/controllers_manifest.json`: commit it and restart a running server. Gems an item needs are reported, never installed.
+
+            ## Use it
+
+            A component renders through a helper named after the item (`acme_pricing_table(plans: @plans)`), with the options its page lists. A block is a partial to adapt in place (`render "blocks/acme_hero_01"`). A restyle changes the look of a Poetry component and nothing else: its class on a wrapper, or on `body`, and the component inside takes the new look while the views keep calling the Poetry helper.
+
+            ## How items are named
+
+            An item adapted from another library is named for that library and for the library's own name for the item: `@acme`'s `pricing-table` is `acme-pricing-table`, installed as `@poetry/acme-pricing-table`, rendered by `acme_pricing_table`, in the class `Community::AcmePricingTable::Component`. An item written for Poetry has a plain name and a helper that begins with `community_`.
+
+            ## What the install records
+
+            `config/poetry_components.yml` gains an entry per item: the address it came from, the version it stated and a SHA-256 digest of each file written. An item adapted from another library records its origin (registry, item, repository, license, copyright), and the install adds that license to `THIRD_PARTY_NOTICES.md`. The record is what lets an update tell the app's edits from the registry's changes: see [Updating community items](/community-updates).
+
+            ## Reviewed, not audited
+
+            A maintainer reviewed every item, and each passes the registry's checks: it installs into a fresh app, `poetry:check` is clean there, and its demo renders in a browser without an error. Nobody audited the code for security: read what you install. Only permissive licenses are accepted.
+          MD
+        end
+
+        # The Updating community items guide's mirror.
+        def community_updates(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## See what changed
+
+            The install recorded a digest of every file as it was written. `bin/rails g poetry:diff` compares each file with that record and with the registry's item as it stands now, so it tells an edit made in the app (`edited here`) from a change the registry made (`changed in the registry`), and names a file that is both, one that is `new in the registry` and one that is `no longer part of the item`. It prints and never writes. `--offline` asks no registry and reports the edits alone; a registry that does not answer is named and the edits are still reported.
+
+            ## Update
+
+            `bin/rails g poetry:update` brings every item installed from a registry to its current version; a name updates one (`bin/rails g poetry:update acme-pricing-table`). A file the app has not edited is replaced with the registry's. A file the app edited is kept: quietly when the registry's is unchanged, and named in the report when the registry changed it too. A file new in the item is written, and one the item dropped is named, never deleted. `--force` replaces the edited files too.
+
+            ## The record follows the files
+
+            In `config/poetry_components.yml` a replaced file takes the new digest and a kept file keeps the digest it was installed with. The item's version moves once every file is the registry's, so until then `poetry:diff` still names the file that was kept.
+
+            ## Taking a change into a file you edited
+
+            Commit, run `bin/rails g poetry:update <name> --force`, and read `git diff`: it shows the registry's version against the edit, and `git restore -p` puts back the parts to keep.
+
+            ## Copies of Poetry's own components
+
+            A component copied from the gems (`bin/rails g poetry:add button`) is reported by the same `poetry:diff` against what the installed gems ship; `poetry:update` leaves those alone.
+          MD
+        end
+
+        # The Publishing components guide's mirror.
+        def community_publishing(entry)
+          <<~MD
+            #{header(entry)}
+
+            ## A registry at your own address
+
+            A registry is an address that answers with one JSON document per item; a folder of files behind any web server is one. An app installs from it by name once `config/poetry_components.yml` names it under `registries:`, as `"@acme": "https://acme.dev/r/{name}.json"`; then `bin/rails g poetry:add @acme/pricing-table`. A full address (`https://acme.dev/r/pricing-table.json`) or a local file (`./registry/pricing-table.json`) installs with nothing configured. A registry is fetched over https (http for localhost only), an item may be up to 1 MB, and a request follows three redirects at most.
+
+            ## A private registry
+
+            An entry may be `url:` and `headers:`. A secret is never written in the file: a header value names an environment variable (`Authorization: "Bearer ${ACME_TOKEN}"`), and the install fails with a clear message when it is not set.
+
+            ## The item
+
+            An item is a JSON object in the registry-item format: `name`, `type` (`registry:component`, `registry:block` or `registry:style`), `title`, `description`, `files` (each with its content and the path it is written to), `registryDependencies` (the Poetry components it builds on, or other items by address), `dependencies` (gems, reported and never installed), `css` (rules a class cannot express) and `meta.version`. Every item this site serves is such a document at `/r/<name>.json`.
+
+            ## Names and helpers
+
+            Keep items under a module and a folder of your own; `Community::` belongs to the Poetry registry. A component declares its view helper (`helper :acme_pricing_table`), and Poetry refuses to start when that name is one Rails, Poetry or the app already has, or one two components declare.
+
+            ## Versions
+
+            State a version in `meta.version` and change it when the item changes. The installing app records it beside a digest of each file it wrote.
+
+            ## The Poetry registry
+
+            The items under `@poetry` are added by Poetry's maintainers today: each is reviewed, installs into a fresh app, passes `poetry:check` there and renders its demo without an error. Submissions from outside open later; until then a suggestion is welcome on the project's issues, https://github.com/roboruby/poetry/issues.
+          MD
+        end
+
+        # One community item's mirror: what its page shows, from the same
+        # index entry.
+        def community_item(item, demo_url: nil)
+          out = [ "# #{item.title}", item.description,
+                  "A community #{item.kind.downcase}#{", version `#{item.version}`" if item.version}: reviewed and checked, not audited.",
+                  "## Install\n\n`#{item.install}`" ]
+          facts = []
+          facts << "Writes: #{item.files.map { |file| "`#{file}`" }.join(", ")}." if item.files.any?
+          facts << "Builds on: #{item.needs.join(", ")}." if item.needs.any?
+          facts << "Needs gems (reported, never installed for you): #{item.gems.join(", ")}." if item.gems.any?
+          facts << "Restyles Poetry's #{item.restyles}: the app's views keep calling its helper." if item.restyles
+          facts << "Brings #{item.javascript}." if item.javascript
+          facts << "Looks: #{item.traits.map { |trait| trait.tr("-", " ") }.join(", ")}." if item.traits.any?
+          facts << item.notes if item.notes
+          out << facts.join("\n\n") if facts.any?
+          if item.demo
+            usage = item.helper ? "Render it with `#{item.helper}`.\n\n" : ""
+            out << "## Example\n\n#{usage}```erb\n#{item.demo}\n```"
+          end
+          out << "The demo runs at #{demo_url}" if demo_url
+          out << community_table("Options", %w[Option Type Default Description], item.options) do |option|
+            default = if option["required"] then "required"
+            elsif option.key?("default") then "`#{option["type"] == "symbol" ? ":#{option["default"]}" : option["default"].to_json}`"
+            else ""
+            end
+            [ "`#{option["name"]}:`", option["type"].presence || "any", default, option["description"].to_s ]
+          end
+          out << community_table("Style axes", %w[Axis Values Default], item.styles) do |style|
+            [ "`#{style["name"]}:`", Array(style["variants"]).map { |variant| "`:#{variant}`" }.join(", "),
+              style["default"] ? "`:#{style["default"]}`" : "" ]
+          end
+          out << community_table("Slots", %w[Writer Description], item.slots) do |slot|
+            [ "`with_#{slot["name"]}`", slot["description"].to_s ]
+          end
+          out << "## Usage rules\n\n#{item.agent_rules.map { |rule| "- #{rule}" }.join("\n")}" if item.agent_rules.any?
+          origins = item.origins.map do |origin|
+            "- Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), #{origin["repository"]}. " \
+              "License: #{origin["license"]}. #{origin["copyright"]}"
+          end
+          out << "## Origin and license\n\n" +
+                 (origins.any? ? origins.join("\n") : "An original community item: nothing in it was adapted from another library.")
+          out.compact.join("\n\n") + "\n"
         end
 
         # The agent-skills catalog's mirror: the live projection, so the
@@ -341,8 +568,32 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
           <<~MD
             #{header(entry)}
 
-            The default icon set: 1,745 Lucide icons vendored into the gem at a pinned upstream commit (`Poetry::Lucide.vendored_commit`) and sanitized at vendor time, so rendering never parses, never sanitizes, and never touches the network. Requiring the gem registers the set as `:lucide`; `poetry_icon(name: :"circle-check")` renders decorative (aria-hidden) by default, and `label:` makes an icon standalone (`role="img"` plus the accessible name). `poetry check` validates icon-name literals statically against the set; a dynamic miss raises with a did-you-mean in development and test and renders the configured fallback (`:"circle-question-mark"`) in production while `on_missing_icon` fires. The vendored Lucide icons remain under Lucide's ISC license - see `LICENSE-LUCIDE.txt`, which ships in the gem beside them.
+            The default icon set: 1,890 Lucide icons vendored into the gem at a pinned upstream commit (`Poetry::Lucide.vendored_commit`) and sanitized at vendor time, so rendering never parses, never sanitizes, and never touches the network. Requiring the gem registers the set as `:lucide`; `poetry_icon(name: :"circle-check")` renders decorative (aria-hidden) by default, and `label:` makes an icon standalone (`role="img"` plus the accessible name). `poetry check` validates icon-name literals statically against the set; a dynamic miss raises with a did-you-mean in development and test and renders the configured fallback (`:"circle-question-mark"`) in production while `on_missing_icon` fires. The 264 names Lucide has renamed (`trash-2` is now `trash`) still render through aliases, and `poetry check` warns on an old name with the new one. The vendored Lucide icons remain under Lucide's ISC license - see `LICENSE-LUCIDE.txt`, which ships in the gem beside them.
           MD
+        end
+
+        # The icon-set gems' mirrors, one per set, from the record the page
+        # renders (Poetry::Docs::IconSets).
+        IconSets::ALL.each do |set|
+          define_method(:"icons_#{set.slug.tr("-", "_")}") do |entry|
+            styles = set.rows.map { |row| "- `:#{row[:key]}`: #{row[:style]}, #{row[:count]} icons" }.join("\n")
+            sample = set.samples.first.include?("-") ? %(:"#{set.samples.first}") : ":#{set.samples.first}"
+            <<~MD
+              #{header(entry)}
+
+              #{set.gem} brings #{set.total} #{set.title} icons to Poetry, vendored at a pinned commit of #{set.repository} (`Poetry::#{set.namespace}.vendored_commit`) and sanitized at vendor time. #{set.blurb}
+
+              Add `gem "#{set.gem}"`; requiring it registers each style under its own library key:
+
+              #{styles}
+
+              `poetry_icon(name: #{sample}, library: :#{set.rows.first[:key]})` renders one, and `config.icon_library = :#{set.rows.first[:key]}` makes the style the default. `poetry check` validates a literal name against the library the call names.
+
+              Porting from React: #{set.react}
+
+              The icons remain under #{set.title}'s #{set.license} license; `#{set.license_file}` ships in the gem beside them.
+            MD
+          end
         end
 
         # The root llms.txt: the whole site, indexed for agents - every docs
@@ -353,9 +604,12 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
 
             > The documentation site for Poetry, an AI-native, Rails-first component library: accessible, themeable ViewComponents on semantic design tokens. Every page below also serves a markdown mirror - append `.md` to its URL or send `Accept: text/markdown`.
           MD
+          # The five usage rules first: the one-fetch agent that reads only
+          # this index still leaves with the doctrine.
+          out << Poetry::Core::LlmsText::USAGE_RULES_SECTION.chomp
           { "Guides" => DocsCatalog.docs, "Libraries" => DocsCatalog.libraries,
             "Icons" => DocsCatalog.icons, "Components" => DocsCatalog.components,
-            "Charts" => DocsCatalog.charts, "Blocks" => DocsCatalog.blocks,
+            "Charts" => DocsCatalog.charts, "Motion" => DocsCatalog.motion, "Blocks" => DocsCatalog.blocks,
             "Demos" => DocsCatalog.demos, "API" => DocsCatalog.apis }.each do |title, entries|
             out << "## #{title}\n\n" + entries.map { |e| "- [#{e.title}](#{e.path}): #{e.description}" }.join("\n")
           end
@@ -365,7 +619,7 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
             - [Component catalog for agents](/poetry/llms.txt) and [full contracts + Stimulus wiring](/poetry/llms-full.txt)
             - [Registry index](/r/registry.json) - shadcn-schema items; install with `bin/rails g poetry:add <name>` or `npx shadcn add`
             - [Agent skills inventory](/.well-known/skills/index.json) with per-file serving, and the [discovery index](/.well-known/agent-skills/index.json) (agentskills.io schema 0.2.0, sha256 digests) - `npx skills add <origin>/agent-skills` installs from it
-            - [Agent install instructions](/installation.md)
+            - [Agent install instructions](/installation.md), and the cold-start prompt for an assistant without the skills or MCP server: `bin/rails poetry:prompt` in an installed app (the text is on the [Installation page](/installation#prompts))
             - [OpenAPI description](/openapi.json) and [API catalog](/.well-known/api-catalog)
           MD
           out.join("\n\n")
@@ -377,12 +631,23 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
           [ "# #{entry.title}", entry.description ].compact.join("\n\n")
         end
 
+        # A titled markdown table of a community item's facts, or nil for none.
+        def community_table(title, columns, rows)
+          return nil if rows.empty?
+
+          lines = [ "| #{columns.join(" | ")} |", "| #{columns.map { "---" }.join(" | ")} |" ]
+          lines += rows.map { |row| "| #{yield(row).map { |cell| cell.gsub("|", "\\|") }.join(" | ")} |" }
+          "## #{title}\n\n#{lines.join("\n")}"
+        end
+
         def install_note(entry)
           case entry.section
           when "components"
             "Included in poetry-ui as `poetry_#{entry.slug.tr('-', '_')}` with no per-component step. To own and edit the source: `bin/rails g poetry:add #{entry.slug}`."
           when "charts"
             "Ships in the separate, optional poetry-charts gem."
+          when "motion"
+            "Ships in the separate, optional poetry-motion gem: `bundle add poetry-motion` and `bin/rails g poetry:install --motion`. The server renders the finished state; motion is enhancement on top."
           end
         end
 

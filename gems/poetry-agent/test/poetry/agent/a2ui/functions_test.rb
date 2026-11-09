@@ -14,6 +14,16 @@ class FunctionsTest < Minitest::Test
     A2UI::Evaluator.new(surface(data), scope, on_error: errors && ->(message) { errors << message })
   end
 
+  def test_a_copied_set_takes_definitions_of_its_own_without_changing_the_source
+    copy = A2UI::Functions.basic.dup
+    copy.define("shout", description: "upper", returns: "string", params: { "text" => { "type" => "string" } },
+                         required: ["text"]) { |args, _| args["text"].upcase }
+
+    assert copy.declared?("shout")
+    refute A2UI::Functions.basic.declared?("shout")
+    assert copy.declared?("formatString"), "the basic set comes along"
+  end
+
   def test_validators_return_validation_results
     ev = evaluator
 
@@ -29,7 +39,43 @@ class FunctionsTest < Minitest::Test
     assert_equal({ "valid" => true }, ev.call("numeric", { "value" => "7.5", "min" => 1, "max" => 10 }))
     assert_equal({ "valid" => false }, ev.call("numeric", { "value" => "seven" }))
     assert_equal({ "valid" => true }, ev.call("email", { "value" => "ada@example.com" }))
-    assert_equal({ "valid" => false }, ev.call("email", { "value" => "ada@example" }))
+    assert_equal A2UI::Functions::EMAIL_FAILURE, ev.call("email", { "value" => "ada@example" })
+  end
+
+  def test_v0_9_validators_answer_booleans_and_v1_0_ones_results
+    v09 = A2UI::Evaluator.new(A2UI::Surface.new(id: "s", catalog: A2UI::Catalogs::Basic.new, dialect: A2UI::Dialect::V0_9))
+
+    assert(v09.call("required", { "value" => "x" }))
+    refute(v09.call("email", { "value" => "ada@example.c" }))
+    refute(v09.call("not", { "value" => { "valid" => false } }), "an object is present in v0.9")
+    assert(evaluator.call("not", { "value" => { "valid" => false } }), "v1.0 reads a result as its verdict")
+  end
+
+  def test_the_spec_semantics_of_required_length_and_the_combinators
+    errors = []
+    ev = evaluator(errors: errors)
+
+    assert_equal({ "valid" => true }, ev.call("required", { "value" => {} }), "an object is present")
+    assert_equal({ "valid" => true }, ev.call("length", { "value" => %w[a b], "min" => 2 }), "a list counts items")
+    assert_equal({ "valid" => false }, ev.call("length", { "value" => %w[a], "min" => 2 }))
+    assert_nil ev.call("and", { "values" => [true] })
+    assert_match(/and requires at least 2 values/, errors.last)
+  end
+
+  def test_dates_must_exist_and_iso_normalizes
+    ev = evaluator
+
+    assert_equal "", ev.call("formatDate", { "value" => "2026-02-30", "format" => "yyyy-MM-dd" })
+    assert_equal "", ev.call("formatDate", { "value" => "2026-13-01", "format" => "yyyy-MM-dd" })
+    assert_equal "2026-08-26T12:00:00.000Z",
+                 ev.call("formatDate", { "value" => "2026-08-26T14:00:00+02:00", "format" => "ISO" })
+  end
+
+  def test_a_validation_result_reads_as_its_verdict_in_a_boolean_argument
+    ev = evaluator
+
+    assert_equal "1234", ev.call("formatNumber", { "value" => 1234, "grouping" => { "valid" => false } })
+    assert_equal "1,234", ev.call("formatNumber", { "value" => 1234 })
   end
 
   def test_an_invalid_pattern_is_a_function_error
@@ -46,6 +92,26 @@ class FunctionsTest < Minitest::Test
     assert_equal "1234.50", ev.call("formatNumber", { "value" => 1234.5, "decimals" => 2, "grouping" => false })
     assert_equal "12", ev.call("formatNumber", { "value" => "12.0" })
     assert_equal "", ev.call("formatNumber", { "value" => "n/a" })
+  end
+
+  def test_decimals_hold_to_the_formatters_limit
+    ev = evaluator
+
+    assert_equal 102, ev.call("formatNumber", { "value" => 1.5, "decimals" => 1_000_000_000 }).length
+    assert_equal "2", ev.call("formatNumber", { "value" => 1.5, "decimals" => -3 })
+    assert_equal 103, ev.call("formatCurrency", { "value" => 1.5, "currency" => "USD", "decimals" => 10**30 }).length
+  end
+
+  def test_a_function_that_raises_fails_the_call_not_the_render
+    functions = A2UI::Functions.new
+    functions.define("lookup", description: "Looks up a record.", returns: "string") { |_, _| raise TypeError, "no" }
+    catalog = A2UI::Catalogs::Basic.new
+    catalog.define_singleton_method(:functions) { functions }
+    errors = []
+    ev = A2UI::Evaluator.new(A2UI::Surface.new(id: "s", catalog: catalog), on_error: ->(message) { errors << message })
+
+    assert_nil ev.call("lookup", {})
+    assert_equal ['function "lookup" raised TypeError: no'], errors
   end
 
   def test_currency_formatting
@@ -83,13 +149,22 @@ class FunctionsTest < Minitest::Test
     assert_equal "items", ev.call("pluralize", forms.merge("value" => "many"))
   end
 
-  def test_open_url_allows_http_only
+  def test_open_url_answers_nothing_and_refuses_other_schemes
     errors = []
-    ev = evaluator(errors: errors)
+    ev = A2UI::Evaluator.new(surface, on_error: ->(message) { errors << message }, gesture: true)
 
-    assert_equal "https://example.com/docs", ev.call("openUrl", { "url" => "https://example.com/docs" })
+    assert_nil ev.call("openUrl", { "url" => "https://example.com/docs" })
+    assert_nil ev.call("openUrl", { "url" => "mailto:ada@example.com" })
+    assert_empty errors
     assert_nil ev.call("openUrl", { "url" => "javascript:alert(1)" })
-    assert_match(/only http and https/, errors.last)
+    assert_match(/only http, https, mailto and tel/, errors.last)
+  end
+
+  def test_a_function_that_needs_a_gesture_is_refused_without_one
+    errors = []
+
+    assert_nil evaluator(errors: errors).call("openUrl", { "url" => "https://example.com" })
+    assert_equal ["Function 'openUrl' requires user activation context to execute."], errors
   end
 
   def test_combinators_read_validation_results_and_booleans
@@ -119,14 +194,14 @@ class FunctionsTest < Minitest::Test
     assert_equal "Total: $3.00 for 3 items",
                  ev.argument("Total: ${formatCurrency(value: ${/n}, currency: 'USD')} for ${/n} " \
                              "${pluralize(value: ${/n}, one: 'item', other: 'items')}")
-    assert_equal [3, "Ada"], ev.argument([{ "path" => "/n" }, { "path" => "/user/name" }])
+    assert_equal [3, "Ada"], ev.argument([{ "@path" => "/n" }, { "@path" => "/user/name" }])
     assert_equal({ "nested" => "Ada" }, ev.argument({ "nested" => "${/user/name}" }))
     assert_equal "plain", ev.argument("plain")
   end
 
   def test_format_string_interpolates_through_resolve
     ev = evaluator({ "reviewCount" => 2847 })
-    value = { "call" => "formatString",
+    value = { "@call" => "formatString",
               "args" => { "value" => "(${formatNumber(value: ${/reviewCount})} " \
                                      "${pluralize(value: ${/reviewCount}, one: 'review', other: 'reviews')})" } }
 
@@ -139,14 +214,14 @@ class FunctionsTest < Minitest::Test
     assert_equal "#3", evaluator(scope: "/rows/2").interpolate("#${@index(offset: 1)}")
     assert_equal 2, evaluator(scope: "/rows/2").call("@index", {})
     assert_equal "", evaluator(errors: errors).interpolate("${@index()}")
-    assert_match(/only available inside a template/, errors.first)
+    assert_match(/can only be evaluated inside a collection template iteration scope/, errors.first)
   end
 
   def test_malformed_interpolation_warns_and_renders_nothing
     errors = []
 
     assert_equal "", evaluator(errors: errors).interpolate("${oops")
-    assert_match(/formatString: expected "}"/, errors.first)
+    assert_match(/formatString: Unclosed interpolation/, errors.first)
   end
 
   def test_stringify_follows_the_conversion_rules
@@ -164,17 +239,18 @@ class FunctionsTest < Minitest::Test
     ev = A2UI::Evaluator.new(s)
     component = { "id" => "x",
                   "checks" => [
-                    { "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                    { "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } },
                       "message" => "Invalid email format" },
-                    { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/terms" } } } },
-                    { "condition" => { "path" => "/result" } },
-                    { "condition" => { "call" => "not", "args" => { "value" => false } } }
+                    { "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/terms" } } } },
+                    { "condition" => { "@path" => "/result" } },
+                    { "condition" => { "@call" => "not", "args" => { "value" => false } } }
                   ] }
     s.update_data("/result",
                   { "valid" => false, "code" => "SOFT", "message" => "Just a note", "severity" => "warning" })
 
-    assert_equal [{ valid: false, code: nil, message: "Invalid email format", severity: "error" },
-                  { valid: false, code: nil, message: "Check failed", severity: "error" }],
+    assert_equal [{ valid: false, code: "INVALID_EMAIL", severity: "error",
+                    message: "Please enter a valid email address (e.g. user@example.com)." },
+                  { valid: false, code: nil, message: "Check failed", severity: nil }],
                  A2UI::Checks.failures(component, ev)
   end
 
@@ -184,8 +260,13 @@ class FunctionsTest < Minitest::Test
     assert_equal %w[required regex length numeric email formatString formatNumber formatCurrency formatDate pluralize
                     openUrl and or not], schema.keys
     assert_equal "validationResult", schema["length"]["returnType"]
-    assert_equal "length", schema["length"]["allOf"][1]["properties"]["call"]["const"]
-    assert_equal %w[value], schema["length"]["allOf"][1]["properties"]["args"]["required"]
+    assert_equal "length", schema["length"]["properties"]["@call"]["const"]
+    assert_equal %w[value], schema["length"]["properties"]["args"]["required"]
+    assert_equal %w[@call args], schema["length"]["required"]
+    legacy = A2UI::Functions.basic.schema(A2UI::Dialect::V0_9)
+
+    assert_equal "length", legacy["length"]["properties"]["call"]["const"]
+    assert_equal({ "const" => "boolean" }, legacy["length"]["properties"]["returnType"])
     assert schema["openUrl"]["requiresUserActivation"]
     assert_equal "rendererOnly", schema["email"]["allowedCallers"]
     assert_equal 14, A2UI::Functions.basic.any_function["oneOf"].length

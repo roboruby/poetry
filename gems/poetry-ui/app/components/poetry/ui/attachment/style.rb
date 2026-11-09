@@ -48,6 +48,10 @@ module Poetry
 
         element :actions, "cn-attachment-actions flex shrink-0 items-center"
 
+        # The slim bar under the title: the Progress caption is for screen
+        # readers, the track is one hair high.
+        element :progress, "mt-1 w-full [&_[data-slot=progress-label]]:sr-only [&_[data-slot=progress-track]]:h-1"
+
         element :trigger, "cn-attachment-trigger"
 
         element :group, "cn-attachment-group flex min-w-0 scroll-fade-x snap-x snap-mandatory " \

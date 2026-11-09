@@ -23,6 +23,7 @@ Poetry::Docs::Engine.routes.draw do
   get "deferred/fragment" => "docs#deferred_fragment", as: :deferred_fragment
   get "optimistic-forms" => "docs#optimistic_forms", as: :optimistic_forms
   get "forms" => "docs#forms", as: :forms
+  get "uploads" => "docs#uploads", as: :uploads
   get "pagination" => "docs#pagination", as: :pagination
   post "optimistic-forms/favorite" => "docs#optimistic_favorite", as: :optimistic_favorite
   post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
@@ -30,6 +31,7 @@ Poetry::Docs::Engine.routes.draw do
   get "testing" => "docs#testing", as: :testing
   get "i18n" => "docs#i18n", as: :i18n
   get "stimulus" => "docs#stimulus", as: :stimulus
+  get "where-state-lives" => "docs#where_state_lives", as: :where_state_lives
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching
   get "engines" => "docs#engines", as: :engines_guide
@@ -40,13 +42,28 @@ Poetry::Docs::Engine.routes.draw do
   get "webmcp" => "docs#webmcp", as: :webmcp
   get "ag-ui" => "docs#agui", as: :agui
   get "a2ui" => "docs#a2ui", as: :a2ui
+  get "mcp-apps" => "docs#mcp_apps", as: :mcp_apps
+  post "mcp-apps/rpc" => "docs#mcp_app_rpc", as: :mcp_app_rpc, format: false
+  get "mcp-apps/sandbox/*token" => "docs#mcp_app_sandbox", as: :mcp_app_sandbox, format: false
   # The site's own MCP server over HTTP at the conventional same-origin
   # path - what in-page WebMCP bridges (site MCP server packs)
-  # proxy, read-only by construction.
-  mount Poetry::Agent::MCP::HTTP.new(-> { Poetry::Agent::MCP::Bundled.server(app_root: Poetry::Docs.root.to_s) }) => "/mcp"
+  # proxy, read-only by construction - with the MCP App demo served
+  # beside the roster (the plans document and its two tools).
+  mount Poetry::Agent::MCP::HTTP.new(-> { Poetry::Docs::McpAppShowcase.server(app_root: Poetry::Docs.root.to_s) }) => "/mcp"
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
+  get "community-items" => "docs#community_items", as: :community_items
+  get "community-updates" => "docs#community_updates", as: :community_updates
+  get "community-publishing" => "docs#community_publishing", as: :community_publishing
+  # The Community section: the index is a catalog page, and a component's
+  # page exists where the host serves a community registry that lists it.
+  # A host with a section of its own (a browser, a libraries directory)
+  # draws those routes ahead of the mount; here the browser's address
+  # leads to the index, which lists every item.
+  get "community" => "community#index", as: :community
+  get "community/components" => redirect("/community")
+  get "community/components/:name" => "community#show", as: :community_item, constraints: { name: /[a-z0-9]+(-[a-z0-9]+)*/ }
   get "page-agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false
 
@@ -54,6 +71,8 @@ Poetry::Docs::Engine.routes.draw do
   # registries; literal routes before the catch.
   get "r/registry.json" => "registry#index", as: :registry_index
   get "r/registries.json" => "registry#directory", as: :registry_directory
+  get "r/community/screenshots/:file" => "registry#screenshot", as: :registry_community_screenshot, format: false,
+                                         constraints: { file: /[a-z0-9]+(-[a-z0-9]+)*\.webp/ }
   get "r/:name" => "registry#show", as: :registry_item, format: false,
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 
@@ -94,7 +113,7 @@ Poetry::Docs::Engine.routes.draw do
   get "/.well-known/api-catalog" => "machine#api_catalog", as: :api_catalog, format: false
 
   get "examples/:section/:slug/:name" => "examples#show", as: :standalone_example, format: false,
-      constraints: { section: /components|charts|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
+      constraints: { section: /components|charts|motion|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
   get "examples/blocks/:slug" => "examples#block", as: :standalone_block, format: false,
       constraints: { slug: /[a-z0-9-]+/ }
 
@@ -105,12 +124,15 @@ Poetry::Docs::Engine.routes.draw do
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
+  get "motion/:slug" => "motion#show", as: :motion_effect
   get "blocks/:slug" => "blocks#show", as: :block
   get "demos/chat-replay/stream" => "chat_replay#stream", as: :chat_replay_stream, format: false
   get "demos/agui-relay/stream" => "agui_relay#stream", as: :agui_relay_stream, format: false
   post "demos/agui-relay/continue" => "agui_relay#continue", as: :agui_relay_continue, format: false
   post "demos/agui-relay/surface" => "agui_relay#surface", as: :agui_relay_surface, format: false
   get "a2ui/catalog.json" => "a2ui#catalog", as: :a2ui_catalog, format: false
+  get "a2ui/v1_0/catalog.json" => "a2ui#catalog", as: :a2ui_catalog_v1_0, format: false, defaults: { version: "1.0" }
+  get "a2ui/v0_9/catalog.json" => "a2ui#catalog", as: :a2ui_catalog_v0_9, format: false, defaults: { version: "v0.9" }
   get "demos/a2ui-surface/stream" => "a2ui_surface#stream", as: :a2ui_surface_stream, format: false
   post "demos/a2ui-surface/action" => "a2ui_surface#action", as: :a2ui_surface_action, format: false
   get "demos/:slug" => "demos#show", as: :demo

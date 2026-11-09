@@ -59,7 +59,7 @@ module Poetry
       # Make the client chrome + the motion stylesheet servable by Propshaft.
       initializer "poetry_charts.assets" do |app|
         if app.config.respond_to?(:assets)
-          app.config.assets.paths << Poetry::Charts.root.join("app/javascript").to_s
+          app.config.assets.paths << Poetry::Core.javascript_path(Poetry::Charts.root).to_s
           app.config.assets.paths << Poetry::Charts.root.join("app/assets/stylesheets").to_s
         end
       end
@@ -68,7 +68,7 @@ module Poetry
       initializer "poetry_charts.importmap", before: "importmap" do |app|
         if app.config.respond_to?(:importmap)
           app.config.importmap.paths << Poetry::Charts.root.join("config/importmap.rb")
-          app.config.importmap.cache_sweepers << Poetry::Charts.root.join("app/javascript")
+          app.config.importmap.cache_sweepers << Poetry::Core.javascript_path(Poetry::Charts.root)
         end
       end
     end

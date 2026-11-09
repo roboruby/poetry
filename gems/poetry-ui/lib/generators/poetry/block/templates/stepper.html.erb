@@ -1,4 +1,5 @@
 <%# poetry:block title="Stepper" description="A multi-step flow header: numbered step indicators with connectors and completed/current/upcoming states over the current step's panel with back/continue actions." keywords="stepper, wizard, steps, checkout, onboarding, progress, multi-step" %>
+<%# locals: (step: nil) %>
 <%# Stepper is a BLOCK, not a component: neither shadcn nor Base UI
     ships one, so the pattern lives here as copy-in source - adapt the
     steps freely; nothing hides behind an API. The server owns step state:
@@ -7,7 +8,7 @@
     flow, swap the query param for your wizard's own routes/model state
     and the final action for a form submit. %>
 <% steps = ["Shipping", "Payment", "Review"] %>
-<% step = (local_assigns[:step] || params[:step] || 2).to_i.clamp(1, steps.length) %>
+<% step = (step || params[:step] || 2).to_i.clamp(1, steps.length) %>
 <% panels = {
      1 => ["Shipping", "Step 1 of 3 - where this order lands.",
            "Address fields mount here; this panel is the step's content slot."],

@@ -96,6 +96,34 @@
     <% end %>
   </section>
 
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="prompts">Hand it to an assistant</h2>
+      <p>
+        An assistant working in the app finds the <code>AGENTS.md</code>
+        section, the skills and the MCP server the install wrote. One that
+        has none of them in front of it yet, a hosted agent or a teammate's
+        editor before <code>poetry:skill</code> ran, starts from this
+        prompt: <code>bin/rails poetry:prompt | pbcopy</code> copies the
+        same text, so paste it as the first message. It verifies the
+        install, names the catalog, carries the five usage rules every
+        <code>llms.txt</code> prints, and ends on the check.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: Poetry::Docs::Prompts.cold_start, language: "text", label: "Cold-start prompt",
+                          wrap: true) %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h3 id="prompts-to-try">Prompts to try</h3>
+      <p>
+        Four task prompts that teach the workflow by example: start from
+        what the app already has, compose with the helpers, check last.
+        Edit the paths to your own.
+      </p>
+    <% end %>
+    <% Poetry::Docs::Prompts::TO_TRY.each do |prompt| %>
+      <%= poetry_code_block(code: prompt.text, language: "text", label: prompt.title, wrap: true) %>
+    <% end %>
+  </section>
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>

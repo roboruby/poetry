@@ -1,0 +1,86 @@
+data: {"type":"RUN_STARTED","threadId":"a2ui-form-162309","runId":"cc081e0a-186f-453f-ac57-fba4e9c50114","protocolVersion":"1.0"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building"},"replace":true}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_7ac0a2dc","toolCallName":"render_a2ui","parentMessageId":"msg_a5a683c6"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"{\"surfaceId\":\"si"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"gnup\",\"component"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"s\":[{\"id\":\"root\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":",\"component\":\"Co"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building","progressTokens":20},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"lumn\",\"children\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":":[\"title\",\"name\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":",\"submit\"]},{\"id"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\":\"title\",\"compo"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"nent\":\"Text\",\"te"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building","progressTokens":40},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"xt\":\"Sign up\"},{"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\"id\":\"name\",\"com"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"ponent\":\"TextFie"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"ld\",\"label\":\"Nam"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"e\",\"value\":{\"pat"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building","progressTokens":60},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"h\":\"/form/name\"}"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"},{\"id\":\"submit\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":",\"component\":\"Bu"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"tton\",\"child\":\"s"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"ubmit-label\",\"ac"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building","progressTokens":80},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"tion\":{\"event\":{"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\"name\":\"submit_f"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"orm\",\"context\":{"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\"name\":{\"path\":\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"/form/name\"}}}}}"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"status":"building","progressTokens":100},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":",{\"id\":\"submit-l"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"abel\",\"component"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\":\"Text\",\"text\":"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"a2ui_operations":[{"version":"v0.9","createSurface":{"surfaceId":"signup","catalogId":"https://a2ui.org/specification/v0_9/basic_catalog.json"}},{"version":"v0.9","updateComponents":{"surfaceId":"signup","components":[{"id":"root","component":"Column","children":["title","name","submit"]},{"id":"title","component":"Text","text":"Sign up"},{"id":"name","component":"TextField","label":"Name","value":{"path":"/form/name"}},{"id":"submit","component":"Button","child":"submit-label","action":{"event":{"name":"submit_form","context":{"name":{"path":"/form/name"}}}}},{"id":"submit-label","component":"Text","text":"Submit"}]}}]},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\"Submit\"}],\"data"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\":{\"form\":{\"name"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_7ac0a2dc","activityType":"a2ui-surface","content":{"a2ui_operations":[{"version":"v0.9","createSurface":{"surfaceId":"signup","catalogId":"https://a2ui.org/specification/v0_9/basic_catalog.json"}},{"version":"v0.9","updateComponents":{"surfaceId":"signup","components":[{"id":"root","component":"Column","children":["title","name","submit"]},{"id":"title","component":"Text","text":"Sign up"},{"id":"name","component":"TextField","label":"Name","value":{"path":"/form/name"}},{"id":"submit","component":"Button","child":"submit-label","action":{"event":{"name":"submit_form","context":{"name":{"path":"/form/name"}}}}},{"id":"submit-label","component":"Text","text":"Submit"}]}},{"version":"v0.9","updateDataModel":{"surfaceId":"signup","path":"/","value":{"form":{"name":"Alice"}}}}]},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_7ac0a2dc","delta":"\":\"Alice\"}}}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_7ac0a2dc"}
+
+data: {"type":"TOOL_CALL_RESULT","messageId":"f7d9bf49-14fb-4424-b4e8-87b43fb039ad","toolCallId":"call_7ac0a2dc","content":"{\"status\":\"rendered\"}"}
+
+data: {"type":"RUN_FINISHED","threadId":"a2ui-form-162309","runId":"cc081e0a-186f-453f-ac57-fba4e9c50114"}
+

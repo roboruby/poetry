@@ -47,14 +47,27 @@ module Poetry
         Entry.new(slug: "stimulus", title: "Stimulus", section: "docs", icon: :zap,
                   description: "Compose your own Stimulus controllers with Poetry's: data: keywords merge onto " \
                            "any root or slot, forty-two controllers dispatch namespaced events, your markup " \
-                           "drives Poetry's actions, use_stimulus declares wiring in a subclass, and a " \
-                           "re-registered identifier extends a controller in JavaScript - poetry:check and " \
-                           "the registration guard cover every rung."),
+                           "drives Poetry's actions, use_stimulus declares wiring in a subclass, a Poetry " \
+                           "behavior composes into your own controller, and a re-registered identifier " \
+                           "extends a controller in JavaScript - poetry:check and the registration guard " \
+                           "cover every rung."),
+        Entry.new(slug: "where-state-lives", title: "Where State Lives", section: "docs", icon: :"map-pin",
+                  description: "Poetry has no useState: every state a component shows lives where the " \
+                           "server, poetry:check, your CSS and the back button can see it. The tiers - " \
+                           "the record and the form, the URL, a cookie or localStorage, a reactive " \
+                           "template's state, attributes on the element - each with the component that " \
+                           "ships it, and what a Turbo morph does to each."),
         Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
                   description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
                                "fields - label, value, errors, aria, and validation attributes all derived " \
                                "from the object; type inference into Poetry's vocabulary, f.association, " \
                                "and the poetry_form -> simple_form i18n chain."),
+        Entry.new(slug: "uploads", title: "Uploads", section: "docs", icon: :upload,
+                  description: "File drop with Active Storage: FileInput's dropzone takes files by drop, " \
+                               "picker and paste within accept, size and count limits; direct uploads run " \
+                               "at submit (Rails' flow) or as files land, with progress, retry and remove; " \
+                               "poetry_attachment_for renders an attachment through analysis and variants, " \
+                               "with Hot Cell's failures as states, and Turbo broadcasts move the chips."),
         Entry.new(slug: "pagination", title: "Pagination", section: "docs", icon: :"chevrons-left-right",
                   description: "Pagination through the gem you already use: bin/rails g " \
                                "poetry:pagination installs a host-owned adapter for kaminari, pagy " \
@@ -75,6 +88,22 @@ module Poetry
                                "template set, and screen slices (controller + view + system test, " \
                                "blocks pulled as dependencies) - installable with bin/rails g " \
                                "poetry:add <name> or any shadcn-compatible registry client."),
+        Entry.new(slug: "community", title: "Community components", section: "docs", icon: :users,
+                  description: "Components, blocks and restyles beyond the gems, each reviewed and installed " \
+                               "by name with bin/rails g poetry:add @poetry/<name>: its screenshot, its " \
+                               "options, its origin and its license on a page of its own."),
+        Entry.new(slug: "community-items", title: "Using community items", section: "docs", icon: :"package-open",
+                  description: "What a community item is, what bin/rails g poetry:add @poetry/<name> writes and " \
+                               "records, how a component, a block and a restyle are used, how items are named, " \
+                               "and what reviewed-not-audited means."),
+        Entry.new(slug: "community-updates", title: "Updating community items", section: "docs", icon: :"refresh-cw",
+                  description: "See what a registry changed in an item you installed and take it without losing an " \
+                               "edit: bin/rails g poetry:diff reports each file against its install record and the " \
+                               "registry, and bin/rails g poetry:update replaces what you have not edited."),
+        Entry.new(slug: "community-publishing", title: "Publishing components", section: "docs", icon: :upload,
+                  description: "Serve your own components from a registry at your own address: the item " \
+                               "format, the registries: entry an app adds, private registries, versions, and " \
+                               "how items reach the Poetry registry."),
         Entry.new(slug: "page-agent", title: "Page Agent", section: "docs", icon: :bot,
                   description: "The operator-register demo: this site embeds page-agent (pinned, " \
                                "opt-in, bring-your-own key) configured with Poetry's operator " \
@@ -140,7 +169,12 @@ module Poetry
                   description: "Render agent-generated UI with your own components: fold A2UI " \
                            "messages into surfaces, render them as forms, stream updates that keep " \
                            "their state, turn a submission into the spec's action, and run the " \
-                           "catalog's functions and checks on the server and in the browser.")
+                           "catalog's functions and checks on the server and in the browser."),
+        Entry.new(slug: "mcp-apps", title: "MCP Apps", section: "docs", icon: :"app-window",
+                  description: "Your screens inside Claude's chat: serve Poetry-rendered documents " \
+                           "as the ui:// resources of your app's own MCP server, answer tool calls " \
+                           "with server-rendered fragments the page applies by region, and let the " \
+                           "page call your tools, post to the chat and follow the host's theme.")
       ].freeze
 
       # The interaction demos are the one hand-curated section: full-page
@@ -156,11 +190,19 @@ module Poetry
                                "stream after your decision. No model, no key, same bytes every run."),
         Entry.new(slug: "agui-relay", title: "AG-UI Relay", section: "demos",
                   description: "A scripted AG-UI agent's event stream - text deltas, reasoning, a " \
-                               "backend tool call, shared state, a frontend tool call, an interrupt - " \
-                               "relayed by poetry-agent as versioned Turbo Streams into MessageScroller. " \
-                               "The tabs component on the page executes the agent's tool call through " \
-                               "the registrar and reports back; the interrupt is answered as a URL " \
-                               "decision. No model, no key, same bytes every run."),
+                               "backend tool call with an app the page cannot show, shared state, a frontend tool call that asks first, an " \
+                               "interrupt, a subagent - relayed by poetry-agent as versioned Turbo Streams " \
+                               "into MessageScroller. The tabs component on the page executes the agent's " \
+                               "tool call through the registrar once you approve it; the interrupt is " \
+                               "answered as a URL decision. No model, no key, same bytes every run."),
+        Entry.new(slug: "mcp-app", title: "MCP App", section: "demos",
+                  description: "A Poetry screen served as an MCP App by this site's own MCP server, " \
+                               "hosted by this site's own host: the page calls show_plans through the " \
+                               "host, the frame loads the document into the sandbox and fills from the " \
+                               "fragment, a Choose button calls the app-only tool from inside the page " \
+                               "through the host's endpoint, the frame goes fullscreen or into the corner " \
+                               "without reloading, and the bridge's traffic is logged both ways. The same " \
+                               "document renders in Claude Desktop."),
         Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
                   description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
                                "Poetry's own catalog rendered on the server as forms, and a third streamed " \
@@ -208,6 +250,14 @@ module Poetry
           end.sort_by(&:slug)
         end
 
+        # The poetry-motion effects, one page each at /motion/<slug>.
+        def motion
+          @motion ||= registry_components(Poetry::Motion.root).map do |key, entry|
+            slug = key.split("/").last.tr("_", "-")
+            Entry.new(slug: slug, title: titleize(slug), section: "motion", description: entry["description"])
+          end.sort_by(&:slug)
+        end
+
         def demos = DEMOS
 
         def docs = DOCS
@@ -215,10 +265,12 @@ module Poetry
         # The sidebar's guide sections. Order within a section is the display
         # order; Agent stays last in AI Native while it is experimental.
         DOC_SECTIONS = {
-          "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
-          "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines
+          "Get Started" => %w[installation theming typography testing i18n stimulus where-state-lives editors api],
+          "Community" => %w[community community-items community-updates community-publishing],
+          "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
+                           engines
                            herb],
-          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
+          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent]
         }.freeze
 
         # DOC_SECTIONS resolved to entries. Raises when the section map and
@@ -257,7 +309,7 @@ module Poetry
                                metadata-list stat table timeline tree typeset],
           "Feedback & status" => %w[alert deferred empty meter progress skeleton spinner toast
                                     toast-trigger toaster],
-          "Chat & streaming" => %w[attachment bubble marker message message-scroller]
+          "Chat & streaming" => %w[attachment bubble marker message message-scroller trace]
         }.freeze
 
         # COMPONENT_GROUPS resolved to entries. Raises when the group map and
@@ -300,7 +352,7 @@ module Poetry
         def block_meta(slug) = blocks_meta[slug]
 
         def find(section, slug)
-          list = { "charts" => charts, "demos" => demos, "blocks" => blocks,
+          list = { "charts" => charts, "motion" => motion, "demos" => demos, "blocks" => blocks,
                    "api" => apis }.fetch(section, components)
           list.find { |entry| entry.slug == slug }
         end
@@ -325,6 +377,15 @@ module Poetry
                     description: "Nine chart families computed in Ruby and shipped as finished SVG in " \
                                "the initial HTML - valid in print, PDF, email, and without " \
                                "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
+          Entry.new(slug: "motion", title: "Motion", section: "libraries", icon: :"wand-sparkles",
+                    description: "Animated effects whose finished state the server renders: an engine that " \
+                               "loads only when an element asks, one motion policy for reduced motion and " \
+                               "the Turbo cache, and ten behaviors to compose into your own controllers."),
+          Entry.new(slug: "island", title: "Islands", section: "libraries", icon: :"tree-palm",
+                    description: "The declared exception for client-owned state: poetry_island mounts a " \
+                               "module from the importmap over a server-rendered shell, handles the Turbo " \
+                               "lifecycle once, and hands the state back through a form field. No " \
+                               "framework, no bundler."),
           Entry.new(slug: "agent", title: "Agent", section: "libraries", icon: :"radio-tower",
                     description: "The agent-interop gem: the boot-free poetry-agent MCP server for " \
                                "coding agents, and the WebMCP runtime that registers rendered " \
@@ -346,13 +407,30 @@ module Poetry
         # The icon-set pages at /icons/<slug> - one per icon library.
         ICONS = [
           Entry.new(slug: "lucide", title: "Lucide", section: "icons",
-                    description: "The vendored icon set: 1,745 icons served from the gem, rendered " \
-                                 "through poetry_icon with literal-name validation.")
+                    description: "The vendored icon set: 1,890 icons served from the gem, rendered " \
+                                 "through poetry_icon with literal-name validation."),
+          Entry.new(slug: "tabler", title: "Tabler Icons", section: "icons",
+                    description: "poetry-tabler: Tabler's outline and filled icons on Lucide's grid and " \
+                                 "stroke, as :tabler and :tabler_filled."),
+          Entry.new(slug: "hugeicons", title: "Hugeicons", section: "icons",
+                    description: "poetry-hugeicons: Hugeicons' free stroke-rounded set as :hugeicons, " \
+                                 "repainted to currentColor."),
+          Entry.new(slug: "phosphor", title: "Phosphor", section: "icons",
+                    description: "poetry-phosphor: all six Phosphor weights, one library key each."),
+          Entry.new(slug: "heroicons", title: "Heroicons", section: "icons",
+                    description: "poetry-heroicons: outline, solid, mini and micro, each at its own size."),
+          Entry.new(slug: "simple-icons", title: "Simple Icons", section: "icons",
+                    description: "poetry-simple_icons: brand logos with their brand names and colours."),
+          Entry.new(slug: "solar", title: "Solar", section: "icons",
+                    description: "poetry-solar: the Solar Icon Set by 480 Design in six styles, CC BY 4.0 " \
+                                 "with the credit inside every svg."),
+          Entry.new(slug: "blode", title: "Blode Icons", section: "icons",
+                    description: "poetry-blode: outline and filled pairs as :blode and :blode_filled.")
         ].freeze
 
         def icons = ICONS
 
-        def all = docs + components + charts + blocks + demos + apis + libraries + icons
+        def all = docs + components + charts + motion + blocks + demos + apis + libraries + icons
 
         # The component class behind a gallery page - keys the YARD-export
         # lookup for the page's API section.
@@ -360,6 +438,7 @@ module Poetry
           case section
           when "components" then component_class_names[slug]
           when "charts" then chart_class_names[slug]
+          when "motion" then motion_registry_fact(slug, "class_name")
           end
         end
 
@@ -369,6 +448,7 @@ module Poetry
           case section
           when "components" then component_parts[slug]
           when "charts" then chart_parts[slug]
+          when "motion" then motion_registry_fact(slug, "parts")
           end
         end
 
@@ -378,6 +458,17 @@ module Poetry
           case section
           when "components" then component_wiring[slug]
           when "charts" then chart_wiring[slug]
+          when "motion" then motion_registry_fact(slug, "stimulus")
+          end
+        end
+
+        # The behaviors a component uses (the registry's behaviors
+        # section) - rendered as the Behaviors table beside the Wiring.
+        def behaviors_for(section, slug)
+          case section
+          when "components" then component_behaviors[slug]
+          when "charts" then chart_behaviors[slug]
+          when "motion" then motion_registry_fact(slug, "behaviors")
           end
         end
 
@@ -421,6 +512,26 @@ module Poetry
         def component_wiring
           @component_wiring ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
             [ key.split("/")[2..].join("-").tr("_", "-"), entry["stimulus"] ]
+          end
+        end
+
+        # One fact of a motion effect's registry entry, by page slug.
+        def motion_registry_fact(slug, key)
+          @motion_entries ||= registry_components(Poetry::Motion.root).to_h do |path, entry|
+            [ path.split("/").last.tr("_", "-"), entry ]
+          end
+          @motion_entries.dig(slug, key)
+        end
+
+        def component_behaviors
+          @component_behaviors ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
+            [ key.split("/")[2..].join("-").tr("_", "-"), entry["behaviors"] ]
+          end
+        end
+
+        def chart_behaviors
+          @chart_behaviors ||= registry_components(Poetry::Charts.root).to_h do |key, entry|
+            [ key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["behaviors"] ]
           end
         end
 

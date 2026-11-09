@@ -14,6 +14,20 @@ module Poetry
     destination File.expand_path("../tmp/install-dest", __dir__)
     setup :prepare_destination
 
+    def test_the_install_ends_on_the_cold_start_prompt_offer
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "bin/rails poetry:prompt | pbcopy"
+    end
+
+    def test_the_install_ignores_the_audit_folder_once
+      File.write(File.join(destination_root, ".gitignore"), "/tmp\n")
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_equal ["/tmp", ".poetry/audit/"], File.read(File.join(destination_root, ".gitignore")).lines.map(&:strip)
+    end
+
     def test_installs_tokens_theme_safelist_initializer_and_manifest
       run_generator
 
@@ -198,6 +212,97 @@ module Poetry
       # trigger dead in a fresh host without this call.
       assert_equal 1, content.scan("registerPoetryControllers(application)").size
       assert_includes content, %(import { registerPoetryControllers } from "@poetry/controllers")
+    end
+
+    def test_active_storage_pin_and_start_land_once_when_the_engine_is_in_the_app
+      importmap = File.join(destination_root, "config/importmap.rb")
+      entry = File.join(destination_root, "app/javascript/application.js")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(importmap, %(pin "application"\n))
+      File.write(entry, %(import "@hotwired/turbo-rails"\n))
+
+      with_active_storage_engine do
+        run_generator
+        run_generator
+      end
+
+      assert_equal 1, File.read(importmap).scan(%(pin "@rails/activestorage", to: "activestorage.esm.js")).size
+      assert_equal 1, File.read(entry).scan("ActiveStorage.start()").size
+      assert_includes File.read(entry), %(import * as ActiveStorage from "@rails/activestorage")
+    end
+
+    def test_an_existing_active_storage_pin_is_left_alone_and_nothing_lands_without_the_engine
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js", preload: true\n))
+
+      with_active_storage_engine { run_generator }
+
+      assert_equal 1, File.read(importmap).scan("@rails/activestorage").size, "the host's own pin stands"
+
+      File.write(importmap, %(pin "application"\n))
+      run_generator
+
+      refute_includes File.read(importmap), "@rails/activestorage", "no pin without Active Storage in the app"
+    end
+
+    # The availability probe reads ActiveStorage::Engine; the ui gem's
+    # test host loads no Active Storage, so the constant stands in for it.
+    def with_active_storage_engine
+      defined_here = !defined?(::ActiveStorage::Engine)
+      if defined_here
+        Object.const_set(:ActiveStorage, Module.new) unless defined?(::ActiveStorage)
+        ::ActiveStorage.const_set(:Engine, Class.new)
+      end
+      yield
+    ensure
+      if defined_here
+        ::ActiveStorage.send(:remove_const, :Engine)
+        Object.send(:remove_const, :ActiveStorage) if ::ActiveStorage.constants.empty?
+      end
+    end
+
+    def test_island_registration_and_the_islands_pin_land_once_when_poetry_island_is_bundled
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(index))
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+      File.write(importmap, %(pin "application"\n))
+
+      with_island_engine do
+        run_generator
+        run_generator
+      end
+
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryIslandControllers(application)").size
+      assert_includes content, %(import { registerPoetryIslandControllers } from "@poetry/island")
+      assert_equal 1, File.read(importmap).scan(%(pin_all_from "app/javascript/islands", under: "islands")).size
+      assert_file "app/javascript/islands/.keep"
+    end
+
+    def test_nothing_island_lands_without_the_gem
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      run_generator
+
+      refute_includes File.read(index), "@poetry/island"
+      assert_no_file "app/javascript/islands/.keep"
+    end
+
+    # The availability probe reads Poetry::Island::Engine; the ui gem's test
+    # host loads no poetry-island, so the constant stands in for it.
+    def with_island_engine
+      island = Module.new { const_set(:Engine, Class.new) }
+      Poetry.const_set(:Island, island)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Island) if Poetry.const_defined?(:Island, false)
     end
 
     def test_agent_runtime_registers_beside_the_controllers_when_poetry_agent_is_bundled
@@ -452,7 +557,7 @@ module Poetry
         spec.name = "actionview"
         spec.version = herb ? "8.2.0" : "8.1.0"
         real.runtime_dependencies.each do |dependency|
-          spec.add_dependency dependency.name, dependency.requirement unless dependency.name == "herb"
+          spec.add_dependency dependency.name, *dependency.requirement.as_list unless dependency.name == "herb"
         end
         spec.add_dependency "herb", ">= 0.10" if herb
       end
@@ -524,6 +629,63 @@ module Poetry
           Poetry::Charts.root.join("themes/vega.css").delete # the stub is shared
         end
       end
+    end
+
+    # -- the --motion flag (cross-repo: poetry-motion), stubbed like charts --
+
+    MOTION_CSS_MARKER = "--motion-duration-fast: 150ms;"
+
+    def with_motion_stub
+      root = Pathname.new(File.expand_path("../tmp/motion-stub", __dir__))
+      FileUtils.mkdir_p(root.join("app/assets/stylesheets"))
+      root.join("app/assets/stylesheets/poetry-motion.css").write(":root { #{MOTION_CSS_MARKER} }\n")
+
+      motion = Module.new do
+        const_set(:Engine, Class.new)
+        define_singleton_method(:root) { root }
+      end
+      Poetry.const_set(:Motion, motion)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Motion) if Poetry.const_defined?(:Motion, false)
+    end
+
+    def test_motion_flag_copies_the_tokens_and_registers_once
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        run_generator %w[--motion --skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/motion.css";').size, "entry line appended exactly once"
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryMotionControllers(application)").size
+      assert_includes content, %(import { registerPoetryMotionControllers } from "@poetry/motion")
+    end
+
+    def test_motion_is_remembered_by_the_vendored_file_on_a_plain_rerun
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        File.write(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"), "/* stale */\n")
+
+        run_generator %w[--skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+    end
+
+    def test_motion_without_the_gem_fails_before_any_file_lands
+      error = assert_raises(Thor::Error) { run_generator %w[--motion --skip-bundle], debug: true }
+
+      assert_includes error.message, %(gem "poetry-motion")
+      assert_no_file "app/assets/tailwind/poetry/tokens.css"
     end
 
     def test_a_superseded_tokens_line_converges_however_it_was_written

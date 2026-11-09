@@ -87,6 +87,35 @@ describe("poetry--core--roving-focus", () => {
     expect(document.activeElement).toBe(el("c"))
   })
 
+  it("an arrow with nowhere to go dispatches no entry (a radio group would check the item)", async () => {
+    application.stop()
+    application = await mount({ loop: false })
+    const entries = []
+    el("group").addEventListener("poetry--core--roving-focus:entry", (event) => entries.push(event.detail.item.id))
+
+    el("c").focus()
+    const down = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
+    el("c").dispatchEvent(down)
+    el("a").focus()
+    press(el("a"), "Home")
+
+    expect(entries).toEqual([])
+    expect(down.defaultPrevented).toBe(true) // still handled: the page does not scroll
+    expect(document.activeElement).toBe(el("a"))
+  })
+
+  it("arrows held with Ctrl, Alt or Meta belong to the platform: no move, no preventDefault", () => {
+    el("a").focus()
+
+    for (const modifier of ["ctrlKey", "altKey", "metaKey"]) {
+      const event = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true, [modifier]: true })
+      el("a").dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(false)
+      expect(document.activeElement).toBe(el("a"))
+    }
+  })
+
   it("a vertical group ignores the horizontal arrows (they fall through)", () => {
     el("a").focus()
     const notHandled = press(el("a"), "ArrowRight") // dispatchEvent: true = not preventDefault'ed

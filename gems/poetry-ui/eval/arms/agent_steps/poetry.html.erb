@@ -1,0 +1,11 @@
+<%# The poetry arm: "an agent's steps: a search with its result count, a
+    running test step, a failed tool call that reveals its error output, and
+    a link to a file it changed". %>
+<%= poetry_trace do |trace| %>
+  <% trace.with_step("Searched the docs for \"pending migrations\"", icon: :search, description: "3 results") %>
+  <% trace.with_step("Running bin/rails test", icon: :terminal, status: :running) %>
+  <% trace.with_step("Failed to run bin/rails db:migrate", icon: :terminal, status: :error, open: true) do %>
+    <%= poetry_code_block(code: "ActiveRecord::PendingMigrationError", variant: :destructive, size: :sm, copy: false, label: "Error output") %>
+  <% end %>
+  <% trace.with_step("Edited db/schema.rb", icon: :"file-pen", href: "/files/db/schema.rb", description: "+2 -1") %>
+<% end %>

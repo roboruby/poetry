@@ -64,7 +64,7 @@
       <h2 id="mcp">The MCP server</h2>
       <p>
         <code>poetry-agent</code> speaks newline-delimited JSON-RPC over
-        stdio with no SDK dependency. Wire it into Claude Code, Cursor, VS
+        stdio, on the official <code>mcp</code> gem. Wire it into Claude Code, Cursor, VS
         Code, Zed, or RubyMine with <code>bin/rails g poetry:editor</code>;
         the <%= link_to "MCP guide", mcp_path %> covers the ten tools and
         the verify loop they close.
@@ -109,12 +109,13 @@
         A2UI is the declarative generative-UI format: an agent emits a flat
         component list against a catalog the client owns. Poetry's registry is
         that catalog once projected -
-        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the v1.0
-        JSON Schema document (style axes as enums, options as typed
-        properties, slots as child references, the content block as
-        <code>text</code> or <code>children</code>), and this site serves it at
-        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %> for any agent
-        or middleware that reads catalogs by URL.
+        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the JSON
+        Schema document for each protocol version, v1.0 and v0.9 (style axes as
+        enums, options as typed properties, slots as child references, the content
+        block as <code>text</code> or <code>children</code>), and this site serves
+        them at <%= link_to "/a2ui/v1_0/catalog.json", "/a2ui/v1_0/catalog.json" %>
+        and <%= link_to "/a2ui/v0_9/catalog.json", "/a2ui/v0_9/catalog.json" %> for
+        any agent or middleware that reads catalogs by URL.
       </p>
       <p>
         The renderer is the other half. <code>Poetry::Agent::A2UI::Session</code>
@@ -161,7 +162,7 @@
       <table>
         <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
         <tbody>
-          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop</td></tr>
+          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server on the official <code>mcp</code> gem; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop, <code>#mcp</code> the gem's server underneath, open to a host's own tools; <code>Poetry::Agent::MCP::Auth</code> makes the HTTP mount a protected resource (the metadata document, the challenge, the verified token as <code>Auth.current</code>)</td></tr>
           <tr><td><code>exe/poetry-agent</code></td><td>the one executable (<code>bundle exec poetry-agent</code>); skills, helpers, and recipes ride along when poetry-ui is bundled</td></tr>
           <tr><td><code>poetry--agent--webmcp</code></td><td>the registrar controller: registers an opted-in instance's tools on connect, aborts them on disconnect, dispatches calls to the component's own action</td></tr>
           <tr><td><code>poetry--agent--webmcp-form</code></td><td>the declarative-form controller: an agent-invoked submit answers through <code>SubmitEvent.respondWith</code> instead of navigating</td></tr>
@@ -176,6 +177,8 @@
           <tr><td><code>Poetry::Agent::A2UI::Catalogs</code></td><td><code>Basic</code> (the spec's catalog mapped onto Poetry's components) and <code>Native</code> (Poetry's catalog rendered from the registry, no hand mapping)</td></tr>
           <tr><td><code>Poetry::Agent::A2UI::Streams</code></td><td>every surface change as a versioned Turbo Stream (append on first appearance, a morphing <code>vreplace</code> after, remove on delete)</td></tr>
           <tr><td><code>Poetry::Agent::A2UI::Functions</code></td><td>the function registry and the basic catalog's set (<code>Functions.basic</code>); <code>Expression</code> parses <code>formatString</code>, <code>Evaluator</code> resolves values in scope, <code>Checks</code> runs a component's rules</td></tr>
+          <tr><td><code>Poetry::Agent::Apps</code></td><td>MCP Apps, the author's side: <code>Document</code> (one <code>ui://</code> resource rendered through your views, its assets from your origin or inlined, its <code>_meta.ui</code>), <code>Result</code> and <code>Fragment</code> (text for the model, data for the host, server-rendered HTML for the page's regions), <code>capabilities</code> and <code>reader</code> for the gem's server; <code>MCP::Server#apps</code> serves documents beside the roster; <code>Activity</code> reads the <code>mcp-apps</code> activity AG-UI's MCP Apps middleware sends, for the relay's fallback step; <code>Host</code> is the other direction: other servers' apps in your page (servers, tools and resources through its own client, the visibility allowlist, the sandbox proxy page on a second origin, the RPC endpoint, the frame's data for the <code>poetry--agent--mcp-app-host</code> controller, the three display modes, per-user credentials through a server's <code>credentials:</code> with <code>Host::OAuth</code> as the gem's OAuth client over your storage)</td></tr>
+          <tr><td><code>@poetry/agent/mcp_app</code></td><td>the page's half of the MCP Apps bridge: initialize, tool input and result, fragments by region, tool calls from marked buttons and forms, messages, links, size, theme and the host's style variables on Poetry's tokens</td></tr>
           <tr><td><code>poetry--agent--a2ui-surface</code></td><td>the client side of a surface's checks: evaluates the rendered program as the user types, disables failing buttons, fills error slots</td></tr>
         </tbody>
       </table>

@@ -1,0 +1,7 @@
+<%# href: makes a step a link - a source the agent read, a file it changed. %>
+<div class="w-full max-w-md">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Read the Turbo handbook", icon: :"book-open", href: "https://turbo.hotwired.dev/handbook/introduction") %>
+    <% trace.with_step("Edited app/models/invoice.rb", icon: :"file-pen", href: "#", description: "+2 -1") %>
+  <% end %>
+</div>

@@ -13,8 +13,9 @@ module Poetry
         # `relative`: it is discarded in the top layer (the UA reasserts
         # `absolute`, pinning the panel to the document origin so it scrolls
         # off-screen below the fold); the UA `:modal` rule keeps it fixed and
-        # viewport-centered instead. See the parent Dialog.
-        element :content, "cn-alert-dialog-content m-auto open:grid group/alert-dialog-content"
+        # viewport-centered instead. See the parent Dialog, content-start
+        # included (WebKit's stretched auto rows under the modal max-height).
+        element :content, "cn-alert-dialog-content m-auto open:grid content-start group/alert-dialog-content"
 
         element :header, "cn-alert-dialog-header grid grid-rows-[auto_1fr] place-items-center text-center"
         # The with-media x-gap is theme-side (.cn-alert-dialog-header

@@ -1,0 +1,6052 @@
+{
+  "source": "apply/__tests__/default.snapshot-tool-order.test.ts",
+  "vectors": [
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not detach a streamed result when the snapshot re-ids it",
+      "line": 75,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "u1",
+          "role": "user"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "u1",
+          "delta": "u1 text"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "u1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "lookup",
+          "parentMessageId": "a1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "c1",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "a2",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "a2",
+          "delta": "a2 text"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "a2"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "streamed-result",
+          "toolCallId": "c1",
+          "content": "result of c1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "snapshot-result",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "snapshot-result",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "TOOL_CALL_START with an unseen parentMessageId mints assistant 'a1'. The streamed result lands after a1; the snapshot omits 'streamed-result' (dropped) and appends 'snapshot-result' at the end, and the repair moves it back behind a1.",
+      "specConflict": "A spec-literal merge appends the unseen 'snapshot-result' after 'a2' ([u1, a1, a2, snapshot-result]); the reference re-seats it behind a1."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > repairs a history that is already out of order",
+      "line": 114,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "History and snapshot are the same out-of-order list; every id matches, so only the repair reorders.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps the order of parallel results and places each after its own call",
+      "line": 123,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              },
+              {
+                "id": "c2",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          },
+          {
+            "id": "a3",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c3",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a4",
+            "role": "assistant",
+            "content": "a4 text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c3",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a4",
+              "role": "assistant",
+              "content": "a4 text"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "c3",
+              "content": "result of c3"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "a4",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"t1\", \"a2\", \"a3\", \"a4\", \"t2\", \"t3\"], the reference gives [\"u1\", \"a1\", \"t1\", \"t2\", \"a2\", \"a3\", \"t3\", \"a4\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > never moves an early result past an answered call onto a later pending one",
+      "line": 140,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "t0",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "t0",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps the original order of detached results for different calls moved to one message [t1 then t2]",
+      "line": 152,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"x\", \"t1\", \"t2\"], the reference gives [\"a1\", \"t1\", \"t2\", \"x\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps the original order of detached results for different calls moved to one message [t2 then t1]",
+      "line": 156,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. Moved results keep their original relative order, not call order.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"x\", \"t2\", \"t1\"], the reference gives [\"a1\", \"t2\", \"t1\", \"x\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves a result whose call is not in the history where it is",
+      "line": 185,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "orphan",
+              "role": "tool",
+              "toolCallId": "missing",
+              "content": "result of missing"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "a1 text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "orphan",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "No message issues 'missing'; the orphan tool message is kept in place, not dropped."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves a correctly ordered snapshot unchanged",
+      "line": 196,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              },
+              {
+                "id": "c2",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t2",
+            "role": "tool",
+            "toolCallId": "c2",
+            "content": "result of c2"
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Asserted with toEqual on the whole snapshot: full objects. Parallel results keep their own order (t2 before t1), not call order."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves results alone when providers reuse a tool call id every turn",
+      "line": 208,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "a4",
+              "role": "assistant",
+              "content": "a4 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "a4",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Two assistant messages issue the same toolCallId 'call_0' (providers reuse ids per turn); each result answers the call right before it."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a drifted result with a reused id to the nearest call that issued it",
+      "line": 234,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a4",
+              "role": "assistant",
+              "content": "a4 text"
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "a4",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"t1\", \"a2\", \"u2\", \"a3\", \"a4\", \"t3\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\", \"u2\", \"a3\", \"t3\", \"a4\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not pull a later turn's result back to an earlier unanswered call with the same id",
+      "line": 258,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "y",
+              "role": "assistant",
+              "content": "y text"
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "y",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "a1's call_0 was abandoned; t3 answers a3, the nearest earlier call with its id.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"x\", \"u2\", \"a3\", \"y\", \"t3\"], the reference gives [\"u1\", \"a1\", \"x\", \"u2\", \"a3\", \"t3\", \"y\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a drifted result with a reused id past a call that is already answered",
+      "line": 275,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "a4",
+              "role": "assistant",
+              "content": "a4 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "a4",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "a3 is answered in place by t3, so the drifted t1 belongs to a1.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"a3\", \"t3\", \"a4\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\", \"a3\", \"t3\", \"a4\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps each turn's result with its own turn when a reload re-ids every result",
+      "line": 291,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a1t",
+            "role": "assistant",
+            "content": "a1t text"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "u2 text"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2t",
+            "role": "assistant",
+            "content": "a2t text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a1t",
+              "role": "assistant",
+              "content": "a1t text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2t",
+              "role": "assistant",
+              "content": "a2t text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a1t",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "a2t",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Both results are new to the consumer and share the reused id call_0.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a1t\", \"u2\", \"a2\", \"a2t\", \"t1\", \"t2\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a1t\", \"u2\", \"a2\", \"t2\", \"a2t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a duplicate result for an answered call back to an older abandoned call",
+      "line": 311,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "y",
+              "role": "assistant",
+              "content": "y text"
+            },
+            {
+              "id": "t3dup",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t3dup",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "y",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Pins an admitted heuristic limit (the TS comment: the pass cannot tell a duplicate from a late answer): the duplicate t3dup moves back across the user turn u2 to a1's abandoned call. A port may reasonably differ here.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"x\", \"u2\", \"a3\", \"t3\", \"y\", \"t3dup\"], the reference gives [\"u1\", \"a1\", \"t3dup\", \"x\", \"u2\", \"a3\", \"t3\", \"y\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves one copy of a merge-duplicated call unanswered",
+      "line": 339,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The list carries one message id twice. /spec/1.0/basic#identifiers says a messageId MUST be unique within its thread, so this pins the reference's tolerance of a producer or store violation. Both local copies of 'a1' map to the snapshot's copy and stay two slots; t1 answers the nearer one.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a1\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"a1\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves one copy of a result the merge aliases twice and leaves the other",
+      "line": 354,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The list carries one message id twice. /spec/1.0/basic#identifiers says a messageId MUST be unique within its thread, so this pins the reference's tolerance of a producer or store violation. Matching from the newest back, the second t1 answers a1 and moves; the first finds no open call and stays.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"t1\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\", \"t1\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > tolerates null and non-object entries in toolCalls on unverified input",
+      "line": 374,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                null
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                42,
+                "c9",
+                {
+                  "type": "function"
+                }
+              ]
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c3",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a4",
+              "role": "assistant",
+              "content": "a4 text"
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "c3",
+              "content": "result of c3"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing (enforcement): a malformed known field is fatal",
+      "notes": "The TS test feeds the reducer unverified input. On the full pipeline enforcement rejects the malformed snapshot message before apply sees it (nulls and malformed entries nested in messages are fatal), so the vector expects any ProtocolError. The TS unit assertion (reducer alone) is [u1, a1, a2, a3, t3, a4]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > tolerates a non-array toolCalls on unverified input",
+      "line": 387,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": {
+                "id": "c1"
+              }
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing (enforcement): a malformed known field is fatal",
+      "notes": "The TS test feeds the reducer unverified input. On the full pipeline enforcement rejects the malformed snapshot message before apply sees it (nulls and malformed entries nested in messages are fatal), so the vector expects any ProtocolError. The TS unit assertion is [u1, a1, a2, t1]: an object toolCalls registers no call."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not pair a result without a toolCallId with a call without an id",
+      "line": 399,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "content": "no call id"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/schema (enforcement): ToolCall.id and ToolMessage.toolCallId are required",
+      "notes": "The TS test feeds the reducer unverified input. On the full pipeline enforcement rejects the malformed snapshot message before apply sees it (nulls and malformed entries nested in messages are fatal), so the vector expects any ProtocolError. The TS unit assertion is [u1, a1, a2, t1]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves a result behind reasoning stored between it and its call",
+      "line": 414,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "r1 thought"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Reasoning between a call and its result is the next step's; it does not separate the result from its call, and the result is not moved in front of it."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps a multi-step turn's later reasoning ahead of the result appended after it",
+      "line": 428,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "r1 thought"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c-lookup",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c-chart",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t-lookup",
+              "role": "tool",
+              "toolCallId": "c-lookup",
+              "content": "result of c-lookup"
+            },
+            {
+              "id": "r2",
+              "role": "reasoning",
+              "content": "r2 thought"
+            },
+            {
+              "id": "t-chart",
+              "role": "tool",
+              "toolCallId": "c-chart",
+              "content": "result of c-chart"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t-lookup",
+            "role": "tool"
+          },
+          {
+            "id": "r2",
+            "role": "reasoning"
+          },
+          {
+            "id": "t-chart",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a detached result back in front of reasoning, which stays with the message after it",
+      "line": 441,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "r1 thought"
+            },
+            {
+              "id": "a1t",
+              "role": "assistant",
+              "content": "a1t text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning"
+          },
+          {
+            "id": "a1t",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"r1\", \"a1t\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"r1\", \"a1t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a detached result in front of reasoning that follows its call's other results",
+      "line": 456,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "r2",
+              "role": "reasoning",
+              "content": "r2 thought"
+            },
+            {
+              "id": "a1t",
+              "role": "assistant",
+              "content": "a1t text"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "r2",
+            "role": "reasoning"
+          },
+          {
+            "id": "a1t",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"t1\", \"r2\", \"a1t\", \"t2\"], the reference gives [\"u1\", \"a1\", \"t1\", \"t2\", \"r2\", \"a1t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > looks past activity after reasoning when placing a moved result",
+      "line": 469,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "r1 thought"
+            },
+            {
+              "id": "act",
+              "role": "activity",
+              "activityType": "progress",
+              "content": {}
+            },
+            {
+              "id": "a1t",
+              "role": "assistant",
+              "content": "a1t text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "a1t",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. The snapshot carries the activity message, so it is merged like any other.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"r1\", \"act\", \"a1t\", \"t1\"], the reference gives [\"a1\", \"t1\", \"r1\", \"act\", \"a1t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a result before a user message that separates it from its call",
+      "line": 483,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"u2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"u2\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a result that sits before its call forward to that call",
+      "line": 489,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Nothing earlier issued c1, so the early result answers the one later call with its id.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"t1\", \"a1\", \"a2\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a result before its call forward when that call ends the list",
+      "line": 496,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"t1\", \"a1\"], the reference gives [\"u1\", \"a1\", \"t1\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > puts the result back after its call when the snapshot re-ids the assistant message",
+      "line": 502,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          },
+          {
+            "id": "txt",
+            "role": "assistant",
+            "content": "txt text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "a1-snapshot",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "txt-snapshot",
+              "role": "assistant",
+              "content": "txt-snapshot text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a1-snapshot",
+            "role": "assistant"
+          },
+          {
+            "id": "t",
+            "role": "tool"
+          },
+          {
+            "id": "txt-snapshot",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The merge keeps the held result 't' in place and drops a1/txt, giving [u, t, a1-snapshot, txt-snapshot]; the forward repair moves t behind a1-snapshot.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u\", \"t\", \"a1-snapshot\", \"txt-snapshot\"], the reference gives [\"u\", \"a1-snapshot\", \"t\", \"txt-snapshot\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > keeps reasoning before its call when a result moves forward past both",
+      "line": 515,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "r",
+              "role": "reasoning",
+              "content": "r thought"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "r",
+            "role": "reasoning"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "t",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u\", \"t\", \"r\", \"a\"], the reference gives [\"u\", \"r\", \"a\", \"t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not move a result forward onto a call that is answered in place",
+      "line": 521,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "t0",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "t0",
+            "role": "tool"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "a's call is answered by t1 directly behind it, so the early t0 stays."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not move an extra result for an answered call forward onto a later pending call",
+      "line": 534,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t1dup",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "call_0",
+            "content": "result of call_0"
+          },
+          {
+            "id": "x",
+            "role": "assistant",
+            "content": "x text"
+          },
+          {
+            "id": "t1dup",
+            "role": "tool",
+            "toolCallId": "call_0",
+            "content": "result of call_0"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "u2 text"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Asserted with toEqual on the whole snapshot: full objects. The helper's identity (toBe) is TS-only. a2 stays unanswered (a pending human-in-the-loop call)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not move early results forward when their call id is reused across turns",
+      "line": 553,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "call_0",
+              "content": "result of call_0"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "u2 text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "call_0",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "t",
+            "role": "tool"
+          },
+          {
+            "id": "t",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order. The list carries one message id twice. /spec/1.0/basic#identifiers says a messageId MUST be unique within its thread, so this pins the reference's tolerance of a producer or store violation. (one result object listed twice)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > does not move distinct early results forward onto calls that reuse their id",
+      "line": 570,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "t0",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "y",
+              "role": "assistant",
+              "content": "y text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "t0",
+            "role": "tool"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "y",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves an early result forward to the one call that issues its unique id",
+      "line": 583,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "txt",
+              "role": "assistant",
+              "content": "txt text"
+            },
+            {
+              "id": "a1-prime",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "txt",
+            "role": "assistant"
+          },
+          {
+            "id": "a1-prime",
+            "role": "assistant"
+          },
+          {
+            "id": "t",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u\", \"t\", \"txt\", \"a1-prime\"], the reference gives [\"u\", \"txt\", \"a1-prime\", \"t\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves only the first of two early results for one unique call forward",
+      "line": 590,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "t0",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "t0",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"t0\", \"t1\", \"a\", \"x\"], the reference gives [\"t1\", \"a\", \"t0\", \"x\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > emits a forward-moved result before a backward-moved one for the same issuer",
+      "line": 596,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"t1\", \"a1\", \"x\", \"t2\"], the reference gives [\"a1\", \"t1\", \"t2\", \"x\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves extra results for a call that is already answered where they are",
+      "line": 603,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1b",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "t1c",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t1b",
+            "role": "tool"
+          },
+          {
+            "id": "t1c",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "One call takes one result; the extras pair with nothing and stay. No result is dropped."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > places parallel results split across two assistant messages after their own call",
+      "line": 617,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            },
+            {
+              "id": "a3",
+              "role": "assistant",
+              "content": "a3 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"t1\", \"t2\", \"a3\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\", \"t2\", \"a3\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > leaves a result in place when only preserved activity separates it from its call",
+      "line": 630,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "progress",
+            "content": {}
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The snapshot carries no activity, so the local activity is preserved between the call and its result; activity does not separate them, so nothing moves."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > lands a moved result after client-only activity that follows its call",
+      "line": 649,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "progress",
+            "content": {}
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The moved result goes behind the preserved activity, in front of a2.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"act\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"act\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "tool results pair with calls by id alone, whatever their subagent run > lands a streamed result after its call when its subagent run differs",
+      "line": 669,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "x",
+            "role": "assistant",
+            "content": "x text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "ta",
+          "toolCallId": "c",
+          "content": "a",
+          "subagentRunId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "ta",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right; /spec/1.0/events/subagents (a result's subagentRunId is its own attribution)",
+      "notes": "The call 'c' lives only in the history; the result carries an unannounced subagentRunId, which verification accepts as provenance."
+    },
+    {
+      "name": "tool results pair with calls by id alone, whatever their subagent run > lands a streamed result after its call when its subagent run differs [later snapshot]",
+      "line": 689,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "ta",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "a",
+            "subagentRunId": "r1"
+          },
+          {
+            "id": "x",
+            "role": "assistant",
+            "content": "x text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "ta",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "a",
+              "subagentRunId": "r1"
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "ta",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test's second assertion (keepToolResultsWithCalls(messages) is unchanged), routed as a later snapshot of that history."
+    },
+    {
+      "name": "tool results pair with calls by id alone, whatever their subagent run > moves a snapshot result to its call when its subagent run differs",
+      "line": 692,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "ta",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c",
+              "subagentRunId": "r1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "ta",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Pairing ignores subagentRunId.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u\", \"a\", \"x\", \"ta\"], the reference gives [\"u\", \"a\", \"ta\", \"x\"]."
+    },
+    {
+      "name": "tool results pair with calls by id alone, whatever their subagent run > cannot tell apart a parent and a subagent call that reuse one id (known limitation)",
+      "line": 698,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "s",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ],
+              "subagentRunId": "r1"
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "ts",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c",
+              "subagentRunId": "r1"
+            },
+            {
+              "id": "ta",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "ts",
+            "role": "tool"
+          },
+          {
+            "id": "s",
+            "role": "assistant"
+          },
+          {
+            "id": "ta",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Pins an admitted wrong answer: the parent's result 'ta' lands behind the subagent's call 's' and the subagent's 'ts' behind the parent's 'a' (swapped). A port that pairs correctly would fail this vector, and should.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u\", \"a\", \"s\", \"x\", \"ts\", \"ta\"], the reference gives [\"u\", \"a\", \"ts\", \"s\", \"ta\", \"x\"]."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result with a reused id after the latest call with that id",
+      "line": 732,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "call_0",
+            "content": "result of call_0"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "u2 text"
+          },
+          {
+            "id": "a3",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "call_0",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t3",
+          "toolCallId": "call_0",
+          "content": "result of call_0"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right",
+      "notes": ""
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result after the newest call with its id that has no result yet",
+      "line": 749,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t2",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t1",
+          "toolCallId": "c",
+          "content": "result of c"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right",
+      "notes": "a2's call is answered by t2, so t1 answers a1, not the newest holder."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result after the newest call with its id that has no result yet [later snapshot]",
+      "line": 757,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t2",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "u text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test's second assertion: a later snapshot of that history leaves it in place."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result after the newest holder when every holder is answered",
+      "line": 760,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "t2",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "result of c"
+          },
+          {
+            "id": "x",
+            "role": "assistant",
+            "content": "x text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t3",
+          "toolCallId": "c",
+          "content": "result of c"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right",
+      "notes": "Every holder is answered, so the extra result goes behind the newest holder's results."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > does not throw on malformed toolCalls in history",
+      "line": 775,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "u text"
+          },
+          {
+            "id": "a0",
+            "role": "assistant",
+            "toolCalls": [
+              null
+            ]
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": {
+              "id": "c"
+            }
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a3",
+            "role": "assistant",
+            "toolCalls": [
+              null,
+              42
+            ]
+          },
+          {
+            "id": "x",
+            "role": "assistant",
+            "content": "x text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t2",
+          "toolCallId": "c",
+          "content": "result of c"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "a0",
+            "role": "assistant"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "a3",
+            "role": "assistant"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right",
+      "notes": "The history is the consumer's own store (TS agent.messages, Poetry Transcript#add_message), which no pipeline stage verifies; the malformed entries are tolerated and skipped."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result after activity that follows its call",
+      "line": 790,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "progress",
+            "content": {}
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t1",
+          "toolCallId": "c1",
+          "content": "result of c1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "reference-only: TOOL_CALL_RESULT inserts its tool message behind the newest call holder still unanswered (apply/default.ts:868); /spec/1.0/events/tool-calls#tool_call_result says only that the result is a tool message in its own right",
+      "notes": "Activity never goes to the backend, so the result goes behind it."
+    },
+    {
+      "name": "TOOL_CALL_RESULT places a streamed result like the snapshot pass > lands a streamed result after activity that follows its call [snapshot pass]",
+      "line": 797,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "act",
+              "role": "activity",
+              "activityType": "progress",
+              "content": {}
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test's second assertion (the snapshot pass puts the same result in the same place), via MESSAGES_SNAPSHOT with an empty history.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"act\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"act\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT stopped by a subscriber > repairs the same snapshot when no subscriber stops it",
+      "line": 821,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "u1 text"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "a2 text"
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "result of c1"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "Control case; the same outcome as line 114.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > returns the same array when every result is in place",
+      "line": 830,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "c2",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "act",
+              "role": "activity",
+              "activityType": "progress",
+              "content": {}
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c2",
+              "content": "result of c2"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "act",
+            "role": "activity"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "keepToolResultsWithCalls > returns the same array when nothing issues a tool call",
+      "line": 846,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "orphan",
+              "role": "tool",
+              "toolCallId": "missing",
+              "content": "result of missing"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "a1 text"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "orphan",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "keepToolResultsWithCalls > returns a new array and leaves the input untouched when it moves a result",
+      "line": 855,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: the new-array identity and non-mutation of the input.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"t1\", \"a2\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > pairs several detached results with a reused id in call order",
+      "line": 865,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"a2\", \"x\", \"t1\", \"t2\"], the reference gives [\"a1\", \"t1\", \"a2\", \"t2\", \"x\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > leaves a detached result that has no open call left where it is",
+      "line": 879,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. t2 takes the only open call; t1 stays.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"x\", \"t1\", \"t2\"], the reference gives [\"a1\", \"t2\", \"x\", \"t1\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > leaves a drifted result alone when every earlier call with its id is answered",
+      "line": 903,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "t3",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "t3",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. TS-only: `toBe(history)` (the helper returns the same array when nothing moves) is object identity; the vector pins the unchanged order."
+    },
+    {
+      "name": "keepToolResultsWithCalls > keeps a result in place after the second copy of an aliased call",
+      "line": 920,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. The list carries one message id twice. /spec/1.0/basic#identifiers says a messageId MUST be unique within its thread, so this pins the reference's tolerance of a producer or store violation. (one call object listed twice). TS-only: the object identity of the two copies.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"a1\", \"t1\", \"t2\"], the reference gives [\"u1\", \"a1\", \"t2\", \"a1\", \"t1\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > moves detached results behind the right copy of an aliased call",
+      "line": 933,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "x",
+              "role": "assistant",
+              "content": "x text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "y",
+              "role": "assistant",
+              "content": "y text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            },
+            {
+              "id": "t2",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "result of c"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "x",
+            "role": "assistant"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "t2",
+            "role": "tool"
+          },
+          {
+            "id": "y",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT. The list carries one message id twice. /spec/1.0/basic#identifiers says a messageId MUST be unique within its thread, so this pins the reference's tolerance of a producer or store violation.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"a1\", \"x\", \"a1\", \"y\", \"t1\", \"t2\"], the reference gives [\"a1\", \"t1\", \"x\", \"a1\", \"t2\", \"y\"]."
+    },
+    {
+      "name": "keepToolResultsWithCalls > emits a moved result after an orphan that sits between it and its call",
+      "line": 941,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "u1 text"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "lookup",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "orphan",
+              "role": "tool",
+              "toolCallId": "missing",
+              "content": "result of missing"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "a2 text"
+            },
+            {
+              "id": "t1",
+              "role": "tool",
+              "toolCallId": "c1",
+              "content": "result of c1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          },
+          {
+            "id": "orphan",
+            "role": "tool"
+          },
+          {
+            "id": "t1",
+            "role": "tool"
+          },
+          {
+            "id": "a2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: keepToolResultsWithCalls (apply/default.ts:250) re-seats each drifted tool result behind the call that issued it after the merge; the spec has no such rule",
+      "notes": "The TS test calls the exported helper keepToolResultsWithCalls directly. With an empty history the snapshot merge appends every message in snapshot order and then runs the same helper, so the vector routes the list through MESSAGES_SNAPSHOT.",
+      "specConflict": "The reference reorders: a spec-literal merge (state.mdx: held messages keep their position, unseen ones append in snapshot order) gives [\"u1\", \"a1\", \"orphan\", \"a2\", \"t1\"], the reference gives [\"u1\", \"a1\", \"orphan\", \"t1\", \"a2\"]."
+    }
+  ],
+  "excluded": [
+    {
+      "line": 161,
+      "name": "MESSAGES_SNAPSHOT keeps tool results next to their calls > moves a large batch of detached results without overflowing the call stack",
+      "reason": "engine-limit: pins V8's spread-argument limit (RangeError) on 150,000 results; the ordering rule it exercises is covered by the small detached-result vectors"
+    },
+    {
+      "line": 802,
+      "name": "MESSAGES_SNAPSHOT stopped by a subscriber > skips the repair along with the rest of the snapshot",
+      "reason": "subscriber: onMessagesSnapshotEvent stopPropagation; no Ruby counterpart"
+    },
+    {
+      "line": 886,
+      "name": "keepToolResultsWithCalls > does not let a null entry separate a call from its result",
+      "reason": "helper-only: a null list entry cannot reach apply (enforcement rejects a null message); pins the exported helper's tolerance for direct callers"
+    },
+    {
+      "line": 892,
+      "name": "keepToolResultsWithCalls > moves a result behind null entries that follow its call",
+      "reason": "helper-only: null list entries, as above"
+    },
+    {
+      "line": 954,
+      "name": "keepToolResultsWithCalls > does not throw on null or non-object messages and passes them through",
+      "reason": "helper-only: null and numeric list entries, as above"
+    },
+    {
+      "line": 1074,
+      "name": "keepToolResultsWithCalls properties > holds its invariants over thousands of random histories",
+      "reason": "property test of the exported helper (invariants, no fixed outcomes; histories include null entries)"
+    }
+  ]
+}

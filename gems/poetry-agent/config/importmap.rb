@@ -6,5 +6,5 @@
 # @poetry/agent npm package instead - one source, two channels.
 
 pin "@poetry/agent", to: "poetry/agent/index.js"
-pin_all_from File.expand_path("../app/javascript/poetry/agent", __dir__),
+pin_all_from Poetry::Core.javascript_path(File.expand_path("..", __dir__)).join("poetry/agent"),
              under: "@poetry/agent", to: "poetry/agent"

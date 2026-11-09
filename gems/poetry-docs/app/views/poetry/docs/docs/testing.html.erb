@@ -12,6 +12,7 @@
     bundle exec rake "poetry:check[app/views/checkout/**/*.html.erb]" # scope with a glob
     POETRY_CHECK_JSON=1 bin/rails poetry:check                        # JSON for editors / CI
     POETRY_CHECK_DESIGN=1 bin/rails poetry:check                      # add the design-slop warnings
+    bin/rails poetry:audit                                            # the whole app: axes used, paint, partials, flows -> .poetry/audit/
   CODE
   wiring_source = <<~CODE
     class Settings::NotificationsViewTest < ActionView::TestCase

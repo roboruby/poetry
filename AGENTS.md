@@ -8,9 +8,15 @@ tests and gates; read the gem's file before working in it.
 ## Layout
 
 - `gems/poetry-core`, `poetry-lucide`, `poetry-charts`, `poetry-extract`,
-  `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`
+  `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`,
+  and the icon sets `poetry-tabler`, `poetry-hugeicons`, `poetry-phosphor`,
+  `poetry-heroicons`, `poetry-simple_icons`, `poetry-solar`, `poetry-blode`
   — one directory per gem;
   siblings resolve by relative path (`../poetry-core`) inside the tree.
+- `gems/poetry-solar` — the one CC BY 4.0 member: 480 Design's icons, credited
+  in every rendered svg (`Poetry::Solar::ATTRIBUTION`), `NOTICE` and
+  `LICENSE-SOLAR.txt`; the gem's AGENTS.md has the rules. CC BY 4.0 has no
+  ShareAlike term, so nothing else in the family changes license.
 - `gems/poetry-docs` — the poetryui.com documentation as a mountable engine
   on the family from the tree, with its dummy host under `test/dummy`
   (`bin/dev` serves it on 4110). Versioned with the family, never published:
@@ -22,8 +28,15 @@ tests and gates; read the gem's file before working in it.
   comments into the tree (the gem's AGENTS.md has the rule).
 - `tools/releaser/` — versions, changelog dates, notes, build, sign, verify,
   push; its own small bundle and tests.
+- `tools/minifier/` — the release's JavaScript minifier (esbuild, pinned).
+  The build turns each published gem's `app/javascript` into
+  `dist/javascript`, one minified file and source map per source file, packs
+  it, then deletes `dist/` (gitignored). `Poetry::Core.javascript_path`
+  serves `dist/javascript` when a gem carries it, so released gems serve
+  minified files and a checkout serves source. `rake minify:write` and
+  `minify:clean` in `tools/releaser` produce and remove the trees locally.
 - The root: the umbrella gem (`poetry.gemspec`, `lib/`, `test/`) plus
-  `VERSION`, the single source of truth for all nine gems. One
+  `VERSION`, the single source of truth for every gem in the family. One
   `gem "poetry"` installs core, ui and lucide as hard runtime dependencies,
   required outright in `lib/poetry.rb`; charts, agent, extract,
   simple_form and jumpstart_pro are opt-in gems a host adds itself.
@@ -59,8 +72,8 @@ tests and gates; read the gem's file before working in it.
 - The train tags `vX` (annotated) and opens a draft GitHub release with
   notes assembled from the ten changelogs; the docs engine is in the
   family for versions and notes and out of the publish list. Publishing that release is the
-  word: `release.yml` builds all nine reproducibly from the tag's commit
-  time, signs each with sigstore, verifies, then exchanges one trusted
+  word: `release.yml` builds every published gem reproducibly from the tag's commit
+  time with their JavaScript minified, signs each with sigstore, verifies, then exchanges one trusted
   publishing credential and pushes in order, idempotently (a version already
   on RubyGems with the same checksum is skipped, a different checksum stops
   the run). A manual dispatch of `release.yml` is always a dry run.

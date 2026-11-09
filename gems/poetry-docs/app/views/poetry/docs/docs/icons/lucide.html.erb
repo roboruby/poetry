@@ -34,7 +34,7 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">Lucide</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
-      poetry-lucide is the default Poetry icon set: 1,745 Lucide icons
+      poetry-lucide is the default Poetry icon set: 1,890 Lucide icons
       vendored into the gem at a pinned upstream commit and sanitized at
       vendor time, so rendering never parses, never sanitizes, and never
       touches the network.
@@ -82,6 +82,12 @@
         instead while the optional <code>on_missing_icon</code> callable
         fires. The default fallback is <code>:"circle-question-mark"</code>,
         which this set ships.
+      </p>
+      <p>
+        Lucide renames icons from time to time; <code>trash-2</code> became
+        <code>trash</code> in 1.57.0. The 264 old names ship as aliases, so
+        they keep rendering after an update, and <code>poetry check</code>
+        warns on one with the current name.
       </p>
     <% end %>
     <%= poetry_code_block(code: config_source, language: "ruby", label: "Configuration") %>

@@ -1,0 +1,8 @@
+<%# Limits are options the zone enforces at intake: a file outside accept:,
+    over max_size: or beyond max_files: is refused with a message in the
+    role=alert list under the zone, and the hint says the same in words.
+    With active_storage_validations loaded, form.file_input reads the
+    attribute's validators for these. %>
+<%= poetry_file_input(variant: :dropzone, name: "receipts[]", multiple: true, accept: "image/*,application/pdf",
+                      max_size: 5.megabytes, min_size: 1.kilobyte, max_files: 4,
+                      hint: "Up to four images or PDFs, 1 KB to 5 MB each", class: "w-full max-w-md") %>

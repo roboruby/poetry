@@ -33,8 +33,9 @@ export default class extends Controller {
   #scrollLock = null
 
   /**
-   * Heals a restored zombie snapshot, subscribes the before-cache close,
-   * and arms the opt-in global hotkey.
+   * Heals a restored zombie snapshot, subscribes the before-cache close
+   * and the close on the dialog's own successful form submission, and
+   * arms the opt-in global hotkey.
    */
   connect() {
     this.#scrollLock = useScrollLock(this)
@@ -49,6 +50,15 @@ export default class extends Controller {
         this.close()
         flushPendingExits()
       }
+    })
+
+    // A form inside the dialog that submits successfully closes it. The
+    // redirect back is a morph refresh under turbo-refresh-method=morph,
+    // and the morph guard keeps an open dialog open (the client opened
+    // it); a failed submission re-renders inside it, so it stays.
+    useListen(this, this.element, "turbo:submit-end", (event) => {
+      if (!event.detail?.success || !this.hasDialogTarget || !this.dialogTarget.contains(event.target)) return
+      this.close()
     })
 
     if (this.hotkeyValue === "") return

@@ -1,49 +1,7 @@
 <!DOCTYPE html>
 <html class="style-default">
   <head>
-    <title><%= page_meta[:title] %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= render "layouts/poetry/docs/meta" %>
-    <%# poetry_optimistic_form's prerequisite: failure
-        reconciliation is a Turbo refresh that must MORPH to be seamless. %>
-    <meta name="turbo-refresh-method" content="morph">
-    <meta name="turbo-refresh-scroll" content="preserve">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%# Advertise the page's markdown twin to crawlers (paired with the
-        HTTP Link header the MarkdownMirror concern sets). %>
-    <% if respond_to?(:markdown_alternate_path) && (md_path = markdown_alternate_path) %>
-      <link rel="alternate" type="text/markdown" href="<%= md_path %>">
-    <% end %>
-
-    <%# Apply the stored dark mode AND component style BEFORE first paint.
-        The style axis swaps the server-rendered style-default for
-        the stored choice; style_controller.js switches it live. %>
-    <script>
-      try {
-        const stored = localStorage.getItem("poetry-docs-theme")
-        if (stored === "dark" || (!stored && matchMedia("(prefers-color-scheme: dark)").matches)) {
-          document.documentElement.classList.add("dark")
-        }
-        const style = localStorage.getItem("poetry-docs-style")
-        if (style && style !== "default" && /^[a-z]{4,7}$/.test(style)) {
-          document.documentElement.classList.replace("style-default", "style-" + style)
-        }
-      } catch {}
-    </script>
-
-    <%= yield :head %>
-
-    <link rel="icon" href="<%= image_path("poetry_docs/icon.png") %>" type="image/png">
-
-    <link rel="icon" href="<%= image_path("poetry_docs/icon.svg") %>" type="image/svg+xml">
-
-    <link rel="apple-touch-icon" href="<%= image_path("poetry_docs/icon.png") %>">
-
-    <%# The engine's built stylesheet (rake poetry_docs:css) and its own JavaScript graph. %>
-    <%= stylesheet_link_tag "poetry_docs", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags "poetry_docs/application" %>
+    <%= render "layouts/poetry/docs/head" %>
   </head>
 
   <body data-controller="theme sidebar-sections" class="min-h-screen bg-background text-foreground antialiased">
@@ -82,10 +40,12 @@
           <% [["Get Started", :rocket, nil, Poetry::Docs::DocsCatalog.doc_sections["Get Started"]],
               ["Advanced", :layers, nil, Poetry::Docs::DocsCatalog.doc_sections["Advanced"]],
               ["AI Native", :sparkles, nil, Poetry::Docs::DocsCatalog.doc_sections["AI Native"]],
+              ["Community", :users, "/community", Poetry::Docs::DocsCatalog.doc_sections["Community"]],
               ["Libraries", :"library-big", "/libraries", Poetry::Docs::DocsCatalog.libraries],
               ["Icons", :shapes, "/icons", Poetry::Docs::DocsCatalog.icons],
               ["Components", :component, "/components", Poetry::Docs::DocsCatalog.components],
               ["Charts", :"chart-area", "/charts", Poetry::Docs::DocsCatalog.charts],
+              ["Motion", :"wand-sparkles", "/motion", Poetry::Docs::DocsCatalog.motion],
               ["Blocks", :"layout-template", "/blocks", Poetry::Docs::DocsCatalog.blocks],
               ["Demos", :"monitor-play", "/demos", Poetry::Docs::DocsCatalog.demos],
               ["API", :braces, "/api/", Poetry::Docs::DocsCatalog.apis]].each do |title, icon, prefix, entries| %>
@@ -158,39 +118,7 @@
         <% end %>
       <% end %>
       <% shell.with_inset do %>
-        <header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
-          <%= poetry_sidebar_trigger %>
-          <div class="hidden truncate lg:block"><%= yield :breadcrumb %></div>
-          <div class="ml-auto flex items-center gap-2">
-            <%= render "poetry/docs/shared/site_nav" %>
-            <%# The palette lists every page plus the search index headings (a
-                thousand items) and depends on nothing in the request, so it is
-                cached whole; its ids are random per render and stay unique. %>
-            <% cache [ "docs", "search-palette", Poetry::Ui::VERSION, Poetry::Docs::SearchIndex.digest ] do %>
-              <%= render "poetry/docs/shared/search" %>
-            <% end %>
-            <%# The theme switcher is itself styled by the theme it switches, so
-                its native-select width would otherwise track each theme's font/
-                padding and jump on change. class: "w-full" overrides the
-                component's w-fit wrapper so the select fills this fixed w-28 -
-                a stable-width control, no horizontal jump between themes. %>
-            <div data-controller="style" data-action="change->style#apply" class="w-28">
-              <label for="style-switcher" class="sr-only">Component style</label>
-              <%= poetry_native_select(name: "style", id: "style-switcher", class: "w-full",
-                                       options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
-                                       selected: "default") %>
-            </div>
-            <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
-                              data: { action: "click->theme#toggle" }) do %>
-              <%= poetry_icon(name: :sun, class: "dark:hidden") %>
-              <%= poetry_icon(name: :moon, class: "hidden dark:block") %>
-            <% end %>
-            <%# The appearance controls (style, light/dark) on one side of the
-                divider, the project links on the other. %>
-            <%= poetry_separator(orientation: :vertical, class: "mx-1 h-5") %>
-            <%= render "poetry/docs/shared/project_links" %>
-          </div>
-        </header>
+        <%= render "poetry/docs/shared/header" %>
         <main class="mx-auto w-full max-w-4xl flex-1 p-6 lg:p-10">
           <%= yield %>
         </main>

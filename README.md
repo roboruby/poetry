@@ -10,8 +10,8 @@ This is the umbrella gem. One line installs the library proper: the engine, the 
 
 This repository holds the whole family. Each gem keeps its own bundle, tests and gates, and resolves its siblings from the tree beside it.
 
-- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent, poetry-simple_form and poetry-jumpstart_pro, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
-- `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for all nine gems
+- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-motion, poetry-island, poetry-extract, poetry-ui, poetry-agent, poetry-simple_form, poetry-jumpstart_pro and seven more icon sets, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
+- `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for every gem in the family
 - this directory — the umbrella gem
 
 Work inside a gem's directory: `bundle install`, then `bundle exec rake` runs its default chain. At the root, `bundle exec rake family` runs every gem's chain in publish order, then the umbrella's.
@@ -32,7 +32,7 @@ Beyond components it carries nine complete visual themes, a model-bound form bui
 
 ### [poetry-lucide](https://github.com/roboruby/poetry/tree/main/gems/poetry-lucide) — the default icon set
 
-Lucide's 1,745 icons, vendored at a pinned upstream commit and sanitized at vendor time, so rendering an icon never parses SVG, never sanitizes, and never touches the network. The set registers with poetry-core's icon registry, which is what `poetry_icon(:"circle-check")` and every icon-bearing component resolve against. A wrong name raises in development with a did-you-mean suggestion, `bin/rails poetry:check` catches literal names before that, and in production a configured fallback glyph renders instead of a 500.
+Lucide's 1,890 icons, with its 264 renamed names kept as aliases, vendored at a pinned upstream commit and sanitized at vendor time, so rendering an icon never parses SVG, never sanitizes, and never touches the network. The set registers with poetry-core's icon registry, which is what `poetry_icon(:"circle-check")` and every icon-bearing component resolve against. A wrong name raises in development with a did-you-mean suggestion, `bin/rails poetry:check` catches literal names before that, and in production a configured fallback glyph renders instead of a 500.
 
 ## Installation
 
@@ -61,6 +61,10 @@ A small Stimulus layer adds tooltips, legends, and active states by reading coor
 ```ruby
 gem "poetry-charts"
 ```
+
+### Icon sets beyond Lucide
+
+[poetry-tabler](https://github.com/roboruby/poetry/tree/main/gems/poetry-tabler), [poetry-hugeicons](https://github.com/roboruby/poetry/tree/main/gems/poetry-hugeicons), [poetry-phosphor](https://github.com/roboruby/poetry/tree/main/gems/poetry-phosphor), [poetry-heroicons](https://github.com/roboruby/poetry/tree/main/gems/poetry-heroicons) and [poetry-simple_icons](https://github.com/roboruby/poetry/tree/main/gems/poetry-simple_icons), [poetry-solar](https://github.com/roboruby/poetry/tree/main/gems/poetry-solar) and [poetry-blode](https://github.com/roboruby/poetry/tree/main/gems/poetry-blode) vendor seven more sets the way poetry-lucide vendors Lucide: pinned to an upstream commit, sanitized at vendor time, each style one packed file registered under its own library key. `poetry_icon(name: :house, library: :phosphor_bold)` names the style per icon, `poetry check` validates the name against that library, and Simple Icons' brand logos carry their brand colours through `Poetry::SimpleIcons.brand`. Solar's icons are 480 Design's, under CC BY 4.0: every one renders with its credit inside the svg, and the rest of Poetry keeps its own license.
 
 ### [poetry-agent](https://github.com/roboruby/poetry/tree/main/gems/poetry-agent) — the agent surfaces
 

@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"thread-human_in_the_loop","runId":"52208509-a7ca-4cc1-849f-5544437b8140","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"00dfc24f-07be-42a2-8897-baa6a93bb8d0","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"00dfc24f-07be-42a2-8897-baa6a93bb8d0","delta":"Ok! I'm working on it."}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"00dfc24f-07be-42a2-8897-baa6a93bb8d0"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-human_in_the_loop","runId":"52208509-a7ca-4cc1-849f-5544437b8140"}
+

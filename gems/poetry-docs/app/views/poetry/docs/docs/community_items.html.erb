@@ -1,0 +1,148 @@
+<% content_for :title, "Using community items" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Using community items") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB delimiters are assembled by
+  # interpolation so none appear literally inside a heredoc.
+  eo = "<" + "%="
+  ce = "%" + ">"
+  install_source = <<~CODE
+    bin/rails g poetry:add @poetry/acme-pricing-table
+  CODE
+  writes_source = <<~CODE
+    app/components/community/acme_pricing_table/   # a component
+    app/javascript/controllers/community/          # its Stimulus controller, if it has one
+    app/views/blocks/_acme_hero_01.html.erb        # a block: one partial
+    app/assets/tailwind/poetry/community/          # a restyle, or keyframes: one stylesheet
+  CODE
+  # The block's partial is named apart from the sample, so the render graph
+  # test does not read the sample as this view rendering it.
+  block = "blocks/acme_hero_01"
+  use_source = <<~CODE
+    #{eo} acme_pricing_table(plans: @plans) #{ce}
+
+    #{eo} render #{block.inspect} #{ce}
+
+    <body class="acme-card">
+  CODE
+  record_source = <<~CODE
+    # config/poetry_components.yml
+    components:
+      acme-pricing-table:
+        source: "@poetry/acme-pricing-table"
+        community: true
+        origin:
+          registry: "@acme"
+          item: pricing-table
+          repository: https://github.com/acme/ui
+          license: MIT
+          copyright: Copyright (c) 2026 Acme
+        version: 2e609d824932
+        files:
+          app/components/community/acme_pricing_table/component.rb: c3653e17810a...
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Using community items</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      A community item is a component, a block or a restyle the gems do not ship.
+      You install it by name, and its files become your app's.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-they-are">What a community item is</h2>
+      <p>
+        Poetry's own components come from the gems and upgrade with them. A
+        community item comes from the registry this site serves:
+        <code>poetry:add</code> copies its files into your app, where they are
+        yours to read and edit, and nothing overwrites them later. An item that
+        composes a Poetry component, a Button inside a pricing table, brings no
+        copy of it: the gem's Button renders.
+      </p>
+      <p>
+        <%= link_to "Community components", community_path %> lists every item
+        with its screenshot, and each has a page with its options and its origin.
+      </p>
+      <h2 id="install">Install</h2>
+    <% end %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>What an install writes depends on what the item is:</p>
+    <% end %>
+    <%= poetry_code_block(code: writes_source, language: "plaintext", label: "Where the files go") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        An item with a Stimulus controller also rewrites
+        <code>config/controllers_manifest.json</code>, so the component that names
+        the controller loads. Commit the manifest and restart a running server:
+        it is read at boot. A stylesheet gets its import line in your Tailwind
+        entry file. Gems an item needs are reported, never installed for you.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="use">Use it</h2>
+      <ul>
+        <li><strong>A component</strong> renders through a helper named after the item, with the options its page lists.</li>
+        <li><strong>A block</strong> is a partial to adapt in place: render it, then change its copy and point it at your records.</li>
+        <li><strong>A restyle</strong> changes the look of a Poetry component and nothing else. Put its class on a wrapper, or on <code>body</code> for the whole app, and the component inside takes the new look; your views keep calling the Poetry helper.</li>
+      </ul>
+    <% end %>
+    <%= poetry_code_block(code: use_source, language: "erb", label: "A component, a block, a restyle") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="names">How items are named</h2>
+      <p>
+        An item adapted from another library is named for that library and for
+        the library's own name for the item: <code>@acme</code>'s
+        <code>pricing-table</code> is <code>acme-pricing-table</code>. Its address
+        is <code>@poetry/acme-pricing-table</code>, its helper is
+        <code>acme_pricing_table</code>, and its class is
+        <code>Community::AcmePricingTable::Component</code>. Two libraries' items
+        of the same name never meet, and the name says where the item came from.
+      </p>
+      <p>
+        An item written for Poetry has no library: it has a plain name, and its
+        helper begins with <code>community_</code>.
+      </p>
+      <h2 id="record">What the install records</h2>
+      <p>
+        <code>config/poetry_components.yml</code> gains an entry per item: the
+        address it came from, the version it stated, and a SHA-256 digest of each
+        file written, which is what your copy started from whatever you change
+        later. An item adapted from another library also records its origin, and
+        the install adds that library's license to your
+        <code>THIRD_PARTY_NOTICES.md</code>. The record is what lets
+        <%= link_to "an update", community_updates_path %> tell your edits from
+        the registry's changes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: record_source, language: "yaml", label: "The record") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="reviewed-not-audited">Reviewed, not audited</h2>
+      <p>
+        A maintainer reviewed every item, and each one passes the registry's
+        checks: it installs into a fresh app, <code>poetry:check</code> is clean
+        there, and its demo renders in a browser without an error. Nobody audited
+        the code for security, so read what you install, as you would any code you
+        copy. Only permissive licenses are accepted, and an item's page names its
+        origin and license.
+      </p>
+    <% end %>
+  </section>
+</div>

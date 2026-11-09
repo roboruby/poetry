@@ -7,7 +7,9 @@ module Poetry
     # on-distribution defaults generated UIs drift toward: cards in cards,
     # the icon-tile-over-heading hero, walls of identical cards, off-scale
     # values, token-less gradients, heading skips, center-everything,
-    # stacked shadows, type-scale monotony, invisible surface boundaries.
+    # stacked shadows, type-scale monotony, invisible surface boundaries,
+    # text under the legibility floor, the fake blinking cursor, content
+    # parked at opacity-0, the radial halo and the zero-offset glow.
     # No LLM scoring here - measured runs showed cold aesthetic judgment is
     # near chance; deterministic rules + paired judges are the defensible
     # modes.
@@ -53,6 +55,13 @@ module Poetry
         "repeated-section-kickers" => [:ast, "tracked-caps kicker above every section heading"],
         "hero-eyebrow-chip" => [:ast, "tracked-caps/accent text eyebrow above the h1"],
         "oversized-h1" => [:ast, "72px+ display h1 carrying long copy"],
+        # The craft floor: refusals that read the markup alone, and that
+        # poetry's own surfaces never carry.
+        "undersized-ui-text" => [:ast, "legibility floor: functional text under 11px is set to be skipped"],
+        "blinking-cursor" => [:ast, "the fake terminal caret blinking after copy - the typing-effect tell"],
+        "content-hidden-at-rest" => [:ast, "content parked at opacity-0 for a pointer or a script is content " \
+                                           "keyboard, touch and a failed script never get"],
+        "radial-halo" => [:ast, "the radial glow blob and the zero-offset glow - the neon hero tell"],
         # Motion floor: perception-physics rules, theme-independent - they
         # read the utility classes the same in host ERB (poetry check /
         # design:lint) and in the extracted theme layer (design:motion
@@ -88,6 +97,32 @@ module Poetry
       DURATION_ARBITRARY = /\Aduration-\[(\d+(?:\.\d+)?)(m?s)\]\z/
       SCALE_ZERO = /\Ascale(?:-[xy])?-0\z/
       UI_DURATION_CEILING_MS = 500
+
+      # The craft floor. Functional text under 11px: an arbitrary text size
+      # (variant-stripped, so sm:text-[9px] counts) or an inline font-size.
+      ARBITRARY_TEXT_SIZE = %r{\Atext-\[(\d+(?:\.\d+)?)(px|rem|em)\](?:/[^\s]+)?\z}
+      INLINE_FONT_SIZE = /font-size:\s*(\d+(?:\.\d+)?)(px|rem|em)/
+      LEGIBILITY_FLOOR_PX = 11
+      # The blinking cursor: a glyph that reads as a caret, animated, or an
+      # empty hairline bar animated with the caret keyframes. A real caret
+      # belongs to a real input (the OTP slot's is a contracted part).
+      CURSOR_GLYPHS = %w[| _ ▌ █ ▍ ▋ ▊ ▉ ▮ ▁].freeze
+      BLINK_ANIMATION = /\Aanimate-(?:caret-blink|pulse|blink|ping|\[[^\]]*(?:blink|caret|cursor)[^\]]*\])\z/
+      CARET_BAR_WIDTH = %w[w-px w-0.5 w-1 w-[1px] w-[2px] w-[3px]].freeze
+      # Content hidden at rest: a bare opacity-0 whose only reveal is a
+      # pointer hover (or nothing at all). A reveal on focus, a state
+      # attribute or a group/peer state reaches keyboards and scripts; a
+      # breakpoint or motion prefix is neutral.
+      OPACITY_REVEAL = /\Aopacity-(?:[1-9]\d?|100)\z/
+      POINTER_ONLY_VARIANTS = /\A(?:hover|group-hover|peer-hover|sm|md|lg|xl|2xl|max-[a-z0-9]+|
+                                 motion-safe|motion-reduce|dark)\z/x
+      HIDDEN_AT_REST_EXEMPT_TAGS = %w[input select textarea].freeze
+      # The radial halo: a radial gradient (named or arbitrary), a
+      # zero-offset glow shadow, or the blurred, rounded, positioned color
+      # blob behind a hero.
+      RADIAL_HALO = /\Abg-(?:\[radial-gradient\(|radial(?:\z|-))/
+      GLOW_SHADOW = /\A(?:drop-)?shadow-\[0(?:px)?_0(?:px)?_/
+      BLUR_HALO = /\Ablur-(?:xl|2xl|3xl)\z/
 
       # The lint tree: HTML elements plus poetry_* call blocks as
       # pseudo-nodes, so "Card inside Card" is checkable whether the card is
@@ -231,6 +266,10 @@ module Poetry
           hero_eyebrow_chip(child, node.children[index + 1], findings)
           class_token_rules(child, findings) if child.element?
           findings.concat(motion_class_findings(child.classes, child.line)) if child.element?
+          inline_undersized_text(child, findings)
+          blinking_cursor(child, findings)
+          content_hidden_at_rest(child, findings)
+          halo_blob(child, findings)
           oversized_h1(child, findings)
           shadow_stack(child, findings)
           wall_of_cards(node, findings) if index.zero?
@@ -266,10 +305,21 @@ module Poetry
         (child.element? && child.tag == "svg") || child.helper == "poetry_icon"
       end
 
-      # The per-token rules on an element's classes: off-scale arbitrary values and gradients outside the token surface.
+      # The per-token rules on an element's classes: undersized text, halos and glows, off-scale arbitrary
+      # values and gradients outside the token surface - one finding per token, the most specific rule first.
       def class_token_rules(node, findings)
         node.classes.each do |token|
-          if (match = token.match(SCALED_UTILITY))
+          if (px = undersized_px(token.split(":").last))
+            findings << finding("undersized-ui-text", node.line, undersized_message(token, px))
+          elsif token.match?(RADIAL_HALO)
+            findings << finding("radial-halo", node.line,
+                                "#{token} paints a radial halo - the glow-blob hero tell; use a flat token " \
+                                "surface, or one directional token-built scrim over imagery")
+          elsif token.match?(GLOW_SHADOW)
+            findings << finding("radial-halo", node.line,
+                                "#{token} is a zero-offset glow, not a shadow - elevation has an offset; use " \
+                                "the theme's shadow-* steps, or a ring for emphasis")
+          elsif (match = token.match(SCALED_UTILITY))
             value, unit = match.captures
             next if unit != "px" && ((value.to_f / 0.125) % 1).zero? # on the half-step scale
 
@@ -293,6 +343,88 @@ module Poetry
           steps = [lower, lower + 2].map { |step| "#{prefix}-#{format("%g", step / 4.0)} = #{step}px" }
           "#{token} is off the spacing/type scale - use the nearest step (#{steps.join(" / ")}) or add a token"
         end
+      end
+
+      # The pixel size of an arbitrary text-size token below the legibility floor, or nil.
+      def undersized_px(base)
+        match = base.match(ARBITRARY_TEXT_SIZE)
+        return unless match
+
+        px = length_px(match[1].to_f, match[2])
+        px if px < LEGIBILITY_FLOOR_PX
+      end
+
+      # A length in pixels: px as given, rem and em at the 16px root.
+      def length_px(value, unit) = unit == "px" ? value : value * 16
+
+      # The message for text under the floor: the floor, and the smallest UI size the scale offers.
+      def undersized_message(source, pixels)
+        "#{source} sets text at #{format("%g", pixels)}px, under the #{LEGIBILITY_FLOOR_PX}px legibility floor - " \
+          "UI text starts at text-xs (12px); size the label up, or drop the tracked-caps treatment that " \
+          "tempted the size"
+      end
+
+      # The finding for an inline font-size under the legibility floor.
+      def inline_undersized_text(node, findings)
+        return unless node.element? && (match = node.attrs["style"].to_s.match(INLINE_FONT_SIZE))
+
+        px = length_px(match[1].to_f, match[2])
+        return if px >= LEGIBILITY_FLOOR_PX
+
+        declared = "font-size: #{match[0].split(":").last.strip}"
+        findings << finding("undersized-ui-text", node.line, undersized_message(declared, px))
+      end
+
+      # The finding for a blinking cursor: an animated element whose text is a
+      # caret glyph, or an empty animated hairline bar (outside a contracted
+      # part, where a caret is a caret).
+      def blinking_cursor(node, findings)
+        return unless node.element?
+        return if node.attrs["data-slot"] || node.ancestors.any? { |ancestor| ancestor.attrs["data-slot"] }
+
+        bases = node.classes.map { |token| token.split(":").last }
+        return unless bases.any? { |base| base.match?(BLINK_ANIMATION) }
+
+        text = node.texts.to_a.join.strip
+        glyph = !text.empty? && text.chars.uniq.all? { |char| CURSOR_GLYPHS.include?(char) }
+        bar = text.empty? && node.children.empty? && bases.intersect?(CARET_BAR_WIDTH)
+        return unless glyph || bar
+
+        findings << finding("blinking-cursor", node.line,
+                            "a blinking cursor after copy - the fake-terminal typing tell; cut it (a real " \
+                            "caret belongs to a real input)")
+      end
+
+      # The finding for content parked at opacity-0: a bare opacity-0 on an
+      # element with something inside, revealed by a pointer hover at most.
+      # A native control laid over a styled one (opacity-0 input) and a
+      # decorative aria-hidden element are the sanctioned shapes.
+      def content_hidden_at_rest(node, findings)
+        return unless node.element? && node.classes.include?("opacity-0")
+        return if HIDDEN_AT_REST_EXEMPT_TAGS.include?(node.tag) || node.attrs["aria-hidden"] == "true"
+        return if node.children.empty? && node.texts.to_a.join.strip.empty?
+
+        reveals = node.classes.filter_map do |token|
+          *variants, base = token.split(":")
+          variants unless variants.empty? || !base.match?(OPACITY_REVEAL)
+        end
+        return if reveals.any? { |variants| variants.any? { |variant| !variant.match?(POINTER_ONLY_VARIANTS) } }
+
+        how = reveals.empty? ? "no reveal at all - it waits for a script" : "a hover-only reveal"
+        findings << finding("content-hidden-at-rest", node.line,
+                            "content rests at opacity-0 with #{how}; keyboard, touch and a failed script " \
+                            "never see it - render it visible, or reveal it on focus-visible and a state too")
+      end
+
+      # The finding for the blurred, rounded, positioned color blob - the
+      # aurora halo behind a hero.
+      def halo_blob(node, findings)
+        return unless node.element? && node.classes.any?(BLUR_HALO) && node.classes.include?("rounded-full")
+        return unless node.classes.intersect?(%w[absolute fixed]) && node.classes.any? { |c| c.start_with?("bg-") }
+
+        findings << finding("radial-halo", node.line,
+                            "a blurred, rounded color blob behind the content - the aurora-halo background " \
+                            "tell; drop it, or give the section one flat token surface")
       end
 
       # The ENFORCED motion floor, PUBLIC so the
@@ -772,6 +904,8 @@ module Poetry
       private_class_method :hero_eyebrow_chip, :oversized_h1, :center_everything, :collect_centered
       private_class_method :type_scale_monotony, :surface_boundaries, :landmark?, :check_boundary, :surface_color
       private_class_method :bordered?, :shadowed?, :stock_theme_nudge, :finding
+      private_class_method :undersized_px, :length_px, :undersized_message, :inline_undersized_text
+      private_class_method :blinking_cursor, :content_hidden_at_rest, :halo_blob
     end
   end
 end

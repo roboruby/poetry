@@ -23,6 +23,15 @@ module Poetry
       def editors
       end
 
+      def community_items
+      end
+
+      def community_updates
+      end
+
+      def community_publishing
+      end
+
       def testing
       end
 
@@ -32,10 +41,16 @@ module Poetry
       def stimulus
       end
 
+      def where_state_lives
+      end
+
       def accessibility
       end
 
       def caching
+      end
+
+      def uploads
       end
 
       def engines
@@ -67,6 +82,32 @@ module Poetry
       end
 
       def a2ui
+      end
+
+      # The host's endpoint for an app's own requests: the MCP App demo's
+      # frame and the relay's. Same-origin, with the CSRF token the host
+      # controller sends.
+      def mcp_app_rpc
+        body = JSON.parse(request.raw_post)
+        host = McpAppShowcase.host(request.base_url)
+        render json: { result: host.rpc(body["server"].to_s, body["method"].to_s, body["params"] || {}) }
+      rescue JSON::ParserError
+        render json: { error: { code: -32_700, message: "a JSON object with server, method and params" } }, status: :bad_request
+      rescue Poetry::Agent::Apps::Host::Refused => e
+        render json: { error: { code: e.code, message: e.message } }, status: :forbidden
+      end
+
+      # The sandbox proxy page, served on the apps origin when the site has
+      # one; the host's own origin names the page's only framer.
+      def mcp_app_sandbox
+        host = McpAppShowcase.host(ENV.fetch("POETRY_DOCS_ORIGIN", request.base_url))
+        status, headers, body = host.sandbox_app.call(request.env.merge("PATH_INFO" => "/#{params[:token]}"))
+        headers.each { |name, value| response.headers[name] = value }
+        response.headers.delete("X-Frame-Options")
+        render html: body.join.html_safe, status: status, layout: false # rubocop:disable Rails/OutputSafety
+      end
+
+      def mcp_apps
       end
 
       # The per-gem library pages (/libraries/:slug) - templates live under
@@ -179,14 +220,16 @@ module Poetry
       def markdown_mirror
         case action_name
         when "index" then DocsMarkdown.site_index
-        when "installation" then Poetry::Docs.root.join("data/installation.md").read
+        when "installation" then DocsMarkdown.installation
         when "theming" then DocsMarkdown.theming(guide_entry("theming"))
         when "editors" then DocsMarkdown.editors(guide_entry("editors"))
         when "testing" then DocsMarkdown.testing(guide_entry("testing"))
         when "i18n" then DocsMarkdown.i18n(guide_entry("i18n"))
         when "stimulus" then DocsMarkdown.stimulus(guide_entry("stimulus"))
+        when "where_state_lives" then DocsMarkdown.where_state_lives(guide_entry("where-state-lives"))
         when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
         when "caching" then DocsMarkdown.caching(guide_entry("caching"))
+        when "uploads" then DocsMarkdown.uploads(guide_entry("uploads"))
         when "engines" then DocsMarkdown.engines(guide_entry("engines"))
         when "herb" then DocsMarkdown.herb(guide_entry("herb"))
         when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
@@ -195,9 +238,13 @@ module Poetry
         when "webmcp" then DocsMarkdown.webmcp(guide_entry("webmcp"))
         when "agui" then DocsMarkdown.agui(guide_entry("ag-ui"))
         when "a2ui" then DocsMarkdown.a2ui(guide_entry("a2ui"))
+        when "mcp_apps" then DocsMarkdown.mcp_apps(guide_entry("mcp-apps"))
         when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
-        when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug}", icon_entry)
+        when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug.tr('-', '_')}", icon_entry)
         when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
+        when "community_items" then DocsMarkdown.community_items(guide_entry("community-items"))
+        when "community_updates" then DocsMarkdown.community_updates(guide_entry("community-updates"))
+        when "community_publishing" then DocsMarkdown.community_publishing(guide_entry("community-publishing"))
         when "agent" then DocsMarkdown.agent(guide_entry("page-agent"))
         when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)
         when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))

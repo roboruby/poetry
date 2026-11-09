@@ -52,9 +52,15 @@ Gem::Specification.new do |spec|
   spec.files = tracked.reject do |f|
     (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
   end
+  # The minified JavaScript the release writes into dist/ beside the source.
+  # git does not track it, so it joins the list here; the engine serves it.
+  spec.files |= Dir.glob("dist/**/*", base: __dir__).select { |f| File.file?(File.join(__dir__, f)) }
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "event_stream_parser", "~> 1.0" # the mcp gem's HTTP client reads event-stream answers with it
+  spec.add_dependency "faraday", "~> 2.0" # the mcp gem's clients (a host's calls to its servers, its OAuth) run on it
+  spec.add_dependency "mcp", "~> 1.9"
   spec.add_dependency "poetry-core", "= #{Poetry::Agent::VERSION}"
 end

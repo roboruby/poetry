@@ -1,11 +1,15 @@
-<%# Embedded components opt OUT: not-typeset covers the whole subtree. %>
+<%# Components keep their own styles inside prose (every one carries data-slot);
+    not-typeset opts a plain-HTML subtree out the same way. %>
 <%= poetry_typeset(class: "max-w-xl") do %>
   <p>Prose flows around app chrome without restyling it:</p>
-  <div class="not-typeset">
-    <%= poetry_alert do |alert| %>
-      <% alert.with_title { "Untouched component" } %>
-      poetry components style themselves — keep them out of the prose cascade.
-    <% end %>
-  </div>
+  <%= poetry_alert do |alert| %>
+    <% alert.with_title { "Untouched component" } %>
+    poetry components style themselves - the prose rules skip them.
+  <% end %>
+  <ul class="not-typeset flex gap-2 text-sm text-muted-foreground">
+    <li>Plain</li>
+    <li>HTML</li>
+    <li>opted out</li>
+  </ul>
   <p>And the prose continues below.</p>
 <% end %>

@@ -25,7 +25,9 @@ class RenderGraphTest < ActiveSupport::TestCase
     [ "app/views/poetry/docs/docs/agui.html.erb", "assistant/row" ] =>
       "the AG-UI guide's stream-action sample renders the host's own row partial",
     [ "app/views/poetry/docs/docs/agui.html.erb", "assistant/activity" ] =>
-      "the AG-UI guide's activity sample renders the host's own activity partial"
+      "the AG-UI guide's activity sample renders the host's own activity partial",
+    [ "app/views/poetry/docs/docs/agui.html.erb", "assistant/trace" ] =>
+      "the AG-UI guide's row sample renders the host's own trace partial"
   }.freeze
 
   # Partials nothing in app/views renders by name.

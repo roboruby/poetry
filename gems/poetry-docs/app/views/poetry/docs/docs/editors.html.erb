@@ -31,12 +31,10 @@
   CODE
 herb_source = <<~CODE
   # .herb.yml - written by poetry:editor (kept if you already have one)
-  version: 0.11.0
+  version: 0.11.2
   framework: actionview
   linter:
     enabled: true
-    rules:
-      html-no-nested-forms: { enabled: false }   # marcoroth/herb#2708
 CODE
 herb_ci_source = <<~CODE
   npx --yes @herb-tools/linter app          # lint (Node); bundle exec herb lint delegates to it
@@ -93,7 +91,7 @@ CODE
       <h2 id="mcp">The MCP server</h2>
       <p>
         Poetry's agent surface is a standard stdio MCP server
-        (<code>bundle exec poetry-agent</code>, from the poetry-agent gem): boot-free, read-only, no SDK.
+        (<code>bundle exec poetry-agent</code>, from the poetry-agent gem): boot-free, read-only, on the official <code>mcp</code> gem.
         Its ten tools teach an agent the catalog and gate its work. Call
         <code>compose</code> first, build from primitives, run
         <code>check</code> last, and take a PASS verdict rather than an eyeball.
@@ -178,13 +176,13 @@ CODE
     </p>
     <p>
       <code>poetry:editor</code> writes the one config all of it reads,
-      and keeps yours if you have one. One rule starts off: the linter
-      reads a form inside a block helper (<code>form_with</code> inside
-      <code>poetry_card do</code>) as a form nested in another form. It is
-      tracked upstream, and the pinned <code>version</code> means an upgrade
-      never switches rules on behind you. A config written before Herb 0.11
-      switched two more rules off for slot setters; both are fixed upstream
-      and can come back on with the pin.
+      and keeps yours if you have one. Every rule is on, and the pinned
+      <code>version</code> means an upgrade never switches rules on behind
+      you: bump it and re-lint in one change. A config written before Herb
+      0.11.1 switched one rule off, where the linter read a form inside a
+      block helper (<code>form_with</code> inside <code>poetry_card do</code>)
+      as a form nested in another form; that is fixed upstream, and the rule
+      comes back on with the pin.
     </p>
   <% end %>
   <%= poetry_code_block(code: herb_source, language: "yaml", label: ".herb.yml") %>

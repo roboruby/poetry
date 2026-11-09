@@ -1,0 +1,479 @@
+{
+  "source": "verify/__tests__/verify.events.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents general validation > should ensure message content has the same ID as message start",
+      "line": 31,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "different-id",
+          "delta": "test content"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_CONTENT' event: No active text message found with ID 'different-id'. Start a text message with 'TEXT_MESSAGE_START' first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents general validation > should not allow ending a message that wasn't started",
+      "line": 75,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_END' event: No active text message found with ID 'msg1'. A 'TEXT_MESSAGE_START' event must be sent first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents general validation > should ensure tool call args has the same ID as tool call start",
+      "line": 114,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "t1",
+          "toolCallName": "test-tool"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "different-id",
+          "delta": "test args"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_ARGS' event: No active tool call found with ID 'different-id'. Start a tool call with 'TOOL_CALL_START' first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents general validation > should not allow ending a tool call that wasn't started",
+      "line": 159,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "t1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_END' event: No active tool call found with ID 't1'. A 'TOOL_CALL_START' event must be sent first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents general validation > should allow CUSTOM and RAW in any context",
+      "line": 198,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "Exit",
+          "value": null
+        },
+        {
+          "type": "RAW",
+          "event": {
+            "type": "test_rawEvent",
+            "content": "test"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "CUSTOM",
+          "RAW",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: standalone events (STATE_*, MESSAGES_SNAPSHOT, CUSTOM, RAW, ...) open and close nothing and MAY appear anywhere within an open run",
+      "notes": "TS asserts 6 delivered events, CUSTOM at 1 and RAW at 2. CUSTOM.value is schema-required; the TS test sends `value: undefined`, which JSON cannot express, so it is completed as null (required fields completed for enforcement)."
+    },
+    {
+      "name": "verifyEvents general validation > should allow state-related events in appropriate contexts",
+      "line": 252,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "state": "initial",
+            "data": {
+              "foo": "bar"
+            }
+          }
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "step1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "user-1",
+              "role": "user",
+              "content": "test"
+            }
+          ]
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "step1"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "add",
+              "path": "/result",
+              "value": "success"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STATE_SNAPSHOT",
+          "STEP_STARTED",
+          "MESSAGES_SNAPSHOT",
+          "STEP_FINISHED",
+          "STATE_DELTA",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: standalone events (STATE_*, MESSAGES_SNAPSHOT, CUSTOM, RAW, ...) open and close nothing and MAY appear anywhere within an open run",
+      "notes": "TS asserts 7 delivered events, STATE_SNAPSHOT at 1, MESSAGES_SNAPSHOT at 3, STATE_DELTA at 5. The snapshot's message has no id in the TS test; Message.id is schema-required, so 'user-1' was added (required fields completed for enforcement). A MESSAGES_SNAPSHOT inside an open step does not close the step."
+    },
+    {
+      "name": "verifyEvents general validation > should allow complex valid sequences with multiple message types",
+      "line": 310,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "step1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "msg1 content"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "t1",
+          "toolCallName": "test-tool"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "t1",
+          "delta": "t1 args"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "t1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "msg2 content"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "step1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: open, content, close matched by identifier",
+      "notes": "TS asserts 13 delivered events, first RUN_STARTED and last RUN_FINISHED."
+    },
+    {
+      "name": "verifyEvents events > should require TEXT_MESSAGE_START before TEXT_MESSAGE_CONTENT with the same ID",
+      "line": 394,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "different-id",
+          "delta": "test content"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_CONTENT' event: No active text message found with ID 'different-id'. Start a text message with 'TEXT_MESSAGE_START' first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Same stream as the general-validation test at line 31. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents events > should require TEXT_MESSAGE_START before TEXT_MESSAGE_END with the same ID",
+      "line": 438,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_END' event: No active text message found with ID 'msg1'. A 'TEXT_MESSAGE_START' event must be sent first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Same stream as the general-validation test at line 75. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents events > should require TOOL_CALL_START before TOOL_CALL_ARGS with the same ID",
+      "line": 477,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "t1",
+          "toolCallName": "test-tool"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "different-id",
+          "delta": "test args"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_ARGS' event: No active tool call found with ID 'different-id'. Start a tool call with 'TOOL_CALL_START' first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Same stream as the general-validation test at line 114. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents events > should require TOOL_CALL_START before TOOL_CALL_END with the same ID",
+      "line": 522,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "t1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_END' event: No active tool call found with ID 't1'. A 'TOOL_CALL_START' event must be sent first."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content or end event for an identifier that is not open",
+      "notes": "Same stream as the general-validation test at line 159. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents events > should allow special events outside of tool calls",
+      "line": 561,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "Exit",
+          "value": null
+        },
+        {
+          "type": "RAW",
+          "event": {
+            "type": "raw_data",
+            "content": "test"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "CUSTOM",
+          "RAW",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: standalone events (STATE_*, MESSAGES_SNAPSHOT, CUSTOM, RAW, ...) open and close nothing and MAY appear anywhere within an open run",
+      "notes": "TS asserts 6 delivered events, CUSTOM at 1 and RAW at 2. CUSTOM.value is schema-required; the TS test sends `value: undefined`, which JSON cannot express, so it is completed as null (required fields completed for enforcement)."
+    },
+    {
+      "name": "verifyEvents events > should allow STATE_SNAPSHOT events",
+      "line": 620,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "state": "test_state",
+            "data": {
+              "foo": "bar"
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STATE_SNAPSHOT",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: standalone events (STATE_*, MESSAGES_SNAPSHOT, CUSTOM, RAW, ...) open and close nothing and MAY appear anywhere within an open run",
+      "notes": "TS asserts 2 delivered events (RUN_STARTED, STATE_SNAPSHOT) on an unterminated stream; RUN_FINISHED appended here, so 3 are delivered."
+    }
+  ]
+}

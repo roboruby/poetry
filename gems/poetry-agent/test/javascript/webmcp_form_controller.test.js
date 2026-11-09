@@ -2,6 +2,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryAgent } from "@poetry/agent"
 import { stripToolAttributes } from "@poetry/agent/webmcp_form_controller"
+import { announce } from "@poetry/controllers/helpers/announce"
+
+// The live region is poetry-core's; what matters here is what the controller says into it.
+vi.mock("@poetry/controllers/helpers/announce", () => ({ acquire: vi.fn(), release: vi.fn(), announce: vi.fn() }))
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -23,11 +27,11 @@ describe("poetry--agent--webmcp-form", () => {
 
   afterEach(async () => {
     await flush() // let a scheduled page catch-up run against the stub, not jsdom
+    document.body.innerHTML = "" // disconnect while the observers are alive, so listeners never leak
+    await flush()
     application.stop()
-    document.body.innerHTML = ""
     delete window.Turbo
     vi.restoreAllMocks()
-    await flush()
   })
 
   const agentSubmit = () => {
@@ -136,5 +140,115 @@ describe("poetry--agent--webmcp-form", () => {
     document.getElementById("f").dispatchEvent(event)
 
     expect(event.defaultPrevented).toBe(false)
+  })
+})
+
+describe("poetry--agent--webmcp-form and the browser's tool events", () => {
+  let application, context, events, listeners
+
+  const fire = (type, toolName) => {
+    const event = new Event(type)
+    event.toolName = toolName
+    context.dispatchEvent(event)
+  }
+  const form = () => document.getElementById("f")
+
+  beforeEach(async () => {
+    context = new EventTarget()
+    document.modelContext = context
+    events = []
+    listeners = new AbortController()
+    for (const type of ["poetry:webmcp:tool-activated", "poetry:webmcp:tool-cancelled"]) {
+      document.addEventListener(type, (event) => events.push([type, event.detail.tool]), { signal: listeners.signal })
+    }
+    document.body.innerHTML = `
+      <form id="f" action="/search" method="get" toolname="find_contact" tooldescription="Find."
+            data-controller="poetry--agent--webmcp-form"
+            data-poetry--agent--webmcp-form-activated-message-value="Filled."
+            data-poetry--agent--webmcp-form-cancelled-message-value="Stopped.">
+        <input name="q" value="ada">
+      </form>`
+    window.Turbo = { visit: vi.fn(), renderStreamMessage: vi.fn() }
+    application = Application.start()
+    registerPoetryAgent(application)
+    await flush()
+    announce.mockClear()
+  })
+
+  afterEach(async () => {
+    await flush()
+    document.body.innerHTML = ""
+    await flush()
+    application.stop()
+    listeners.abort()
+    delete document.modelContext
+    delete window.Turbo
+    vi.restoreAllMocks()
+  })
+
+  it("marks the form, tells the page and announces when an agent fills its tool", () => {
+    fire("toolactivated", "find_contact")
+
+    expect(form().getAttribute("data-webmcp-agent")).toBe("active")
+    expect(events).toEqual([["poetry:webmcp:tool-activated", "find_contact"]])
+    expect(announce).toHaveBeenCalledWith("Filled.")
+  })
+
+  it("ignores another tool's events", () => {
+    fire("toolactivated", "other_tool")
+    fire("toolcancel", "other_tool")
+
+    expect(form().hasAttribute("data-webmcp-agent")).toBe(false)
+    expect(events).toEqual([])
+    expect(announce).not.toHaveBeenCalled()
+  })
+
+  it("drops the marker on the agent's cancel and says so", () => {
+    fire("toolactivated", "find_contact")
+    fire("toolcancel", "find_contact")
+
+    expect(form().hasAttribute("data-webmcp-agent")).toBe(false)
+    expect(events.map(([type]) => type)).toEqual(["poetry:webmcp:tool-activated", "poetry:webmcp:tool-cancelled"])
+    expect(announce).toHaveBeenLastCalledWith("Stopped.")
+  })
+
+  it("keeps the marker through an agent-invoked submit and drops it once the answer is delivered", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("ok", { status: 200 }))
+    const event = new Event("submit", { cancelable: true })
+    event.agentInvoked = true
+    let answer
+    event.respondWith = (promise) => { answer = promise }
+    form().dispatchEvent(event)
+    fire("toolactivated", "find_contact") // Chrome 156's order: the submit first, the event after
+
+    expect(form().getAttribute("data-webmcp-agent")).toBe("active")
+    await answer
+    await flush()
+    expect(form().hasAttribute("data-webmcp-agent")).toBe(false)
+  })
+
+  it("drops the marker at once when the person submits the filled form", () => {
+    fire("toolactivated", "find_contact")
+    form().dispatchEvent(new Event("submit", { cancelable: true }))
+
+    expect(form().hasAttribute("data-webmcp-agent")).toBe(false)
+  })
+
+  it("says nothing for an autosubmit form's fill, whose answer the page shows", () => {
+    form().setAttribute("toolautosubmit", "")
+    fire("toolactivated", "find_contact")
+
+    expect(form().getAttribute("data-webmcp-agent")).toBe("active")
+    expect(events).toEqual([["poetry:webmcp:tool-activated", "find_contact"]])
+    expect(announce).not.toHaveBeenCalled()
+  })
+
+  it("stops listening once disconnected", async () => {
+    document.body.innerHTML = ""
+    await flush()
+    fire("toolactivated", "find_contact")
+
+    expect(events).toEqual([])
+    expect(announce).not.toHaveBeenCalled()
   })
 })

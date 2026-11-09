@@ -1,0 +1,250 @@
+<% content_for :title, @item.title %>
+<% content_for :description, @item.description %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Community", href: community_path) %>
+    <% crumb.with_item(@item.title) %>
+  <% end %>
+<% end %>
+<% web = %r{\Ahttps?://} %>
+
+<div class="flex flex-col gap-10 wrap-break-word">
+  <p class="text-sm">
+    <%# The way back is the tab this page is under: the engine's index, or
+        the list a host serves in its place. %>
+    <%= link_to (community_tab&.last || community_path), class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground", data: { community_back: true } do %>
+      <%= poetry_icon(name: :"arrow-left", class: "size-3.5") %> All components
+    <% end %>
+  </p>
+  <header class="flex flex-col gap-3">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @item.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= @item.description %></p>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= poetry_badge(variant: :outline) { @item.kind } %>
+      <%= poetry_badge(variant: :secondary) { "Community" } %>
+      <% if @item.version %>
+        <span class="font-mono text-xs text-muted-foreground">version <%= @item.version %></span>
+      <% end %>
+    </div>
+  </header>
+
+  <% if (shot = @item.screenshot) %>
+    <%# With a demos address the frame is loaded over the screenshot and
+        takes its place once the demo answers (community_demo_controller);
+        the screenshot keeps the box's width, the demo sets its height. %>
+    <% live = @demo_url ? { controller: "community-demo", community_demo_url_value: @demo_url,
+                            action: "turbo:before-morph-element->community-demo#keep" } : {} %>
+    <%= tag.figure class: "flex flex-col gap-2", data: live do %>
+      <div class="relative w-fit max-w-full overflow-hidden rounded-xl border" data-community-demo-target="box">
+        <%= image_tag registry_community_screenshot_path(file: File.basename(shot["path"])),
+                      alt: "#{@item.title}, as its demo renders", width: shot["width"].to_i / 2, height: shot["height"].to_i / 2,
+                      class: "h-auto max-w-full", data: { community_demo_target: "shot" } %>
+        <% if @demo_url %>
+          <iframe class="invisible absolute inset-0 size-full" title="<%= @item.title %>, running"
+                  sandbox="allow-scripts allow-same-origin allow-forms" data-community-demo-target="frame"></iframe>
+        <% end %>
+      </div>
+      <figcaption class="text-sm text-muted-foreground">
+        <span data-community-demo-target="still">A screenshot of the demo below, taken by the registry's build in the light scheme.</span>
+        <% if @demo_url %>
+          <span hidden data-community-demo-target="live">
+            The demo, running in Poetry's default style; its source is below. It is served from <%= URI(@demo_url).host %>, apart from this site.
+          </span>
+        <% end %>
+      </figcaption>
+    <% end %>
+  <% end %>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="install">Install</h2>
+    <%= poetry_code_block(code: @item.install, language: "plaintext", label: "Install") %>
+    <% if @item.files.any? %>
+      <div class="flex flex-col gap-1">
+        <span class="text-sm text-muted-foreground">Writes:</span>
+        <ul class="flex flex-col gap-1 font-mono text-xs text-muted-foreground">
+          <% @item.files.each do |file| %>
+            <li class="break-all"><%= file %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <% if @item.needs.any? %>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm text-muted-foreground">Builds on:</span>
+        <% @item.needs.each do |need| %>
+          <%= poetry_badge { need } %>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @item.gems.any? %>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm text-muted-foreground">Needs gems (reported, never installed for you):</span>
+        <% @item.gems.each do |gem| %>
+          <%= poetry_badge(variant: :secondary) { gem } %>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @item.restyles %>
+      <p class="text-sm text-muted-foreground" data-fact="restyles">
+        Restyles Poetry's
+        <%= link_to @item.restyles, component_path(@item.restyles), class: "text-foreground underline underline-offset-4" %>:
+        your views keep calling its helper.
+      </p>
+    <% end %>
+    <% if @item.javascript %>
+      <p class="text-sm text-muted-foreground" data-fact="javascript">Brings <%= @item.javascript %>.</p>
+    <% end %>
+    <% if @item.traits.any? %>
+      <div class="flex flex-wrap items-center gap-2" data-fact="traits">
+        <span class="text-sm text-muted-foreground">Looks:</span>
+        <% @item.traits.each do |trait| %>
+          <%= poetry_badge(variant: :outline) { trait.tr("-", " ") } %>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @item.notes %>
+      <p class="max-w-2xl text-sm text-muted-foreground"><%= @item.notes %></p>
+    <% end %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      The files are yours once they land, and a second run never overwrites them. This item was
+      reviewed and passes the registry's checks; it was not audited, so read what you install.
+      <%= link_to "How community items work", community_items_path, class: "underline underline-offset-4" %>.
+    </p>
+  </section>
+
+  <% if @item.demo %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="example">Example</h2>
+      <% if @item.helper %>
+        <p class="max-w-2xl text-muted-foreground">
+          Render it with <code class="text-foreground"><%= @item.helper %></code>. This is the demo's source:
+        </p>
+      <% end %>
+      <%= poetry_code_block(code: @item.demo, language: "erb", label: "Demo", wrap: true) %>
+    </section>
+  <% end %>
+
+  <% if @item.options.any? %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="options">Options</h2>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Option" } %>
+              <%= poetry_table_head { "Type" } %>
+              <%= poetry_table_head { "Default" } %>
+              <%= poetry_table_head { "Description" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% @item.options.each do |option| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "#{option["name"]}:" } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs text-muted-foreground") { option["type"].presence || "any" } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs text-muted-foreground") do %>
+                  <% if option["required"] %>
+                    <%= poetry_badge(variant: :outline) { "required" } %>
+                  <% elsif option.key?("default") %>
+                    <%= option["type"] == "symbol" ? ":#{option["default"]}" : option["default"].to_json %>
+                  <% end %>
+                <% end %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { option["description"].to_s } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @item.styles.any? %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="style-axes">Style axes</h2>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Axis" } %>
+              <%= poetry_table_head { "Values" } %>
+              <%= poetry_table_head { "Default" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% @item.styles.each do |style| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "#{style["name"]}:" } %>
+                <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { Array(style["variants"]).map { |variant| ":#{variant}" }.join(", ") } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs text-muted-foreground") { style["default"] ? ":#{style["default"]}" : "" } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @item.slots.any? %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="slots">Slots</h2>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Writer" } %>
+              <%= poetry_table_head { "Description" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% @item.slots.each do |slot| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "with_#{slot["name"]}" } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { slot["description"].to_s } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @item.agent_rules.any? %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="usage-rules">Usage rules</h2>
+      <ul class="flex max-w-2xl list-disc flex-col gap-1 pl-5 text-muted-foreground">
+        <% @item.agent_rules.each do |rule| %>
+          <li><%= rule %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="origin">Origin and license</h2>
+    <% if @item.origins.any? %>
+      <ul class="flex max-w-2xl flex-col gap-3 text-muted-foreground">
+        <% @item.origins.each do |origin| %>
+          <% links = [ link_to_if(origin["url"].to_s.match?(web), "#{origin["registry"]}/#{origin["item"]}", origin["url"],
+                                  class: "underline underline-offset-4", rel: "noopener") ] %>
+          <% if origin["repository"].to_s.match?(web) %>
+            <% links << link_to(origin["repository"].sub(web, ""), origin["repository"], class: "underline underline-offset-4", rel: "noopener") %>
+          <% end %>
+          <li class="flex flex-col gap-1">
+            <span>Adapted from <%= safe_join(links, ", ") %>.</span>
+            <span class="text-sm">
+              License: <span class="text-foreground"><%= origin["license"] %></span>. <%= origin["copyright"] %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+      <p class="max-w-2xl text-sm text-muted-foreground">
+        The install writes each license's text into your
+        <code class="text-foreground">THIRD_PARTY_NOTICES.md</code>, once.
+      </p>
+    <% else %>
+      <p class="max-w-2xl text-muted-foreground">
+        An original community item: nothing in it was adapted from another library.
+      </p>
+    <% end %>
+  </section>
+</div>

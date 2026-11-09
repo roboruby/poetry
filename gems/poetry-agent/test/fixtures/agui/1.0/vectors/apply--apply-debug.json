@@ -1,0 +1,109 @@
+{
+  "source": "apply/__tests__/apply-debug.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents debug logging > no debug logs when logger is undefined [outcome]",
+      "line": 46,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": ""
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#text_message_start (a message opened and closed with no content is an empty assistant message)",
+      "notes": "The TS test asserts console.debug output only (debug-logging, excluded); the vector keeps the observable outcome of its stream. Input normalized: the TS RUN_FINISHED carries threadId/runId 'test-thread'/'test-run' against RUN_STARTED's 'test'/'test'; here they match."
+    },
+    {
+      "name": "defaultApplyEvents debug logging > event applied log: [APPLY] Event applied: with type and subscriber count (summary mode) [outcome]",
+      "line": 77,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "assistant"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": ""
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing (a stream that ends without its terminal is truncated; nothing is synthesized)",
+      "notes": "The TS test asserts console.debug output only (debug-logging, excluded); the vector keeps the observable outcome of its stream. The stream is truncated (no END, no RUN_FINISHED), as in the TS test: the opened message stays, empty."
+    },
+    {
+      "name": "defaultApplyEvents debug logging > event applied log with verbose: full JSON payload [outcome]",
+      "line": 122,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started (opens a run; builds no message)",
+      "notes": "The TS test asserts console.debug output only (debug-logging, excluded); the vector keeps the observable outcome of its stream. A bare, truncated RUN_STARTED."
+    }
+  ],
+  "excluded": [
+    {
+      "line": 46,
+      "name": "defaultApplyEvents debug logging > no debug logs when logger is undefined",
+      "reason": "debug-logging: asserts console.debug silence (outcome kept as a vector)"
+    },
+    {
+      "line": 77,
+      "name": "defaultApplyEvents debug logging > event applied log: [APPLY] Event applied: with type and subscriber count (summary mode)",
+      "reason": "debug-logging (outcome kept as a vector)"
+    },
+    {
+      "line": 122,
+      "name": "defaultApplyEvents debug logging > event applied log with verbose: full JSON payload",
+      "reason": "debug-logging (outcome kept as a vector)"
+    },
+    {
+      "line": 158,
+      "name": "defaultApplyEvents debug logging > event dropped log: [APPLY] Event dropped: with type and reason when subscriber calls stopPropagation",
+      "reason": "debug-logging + subscriber stopPropagation; the outcome depends on the subscriber, no Ruby counterpart"
+    }
+  ]
+}

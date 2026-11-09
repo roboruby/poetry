@@ -12,7 +12,7 @@ arguments, structure, then implementation.
 | 1 | Includes & class config | `include` / `extend`, `internal_component!`, `requires_content`, `delegate`, `with_collection_parameter` |
 | 2 | Constants | vocabularies first (`VARIANTS`, `SIZES`, ...), then the agent contract (`AGENT_RULES`, `REQUIRES_ANY`, `SLOT_RENDERS`) |
 | 3 | Slots | `renders_one` / `renders_many` |
-| 4 | Stimulus | `use_stimulus do ... end` |
+| 4 | Stimulus | `use_behavior :name` for runtime behaviors, then `use_stimulus do ... end` (`behavior :name` inside an element) |
 | 4b | Agent tools | `tool :name, executes:, ...` (interactive components; optional) |
 | 5 | Styles & options | `style` declarations, then `option` declarations |
 | 6 | Validations | `validates` / `validate` |
@@ -120,6 +120,31 @@ module MyApp
   end
 end
 ```
+
+## Behaviors (reach for one before writing wiring)
+
+A behavior is a named piece of client behavior several components share,
+declared once in Ruby: arrow-key focus (`:roving_focus`), anchored
+positioning (`:popper`), a checked toggle (`:checked`), and the overlay
+layers the JS activates on open (`:focus_scope`, `:dismissable`). Use one
+before declaring the same controller by hand:
+
+```ruby
+use_behavior :dismissable              # runtime: the JS turns it on when the layer opens
+
+use_stimulus do
+  on :list do
+    behavior :roving_focus, orientation: :option, loop: true   # :option reads your own option
+    controller(:tabs) { action :focus_activate, on: event(:roving_focus, :entry) }
+  end
+end
+```
+
+A behavior lands where you write it, in order with the element's own
+controllers. Its rules lead your `AGENT_RULES` in the registry, and the
+registry, llms.txt, `describe_component` and the docs page list it. Poetry
+behaviors are not Herb's client behaviors, which follow elements the client
+adds and removes.
 
 ## Agent tools (the operate surface)
 

@@ -45,7 +45,29 @@ module Poetry
         plan = installer.plan([address("@acme/fancy-chart")])
 
         assert_equal ["app/components/acme/fancy_chart.rb"], plan.writes.map(&:target)
-        assert_equal({ "fancy-chart" => { "source" => "@acme/fancy-chart" } }, plan.manifest)
+        assert_equal({ "fancy-chart" => {
+                       "source" => "@acme/fancy-chart",
+                       "files" => { "app/components/acme/fancy_chart.rb" => Digest::SHA256.hexdigest("# fancy-chart\n") }
+                     } }, plan.manifest)
+      end
+
+      def test_the_manifest_entry_carries_the_stated_version_and_a_digest_per_file_written
+        installer, = build_installer(
+          { "@acme/x" => item("x", deps: ["y"], "css" => ".x { color: red; }",
+                                   "meta" => { "version" => "3f9c2ab81d0e" }),
+            "@acme/y" => item("y", "meta" => { "version" => 2 }),
+            "@acme/z" => item("z", files: [], "meta" => { "version" => "" }) }
+        )
+        plan = installer.plan([address("@acme/x"), address("@acme/z")])
+        stylesheet = plan.css_writes.first
+
+        assert_equal "3f9c2ab81d0e", plan.manifest.dig("x", "version")
+        assert_equal({ "app/components/acme/x.rb" => RegistryInstaller.digest("# x\n"),
+                       stylesheet[:path] => RegistryInstaller.digest(stylesheet[:content]) },
+                     plan.manifest.dig("x", "files"))
+        assert_equal "2", plan.manifest.dig("y", "version"), "a number is kept as text"
+        assert_equal ["app/components/acme/y.rb"], plan.manifest.dig("y", "files").keys, "each item lists its own files"
+        assert_equal({ "source" => "@acme/z" }, plan.manifest["z"], "no version stated and no files: neither key")
       end
 
       def test_poetry_gem_components_satisfy_at_runtime_with_no_copy
@@ -78,11 +100,12 @@ module Poetry
                      plan.writes.map(&:target), "dependencies write before dependents"
       end
 
-      def test_an_unsatisfiable_poetry_dep_raises
-        installer, = build_installer({ "@acme/x" => item("x", deps: ["@poetry/no-such-thing"]) })
-        error = assert_raises(RegistryInstaller::Error) { installer.plan([address("@acme/x")]) }
+      def test_a_poetry_dep_the_gems_do_not_ship_is_a_community_item
+        installer, client = build_installer({ "@acme/x" => item("x", deps: ["@poetry/phone-mockup"]),
+                                              "@poetry/phone-mockup" => item("phone-mockup") })
+        installer.plan([address("@acme/x")])
 
-        assert_match(/not provided by the installed poetry gems/, error.message)
+        assert_includes client.resolved, "@poetry/phone-mockup"
       end
 
       def test_cycles_are_named_not_spun

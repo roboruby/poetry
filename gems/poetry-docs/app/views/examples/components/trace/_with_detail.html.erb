@@ -1,0 +1,17 @@
+<%# A step's block is its detail: the step becomes a disclosure, and its
+    panel animates its height over the measured --collapsible-panel-height. %>
+<% output = <<~TEXT
+   M app/models/invoice.rb
+  ?? db/migrate/20261028_add_due_on_to_invoices.rb
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Ran git status --short", icon: :terminal, description: "0.4s", open: true) do %>
+      <%= poetry_code_block(code: output, size: :sm, wrap: true, copy: false, label: "Output") %>
+    <% end %>
+    <% trace.with_step("Thought for 12 seconds", icon: :brain) do %>
+      <p>The overdue scope needs a due date, so the migration comes first.</p>
+    <% end %>
+  <% end %>
+</div>

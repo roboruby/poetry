@@ -273,6 +273,39 @@ describe("poetry--core--command", () => {
       expect(highlightedId()).toBe("item-late")
     })
 
+    it("results that replace the list after the keystroke get the highlight at once (Base UI #5818)", async () => {
+      application.stop()
+      application = await mount({ filter: false })
+
+      el("input").focus()
+      type("gr")
+      expect(highlightedId()).not.toBe(null) // seated on the stale results
+
+      // The server answers: a frame render swaps the list's children.
+      el("group-suggestions").innerHTML = `
+        <div id="item-grace" data-slot="command-item" role="option"
+             data-poetry-collection-item data-value="grace">
+          <span data-slot="command-item-text">Grace Hopper</span>
+        </div>`
+      for (const group of el("list").querySelectorAll("[data-slot=command-group]")) {
+        if (group.id !== "group-suggestions") group.remove()
+      }
+      await nextFrame()
+
+      expect(highlightedId()).toBe("item-grace")
+      expect(el("input").getAttribute("aria-activedescendant")).toBe("item-grace")
+    })
+
+    it("a refill with no live search drops the dangling activedescendant", async () => {
+      const seated = el("input").getAttribute("aria-activedescendant")
+      expect(seated).not.toBe(null)
+
+      el(seated).remove()
+      await nextFrame()
+
+      expect(el("input").hasAttribute("aria-activedescendant")).toBe(false)
+    })
+
     it("filter:false skips hiding entirely but still re-seats highlight + announces", async () => {
       application.stop()
       application = await mount({ filter: false })

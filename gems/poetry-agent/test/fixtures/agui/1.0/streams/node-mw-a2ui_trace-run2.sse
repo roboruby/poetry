@@ -1,0 +1,12 @@
+data: {"type":"RUN_STARTED","threadId":"a2ui-trace-162259","runId":"38124486-844b-4055-ad4d-de611f5d6310","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"b48c74dd-1c23-4106-8294-8f103ba16009","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"b48c74dd-1c23-4106-8294-8f103ba16009","delta":"Agent saw to"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"b48c74dd-1c23-4106-8294-8f103ba16009","delta":"ol: rendered"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"b48c74dd-1c23-4106-8294-8f103ba16009"}
+
+data: {"type":"RUN_FINISHED","threadId":"a2ui-trace-162259","runId":"38124486-844b-4055-ad4d-de611f5d6310"}
+

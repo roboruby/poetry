@@ -1,104 +1,112 @@
 import { Controller } from "@hotwired/stimulus"
+import { useAnnounce } from "@poetry/controllers/behaviors/announce"
+import { loadDirectUpload, useDirectUpload, useDirectUploadEvents } from "@poetry/controllers/behaviors/direct_upload"
+import { formatFileSize } from "@poetry/controllers/helpers/file_size"
+import { teardown } from "@poetry/controllers/helpers/scope"
 
 const EVENT_PREFIX = "poetry:file-input"
+const DROP_IDENTIFIER = "poetry--core--file-drop"
 
-const UNITS = ["B", "KB", "MB", "GB"]
+// The queue's states as the Attachment chip spells them.
+const CHIP_STATE = Object.freeze({ queued: "idle", uploading: "uploading", done: "done", error: "error" })
 
 /**
- * The FileInput dropzone engine: the
- * component renders a <label> wrapping a visually-hidden native
- * <input type=file>, so click-to-browse and keyboard access are the
- * PLATFORM's - this controller adds only what HTML cannot: drag-and-drop
- * onto the label, the selected-file list, and the clear affordance. The
- * native input stays the single source of truth (its FileList is the
- * form value; ActiveStorage direct upload rides it untouched).
- *
- * Drag state uses an enter/leave COUNTER: dragenter/dragleave fire per
- * descendant crossed, so a boolean flickers over child elements - the
- * counter nets out to zero only when the pointer truly leaves the zone.
+ * The FileInput dropzone's reflection: the component renders a <label>
+ * wrapping a visually-hidden native <input type=file>, so click-to-browse
+ * and keyboard access are the PLATFORM's, and the file-drop controller
+ * beside this one takes drops, pastes and picker selections through the
+ * accept, size and count checks. This controller shows the result: one
+ * Attachment chip per file, cloned from the server's template, with the
+ * rejections, the populated state and the clear affordance; and it runs
+ * the uploads the component asked for. With upload "immediate" every
+ * file goes to Active Storage as it lands, with progress, cancel, retry
+ * and remove, and the form posts the signed ids the queue leaves as
+ * hidden inputs; with "on_submit" Rails uploads at submit time and the
+ * chips follow its events; with "none" the native input posts the bytes.
  */
 export default class FileInputController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry:file-input:change"]
+  static events = ["poetry:file-input:change", "poetry:file-input:upload"]
 
-  static targets = ["input", "list", "clear"]
+  // How the DirectUpload class is found: the host's importmap by default;
+  // a host that bundles its own, or a test, assigns a loader of its own.
+  static loadDirectUpload = loadDirectUpload
+
+  static targets = ["input", "items", "template", "errors", "clear"]
   static values = {
-    // Whether more than one file may be chosen; otherwise a drop keeps the first.
-    multiple: { type: Boolean, default: false }
+    // Whether more than one file may be chosen; the file-drop controller enforces it.
+    multiple: { type: Boolean, default: false },
+    // none, on_submit (Rails uploads at submit) or immediate (the queue uploads as files land).
+    upload: { type: String, default: "none" },
+    // The field name the hidden signed-id inputs carry in immediate mode.
+    name: { type: String, default: "" },
+    // The direct uploads endpoint, in immediate mode.
+    url: { type: String, default: "" },
+    // Whether image files show a thumbnail in their chip.
+    preview: { type: Boolean, default: false },
+    // The upload messages: unavailable, failed and busy, with a {name} token.
+    messages: { type: Object, default: {} }
   }
 
-  #dragDepth = 0
+  #rows = new Map()
+  #uploads = null
+  #announce = null
 
-  /** Reflects the input's current FileList (list, clear, data-populated). */
+  /** Wires the upload mode and reflects the input's current selection. */
   connect() {
+    this.#announce = useAnnounce(this)
+    if (this.uploadValue === "immediate") {
+      // The hidden inputs carry the field name once a file is stored; the
+      // native input posts nothing itself. Without JavaScript it keeps the
+      // name and posts the bytes, the multipart fallback.
+      this.inputTarget.removeAttribute("name")
+      this.#uploads = useDirectUpload(this, {
+        url: this.urlValue,
+        input: this.inputTarget,
+        name: this.nameValue,
+        messages: this.messagesValue,
+        load: this.constructor.loadDirectUpload,
+        onChange: (entry) => this.#upload(entry),
+        onBlocked: (message) => this.#announce(message, "assertive")
+      })
+    } else if (this.uploadValue === "on_submit") {
+      useDirectUploadEvents(this, this.inputTarget, {
+        messages: this.messagesValue,
+        onChange: (entry) => this.#upload(entry)
+      })
+    }
     this.#reflect()
   }
 
-  // Actions on the dropzone label: dragenter/dragover/dragleave/drop.
+  /** Unbinds the queue and the listeners; the chips' object URLs are released. */
+  disconnect() {
+    teardown(this)
+    for (const row of this.#rows.values()) this.#release(row)
+    this.#rows.clear()
+    this.#uploads = null
+  }
+
   /**
-   * File drags flip the zone into its accepting state - depth-counted
-   * (the header explains the counter).
+   * The file-drop controller's files action (drop, paste, picker and a
+   * removal land here): reflects the selection as chips, shows the
+   * rejections, starts the uploads in immediate mode and reports the
+   * file names.
    *
-   * @param {DragEvent} event
+   * @param {CustomEvent} event - detail holds accepted, rejected, source and files
    */
-  dragenter(event) {
-    if (!this.#accepting(event)) return
-
-    event.preventDefault()
-    this.#dragDepth += 1
-    this.element.setAttribute("data-dragging", "")
-  }
-
-  /**
-   * The required preventDefault - without it the browser navigates to
-   * the dropped file.
-   *
-   * @param {DragEvent} event
-   */
-  dragover(event) {
-    if (!this.#accepting(event)) return
-
-    event.preventDefault() // required, or the browser navigates to the file
-  }
-
-  /** Nets the depth counter down; at zero the drag styling clears. */
-  dragleave() {
-    this.#dragDepth = Math.max(0, this.#dragDepth - 1)
-    if (this.#dragDepth === 0) this.element.removeAttribute("data-dragging")
-  }
-
-  /**
-   * Assigns the dropped files to the native input (single-file zones take
-   * the FIRST - the native picker's rule) and dispatches a real change so
-   * every listener sees a picker-identical selection.
-   *
-   * @param {DragEvent} event
-   */
-  drop(event) {
-    if (!this.#accepting(event)) return
-
-    event.preventDefault()
-    this.#dragDepth = 0
-    this.element.removeAttribute("data-dragging")
-
-    const files = event.dataTransfer?.files
-
-    if (!files || files.length === 0) return
-
-    this.inputTarget.files = this.#normalized(files)
-    // The programmatic assignment fires no native change - dispatch it so
-    // form frameworks (and this controller's own change action) see the
-    // selection exactly as a picker selection.
-    this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
-  }
-
-  /**
-   * The native input's change action (picker AND drop land here):
-   * reflects the selection and reports the file names.
-   */
-  changed() {
+  files(event) {
     this.#reflect()
+    this.#reject(event.detail?.rejected ?? [])
+    const accepted = event.detail?.accepted ?? []
+
+    if (this.#uploads && accepted.length > 0) {
+      for (const entry of this.#uploads.enqueue(accepted)) {
+        const row = this.#rows.get(entry.file)
+
+        if (row) row.entry = entry
+      }
+    }
     this.dispatch("change", {
       prefix: EVENT_PREFIX,
       detail: { names: this.#files().map((file) => file.name) }
@@ -106,89 +114,237 @@ export default class FileInputController extends Controller {
   }
 
   /**
-   * The clear button's click action: empties the input and dispatches a
-   * real change.
+   * A chip's remove action: the upload is cancelled or its signed id
+   * dropped, and the file leaves the selection through the file-drop
+   * controller, which reports back into files.
+   *
+   * @param {MouseEvent} event
+   */
+  remove(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const row = this.#rowOf(event.currentTarget)
+
+    if (!row) return
+    if (row.entry) this.#uploads?.remove(row.entry.id)
+    const drop = this.#drop
+
+    if (drop) drop.removeFile(row.file)
+    else this.#forget(row)
+  }
+
+  /**
+   * A chip's retry action: a failed upload goes back into the queue.
+   *
+   * @param {MouseEvent} event
+   */
+  retry(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const row = this.#rowOf(event.currentTarget)
+
+    if (row?.entry) this.#uploads?.retry(row.entry.id)
+  }
+
+  /**
+   * The clear button's click action: cancels every upload, empties the
+   * input and dispatches a real change, which the file-drop controller
+   * hears as a cleared selection.
    *
    * @param {MouseEvent} event
    */
   clear(event) {
-    // The clear button sits INSIDE the label: without this, the click
-    // also re-opens the file picker.
+    // Without this, a clear button inside the label also re-opens the
+    // file picker.
     event.preventDefault()
     event.stopPropagation()
+    this.#uploads?.cancelAll()
     this.inputTarget.value = ""
     this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
+    this.#reflect()
+    this.#reject([])
   }
 
+  /**
+   * The input's current selection.
+   *
+   * @returns {File[]}
+   */
   #files() {
     return Array.from(this.inputTarget.files ?? [])
   }
 
-  // A drag from another application may carry no files (text, links) -
-  // only file drags flip the zone into its accepting state.
-  #accepting(event) {
-    if (this.inputTarget.disabled) return false
-
-    const types = event.dataTransfer?.types
-
-    return Boolean(types && Array.from(types).includes("Files"))
+  /**
+   * The file-drop controller beside this one, when it is connected.
+   *
+   * @returns {Object | null}
+   */
+  get #drop() {
+    return this.application.getControllerForElementAndIdentifier(this.element, DROP_IDENTIFIER) ?? null
   }
 
-  // Single-file zones take the FIRST dropped file (the native picker's
-  // rule). Built through a fresh DataTransfer where the platform provides
-  // one; without it (older engines, some test DOMs) the multi-drop falls
-  // back to the full list rather than throwing.
-  #normalized(files) {
-    if (this.multipleValue || files.length <= 1) return files
-    if (typeof DataTransfer !== "function") return files
-
-    try {
-      const transfer = new DataTransfer()
-      transfer.items.add(files[0])
-      return transfer.files
-    } catch {
-      return files
-    }
-  }
-
-  // The selected-file list is BUILT, never innerHTML'd (names are user
-  // input); data-populated on the root is the styling hook for the
-  // empty/filled swap.
+  /**
+   * Keeps one chip per file in the selection: new files get a chip, gone
+   * files lose theirs; data-populated on the root is the styling hook for
+   * the empty/filled swap.
+   */
   #reflect() {
     const files = this.#files()
 
+    for (const row of [...this.#rows.values()]) {
+      if (!files.includes(row.file)) this.#forget(row)
+    }
+    for (const file of files) {
+      if (!this.#rows.has(file)) this.#add(file)
+    }
     this.element.toggleAttribute("data-populated", files.length > 0)
     if (this.hasClearTarget) this.clearTarget.hidden = files.length === 0
-    if (!this.hasListTarget) return
-
-    this.listTarget.textContent = ""
-    for (const file of files) {
-      const item = document.createElement("li")
-
-      item.setAttribute("data-slot", "file-input-item")
-      const name = document.createElement("span")
-
-      name.setAttribute("data-slot", "file-input-item-name")
-      name.textContent = file.name
-      const size = document.createElement("span")
-
-      size.setAttribute("data-slot", "file-input-item-size")
-      size.textContent = this.#formatSize(file.size)
-      item.append(name, size)
-      this.listTarget.append(item)
-    }
   }
 
-  #formatSize(bytes) {
-    if (!Number.isFinite(bytes) || bytes < 0) return ""
+  /**
+   * One chip, cloned from the server's template and filled (textContent,
+   * never innerHTML: names are user input).
+   *
+   * @param {File} file
+   */
+  #add(file) {
+    if (!this.hasTemplateTarget || !this.hasItemsTarget) return
 
-    let value = bytes
-    let unit = 0
+    const element = this.templateTarget.content.firstElementChild?.cloneNode(true)
 
-    while (value >= 1024 && unit < UNITS.length - 1) {
-      value /= 1024
-      unit += 1
+    if (!element) return
+
+    const row = { file, element, entry: null, url: null }
+    const title = element.querySelector("[data-slot=attachment-title]")
+    const description = element.querySelector("[data-slot=attachment-description]")
+
+    if (title) title.textContent = file.name
+    if (description) description.textContent = formatFileSize(file.size)
+    element.setAttribute("data-upload-state", this.#uploads ? "idle" : "done")
+    this.#thumbnail(row)
+    this.itemsTarget.append(element)
+    this.#rows.set(file, row)
+  }
+
+  /**
+   * An image file's thumbnail in the chip's media slot, from an object
+   * URL released when the chip goes.
+   *
+   * @param {{ file: File, element: Element, url: string | null }} row
+   */
+  #thumbnail(row) {
+    if (!this.previewValue || !row.file.type.startsWith("image/")) return
+    if (typeof URL.createObjectURL !== "function") return
+
+    const media = row.element.querySelector("[data-slot=attachment-media]")
+
+    if (!media) return
+
+    row.url = URL.createObjectURL(row.file)
+    media.setAttribute("data-variant", "image")
+    media.textContent = ""
+    const image = document.createElement("img")
+
+    image.src = row.url
+    image.alt = ""
+    media.append(image)
+  }
+
+  /**
+   * Drops a chip: its upload if any, its object URL, its element.
+   *
+   * @param {{ file: File, element: Element, entry: Object | null, url: string | null }} row
+   */
+  #forget(row) {
+    if (row.entry && this.#uploads) this.#uploads.remove(row.entry.id)
+    this.#release(row)
+    row.element.remove()
+    this.#rows.delete(row.file)
+  }
+
+  /**
+   * Releases a chip's object URL.
+   *
+   * @param {{ url: string | null }} row
+   */
+  #release(row) {
+    if (row.url && typeof URL.revokeObjectURL === "function") URL.revokeObjectURL(row.url)
+    row.url = null
+  }
+
+  /**
+   * The chip a button inside it belongs to.
+   *
+   * @param {Element} button
+   * @returns {Object | null}
+   */
+  #rowOf(button) {
+    const element = button?.closest("[data-slot=attachment]")
+
+    if (!element) return null
+    for (const row of this.#rows.values()) {
+      if (row.element === element) return row
     }
-    return `${unit === 0 ? value : value.toFixed(1)} ${UNITS[unit]}`
+
+    return null
+  }
+
+  /**
+   * An upload's change, drawn on its chip: the state, the progress bar,
+   * the failure text and the retry affordance; reported to the host.
+   *
+   * @param {Object} entry - the queue's entry
+   */
+  #upload(entry) {
+    const row = this.#rows.get(entry.file)
+
+    if (!row) return
+    if (entry.state === "cancelled" || entry.state === "removed") {
+      row.entry = null
+      return
+    }
+    row.entry = entry
+    row.element.setAttribute("data-upload-state", CHIP_STATE[entry.state] ?? "done")
+    const description = row.element.querySelector("[data-slot=attachment-description]")
+
+    if (description) description.textContent = entry.state === "error" ? entry.error : formatFileSize(entry.file.size)
+    const bar = row.element.querySelector("[data-slot=attachment-progress]")
+
+    if (bar) {
+      bar.hidden = entry.state !== "uploading"
+      bar.setAttribute("aria-valuenow", String(entry.progress))
+      const indicator = bar.querySelector("[data-slot=progress-indicator]")
+      const readout = bar.querySelector("[data-slot=progress-value]")
+
+      if (indicator) indicator.style.width = `${entry.progress}%`
+      if (readout) readout.textContent = `${entry.progress}%`
+    }
+    const retry = row.element.querySelector("[data-upload-action=retry]")
+
+    if (retry) retry.hidden = entry.state !== "error"
+    this.dispatch("upload", {
+      prefix: EVENT_PREFIX,
+      detail: { state: entry.state, file: entry.file, blob: entry.blob, error: entry.error, progress: entry.progress }
+    })
+  }
+
+  /**
+   * Fills the rejections list (role=alert, so a screen reader hears it
+   * fill), one line per file naming every reason; hidden when empty.
+   *
+   * @param {Array<{ file: File, errors: Array<{ message: string }> }>} rejections
+   */
+  #reject(rejections) {
+    if (!this.hasErrorsTarget) return
+
+    this.errorsTarget.textContent = ""
+    for (const { file, errors } of rejections) {
+      const item = document.createElement("li")
+
+      item.setAttribute("data-slot", "file-input-error")
+      item.textContent = errors.map((error) => error.message).join(" ") || file.name
+      this.errorsTarget.append(item)
+    }
+    this.errorsTarget.hidden = rejections.length === 0
   }
 }

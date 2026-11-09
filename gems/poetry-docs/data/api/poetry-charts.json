@@ -43,7 +43,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 109
+          "line": 111
         },
         {
           "name": "registry",
@@ -55,7 +55,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 59
+          "line": 61
         },
         {
           "name": "registry_descriptions",
@@ -67,7 +67,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 74
+          "line": 76
         },
         {
           "name": "registry_items",
@@ -79,7 +79,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 82
+          "line": 84
         },
         {
           "name": "root",
@@ -91,7 +91,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 49
+          "line": 51
         }
       ],
       "constants": [
@@ -663,7 +663,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 42
+          "line": 44
         },
         {
           "name": "tick_count",
@@ -680,7 +680,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 42
+          "line": 44
         },
         {
           "name": "tick_formatter",
@@ -697,7 +697,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 42
+          "line": 44
         },
         {
           "name": "tick_margin",
@@ -714,7 +714,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 42
+          "line": 44
         }
       ],
       "constants": []
@@ -1236,6 +1236,26 @@
       "docstring": "The cartesian chrome on the shared cn-chart-* theme rules\n+ the bar label look.",
       "examples": [],
       "file": "app/components/poetry/charts/bar_chart/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Charts::Behaviors",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The behaviors poetry-charts ships ({Poetry::Core::Behavior}).",
+      "examples": [],
+      "file": "app/components/poetry/charts/behaviors/entrance_animation.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Charts::Behaviors::EntranceAnimation",
+      "type": "module",
+      "superclass": null,
+      "docstring": "A chart's entrance animation (the charts motion controller): the\nclient interpolates toward the server-computed geometry, and\nreduced motion shows the finished chart. Wired only when the\nchart's animate: option holds; the motion options come from\n{Poetry::Charts::Motion}.",
+      "examples": [],
+      "file": "app/components/poetry/charts/behaviors/entrance_animation.rb",
       "methods": [],
       "constants": []
     },
@@ -5056,7 +5076,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 45
+          "line": 47
         },
         {
           "name": "vertical",
@@ -5073,7 +5093,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 45
+          "line": 47
         }
       ],
       "constants": []
@@ -5711,7 +5731,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 82
+          "line": 80
         }
       ],
       "constants": [
@@ -5745,7 +5765,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 38
+          "line": 36
         }
       ],
       "constants": []

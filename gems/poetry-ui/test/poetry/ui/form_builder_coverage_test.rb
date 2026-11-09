@@ -58,7 +58,7 @@ module Poetry
         navigation_menu pagination popover progress questionnaire
         resizable scroll_area separator sheet sidebar skeleton spinner
         stat table tabs timeline toast toast_trigger toaster toggle
-        toggle_group toolbar tooltip tree typeset
+        toggle_group toolbar tooltip trace tree typeset
       ].freeze
 
       def test_the_partition_covers_the_registry_exactly

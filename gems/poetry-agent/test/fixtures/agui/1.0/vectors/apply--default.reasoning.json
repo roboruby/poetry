@@ -1,0 +1,1109 @@
+{
+  "source": "apply/__tests__/default.reasoning.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle full reasoning lifecycle",
+      "line": 29,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "phase1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Thinking..."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "phase1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Thinking..."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern; /spec/1.0/events/reasoning#spans-reasoning_start-and-reasoning_end: a span opens no message",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema), REASONING_END messageId \"phase1\". Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle multiple reasoning content events",
+      "line": 83,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Let me "
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "think about "
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "this."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Let me think about this."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle multiple reasoning messages",
+      "line": 141,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "First thought"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r2",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r2",
+          "delta": "Second thought"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "First thought"
+          },
+          {
+            "id": "r2",
+            "role": "reasoning",
+            "content": "Second thought"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not create duplicate message when REASONING_MESSAGE_START uses existing messageId",
+      "line": 206,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "First part"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": " Second part"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "First part Second part"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: the pattern's rules apply as for text messages; a closed message MAY be reopened and appends",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should trigger onNewMessage callback after REASONING_MESSAGE_END",
+      "line": 271,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Thinking..."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Thinking..."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test: kept for the message the hook observes (id, role, content); the onNewMessage call itself is a TS subscriber API."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should throw error for REASONING_MESSAGE_CHUNK (must be transformed)",
+      "line": 327,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "test"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "test"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: REASONING_MESSAGE_CHUNK is the compact spelling and expands into START + CONTENT",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Stage-isolated in TS: the reducer alone throws on a chunk. On the pipeline transformChunks expands it first, so the throw is unreachable and the chunk assembles; the terminal closes it."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle REASONING_ENCRYPTED_VALUE for tool-call subtype",
+      "line": 360,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "tool-call-123",
+          "encryptedValue": "encrypted-value-data"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test (asserts the subscriber sees the event); kept for its outcome: an unknown tool call is tolerated and nothing is created. TS warns about nothing here."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle REASONING_ENCRYPTED_VALUE for message subtype",
+      "line": 410,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "msg-123",
+          "encryptedValue": "encrypted-value-data"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test; kept for its outcome (unknown message tolerated, nothing created)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle REASONING_ENCRYPTED_VALUE for reasoning message with message subtype",
+      "line": 458,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "encrypted-value-data"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test; kept for its outcome (r1 was never streamed, so it is unknown)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should provide correct reasoningMessageBuffer in callbacks",
+      "line": 506,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "First"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Second"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Third"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "FirstSecondThird"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test; kept for the accumulated content the buffers imply."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should pass-through REASONING_START and REASONING_END without creating messages",
+      "line": 613,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "phase1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "phase1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/reasoning#spans-reasoning_start-and-reasoning_end: a span opens no message",
+      "notes": "Required fields completed for enforcement: REASONING_END messageId \"phase1\". Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook counts are TS-only; the outcome (no message) is kept."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should set encryptedValue on tool call when REASONING_ENCRYPTED_VALUE is emitted",
+      "line": 662,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "tc-1",
+          "encryptedValue": "encrypted-tool-call-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "encrypted-tool-call-value"
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should set encryptedValue on message when REASONING_ENCRYPTED_VALUE is emitted",
+      "line": 715,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": "Hello"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "msg-1",
+          "encryptedValue": "encrypted-message-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": "Hello",
+            "encryptedValue": "encrypted-message-value"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should set encryptedValue on reasoning message when REASONING_ENCRYPTED_VALUE is emitted",
+      "line": 759,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Thinking..."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "encrypted-reasoning-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Thinking...",
+            "encryptedValue": "encrypted-reasoning-value"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should warn and continue when REASONING_MESSAGE_CONTENT has non-existent messageId",
+      "line": 866,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "non-existent",
+          "delta": "test"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning message found with ID 'non-existent'"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a REASONING_MESSAGE_CONTENT or _END naming a message nothing opened MUST fail the run",
+      "notes": "Full pipeline disagrees with the reducer-only test: the reducer warns and continues, but verification rejects the orphan first, as the spec requires. The TS reducer warning (\"REASONING_MESSAGE_CONTENT: No message found with ID 'non-existent'\") is unreachable on the pipeline."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should warn and continue when REASONING_MESSAGE_END has non-existent messageId",
+      "line": 911,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "non-existent"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning message found with ID 'non-existent'"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a REASONING_MESSAGE_CONTENT or _END naming a message nothing opened MUST fail the run",
+      "notes": "Full pipeline disagrees with the reducer-only test: verification rejects the orphan END before apply."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not emit state update when REASONING_ENCRYPTED_VALUE has non-existent entityId for tool-call",
+      "line": 955,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "non-existent-tc",
+          "encryptedValue": "encrypted-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "$absent"
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). TS asserts no mutation is emitted; the vector states the held messages are unchanged. The reference does not warn (the spec says SHOULD)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not emit state update when REASONING_ENCRYPTED_VALUE has non-existent entityId for message",
+      "line": 1005,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": "Hello"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "non-existent-msg",
+          "encryptedValue": "encrypted-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "content": "Hello",
+            "encryptedValue": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The reference does not warn (the spec says SHOULD)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should provide correct reasoningMessageBuffer in REASONING_MESSAGE_END callback",
+      "line": 1152,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "First"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Second"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "FirstSecond"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Hook test; kept for the content the END buffer shows."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle whitespace-only delta correctly",
+      "line": 1207,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Hello"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "   "
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "World"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Hello   World"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not find tool call in non-assistant message for REASONING_ENCRYPTED_VALUE",
+      "line": 1261,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "user-1",
+            "role": "user",
+            "content": "Hello"
+          },
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "tc-1",
+          "encryptedValue": "encrypted-value"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "user-1",
+            "role": "user",
+            "content": "Hello",
+            "encryptedValue": "$absent"
+          },
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "content": "",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "testFunc",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "encrypted-value"
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should handle interleaved reasoning and text messages",
+      "line": 1322,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "Thinking..."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "t1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "t1",
+          "delta": "Here is my response."
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "t1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r2",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r2",
+          "delta": "More thinking..."
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Thinking..."
+          },
+          {
+            "id": "t1",
+            "role": "assistant",
+            "content": "Here is my response."
+          },
+          {
+            "id": "r2",
+            "role": "reasoning",
+            "content": "More thinking..."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages: a reasoning message is a message of its own (role reasoning) assembled by the streaming pattern; /spec/1.0/events/text-messages#events: deltas concatenate in arrival order into the message opened by TEXT_MESSAGE_START",
+      "notes": "Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not set encryptedValue on activity messages",
+      "line": 1408,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "SEARCH",
+            "content": {
+              "query": "test"
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "activity-1",
+          "encryptedValue": "should-not-be-set"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "SEARCH",
+            "content": {
+              "query": "test"
+            },
+            "encryptedValue": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: activity messages carry no encrypted value; an event naming one is the unknown-entityId case",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The reference does not warn (the spec says SHOULD, as for any unknown entity)."
+    }
+  ],
+  "excluded": [
+    {
+      "name": "defaultApplyEvents with reasoning events > should allow subscribers to stop propagation",
+      "line": 566,
+      "reason": "ts-subscriber-api",
+      "detail": "Asserts a subscriber returning stopPropagation suppresses the message; Ruby has no subscriber mutation API."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should not set encryptedValue when stopPropagation is true",
+      "line": 815,
+      "reason": "ts-subscriber-api",
+      "detail": "A subscriber's stopPropagation suppresses the store; no Ruby counterpart."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should allow stopPropagation for REASONING_MESSAGE_CONTENT",
+      "line": 1048,
+      "reason": "ts-subscriber-api",
+      "detail": "A subscriber's stopPropagation suppresses the append; no Ruby counterpart."
+    },
+    {
+      "name": "defaultApplyEvents with reasoning events > should allow stopPropagation for REASONING_MESSAGE_END (prevents onNewMessage)",
+      "line": 1100,
+      "reason": "ts-subscriber-api",
+      "detail": "Asserts onNewMessage still fires after a stopPropagation on END; hooks only."
+    }
+  ]
+}

@@ -14,6 +14,7 @@
 @import "./poetry/base.css";
 @source "./poetry/safelist.txt";
 @import "./poetry/charts.css";
+@import "./poetry/motion.css";
 /* Docs switcher: the two installed slot imports are replaced by
    the scoped nine-theme registry (see style-registry.css). The slot files
    stay on disk, synced to the gem's default theme by

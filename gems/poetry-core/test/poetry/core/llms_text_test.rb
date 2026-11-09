@@ -34,6 +34,20 @@ module Poetry
         end
       end
 
+      def test_index_and_full_open_on_the_five_usage_rules
+        with_registry do |registry|
+          text = LlmsText.new(registry: registry)
+
+          assert_equal 5, LlmsText::USAGE_RULES.size
+          [text.index, text.full].each do |surface|
+            assert_operator surface.index("## Usage rules"), :<, surface.index("## Block")
+            LlmsText::USAGE_RULES.each { |rule| assert_includes surface, "- #{rule}" }
+          end
+
+          assert_match(/Check comes LAST/, LlmsText::USAGE_RULES.last)
+        end
+      end
+
       def test_full_lists_the_declared_tools
         with_registry do |registry|
           entry = { "class_name" => "Poetry::Ui::Tabs::Component", "styles" => [], "options" => [], "slots" => [],
@@ -41,7 +55,8 @@ module Poetry
                                   "inputSchema" => { "type" => "object",
                                                      "properties" => { "value" => { "type" => "string" } },
                                                      "required" => ["value"] },
-                                  "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                                  "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false,
+                                                     "consequentialHint" => false, "debugging" => false },
                                   "executes" => "poetry--core--tabs#setValue" }] }
           full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/tabs" => entry },
                                                          blocks: registry.blocks,
@@ -55,6 +70,26 @@ module Poetry
       APP_ENTRY = { "class_name" => "Demo::Badge::Component", "bem_block" => "demo-badge", "helper" => "demo_badge",
                     "styles" => [{ "name" => "tone", "variants" => %w[neutral loud] }], "options" => [], "slots" => [],
                     "agent_rules" => ["Demo badges are read-only labels."] }.freeze
+
+      def test_full_names_the_hints_a_tool_sets
+        with_registry do |registry|
+          hints = { "readOnlyHint" => false, "untrustedContentHint" => false, "consequentialHint" => true,
+                    "debugging" => false }
+          entry = { "class_name" => "Poetry::Ui::Tabs::Component", "styles" => [], "options" => [], "slots" => [],
+                    "tools" => [{ "name" => "commit", "description" => "Commit the order.", "annotations" => hints,
+                                  "executes" => "poetry--core--tabs#commit" },
+                                { "name" => "dump", "description" => "Dump the state.",
+                                  "annotations" => hints.merge("readOnlyHint" => true, "untrustedContentHint" => true,
+                                                               "consequentialHint" => false, "debugging" => true),
+                                  "executes" => "poetry--core--tabs#dump" }] }
+          full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/tabs" => entry },
+                                                         blocks: registry.blocks,
+                                                         source_root: registry.source_root)).full
+
+          assert_includes full, "- tool commit (mutating, consequential) - Commit the order."
+          assert_includes full, "- tool dump (read-only, untrusted content, debugging) - Dump the state."
+        end
+      end
 
       def test_app_components_follow_the_gem_catalog_under_their_declared_helpers
         with_registry do |registry|

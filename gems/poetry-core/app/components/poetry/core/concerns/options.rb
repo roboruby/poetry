@@ -53,6 +53,12 @@ module Poetry
         extend ActiveSupport::Concern
         include DeclaredAttributes
 
+        # Option names that would shadow a method the rendering itself
+        # calls: an option named `capture` once blanked every block a
+        # template captured. Declaring one raises at class load.
+        RESERVED_OPTION_NAMES = %i[capture content render helpers view_context output_buffer controller
+                                   request].freeze
+
         included do
           class_attribute :registered_options,
                           instance_writer: true,
@@ -85,6 +91,10 @@ module Poetry
           #   option :name, :symbol, required: true, format: :"icon-name"
           # @return [void]
           def option(name, type, **options)
+            if RESERVED_OPTION_NAMES.include?(name.to_sym)
+              raise ArgumentError, "#{self}: option #{name.inspect} would shadow a rendering method " \
+                                   "(#{RESERVED_OPTION_NAMES.join(", ")} are the view's) - pick another name"
+            end
             register_declared_attribute(:option, name, options)
 
             required, default_value = extract_declared_defaults(options)

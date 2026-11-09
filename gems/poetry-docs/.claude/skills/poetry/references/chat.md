@@ -11,12 +11,13 @@ Class: Poetry::Ui::Attachment::Component - BEM block `poetry-ui-attachment`.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required - Row (:horizontal) or stacked thumbnail-card (:vertical) layout.
 - `size:` (symbol) - one of default|sm|xs, default "default", required - The chip density axis.
 - `state:` (symbol) - one of idle|uploading|processing|error|done, default "done" - The upload lifecycle state; flip it by re-render or Turbo Stream replace, never in JS.
-Slots: media (Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.; with_media yields NOTHING to the block - no |param|, write content directly; with_media keywords: variant: ONLY), title (The file name line. User content - never mark it html_safe.), description (Muted metadata under the title (size, type); in the error state, the failure explanation.), actions (Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires label:.; many; with_action yields NOTHING to the block - no |param|, write content directly), trigger (Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) layered under the actions. Don't also wrap the chip in a link.; with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: media (Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.; with_media yields NOTHING to the block - no |param|, write content directly; with_media keywords: variant: ONLY), title (The file name line. User content - never mark it html_safe.), description (Muted metadata under the title (size, type); in the error state, the failure explanation.), progress (An upload's progress under the title: the Progress component, slim, its caption for screen readers only. The uploader moves it; render it with the value you know.), actions (Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires label:.; many; with_action yields NOTHING to the block - no |param|, write content directly), trigger (Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) layered under the actions. Don't also wrap the chip in a link.; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `attachment` - The chip root - the server-owned upload lifecycle rides here (flip data-upload-state by re-render / Turbo Stream replace) | states: data-upload-state=idle|uploading|processing|error|done (always - the resolved state); data-size=default|sm|xs (always - the resolved size); data-orientation=horizontal|vertical (always - the resolved orientation)
 - PART `attachment-media` - The media slot's box - the icon tile or the caller's <img> | states: data-variant=icon|image (always - the media variant)
 - PART `attachment-content` - Text column wrapping title/description - renders when either slot is set
 - PART `attachment-title` - The file name line (title slot; user content, never html_safe)
 - PART `attachment-description` - Muted metadata / failure copy under the title
+- PART `attachment-progress` - The upload's progress bar under the title (the progress slot: a slim Progress whose caption is read, not shown)
 - PART `attachment-actions` - Row of with_action poetry Buttons
 - PART `attachment-trigger` - The whole-chip control (with_trigger: a button or tag: :a anchor) - wraps the picker/download affordance
 - PART `attachment-status` - sr-only role=status announcement for the in-flight and error states (uploading/processing/error)
@@ -68,14 +69,14 @@ Slots: avatar (The sender's avatar, kept beside the content column - decorative 
 A streaming-aware transcript that keeps the latest message in view.
 
 Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scroller`.
-- `auto_scroll:` (boolean) - default true - Follows the newest message while the reader sits at the bottom; scrolling up releases the follow.
+- `auto_scroll:` (boolean) - default true - Follows the newest message while the reader sits at the bottom; scrolling up releases the follow. Composes with anchor: true turns - a new anchored turn holds at the reading line while its reply streams, and following takes over once the reply fills the viewport.
 - `content_id:` (string) - default "dynamic" - The content element's dom id - the Turbo Stream append target; defaults to "<id>-messages".
 - `default_scroll_position:` (symbol) - one of start|end|last-anchor, default "end" - Where the viewport lands on connect: the newest message (:end), the oldest (:start), or the last anchor: true row (:"last-anchor").
 - `id:` (string) - required - The transcript's stable identifier - the content element renders dom id "<id>-messages" for Turbo Streams to target (content_id: overrides it).
 - `jump_button:` (boolean) - default true - Renders the floating jump-to-latest button (shown once the reader leaves the bottom).
 - `preserve_scroll_on_prepend:` (boolean) - default true - Keeps the reading position stable when history prepends into the content element.
 - `track_visibility:` (boolean) - default false - Opt-in observation of which rows are on screen - emits a visibility event as the visible set changes.
-- PART `message-scroller` - The transcript root the controller drives - runtime scroll state is mirrored here | states: data-mode=following-bottom|free-scrolling|anchored-to-message|settling-jump (always once connected - the 4-state machine); data-scrollable (overflow exists - carries which edges have room (start, end, or both as a space-separated pair)); data-autoscrolling (a programmatic scroll is settling - the follow-bottom release is suppressed while set); data-pending-scroll (the opening-position hold - rendered for default_scroll_position :end / :"last-anchor", cleared once the position lands (at once for an empty transcript))
+- PART `message-scroller` - The transcript root the controller drives - runtime scroll state is mirrored here | states: data-mode=following-bottom|free-scrolling|anchored-to-message|settling-jump (always once connected - the 4-state machine); data-scrollable (overflow exists - carries which edges have room (start, end, or both as a space-separated pair); end stays off while following the bottom, which is already closing the gap); data-autoscrolling (a programmatic scroll is settling - the follow-bottom release is suppressed while set); data-pending-scroll (the opening-position hold - rendered for default_scroll_position :end / :"last-anchor", cleared once the position lands (at once for an empty transcript))
 - PART `message-scroller-viewport` - The native scroll region (role=region, focusable) - the controller mirrors the same runtime attributes here | states: data-scrollable (overflow exists - the same edge tokens as the root); data-autoscrolling (a programmatic scroll is settling); data-pending-scroll (the opening-position hold (the root's) - the dictionary hides the viewport while it is set)
 - PART `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions
 - PART `message-scroller-item` - One transcript row (poetry_message_scroller_item) - the id is how anchoring and Streams find it | states: data-message-id (always - the row's message id); data-scroll-anchor (anchor: true - the turn the controller holds at the reading line)
@@ -90,5 +91,27 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - RULE: Append new turns with a Turbo Stream targeting the content element's dom id - content_id:, "<id>-messages" by default.
 - RULE: History loads PREPEND into the content element - the controller preserves the reading position.
 - RULE: Never nest a second scroll container inside the viewport.
+
+## trace (`poetry_trace`)
+
+Class: Poetry::Ui::Trace::Component - BEM block `poetry-ui-trace`.
+Slot REQUIRED: with_step (at least one step (with_step(title, ...))) - a call without it raises.
+Slots: steps (One step: the title (positional), optional icon:, description:, status: (:running, :error, :pending), href: (a link), and open: for a step with detail - the detail is the block, which makes the step a disclosure.; many; with_step yields NOTHING to the block - no |param|, write content directly).
+- PART `trace` - The column of steps
+- PART `trace-line` - One step's row - its icon, title and description | states: data-status=running|error|pending (status: - the step's state (absent when done))
+- PART `trace-icon` - The step's glyph, and the disclosure's chevron (aria-hidden)
+- PART `trace-title` - The step's words - shimmers while running
+- PART `trace-description` - The muted trailing note - a duration, a count
+- PART `trace-collapsible` - A step with detail - the state controller's root | states: data-open (the detail is shown (server-rendered from open:; the controller flips the pair)); data-closed (the detail is hidden)
+- PART `trace-collapsible-trigger` - The disclosure button around the step's line - mirrors aria-expanded
+- PART `trace-collapsible-content` - The detail panel - its height animates over the measured --collapsible-panel-height | states: data-open (the detail is open or entering); data-closed (the detail is closed or animating out (hidden lands after the exit)); data-starting-style (the first painted frame of an entry (controller-written)); data-ending-style (the whole exit, until hidden lands (controller-written))
+- PART `trace-collapsible-content-inner` - The detail itself - indented on the theme's rail
+- WIRING collapsible: `poetry--core--state` registers
+- WIRING collapsible_trigger: `poetry--core--state` actions toggle on click; targets trigger
+- WIRING collapsible_content: `poetry--core--state` targets content
+- RULE: The steps an agent takes (reasoning, tool calls, searches, a plan) are a Trace - never a hand-rolled column of muted rows.
+- RULE: with_step(title, icon:, description:, status:) is one line; a block makes it a disclosure that reveals the detail (tool output in a poetry_code_block size: :sm, a reasoning summary).
+- RULE: Map a tool call's state to status: and to the title's words: running -> status: :running, "Running ..."; failed -> status: :error, "Failed to run ..."; waiting -> status: :pending; done -> no status, "Ran ...". The title is what assistive tech reads.
+- RULE: href: makes a step a link (a source, a file the agent changed).
 
 

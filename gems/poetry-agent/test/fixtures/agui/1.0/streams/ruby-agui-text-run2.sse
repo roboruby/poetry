@@ -1,0 +1,14 @@
+data: {"type":"RUN_STARTED","threadId":"rb-text-162943","runId":"96b590e8-0974-4f4b-ae0b-c56262fc5be5"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"19cd8d02-d4e5-4155-b8a9-cbfa2853175b"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"19cd8d02-d4e5-4155-b8a9-cbfa2853175b","delta":"Your n"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"19cd8d02-d4e5-4155-b8a9-cbfa2853175b","delta":"ame is"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"19cd8d02-d4e5-4155-b8a9-cbfa2853175b","delta":" Alex!"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"19cd8d02-d4e5-4155-b8a9-cbfa2853175b"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-text-162943","runId":"96b590e8-0974-4f4b-ae0b-c56262fc5be5"}
+

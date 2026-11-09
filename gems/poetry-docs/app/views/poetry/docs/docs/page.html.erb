@@ -41,6 +41,17 @@
       </p>
       <%= poetry_code_block(code: "bundle add poetry-charts\nbin/rails g poetry:install --charts", language: "shell", label: "Add charts") %>
     </section>
+  <% elsif @entry.section == "motion" %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="installation">Installation</h2>
+      <p class="max-w-2xl text-muted-foreground">
+        Effects ship in the separate, optional <code class="text-foreground">poetry-motion</code>
+        gem. The server renders each effect's finished state, and under reduced motion that is
+        what the reader sees. See <%= poetry_link(href: "/libraries/motion") { "Motion" } %> for
+        the motion policy and the behaviors.
+      </p>
+      <%= poetry_code_block(code: "bundle add poetry-motion\nbin/rails g poetry:install --motion", language: "shell", label: "Add motion") %>
+    </section>
   <% end %>
 
   <%# Page-specific sections (the rare page with prose beyond the generic
@@ -73,6 +84,7 @@
   <% if (parts = Poetry::Docs::DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
     <%= render "poetry/docs/docs/styling", parts: parts,
                                wiring: Poetry::Docs::DocsCatalog.wiring_for(@entry.section, @entry.slug),
+                               behaviors: Poetry::Docs::DocsCatalog.behaviors_for(@entry.section, @entry.slug),
                                tools: Poetry::Docs::DocsCatalog.tools_for(@entry.section, @entry.slug) %>
   <% end %>
 </div>

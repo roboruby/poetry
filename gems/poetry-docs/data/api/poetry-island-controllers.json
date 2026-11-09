@@ -1,0 +1,132 @@
+{
+  "poetry_version": "0.1.13",
+  "gem": "@poetry/island",
+  "objects": [
+    {
+      "path": "@poetry/island",
+      "type": "module",
+      "superclass": null,
+      "docstring": "@poetry/island - the island controller, one source shipped over two\nchannels: importmap-first (the engine pins this tree) and this same\ntree as the npm package for bundler hosts.",
+      "examples": [],
+      "file": "app/javascript/poetry/island/index.js",
+      "methods": [
+        {
+          "name": "registerPoetryIslandControllers",
+          "scope": "class",
+          "group": null,
+          "signature": "registerPoetryIslandControllers(application)",
+          "docstring": "The host one-liner: registers the island controller on the host's\nStimulus application.",
+          "params": [
+            {
+              "name": "application",
+              "types": [
+                "import(\"@hotwired/stimulus\").Application"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/island/index.js",
+          "line": 16
+        }
+      ],
+      "constants": [
+        {
+          "name": "IDENTIFIER",
+          "value": "\"poetry--island--island\"",
+          "docstring": "The island controller's identifier, as poetry_island renders it."
+        }
+      ]
+    },
+    {
+      "path": "poetry--island--island",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Island: a bounded client mount inside server-rendered HTML. The server\nrenders the shell, the element's content before and without the module;\non connect the controller imports the island's module through the\nimportmap and mounts it in a root beside the shell, which steps aside\nwhile the island is up. A morph refresh leaves the island alone and\nhands it the server's new props; a cached snapshot's dead root is\ncleared on connect; a preview shows the shell; a failed import or mount\nleaves the shell in place and says so.\n\nA module exports mount(element, props) and returns { unmount, update? }.\nThe props are the island's JSON script, plus input (the hidden input\nrendered with name:, or null) and focus (true when the shell had focus).\n\n**Targets**: `input`, `shell`\n\n**Values**:\n- `import` (String): The importmap specifier of the module.\n- `mode` (String, default: \"fill\"): fill paints the shell's box; flow takes the shell's place.\n\n**Events**: `error`, `mount`",
+      "examples": [],
+      "file": "app/javascript/poetry/island/island_controller.js",
+      "methods": [
+        {
+          "name": "load",
+          "scope": "static",
+          "group": null,
+          "signature": "static load",
+          "docstring": "How a module loads: a dynamic import by specifier, resolved by the\nimportmap. A test replaces it.",
+          "params": [
+            {
+              "name": "specifier",
+              "types": [
+                "string"
+              ],
+              "text": "the importmap specifier"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": "the module"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/island/island_controller.js",
+          "line": 33
+        },
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Clears what a cached snapshot kept, guards against a morph and mounts.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/island/island_controller.js",
+          "line": 36
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Unmounts the island and drops the morph guard.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/island/island_controller.js",
+          "line": 44
+        },
+        {
+          "name": "mount",
+          "scope": "instance",
+          "group": null,
+          "signature": "mount()",
+          "docstring": "Imports the module and mounts it beside the shell. A Turbo preview, a\nfailed import and a failed mount all leave the shell.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<void>"
+            ],
+            "text": "settles once the island is up or the shell stays"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/island/island_controller.js",
+          "line": 54
+        },
+        {
+          "name": "unmount",
+          "scope": "instance",
+          "group": null,
+          "signature": "unmount()",
+          "docstring": "Unmounts the island, removes its root and shows the shell again.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/island/island_controller.js",
+          "line": 84
+        }
+      ],
+      "constants": []
+    }
+  ]
+}

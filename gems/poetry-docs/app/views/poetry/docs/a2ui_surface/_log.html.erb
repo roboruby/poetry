@@ -1,6 +1,7 @@
 <%# What the agent receives from a submitted surface: the spec's action
     message, and its AG-UI placement (forwardedProps) with the data model
     the surface asked for. %>
+<%# locals: (action:, rejected: false) %>
 <div id="a2ui-action-log" class="flex flex-col gap-3">
   <% if action && !action.valid? %>
     <p class="text-xs text-muted-foreground">A check failed on the server, so nothing reached the agent. The surface re-rendered with the failures (the same rules the browser enforced natively where it could):</p>
@@ -12,7 +13,7 @@
       <p class="text-xs text-muted-foreground">Over AG-UI it rides <code>forwardedProps</code>; the surface asked for its data model (<code>sendDataModel</code>), so that comes along:</p>
       <%= poetry_code_block(code: JSON.pretty_generate(action.forwarded_props), language: "json", label: "forwardedProps") %>
     <% end %>
-  <% elsif local_assigns[:rejected] %>
+  <% elsif rejected %>
     <p class="text-xs text-muted-foreground">That submission named no agent action, so nothing reached the agent.</p>
   <% else %>
     <p class="text-xs text-muted-foreground">Submit a surface to see the message the agent receives.</p>

@@ -79,10 +79,17 @@ files against the manifest stamped at last bless.
   tolerant section walker). `DesignMd::Import` plans token overrides with
   WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
   L-walk, chroma held) and DROP-not-fabricate for the rest.
-- `Poetry::Core::DesignLint` — twenty-three deterministic design-slop
-  rules: nineteen on the Herb AST (ERB or plain HTML, the motion floor
-  among them), four on computed styles. Warnings name the fix; provenance
-  cited per rule.
+- `Poetry::Core::DesignLint` — twenty-seven deterministic design-slop
+  rules: twenty-three on the Herb AST (ERB or plain HTML, the motion floor
+  and the craft floor among them), four on computed styles. Warnings name
+  the fix; provenance cited per rule.
+- `Poetry::Core::Audit` — the consumer-app audit's Rails-free analyzers:
+  `Inventory` (components by call sites, every declared axis against the
+  literal values passed, icons) over the check linter's call sink
+  (`Check::Call`, `Linter#lint(calls:)`, `Runner#run(calls:)`), `Tokens`
+  (raw colors, off-scale lengths, font sizes per template), `Edges` (link,
+  form and redirect targets by kind, never inferred), `Health` (findings by
+  severity and rule). poetry-ui's `poetry:audit` runs them.
 
 ## Contracts
 
@@ -100,6 +107,20 @@ files against the manifest stamped at last bless.
   the manifest at CLASS LOAD, so declare `use_stimulus` before `tool`. The
   registry and llms-full list declared tools; `poetry check` carries the
   WebMCP rules; poetry-agent registers them at runtime.
+- A behavior (`Poetry::Core::Behavior`) is a named piece of client behavior
+  several components share, declared once: a module declares `behavior
+  :name, "description"`, `agent_rule`, `wiring` (a block run in the element
+  DSL with the caller's options) and `contributes`. A component uses it
+  with `behavior :name, **options` inside a `use_stimulus` element, where it
+  lands in declaration order beside the element's own controllers, or at
+  class level with `use_behavior :name` (a runtime behavior the JS activates
+  when a layer opens; `on:` for a wired one). Its rules lead the component's
+  agent rules; the registry, llms.txt, the skills and `describe_component`
+  list it. Core ships `roving_focus`, `popper`, `checked`, `file_drop`,
+  `focus_scope` and `dismissable`; another gem adds its namespace to
+  `Behavior.namespaces`, and a name two namespaces define raises. Poetry
+  behaviors are not Herb's client behaviors, which follow elements the
+  client adds and removes.
 
 ## Controller conventions
 
@@ -140,6 +161,16 @@ files against the manifest stamped at last bless.
   subclass override without the super call. Page-lifetime nets (the
   presence and portal cache nets, id_integrity, registration_guard,
   dismissable's static heal) stay outside the scope on purpose.
+- State a controller writes lives on the element, through `setState` and
+  the mirrors beside it (`aria-selected`, `aria-expanded`, `tabindex`,
+  `hidden`, a dialog's `open`), and the morph guard
+  (`helpers/morph_guard.js`, installed once by `registerPoetryControllers`)
+  keeps what the client changed across a Turbo morph: per element and
+  attribute, by observation, with form controls judged against their
+  defaults. A change the server made on purpose still lands on anything
+  the client never touched; a controller never patches a morph itself.
+  Overlays still close before Turbo caches a restoration snapshot, and a
+  dialog closes on its own form's successful submission.
 - A layered popup (a trigger, portaled content, focus-scope and
   dismissable tokens while open) composes `behaviors/overlay.js`
   (`useOverlay(this, { content, trigger, layers, eventPrefix, ... })`)

@@ -1,0 +1,231 @@
+<% content_for :title, "Uploads" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Uploads") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  on_submit_source = <<~CODE
+    #{o}= form_with(model: @post, builder: Poetry::Ui::FormBuilder) do |form| #{e}
+      #{o}= form.file_input :documents, variant: :dropzone, multiple: true, direct_upload: true,
+                            accept: "application/pdf", max_size: 10.megabytes, max_files: 5,
+                            hint: "PDFs up to 10 MB" #{e}
+      #{o}= form.submit #{e}
+    #{o} end #{e}
+  CODE
+  immediate_source = <<~CODE
+    #{o}= form.file_input :photos, variant: :dropzone, multiple: true, accept: "image/*",
+                          direct_upload: true, upload: :immediate, preview: true, paste: true,
+                          hint: "Each photo uploads as it lands" #{e}
+  CODE
+  setup_source = <<~CODE
+    # config/importmap.rb (poetry:install adds both lines when Active Storage is in the app)
+    pin "@rails/activestorage", to: "activestorage.esm.js"
+
+    # app/javascript/application.js - Rails' own submit-time uploads
+    import * as ActiveStorage from "@rails/activestorage"
+    ActiveStorage.start()
+  CODE
+  limits_source = <<~CODE
+    class Post < ApplicationRecord
+      has_many_attached :photos
+      validates :photos, content_type: ["image/png", "image/jpeg"], size: { less_than: 5.megabytes },
+                         limit: { max: 4 }
+    end
+
+    #{o}# form.file_input reads those validators: accept, max_size and max_files land on the zone #{e}
+    #{o}= form.file_input :photos, variant: :dropzone, multiple: true #{e}
+  CODE
+  attachments_source = <<~CODE
+    #{o}= poetry_attachment_for @post.cover, variant: :thumb, download: true #{e}
+
+    #{o}= poetry_attachments_for @post.photos, variant: :thumb do |chip, lifecycle| #{e}
+      #{o} chip.with_action(label: "Remove", tag: :a, href: remove_photo_path(lifecycle.attachment),
+                           data: { turbo_method: :delete }) { poetry_icon(name: :x) } #{e}
+    #{o} end #{e}
+  CODE
+  variant_source = <<~CODE
+    class Post < ApplicationRecord
+      has_many_attached :photos do |attachable|
+        attachable.variant :thumb, resize_to_limit: [160, 160], process: :later   # preprocessed: true before 8.2
+      end
+    end
+  CODE
+  hot_cell_source = <<~CODE
+    # config/application.rb - Rails 8.2, with activestorage-hotcell-client in the bundle
+    config.active_storage.variant_processor = ActiveStorage::HotCell::Client::Transformers::Image::Vips
+    config.active_storage.analyzers = [ActiveStorage::HotCell::Client::Analyzers::Image::Vips]
+
+    # config/initializers/hotcell.rb - the failure classes the chips read as states
+    HotCell.register "active_storage", permanent: UnprocessableUpload, transient: ConversionTemporarilyUnavailable
+    Rails.application.config.action_dispatch.rescue_responses.merge!(
+      "ConversionTemporarilyUnavailable" => :service_unavailable, "UnprocessableUpload" => :unprocessable_content
+    )
+  CODE
+  broadcasts_source = <<~CODE
+    class Post < ApplicationRecord
+      include Poetry::Ui::AttachmentBroadcasts
+      has_many_attached :photos
+      broadcasts_attachment_updates_for :photos, variant: :thumb
+    end
+
+    #{o}# the page: subscribe, then render the chips the broadcasts replace #{e}
+    #{o}= turbo_stream_from @post, :attachments #{e}
+    #{o}= poetry_attachments_for @post.photos, variant: :thumb #{e}
+  CODE
+  security_source = <<~CODE
+    # config/application.rb - Rails 8.2: no direct uploads route unless a form needs it
+    config.active_storage.draw_direct_upload_route = false
+
+    # app/controllers/uploads_controller.rb - an authenticated endpoint for the forms that do
+    class UploadsController < ActiveStorage::DirectUploadsController
+      before_action :authenticate_user!
+    end
+
+    #{o}= form.file_input :photos, variant: :dropzone, direct_upload_url: uploads_path, upload: :immediate #{e}
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Uploads</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      File drop with Active Storage: the FileInput dropzone takes files by drop, picker and paste within
+      the limits you set, uploads them straight to storage at submit or as they land, and
+      <code>poetry_attachment_for</code> renders what is attached through analysis and variants, with
+      Hot Cell's failures as states and Turbo broadcasts moving the chips.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="modes">Three modes</h2>
+      <p>
+        A dropzone without <code>direct_upload:</code> is a native file input with better intake: the
+        files post as multipart with the form. <code>direct_upload: true</code> puts Active Storage's
+        endpoint on the input, as Rails' <code>file_field</code> does, and the default
+        <code>upload: :on_submit</code> is Rails' own flow: <code>@rails/activestorage</code> uploads
+        when the form submits, and the chips follow its <code>direct-upload:*</code> events with
+        progress. <code>upload: :immediate</code> uploads each file as it lands, with real progress,
+        cancel, retry and remove; the form posts the signed ids the uploads leave as hidden inputs, and
+        holds its submit while anything is in flight.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: on_submit_source, language: "erb", label: "At submit, Rails' flow") %>
+    <%= poetry_code_block(code: immediate_source, language: "erb", label: "As files land") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="setup">Setup</h2>
+      <p>
+        Both modes load <code>@rails/activestorage</code> through the importmap, as a dynamic import,
+        so a host without the pin fails one upload with a message, never the module graph.
+        <code>poetry:install</code> adds the pin and the start call when Active Storage is in the app;
+        <code>poetry:check</code> warns (<code>direct-upload-unpinned</code>) when the pin is missing
+        and errors (<code>upload-immediate-without-direct-upload</code>) on an immediate zone with no
+        endpoint.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: setup_source, language: "ruby", label: "The two lines") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="limits">Limits and intake</h2>
+      <p>
+        Limits are options the zone enforces at intake, with react-dropzone's rejection codes and
+        translated messages in a <code>role=alert</code> list: <code>accept:</code>,
+        <code>max_size:</code> and <code>min_size:</code> in bytes, <code>max_files:</code> as a count;
+        the surplus beyond the count is refused file by file and a single zone keeps the first.
+        <code>paste: true</code> takes a pasted screenshot, <code>overlay: true</code> makes the whole
+        page the target behind a fixed drop surface, <code>directory: true</code> walks dropped folders,
+        <code>camera: :environment</code> opens a camera on mobile, <code>preview: true</code> gives
+        image files a thumbnail. With active_storage_validations loaded, <code>form.file_input</code>
+        reads the attribute's content type, size and limit validators for these unless the call passes
+        its own.
+      </p>
+    <% end %>
+    <%= poetry_file_input(variant: :dropzone, name: "demo[]", multiple: true, accept: "image/*,application/pdf",
+                          max_size: 5.megabytes, max_files: 3, preview: true, paste: true,
+                          hint: "Up to three images or PDFs, 5 MB each; nothing uploads here",
+                          class: "w-full max-w-2xl") %>
+    <%= poetry_code_block(code: limits_source, language: "ruby", label: "Limits from the model") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="attachments">Rendering attachments</h2>
+      <p>
+        <code>poetry_attachment_for</code> takes an <code>Attached::One</code>, an
+        <code>Attachment</code> or a <code>Blob</code> and renders an Attachment chip through its
+        lifecycle, reading only public Active Storage API: <strong>processing</strong> until the blob is
+        analyzed and the requested variant is processed (<code>processed?</code>, public from Rails 8.2;
+        earlier Rails processes lazily on request and the image renders at once), <strong>done</strong>
+        with the representation as the media or an icon by content type, <strong>error</strong> when an
+        image was analyzed without dimensions, which is what an unprocessable file leaves behind.
+        <code>download: true</code> makes the chip a download link; the block adds actions. The chip's
+        id is the broadcasts' target.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: attachments_source, language: "erb", label: "The helpers") %>
+    <%= poetry_code_block(code: variant_source, language: "ruby", label: "A variant processed in a job") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="hot-cell">Processing with Hot Cell</h2>
+      <p>
+        <%= link_to "Hot Cell", "https://github.com/basecamp/hotcell" %> runs Active Storage's analyzers,
+        transformers and previewers in a locked-down sidecar, on Rails 8.2, where
+        <code>variant_processor</code> takes a class. Nothing in Poetry processes a byte, so the chips
+        need no change: the cell's permanent failure records an analysis without dimensions, which the
+        chip shows as the error state, and its transient failures retry while the chip shows processing.
+        Render the variants a page shows through <code>process: :later</code> so the cell's round trip
+        never sits inside a request, and map the failure classes you register in
+        <code>rescue_responses</code> for lazily processed representation requests, which raise them.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: hot_cell_source, language: "ruby", label: "Hot Cell on Rails 8.2") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="broadcasts">Turbo broadcasts</h2>
+      <p>
+        A chip moves from processing to done without a reload when the model opts its attachments in:
+        the concern replaces the chip over Turbo Streams when the attachment is created, when its blob's
+        analysis lands and when a variant record is written, in the app or in the cell. The hooks land
+        on Active Storage's models the first time a model opts in. The page subscribes to the record's
+        stream and renders the chips the broadcasts replace.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: broadcasts_source, language: "erb", label: "Opting in") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="security">Security, Turbo and native apps</h2>
+      <p>
+        A direct-upload blob keeps the client's content type until it is attached, and a representation
+        URL will process an orphan blob, so <code>accept:</code> and the size limits are advisory:
+        validate on the model (active_storage_validations, with <code>spoofing_protection</code> for a
+        byte-level check), keep Rails' direct uploads route off on Rails 8.2 unless a form needs it,
+        authenticate a <code>DirectUploadsController</code> subclass and point
+        <code>direct_upload_url:</code> at it, and purge unattached blobs on a schedule.
+      </p>
+      <p>
+        Turbo: the queue aborts in-flight uploads when its controller disconnects, and the hidden
+        signed-id inputs are ordinary form values a snapshot keeps. Hotwire Native presents the native
+        picker for the input and has no drag and drop; <code>camera:</code> is the mobile affordance,
+        with the camera usage description iOS needs.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: security_source, language: "ruby", label: "An authenticated endpoint") %>
+  </section>
+</div>

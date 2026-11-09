@@ -1,0 +1,46 @@
+data: {"type":"RUN_STARTED","threadId":"strands-weather-162641","runId":"3fe7a5a8-2734-4c79-bbe3-2c456d6bfe60","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"7590215a-3b15-481a-b158-9a1c8d9f0ecc","role":"user","content":"Weather in San Francisco?"}]}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","toolCallName":"get_weather","parentMessageId":"98afe20c-67f3-47b2-a028-7662bb20f053"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","delta":"{\"loca"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","delta":"tion\":"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","delta":"\"San F"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","delta":"rancis"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_get_weather_1","delta":"co\"}"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"7590215a-3b15-481a-b158-9a1c8d9f0ecc","role":"user","content":"Weather in San Francisco?"},{"id":"98afe20c-67f3-47b2-a028-7662bb20f053","role":"assistant","content":"","toolCalls":[{"id":"call_get_weather_1","type":"function","function":{"name":"get_weather","arguments":"{\"location\":\"San Francisco\"}"}}]}]}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":14,"outputTokens":10,"totalTokens":24}},"source":"strands"}
+
+data: {"type":"TOOL_CALL_RESULT","toolCallId":"call_get_weather_1","messageId":"181d14a0-529e-4e5b-b799-dffc80707d84","content":"{\"location\":\"San Francisco\",\"conditions\":\"sunny\",\"temperature\":20}"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"7590215a-3b15-481a-b158-9a1c8d9f0ecc","role":"user","content":"Weather in San Francisco?"},{"id":"98afe20c-67f3-47b2-a028-7662bb20f053","role":"assistant","content":"","toolCalls":[{"id":"call_get_weather_1","type":"function","function":{"name":"get_weather","arguments":"{\"location\":\"San Francisco\"}"}}]},{"id":"181d14a0-529e-4e5b-b799-dffc80707d84","role":"tool","content":"{\"location\":\"San Francisco\",\"conditions\":\"sunny\",\"temperature\":20}","toolCallId":"call_get_weather_1"}]}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","delta":"Done: "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","delta":"I used"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","delta":"ool re"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","delta":"sult."}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":30,"outputTokens":8,"totalTokens":38}},"source":"strands"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"7590215a-3b15-481a-b158-9a1c8d9f0ecc","role":"user","content":"Weather in San Francisco?"},{"id":"98afe20c-67f3-47b2-a028-7662bb20f053","role":"assistant","content":"","toolCalls":[{"id":"call_get_weather_1","type":"function","function":{"name":"get_weather","arguments":"{\"location\":\"San Francisco\"}"}}]},{"id":"181d14a0-529e-4e5b-b799-dffc80707d84","role":"tool","content":"{\"location\":\"San Francisco\",\"conditions\":\"sunny\",\"temperature\":20}","toolCallId":"call_get_weather_1"},{"id":"29a16ae9-4fca-4bdc-aa14-cfe2c2eb78e4","role":"assistant","content":"Done: I used the tool result."}]}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"RUN_FINISHED","threadId":"strands-weather-162641","runId":"3fe7a5a8-2734-4c79-bbe3-2c456d6bfe60","outcome":{"type":"success"},"usage":[{"provider":"openai","model":"gpt-4.1-mini","inputTokens":44,"outputTokens":18,"totalTokens":62}]}
+

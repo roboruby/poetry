@@ -54,7 +54,8 @@ module Poetry
       # transcript for the server-rendered history; the current run streams.
       def prepare_agui_relay
         @agui_cursor = AguiReplay.cursor(params)
-        @agui_transcript = AguiReplay.transcript_before(@agui_cursor, decision: AguiReplay.decision(params))
+        @agui_transcript = AguiReplay.transcript_before(@agui_cursor, decision: AguiReplay.decision(params),
+                                                                      tool_result: params[:tool_result].presence)
       end
 
       def prepare_interactive

@@ -1,6 +1,6 @@
 /*
  * poetry/typeset - a styling system for HTML and rendered markdown.
- * Ported verbatim from shadcn/typeset (upstream 3cdaa6eb);
+ * Ported verbatim from shadcn/typeset (shadcn@4.23.0, 96da9cc7);
  * https://ui.shadcn.com/docs/typeset.
  *
  * This file is app-owned: poetry copied it here at install and will never
@@ -52,7 +52,9 @@
         .not-typeset,
         [data-not-typeset],
         .not-typeset *,
-        [data-not-typeset] *
+        [data-not-typeset] *,
+        .typeset [data-slot],
+        .typeset [data-slot] *
       )
     ) {
     /* Paragraphs. */
@@ -455,6 +457,20 @@
         border: 1px solid;
       }
     }
+  }
+
+  /* Components (anything with data-slot) keep their own styles. A component
+     placed directly in the flow gets the same space above as a paragraph. */
+  .typeset
+    > :where([data-slot]):not(
+      :where(
+        .not-typeset,
+        [data-not-typeset],
+        .not-typeset *,
+        [data-not-typeset] *
+      )
+    ) {
+    margin-block-start: var(--typeset-flow);
   }
 
   /* First child adds no space above. Last so it wins ties. */

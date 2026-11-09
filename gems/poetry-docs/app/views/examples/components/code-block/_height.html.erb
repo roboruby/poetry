@@ -1,0 +1,8 @@
+<%# content_class: caps the scroll container, so long output scrolls inside
+    the block instead of growing the page. %>
+<% log = (1..24).map { |n| format("[%02d] GET /invoices/%d 200 OK in %dms", n, 1000 + n, 8 + (n * 7) % 40) }.join("\n") + "\n" %>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: log, content_class: "max-h-48") do |block| %>
+    <% block.with_title { "log/production.log" } %>
+  <% end %>
+</div>

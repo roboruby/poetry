@@ -55,6 +55,7 @@ stand against the gems you now have installed:
 
 ```bash
 bin/rails g poetry:diff        # read-only drift report for copy-ins
+bin/rails g poetry:update      # take a registry item's newer version, keeping your edits
 bin/rails g poetry:add <name>  # adds newly-shipped files, never overwrites
 ```
 

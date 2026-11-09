@@ -27,9 +27,24 @@ module Poetry
 
       # The install plan: the writes, css writes, import lines and what the gems already satisfy.
       Plan = Struct.new(:writes, :css_writes, :entry_lines, :gem_satisfied, :block_installs,
-                        :gem_deps, :docs, :manifest, keyword_init: true)
+                        :gem_deps, :docs, :manifest, :provenance, keyword_init: true)
+      # Where an item came from: its address, whether it is a community
+      # item, and the origins a port credits (meta.sources, or the one
+      # meta.source), if any.
+      Provenance = Struct.new(:name, :address, :community, :origins, keyword_init: true) do
+        # The first origin, for a one-origin port's readers.
+        # @return [Hash, nil]
+        def origin = origins&.first
+      end
       # One file write of the plan.
       Write = Struct.new(:target, :content, :item, keyword_init: true)
+
+      # The digest a file is recorded and compared by: SHA-256, hex.
+      # @param content [String] the file's content
+      # @return [String]
+      def self.digest(content)
+        Digest::SHA256.hexdigest(content)
+      end
 
       # An installer over a client, writing under the destination root.
       # @param client [RegistryClient] resolves remote addresses to items
@@ -112,7 +127,8 @@ module Poetry
         elsif dep_address.kind == :bare
           resolve_into(state, parent.sibling(kebab))
         else
-          raise Error, "#{dep} is not provided by the installed poetry gems"
+          # An @poetry name the gems do not ship: a community item.
+          resolve_into(state, dep_address)
         end
       end
 
@@ -127,16 +143,57 @@ module Poetry
       def build_plan(state)
         order = topo_order(state)
         items = order.map { |name| state[:items][name] }
+        writes = collect_writes(state, order)
         Plan.new(
-          writes: collect_writes(state, order),
+          writes: writes,
           css_writes: items.filter_map { |item| css_write(item) },
           entry_lines: items.filter_map { |item| entry_line(item) },
           gem_satisfied: state[:gem_satisfied].sort,
           block_installs: state[:block_installs].sort,
           gem_deps: missing_gem_deps(items),
           docs: items.filter_map { |item| item["docs"] },
-          manifest: order.to_h { |name| [name, { "source" => state[:sources][name] }] }
+          manifest: order.to_h { |name| [name, manifest_entry(state, name, writes)] },
+          provenance: order.map { |name| provenance(state, name) }
         )
+      end
+
+      # The manifest record: the address, and for a community item or a
+      # port, that and the origin it credits (`origins`, a list, when a
+      # bundle credits several); then the version the item states and the
+      # digest of every file it writes, the item as it stood at install.
+      def manifest_entry(state, name, writes)
+        record = provenance(state, name)
+        entry = { "source" => record.address }
+        entry["community"] = true if record.community
+        origins = record.origins.map { |origin| origin.except("notice") }
+        entry["origin"] = origins.first if origins.one?
+        entry["origins"] = origins if origins.size > 1
+        entry.merge(revision(state[:items][name], writes))
+      end
+
+      # The version an item states (meta.version, any text or number, kept
+      # as text) and the digest of each file it writes, by target, its
+      # stylesheet included. An item that states no version records none.
+      def revision(item, writes)
+        stated = (item["meta"] || {})["version"]
+        files = writes.select { |write| write.item == item["name"] }
+                      .to_h { |write| [write.target, self.class.digest(write.content)] }
+        css = css_write(item)
+        files[css[:path]] = self.class.digest(css[:content]) if css
+        revision = {}
+        revision["version"] = stated.to_s if stated.is_a?(Numeric) || (stated.is_a?(String) && !stated.empty?)
+        revision["files"] = files if files.any?
+        revision
+      end
+
+      # The item's provenance: meta.sources (several origins, an island's
+      # bundle) or meta.source (one).
+      def provenance(state, name)
+        meta = state[:items][name]["meta"] || {}
+        sources = meta["sources"]
+        origins = sources.is_a?(Array) && sources.any? ? sources : [meta["source"]].compact
+        Provenance.new(name: name, address: state[:sources][name], community: meta["community"] == true,
+                       origins: origins)
       end
 
       # Kahn: an item writes only after every remote item it depends on has

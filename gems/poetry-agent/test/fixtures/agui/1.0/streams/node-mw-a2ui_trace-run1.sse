@@ -1,0 +1,408 @@
+data: {"type":"RUN_STARTED","threadId":"a2ui-trace-162259","runId":"6f02ac46-b475-4694-aab2-d271b6388ac6","protocolVersion":"1.0"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","toolCallName":"search_flights","parentMessageId":"lc_run--01a0d3c4-d9a8-7cd0-bfc3-dce1bbb24bc1"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"{\"fl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ights"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": [{\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"airl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ine\":"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"Delt"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"a Ai"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"rline"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"s\", \"a"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"irli"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"neLog"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"o\": \"h"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ttps"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"://ex"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ample."}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"com/"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"delta"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"-logo."}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"png\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":", \"fl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ightNu"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"mber"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \"D"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"L123\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"or"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"igin\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"SFO"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"desti"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"nation"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"JFK\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"date"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"Next "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"Tuesda"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"y\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"depa"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"rtureT"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ime\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"08"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":":00 AM"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"arriv"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"alTime"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"04:00"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" PM\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"dur"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ation"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \"8h"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"statu"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"s\": \"O"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"n Ti"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"me\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"price"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"$350\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"}, {\"a"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"irli"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ne\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"Ameri"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"can "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"Airli"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"nes\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"air"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"lineL"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ogo\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"htt"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ps://"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"exampl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"e.co"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"m/aa-"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"logo.p"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ng\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"fli"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ghtNum"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ber\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"AA"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"456\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"ori"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"gin\":"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"SFO\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":", \"d"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"estin"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ation\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"J"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"FK\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\"date\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"N"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"ext T"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"uesday"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"depar"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"tureTi"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"me\":"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" \"09:"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"00 AM\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":", \"a"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"rriva"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"lTime\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"0"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"5:00 "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"PM\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"dura"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"tion\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"8h\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":", \"s"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"tatus"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"\": \"On"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":" Tim"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"e\", \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"price\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":": \"$"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"340\"}"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","delta":"]}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"status":"building"},"replace":true}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","toolCallName":"render_a2ui","parentMessageId":"lc_run--01a0d3c4-d9a8-7cd0-bfc3-dce1bbb24bc1"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"{\"su"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"rface"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"Id\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"cana"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ry-da"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"shboar"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"d\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"comp"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"onents"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\": ["}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"{\"id\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":": \"roo"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"t\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"comp"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"onent\""}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"status":"building","progressTokens":20},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":": \"C"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"olumn"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\", \"ch"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ildr"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"en\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"[\"titl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"e\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"reve"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"nue\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"gro"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"wth\"]"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"}, {\"i"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"d\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"titl"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"e\", \"c"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ompo"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"status":"building","progressTokens":40},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"nent\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":": \"Tit"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"le\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":" \"tex"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"t\": \"C"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"anar"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"y das"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"hboard"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"}, "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"{\"id\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":": \"rev"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"enue"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\", \"c"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ompone"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"nt\":"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":" \"Met"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"status":"building","progressTokens":60},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ric\", "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"lab"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"el\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"Reven"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ue\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":" \"val"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ue\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"$125"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"000\"}"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":", {\"id"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\": \""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"growt"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"h\", \"c"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ompo"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"nent\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":": \"Met"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"status":"building","progressTokens":80},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"ric\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":", \"la"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"bel\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"Gro"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"wth\","}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":" \"valu"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"e\": "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"\"12%\""}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_AWaaAr8EExwYkRIcQU1uQk95","activityType":"a2ui-surface","content":{"a2ui_operations":[{"version":"v0.9","createSurface":{"surfaceId":"canary-dashboard","catalogId":"https://a2ui.org/specification/v0_9/basic_catalog.json"}},{"version":"v0.9","updateComponents":{"surfaceId":"canary-dashboard","components":[{"id":"root","component":"Column","children":["title","revenue","growth"]},{"id":"title","component":"Title","text":"Canary dashboard"},{"id":"revenue","component":"Metric","label":"Revenue","value":"$125000"},{"id":"growth","component":"Metric","label":"Growth","value":"12%"}]}}]},"replace":true}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","delta":"}]}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95"}
+
+data: {"type":"TOOL_CALL_RESULT","messageId":"319bc32b-bf88-49df-a7fa-9ca59eec1514","toolCallId":"call_Nl5NGACaDrRAOO9qJVQ5iJMy","content":"{\"a2ui_operations\": [{\"version\": \"v0.9\", \"createSurface\": {\"surfaceId\": \"flight-search-results\", \"catalogId\": \"copilotkit://app-dashboard-catalog\"}}, {\"version\": \"v0.9\", \"updateComponents\": {\"surfaceId\": \"flight-search-results\", \"components\": [{\"id\": \"root\", \"component\": \"Row\", \"children\": [\"flight-card-0\", \"flight-card-1\"], \"gap\": 16}, {\"id\": \"flight-card-0\", \"component\": \"FlightCard\", \"airline\": \"Delta Airlines\", \"airlineLogo\": \"https://example.com/delta-logo.png\", \"flightNumber\": \"DL123\", \"origin\": \"SFO\", \"destination\": \"JFK\", \"date\": \"Next Tuesday\", \"departureTime\": \"08:00 AM\", \"arrivalTime\": \"04:00 PM\", \"duration\": \"8h\", \"status\": \"On Time\", \"price\": \"$350\"}, {\"id\": \"flight-card-1\", \"component\": \"FlightCard\", \"airline\": \"American Airlines\", \"airlineLogo\": \"https://example.com/aa-logo.png\", \"flightNumber\": \"AA456\", \"origin\": \"SFO\", \"destination\": \"JFK\", \"date\": \"Next Tuesday\", \"departureTime\": \"09:00 AM\", \"arrivalTime\": \"05:00 PM\", \"duration\": \"8h\", \"status\": \"On Time\", \"price\": \"$340\"}]}}]}","role":"tool"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"a2ui-surface-call_Nl5NGACaDrRAOO9qJVQ5iJMy","activityType":"a2ui-surface","content":{"a2ui_operations":[{"version":"v0.9","createSurface":{"surfaceId":"flight-search-results","catalogId":"copilotkit://app-dashboard-catalog"}},{"version":"v0.9","updateComponents":{"surfaceId":"flight-search-results","components":[{"id":"root","component":"Row","children":["flight-card-0","flight-card-1"],"gap":16},{"id":"flight-card-0","component":"FlightCard","airline":"Delta Airlines","airlineLogo":"https://example.com/delta-logo.png","flightNumber":"DL123","origin":"SFO","destination":"JFK","date":"Next Tuesday","departureTime":"08:00 AM","arrivalTime":"04:00 PM","duration":"8h","status":"On Time","price":"$350"},{"id":"flight-card-1","component":"FlightCard","airline":"American Airlines","airlineLogo":"https://example.com/aa-logo.png","flightNumber":"AA456","origin":"SFO","destination":"JFK","date":"Next Tuesday","departureTime":"09:00 AM","arrivalTime":"05:00 PM","duration":"8h","status":"On Time","price":"$340"}]}}]},"replace":true}
+
+data: {"type":"TOOL_CALL_RESULT","messageId":"ec2ce1bc-263e-460f-8dd0-6c56f897003d","toolCallId":"call_AWaaAr8EExwYkRIcQU1uQk95","content":"rendered","role":"tool"}
+
+data: {"type":"RUN_FINISHED","threadId":"a2ui-trace-162259","runId":"6f02ac46-b475-4694-aab2-d271b6388ac6"}
+

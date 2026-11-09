@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="style-default">
+  <head>
+    <%= render "layouts/poetry/docs/head" %>
+  </head>
+
+  <%# The Community section's own shell, apart from the docs: the site's
+      header and the section's tabs on every page, and where the page has
+      filters (content_for :community_sidebar), a sidebar that holds them
+      in the place the docs give their nav. A page with none, a
+      component's own, is drawn at full width. The sidebar's groups are
+      remembered open or closed as the docs' nav sections are. %>
+  <body data-controller="theme sidebar-sections" class="min-h-screen bg-background text-foreground antialiased">
+    <% if content_for?(:community_sidebar) %>
+      <%= poetry_sidebar(open: cookies[:sidebar_state] != "false") do |shell| %>
+        <% shell.with_nav do %>
+          <%= poetry_sidebar_header do %>
+            <%= link_to poetry_docs.root_path, "aria-label": "Poetry home",
+                        class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold" do %>
+              <%= poetry_icon(name: :feather, class: "size-4 shrink-0") %>
+              <span>poetry</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_content do %>
+            <%= yield :community_sidebar %>
+          <% end %>
+        <% end %>
+        <% shell.with_inset do %>
+          <%= render "poetry/docs/shared/header" %>
+          <main class="mx-auto w-full max-w-7xl flex-1 p-6 lg:p-8">
+            <%= render "poetry/docs/community/tabs" %>
+            <%= yield %>
+          </main>
+        <% end %>
+      <% end %>
+    <% else %>
+      <div class="flex min-h-screen flex-col">
+        <%= render "poetry/docs/shared/header", sidebar: false %>
+        <main class="mx-auto w-full max-w-5xl flex-1 p-6 lg:p-10">
+          <%= render "poetry/docs/community/tabs" %>
+          <%= yield %>
+        </main>
+      </div>
+    <% end %>
+  </body>
+</html>

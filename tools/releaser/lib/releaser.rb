@@ -5,6 +5,7 @@ require "fileutils"
 require "json"
 require "net/http"
 require "open3"
+require "rubygems/package"
 require "uri"
 
 # The release mechanics for the Poetry family, driven by rake from
@@ -15,13 +16,14 @@ module Releaser
   ROOT = File.expand_path("../../..", __dir__)
   # The family, in publish order: dependencies first, the umbrella last.
   # Versions, changelog dates and release notes cover all of it.
-  GEMS = %w[poetry-core poetry-lucide poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
-            poetry-jumpstart_pro poetry-docs poetry].freeze
+  GEMS = %w[poetry-core poetry-lucide poetry-tabler poetry-hugeicons poetry-phosphor poetry-heroicons
+            poetry-simple_icons poetry-solar poetry-blode poetry-charts poetry-motion poetry-island poetry-extract poetry-ui
+            poetry-agent poetry-simple_form poetry-jumpstart_pro poetry-docs poetry].freeze
   # What the release builds, signs and pushes: the family without the docs
   # engine, which a host takes from this repository at the tag instead.
   PUBLISHED = (GEMS - %w[poetry-docs]).freeze
   # The package.json trees the family versions in lockstep.
-  PACKAGES = %w[gems/poetry-core gems/poetry-charts gems/poetry-agent].freeze
+  PACKAGES = %w[gems/poetry-core gems/poetry-charts gems/poetry-motion gems/poetry-island gems/poetry-agent].freeze
   # What the umbrella gem may ship, and nothing else.
   UMBRELLA_DOCS = %w[README.md CHANGELOG.md LICENSE.txt].freeze
   ISSUER = "https://token.actions.githubusercontent.com"
@@ -152,7 +154,7 @@ module Releaser
     end
   end
 
-  # gem build for all nine, reproducible: SOURCE_DATE_EPOCH is the commit
+  # gem build for every published gem, reproducible: SOURCE_DATE_EPOCH is the commit
   # time of the ref under release, so a rebuild is byte-identical.
   module Build
     def self.epoch(root, ref = "HEAD")
@@ -171,9 +173,21 @@ module Releaser
       out
     end
 
+    # Minifies first, so each gem with JavaScript ships its dist/ tree, checks
+    # every built gem carries a minified twin of each source file, and always
+    # removes dist/ again so the repository keeps serving source.
     def self.all(root, version, out_dir, epoch:)
       FileUtils.mkdir_p(out_dir)
-      PUBLISHED.map { |name| build(root, name, version, out_dir, epoch: epoch) }
+      Minify.gems(root).each { |name| Minify.run(root, name) }
+      files = PUBLISHED.map { |name| build(root, name, version, out_dir, epoch: epoch) }
+      Minify.gems(root).each do |name|
+        packed = Gem::Package.new(File.join(out_dir, Releaser.gem_file(name, version))).spec.files
+        missing = Minify.missing(root, name, packed)
+        raise Error, "#{name} would ship without minified #{missing.join(', ')}" unless missing.empty?
+      end
+      files
+    ensure
+      Minify.clean(root)
     end
 
     def self.checksums(files) = files.to_h { |f| [File.basename(f), Digest::SHA256.file(f).hexdigest] }
@@ -191,6 +205,44 @@ module Releaser
       raise Error, "the umbrella gem would ship #{strays.join(', ')}" unless strays.empty?
 
       true
+    end
+  end
+
+  # The minified JavaScript a released gem serves. tools/minifier (esbuild,
+  # pinned) turns a gem's app/javascript into dist/javascript file for file,
+  # with a source map beside each; the gemspec adds dist/ to the gem and
+  # Poetry::Core.javascript_path makes the engine serve it.
+  module Minify
+    MINIFIER = File.join("tools", "minifier")
+
+    # The published gems with an importmap JavaScript tree.
+    def self.gems(root)
+      PUBLISHED.select { |name| Dir.glob(File.join(Releaser.gem_dir(name, root), "app/javascript/**/*.js")).any? }
+    end
+
+    def self.dist(root, name) = File.join(Releaser.gem_dir(name, root), "dist")
+
+    def self.run(root, name)
+      minifier = File.join(root, MINIFIER)
+      unless File.directory?(File.join(minifier, "node_modules", "esbuild"))
+        raise Error, "#{MINIFIER} has no esbuild; run `npm ci` there first"
+      end
+
+      gem_dir = Releaser.gem_dir(name, root)
+      ok = system("node", File.join(minifier, "minify.mjs"), File.join(gem_dir, "app/javascript"),
+                  File.join(gem_dir, "dist/javascript"))
+      raise Error, "minifying failed for #{name}" unless ok
+
+      dist(root, name)
+    end
+
+    def self.clean(root) = gems(root).each { |name| FileUtils.rm_rf(dist(root, name)) }
+
+    # Source files whose minified twin is not among a gem's packed files.
+    def self.missing(root, name, packed)
+      source = File.join(Releaser.gem_dir(name, root), "app/javascript")
+      expected = Dir.glob("**/*.js", base: source).map { |path| "dist/javascript/#{path}" }
+      expected - packed
     end
   end
 

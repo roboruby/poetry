@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "a2ui/protocol"
+require_relative "a2ui/dialect"
 require_relative "a2ui/catalog"
 require_relative "a2ui/pointer"
 require_relative "a2ui/markdown"
@@ -8,6 +9,9 @@ require_relative "a2ui/expression"
 require_relative "a2ui/functions"
 require_relative "a2ui/evaluator"
 require_relative "a2ui/checks"
+require_relative "a2ui/strict"
+require_relative "a2ui/schema"
+require_relative "a2ui/schemas"
 require_relative "a2ui/surface"
 require_relative "a2ui/session"
 require_relative "a2ui/renderer"
@@ -36,12 +40,15 @@ module Poetry
     #   the validators behind `checks` ({Checks}) - which {Evaluator} runs
     #   for both catalogs.
     module A2UI
-      # The catalog bindings a {Session} starts with: the spec's basic
-      # catalog and Poetry's own, keyed by catalog id.
+      # The catalog bindings a {Session} starts with, keyed by catalog id:
+      # the spec's basic catalog and Poetry's own, each in v1.0 and v0.9.
       #
       # @return [Hash{String => Object}]
       def self.catalogs
-        { Catalogs::Basic::ID => Catalogs::Basic.new, Catalog::DEFAULT_ID => Catalogs::Native.new }
+        basic_legacy = Catalogs::Basic.new(dialect: Dialect::V0_9)
+        { Catalogs::Basic::ID => Catalogs::Basic.new, Catalog::DEFAULT_ID => Catalogs::Native.new,
+          Catalog::V0_9_ID => Catalogs::Native.new(id: Catalog::V0_9_ID, dialect: Dialect::V0_9),
+          **Catalogs::Basic::V0_9_IDS.to_h { |id| [id, basic_legacy] } }
       end
     end
   end

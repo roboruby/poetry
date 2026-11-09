@@ -15,6 +15,7 @@ components:
         (br, hr, img, ...) self-close and take no content block.
     slots: []
     helper: poetry_box
+    content: true
     identity: false
     parts:
     - name: box
@@ -22,6 +23,7 @@ components:
 internal: true
 internals:
 - Poetry::Core::ApiInternals::Visitor
+- Poetry::Core::Audit
 - Poetry::Core::CSS::BemReference
 - Poetry::Core::CSS::Modes
 - Poetry::Core::CSS::OverrideScan

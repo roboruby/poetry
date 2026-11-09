@@ -127,6 +127,29 @@ module Poetry
         client, = build_client
         assert_raises(RegistryClient::Error) { client.resolve(RegistryAddress.parse("button")) }
       end
+
+      def test_poetry_names_resolve_from_the_community_template_and_a_path_template_reads_files
+        Dir.mktmpdir do |dir|
+          File.write(File.join(dir, "card.json"), JSON.generate({ "name" => "card", "type" => "registry:component" }))
+          client = RegistryClient.new(community: "./{name}.json", base_dir: dir)
+
+          assert_equal "card", client.resolve(RegistryAddress.parse("@poetry/card"))["name"]
+          assert_raises(RegistryClient::Error) { RegistryClient.new(base_dir: dir).resolve(RegistryAddress.parse("@poetry/card")) }
+        end
+      end
+
+      def test_meta_source_must_name_its_origin_in_full
+        Dir.mktmpdir do |dir|
+          item = { "name" => "x", "type" => "registry:component",
+                   "meta" => { "source" => { "registry" => "@acme", "item" => "x", "license" => "MIT" } } }
+          File.write(File.join(dir, "x.json"), JSON.generate(item))
+          error = assert_raises(RegistryClient::Error) { RegistryClient.new(base_dir: dir).resolve(RegistryAddress.parse("./x.json")) }
+
+          assert_match(/meta.source needs url, repository, copyright/, error.message)
+          File.write(File.join(dir, "x.json"), JSON.generate(item.merge("meta" => { "community" => "yes" })))
+          assert_raises(RegistryClient::Error) { RegistryClient.new(base_dir: dir).resolve(RegistryAddress.parse("./x.json")) }
+        end
+      end
     end
   end
 end

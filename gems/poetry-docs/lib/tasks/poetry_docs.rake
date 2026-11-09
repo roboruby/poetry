@@ -28,7 +28,8 @@ namespace :poetry_docs do
   task :api_reference do
     monorepo_only.call("poetry_docs:api_reference")
     root = Poetry::Docs.root
-    gems = %w[poetry-core poetry-ui poetry-charts poetry-agent poetry-simple_form poetry-extract]
+    gems = %w[poetry-core poetry-ui poetry-charts poetry-motion poetry-island poetry-agent poetry-simple_form
+              poetry-extract]
     out_dir = root.join("data/api")
     FileUtils.mkdir_p(out_dir)
 
@@ -55,6 +56,8 @@ namespace :poetry_docs do
     # parsing - no bundle switch needed).
     { "poetry-core" => "poetry-controllers",
       "poetry-charts" => "poetry-charts-controllers",
+      "poetry-motion" => "poetry-motion-controllers",
+      "poetry-island" => "poetry-island-controllers",
       "poetry-agent" => "poetry-agent-controllers" }.each do |js_gem, slug|
       js_root = root.join("..", js_gem).expand_path
       next warn("skip #{slug}: #{js_gem} not found") unless js_root.exist?
@@ -95,6 +98,12 @@ namespace :poetry_docs do
   end
 
   namespace :css do
+    desc "Build the docs stylesheet with the host app's own view folders added (config.stylesheet_sources), for host pages in the docs layout"
+    task host: :environment do
+      path = Poetry::Docs::HostStylesheet.build(root: Rails.root)
+      puts "wrote #{path.relative_path_from(Rails.root)} (#{path.size} bytes)"
+    end
+
     desc "Fail when the committed stylesheet differs from a fresh build"
     task :verify do
       root = Poetry::Docs.root
@@ -118,4 +127,15 @@ namespace :poetry_docs do
       Rake::Task[name].invoke
     end
   end
+end
+
+# A host that names stylesheet sources gets its docs stylesheet built with
+# the rest of its assets, and before its tests, whose pages link it.
+namespace :poetry_docs do
+  task css_for_host: :environment do
+    Rake::Task["poetry_docs:css:host"].invoke if Poetry::Docs.config.stylesheet_sources.any?
+  end
+end
+%w[assets:precompile test:prepare].each do |name|
+  Rake::Task[name].enhance([ "poetry_docs:css_for_host" ]) if Rake::Task.task_defined?(name)
 end

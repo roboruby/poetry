@@ -1,0 +1,14 @@
+data: {"type":"RUN_STARTED","threadId":"mcp_apps-162338","runId":"56da337a-62ae-4d81-b1f2-f2fdcb264eb4","protocolVersion":"1.0"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_5eb99581","toolCallName":"get-time","parentMessageId":"msg_af206d67"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_5eb99581","delta":"{}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_5eb99581"}
+
+data: {"type":"TOOL_CALL_RESULT","messageId":"e6fc7306-3835-4d6d-9c54-61b228986e69","toolCallId":"call_5eb99581","content":"{\"content\":[{\"type\":\"text\",\"text\":\"2026-10-28T20:23:38.554Z\"}],\"structuredContent\":{\"time\":\"2026-10-28T20:23:38.554Z\"}}"}
+
+data: {"type":"ACTIVITY_SNAPSHOT","messageId":"7b7c87e4-e2d8-4f2e-bd5e-f04c08c6acce","activityType":"mcp-apps","content":{"result":{"content":[{"type":"text","text":"2026-10-28T20:23:38.554Z"}],"structuredContent":{"time":"2026-10-28T20:23:38.554Z"}},"resourceUri":"ui://get-time/mcp-app.html","serverHash":"2279c4d9287de1932b697be6d81884a5","serverId":"basic","toolInput":{}},"replace":true}
+
+data: {"type":"RUN_FINISHED","threadId":"mcp_apps-162338","runId":"56da337a-62ae-4d81-b1f2-f2fdcb264eb4"}
+

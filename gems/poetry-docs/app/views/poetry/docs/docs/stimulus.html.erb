@@ -13,8 +13,9 @@
     <p class="max-w-2xl text-lg text-muted-foreground">
       Poetry's behavior is Stimulus, so yours composes with it: attach a
       controller to any component, react to what a component does, drive
-      it from your markup, declare the wiring in Ruby, or extend a
-      controller in JavaScript. Every rung is checked.
+      it from your markup, declare the wiring in Ruby, compose a Poetry
+      behavior into your own controller, or extend a controller in
+      JavaScript. Every rung is checked.
     </p>
   </header>
 
@@ -164,6 +165,50 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: snippets[:escape_hatch], language: "ruby", label: "Escape hatch") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="behaviors">4b. Compose a Poetry behavior into your controller</h2>
+      <p>
+        Before a controller of your own repeats what a Poetry controller
+        already does, borrow the piece. In Ruby, a behavior is a named
+        piece of client behavior several components share:
+        <code>behavior :roving_focus</code> on an element of your
+        <code>use_stimulus</code> block gives a list of your own the
+        arrow-key focus Tabs and Menubar carry, with the same controller,
+        values, events and agent rules, and the registry, llms.txt and
+        your component's page list it by name. The declaration leads; your
+        controller sits beside it and reacts to what it dispatches.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:behavior_ruby], language: "ruby", label: "Declare a behavior") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        In JavaScript, the behaviors under
+        <code>@poetry/controllers/behaviors</code> are the functions
+        Poetry's own controllers are built from: a listener, Escape, a
+        portal, a timer, a scroll lock, a resize or intersection observer.
+        Each is set up in <code>connect()</code> for that one connect and
+        undone by the one line <code>teardown(this)</code> in
+        <code>disconnect()</code>, newest first. A behavior hands back a
+        handle (an unlisten, a lock and unlock pair) and never assigns
+        methods onto your controller, so two never collide on a name.
+        Poetry behaviors are not Herb's client behaviors, which follow
+        elements the client adds and removes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:behavior_js], language: "javascript", label: "Compose a behavior") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Every behavior's signature is on the
+        <%= link_to "@poetry/controllers", api_page_path("poetry-controllers"), class: "underline" %>
+        reference page; the component skill's behaviors reference lists
+        the Ruby ones with their options and the components that use
+        them, and <%= link_to "Where State Lives", where_state_lives_path %>
+        says what a behavior may hold and where.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">

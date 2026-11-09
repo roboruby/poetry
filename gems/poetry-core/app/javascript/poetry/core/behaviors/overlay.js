@@ -59,6 +59,9 @@ const UNMOUNT_AUTO_FOCUS_EVENT = "poetry--core--focus-scope:unmount-auto-focus"
  *   exit finished and the content is home, before the closed event
  * @param {(origin: Element) => boolean} [options.insideAlso] - more
  *   elements an outside press must not dismiss from (a chips field)
+ * @param {(node: Element) => Element | null} [options.levelTrigger] - the
+ *   trigger of a level wired with wireLevel (a submenu's sub-trigger): a
+ *   press on it is that level's toggle, not an outside press
  * @param {(event: Event) => void} [options.onDismiss] - sees every
  *   dismiss event on the content before the machine acts
  * @param {(target: Element, escaped: boolean) => void} [options.onDismissElsewhere]
@@ -177,14 +180,18 @@ export function useOverlay(controller, options) {
   }
 
   // A press on the popup's OWN trigger is the toggle's job, not an
-  // outside press: veto the dismissal so the toggle can close it.
+  // outside press: veto the dismissal so the toggle can close it. A wired
+  // level (a submenu) vetoes a press on its own trigger the same way.
   const onInteractOutside = (event) => {
-    if (event.target !== content()) return
+    const root = event.target === content()
+    const owner = root ? trigger() : options.levelTrigger?.(event.target)
+
+    if (!owner) return
 
     const origin = event.detail?.originalEvent?.target
 
     if (!(origin instanceof Element)) return
-    if (trigger()?.contains(origin) || options.insideAlso?.(origin)) event.preventDefault()
+    if (owner.contains(origin) || (root && options.insideAlso?.(origin))) event.preventDefault()
   }
 
   const onDismiss = (event) => {

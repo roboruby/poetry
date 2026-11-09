@@ -1,0 +1,218 @@
+{
+  "source": "verify/__tests__/verify.lifecycle.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents lifecycle > should require RUN_STARTED as the first event",
+      "line": 22,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        }
+      ],
+      "expect": {
+        "error": "First event must be 'RUN_STARTED'"
+      },
+      "spec": "/spec/1.0/events/lifecycle#the-run: a stream MUST begin with RUN_STARTED or RUN_ERROR; a consumer MUST treat anything else first as a protocol violation",
+      "notes": "TS also asserts the error is an AGUIError instance (class name is TS-only)."
+    },
+    {
+      "name": "verifyEvents lifecycle > should not allow multiple RUN_STARTED events",
+      "line": 50,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_STARTED' while a run is still active"
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a RUN_STARTED while a run is still active is a violation",
+      "notes": "Both RUN_STARTED events carry the same threadId/runId; the second is rejected regardless. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents lifecycle > should not allow events after RUN_FINISHED (except RUN_ERROR)",
+      "line": 88,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "2"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send event type 'TEXT_MESSAGE_START': The run has already finished with 'RUN_FINISHED'"
+      },
+      "spec": "/spec/1.0/events/lifecycle#after-a-run-closes: a consumer MUST reject any event after RUN_FINISHED other than RUN_STARTED or a late RUN_ERROR",
+      "notes": "RUN_FINISHED carries threadId/runId 'test' while RUN_STARTED carried 'test-thread-id'/'test-run-id', as in the TS test; TS verification does not match the two. Delivered-before-error counts asserted by the TS test are not part of an error vector. Input normalized: the TS test closes the run with a RUN_FINISHED whose threadId/runId differ from its RUN_STARTED (incidental); here they match, so the vector pins neither acceptance nor rejection of mismatched ids."
+    },
+    {
+      "name": "verifyEvents lifecycle > should allow RUN_ERROR after RUN_FINISHED",
+      "line": 141,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "Test error"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED",
+          "RUN_ERROR"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#after-a-run-closes: a producer MAY emit RUN_ERROR after RUN_FINISHED",
+      "notes": "TS asserts 5 delivered events, the last RUN_ERROR. RUN_FINISHED ids differ from RUN_STARTED's, as in the TS test. Input normalized: the TS test closes the run with a RUN_FINISHED whose threadId/runId differ from its RUN_STARTED (incidental); here they match, so the vector pins neither acceptance nor rejection of mismatched ids."
+    },
+    {
+      "name": "verifyEvents lifecycle > should allow RUN_ERROR at any time (even as first event)",
+      "line": 190,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_ERROR",
+          "message": "Test error"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_ERROR"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#the-run: a stream MAY begin with RUN_ERROR (a run can fail before it begins)",
+      "notes": "TS asserts exactly one delivered event, RUN_ERROR."
+    },
+    {
+      "name": "verifyEvents lifecycle > should not allow any events after RUN_ERROR",
+      "line": 221,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "Test error"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send event type 'TEXT_MESSAGE_START': The run has already errored with 'RUN_ERROR'. No further events can be sent."
+      },
+      "spec": "/spec/1.0/events/lifecycle#after-a-run-closes: a producer MUST NOT emit anything after RUN_ERROR except RUN_STARTED; a consumer MUST reject it",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents lifecycle > should allow a valid sequence of events",
+      "line": 265,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "t1",
+          "toolCallName": "test-tool"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "t1",
+          "delta": "test args"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "t1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: open, content, close matched by identifier",
+      "notes": "TS asserts 8 delivered events, first RUN_STARTED and last RUN_FINISHED. TEXT_MESSAGE_START carries no role; the explicit event is delivered without one (the assistant default is not materialised on explicit starts). Input normalized: the TS test closes the run with a RUN_FINISHED whose threadId/runId differ from its RUN_STARTED (incidental); here they match, so the vector pins neither acceptance nor rejection of mismatched ids."
+    }
+  ]
+}

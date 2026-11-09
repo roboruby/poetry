@@ -1,8 +1,13 @@
 <%# The AG-UI relay live: a scripted agent's events (text, reasoning, a
-    backend tool, shared state, a frontend tool call, an interrupt)
-    arriving as versioned Turbo Streams into MessageScroller, the tabs
-    component on the page executing the agent's tool call through the
-    registrar, and the interrupt answered as a URL decision. %>
+    backend tool, shared state, a frontend tool call that asks first, an
+    interrupt, a subagent) arriving as versioned Turbo Streams into
+    MessageScroller, the tabs component on the page executing the agent's
+    tool call through the registrar once approved, and the interrupt
+    answered as a URL decision. The demo page prepares the history; the
+    standalone example builds it here. %>
+<% cursor = @agui_cursor || Poetry::Docs::AguiReplay.cursor(params) %>
+<% transcript = @agui_transcript || Poetry::Docs::AguiReplay.transcript_before(cursor, decision: Poetry::Docs::AguiReplay.decision(params),
+                                                                                tool_result: params[:tool_result].presence) %>
 <div class="flex w-full max-w-2xl flex-col gap-4">
   <%= poetry_tabs(label: "Plans", variant: :line, webmcp: "sections") do |tabs| %>
     <% tabs.with_tab("Overview", value: "overview") do %>
@@ -22,13 +27,14 @@
         <%= poetry_bubble { Poetry::Docs::AguiReplay::USER_TEXT } %>
       <% end %>
     <% end %>
-    <% @agui_transcript.messages.each do |message| %>
+    <% transcript.messages.each do |message| %>
       <% next if message.role == "user" %>
       <%= poetry_message_scroller_item(id: "item-#{message.id}", class: "px-4") do %>
-        <%= render "poetry/docs/agui_relay/row", message: message, version: message.version %>
+        <%= render "poetry/docs/agui_relay/row", message: message, version: message.version, transcript: transcript %>
       <% end %>
     <% end %>
-    <% src = agui_relay_stream_path(s: @agui_cursor, d: params[:d].presence, instant: params[:instant].presence, page: request.path) %>
+    <% src = agui_relay_stream_path(s: cursor, d: params[:d].presence, tool_result: params[:tool_result].presence,
+                                    instant: params[:instant].presence, page: request.path) %>
     <turbo-stream-source id="agui-relay-source" src="<%= src %>"></turbo-stream-source>
     <div id="agui-relay-next" class="px-4 pb-4 text-xs text-muted-foreground">streaming…</div>
   <% end %>

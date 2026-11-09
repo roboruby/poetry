@@ -1,0 +1,24 @@
+data: {"type":"RUN_STARTED","threadId":"strands-fe-162641","runId":"6b614a13-93da-42bd-85ad-002dcda6e42c","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"9e5ff4e0-500c-492c-af02-81a07217e8bb","role":"user","content":"Change the background color to blue"},{"id":"0fb46f20-9c9a-4494-ade1-886573af222a","role":"assistant","content":"","toolCalls":[{"id":"call_change_background_1","type":"function","function":{"name":"change_background","arguments":"{\"background\":\"blue\"}"}}]}]}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_change_background_1","toolCallName":"change_background","parentMessageId":"5ba371fa-5912-47fb-9f83-028101c967d7"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_change_background_1","delta":"{\"back"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_change_background_1","delta":"ground"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_change_background_1","delta":"\":\"blu"}
+
+data: {"type":"TOOL_CALL_CHUNK","toolCallId":"call_change_background_1","delta":"e\"}"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"9e5ff4e0-500c-492c-af02-81a07217e8bb","role":"user","content":"Change the background color to blue"},{"id":"0fb46f20-9c9a-4494-ade1-886573af222a","role":"assistant","content":"","toolCalls":[{"id":"call_change_background_1","type":"function","function":{"name":"change_background","arguments":"{\"background\":\"blue\"}"}}]},{"id":"5ba371fa-5912-47fb-9f83-028101c967d7","role":"assistant","content":"","toolCalls":[{"id":"call_change_background_1","type":"function","function":{"name":"change_background","arguments":"{\"background\":\"blue\"}"}}]}]}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":16,"outputTokens":10,"totalTokens":26}},"source":"strands"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"RUN_FINISHED","threadId":"strands-fe-162641","runId":"6b614a13-93da-42bd-85ad-002dcda6e42c","outcome":{"type":"success"},"usage":[{"provider":"openai","model":"gpt-4.1-mini","inputTokens":16,"outputTokens":10,"totalTokens":26}]}
+

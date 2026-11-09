@@ -100,9 +100,9 @@ poetry:
     3xl: calc(var(--radius) * 2.2)
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: system sans
-  treatment: the mira treatment, ported from the source style-mira.css at pin shadcn@4.21.0
-    (7c9eaba1)
-  components_count: 88
+  treatment: the mira treatment, ported from the source style-mira.css at pin shadcn@4.23.0
+    (96da9cc7)
+  components_count: 89
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
     floor: WCAG 2.2 AA (4.5:1) - locked, every gated pair
@@ -125,7 +125,7 @@ poetry mira - semantic role tokens (shared across every poetry theme) under the 
 ## Overview
 
 - design system: poetry - server-rendered Rails components (ViewComponent + Stimulus + Tailwind v4)
-- theme: mira - the mira treatment, ported from the source style-mira.css at pin shadcn@4.21.0 (7c9eaba1)
+- theme: mira - the mira treatment, ported from the source style-mira.css at pin shadcn@4.23.0 (96da9cc7)
 - token source: one DTCG file shared by every poetry theme (`tokens/tokens.dtcg.json`);
   themes are component-treatment layers, not palettes
 - dark mode: the `.dark` class - both modes ship in this file
@@ -195,7 +195,7 @@ Semantic roles only - components never reference raw palette values
 
 ## Components
 
-- catalog: 88 components - the registry is the truth; read
+- catalog: 89 components - the registry is the truth; read
   `/poetry/llms.txt` (or `llms-full.txt` with events and variants)
   instead of duplicating it here
 - consume via `poetry_*` helpers; styling rides the theme's `cn-*` classes,

@@ -98,13 +98,8 @@ module Poetry
               # radio contract.
               action :entry_check, on: event(:roving_focus, :entry)
             end
-            controller :roving_focus do
-              register
-              # DEFAULT tabindex-managing mode: the group is ONE Tab stop.
-              value :orientation
-              value :loop
-              action :keydown, on: :keydown
-            end
+            # DEFAULT tabindex-managing mode: the group is ONE Tab stop.
+            behavior :roving_focus, orientation: :option, loop: :option
           end
           on :item do
             controller(:radio_group) { action :check, on: :click }

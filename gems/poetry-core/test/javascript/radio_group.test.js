@@ -164,6 +164,28 @@ describe("poetry--core--radio-group", () => {
     expect(ariaChecked()).toEqual(["false", "false", "true"])
   })
 
+  it("an arrow that cannot move checks nothing (a lone enabled item; Base UI #5643)", async () => {
+    application.stop()
+    application = await mount({ disabledItems: ["compact", "dense"] })
+
+    el("item-comfortable").focus()
+    press(el("item-comfortable"), "ArrowDown")
+    press(el("item-comfortable"), "End")
+
+    expect(document.activeElement).toBe(el("item-comfortable"))
+    expect(ariaChecked()).toEqual(["false", "false", "false"])
+  })
+
+  it("Ctrl/Alt/Meta + arrow neither moves nor checks", () => {
+    el("item-comfortable").focus()
+    el("item-comfortable").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowDown", ctrlKey: true, bubbles: true, cancelable: true })
+    )
+
+    expect(document.activeElement).toBe(el("item-comfortable"))
+    expect(ariaChecked()).toEqual(["false", "false", "false"])
+  })
+
   it("server-rendered value reconciles on connect (aria/input/tab-stop normalized)", async () => {
     application.stop()
     application = await mount({ value: "dense" })

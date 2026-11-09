@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "dialect"
 require_relative "pointer"
 require_relative "evaluator"
 require_relative "checks"
@@ -12,13 +13,19 @@ module Poetry
       # model, and a monotonic version the Turbo Stream delivery compares.
       # A surface belongs to a catalog binding, which knows how each
       # component references its children; the surface itself is
-      # catalog-agnostic beyond that.
+      # catalog-agnostic beyond that. In v1.0 a component or a function call
+      # may name its own catalog (`catalogId`) among the surface's catalogs
+      # (the session's, of the surface's version); one that names none uses
+      # the surface's default, which a v1.0 surface may not have. There is no
+      # fallback: an unknown catalog is an error. A surface speaks the
+      # protocol version that created it ({Dialect}): v1.0's `{ "@path" }`
+      # bindings, or v0.9's `{ "path" }`.
       #
       # @example
       #   surface = Surface.new(id: "card", catalog: Catalogs::Basic.new)
-      #   surface.update_components([{ "id" => "root", "component" => "Text", "text" => { "path" => "/name" } }])
+      #   surface.update_components([{ "id" => "root", "component" => "Text", "text" => { "@path" => "/name" } }])
       #   surface.update_data("/name", "Ada")
-      #   surface.resolve({ "path" => "/name" }) # => "Ada"
+      #   surface.resolve({ "@path" => "/name" }) # => "Ada"
       class Surface
         # Component names are UAX #31 identifiers.
         NAME_PATTERN = /\A[\p{XID_Start}_]\p{XID_Continue}*\z/u
@@ -40,24 +47,49 @@ module Poetry
         # The components by id.
         # @return [Hash{String => Hash}] components by id
         attr_reader :components
-        # The data model.
-        # @return [Hash] the data model
+        # The data model: an object, or the primitive the agent set at its root.
+        # @return [Hash, Object] the data model
         attr_reader :data
         # A counter that bumps on every applied change.
         # @return [Integer] bumps on every applied change
         attr_reader :version
+        # The protocol version the surface speaks.
+        # @return [Dialect]
+        attr_reader :dialect
+        # The theme the agent sent with createSurface.
+        # @return [Hash, nil]
+        attr_reader :theme
+        # The catalogs a component or a call may name, by id.
+        # @return [Hash{String => Object}]
+        attr_reader :catalogs
 
         # A surface with its catalog, initial data model and components.
         # @param id [String]
-        # @param catalog [Object] the catalog binding
+        # @param catalog [Object, nil] the default catalog binding (none on a v1.0 surface that names none)
         # @param catalog_id [String, nil]
         # @param send_data_model [Boolean]
         # @param data [Hash, nil] the initial data model
         # @param components [Array<Hash>] the initial component list
-        def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [])
+        # @param dialect [Dialect] the protocol version the surface speaks
+        # @param theme [Hash, nil] a v0.9 createSurface's theme (its colors, icon and agent name)
+        # @param catalogs [Hash{String => Object}, nil] the catalogs a component or call may name (the default's
+        #   alone when nil); each must be built for the surface's version
+        # @raise [ArgumentError] when a named catalog is built for another protocol version
+        def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [], # rubocop:disable Metrics/ParameterLists
+                       dialect: Dialect::V1_0, theme: nil, catalogs: nil)
           @id = id
           @catalog = catalog
           @catalog_id = catalog_id
+          @catalogs = catalogs || (catalog && catalog_id ? { catalog_id => catalog } : {})
+          @dialect = dialect
+          @catalogs.each do |bound_id, bound|
+            built_for = bound.respond_to?(:dialect) ? bound.dialect : Dialect::V1_0
+            next if built_for.compatible?(dialect)
+
+            raise ArgumentError, "Protocol version mismatch: cannot mix catalog '#{bound_id}' (#{built_for.version}) " \
+                                 "with surface version #{dialect.version}."
+          end
+          @theme = theme.is_a?(Hash) ? deep_copy(theme) : nil
           @send_data_model = send_data_model ? true : false
           @data = deep_copy(data.is_a?(Hash) ? data : {})
           @components = {}
@@ -80,20 +112,47 @@ module Poetry
 
             @components[component["id"]] = deep_copy(component)
           end
-          errors.concat(cycle_errors)
+          errors.concat(cycle_errors(@components))
           bump!
           errors
         end
 
+        # The problems an update would have, without applying it: each
+        # incoming component's own, then the circular references of the set
+        # it would make.
+        #
+        # @param list [Array<Hash>]
+        # @return [Array<Hash>]
+        def check(list)
+          errors = []
+          Array(list).each_with_index do |component, index|
+            error = component_error(component, index)
+            errors << error if error
+          end
+          errors + cycle_errors(candidate(list))
+        end
+
+        # The component set an update would make: the surface's components
+        # with the incoming well-formed ones in place.
+        #
+        # @param list [Array<Hash>]
+        # @return [Hash{String => Hash}]
+        def candidate(list)
+          incoming = Array(list).each_with_index.reject { |component, index| component_error(component, index) }
+          @components.merge(incoming.to_h { |component, _| [component["id"], component] })
+        end
+
         # Applies an `updateDataModel` (upsert; nil removes; the root
-        # pointer replaces the whole model).
+        # pointer replaces the whole model, nil with an empty one). A
+        # primitive root is kept, and a write through it is refused.
         #
         # @param path [String, nil]
         # @param value [Object, nil]
         # @return [void]
+        # @raise [Pointer::Error] for a write the data model refuses
         def update_data(path, value)
           @data = Pointer.upsert(@data, path || "/", deep_copy(value))
-          @data = {} unless @data.is_a?(Hash)
+          @data = {} if @data.nil?
           bump!
         end
 
@@ -110,10 +169,9 @@ module Poetry
           @components[component_id]
         end
 
-        # Resolves a dynamic value in a scope: a `{ "path" => ... }` binding
-        # reads the data model (relative paths against the scope), a
-        # `{ "call" => ... }` function call runs through the catalog's
-        # functions (see {Evaluator}), anything else is a literal.
+        # Resolves a dynamic value in a scope: a binding reads the data model
+        # (relative paths against the scope), a function call runs through the
+        # catalog's functions (see {Evaluator}), anything else is a literal.
         #
         # @param value [Object]
         # @param scope [String, nil] the collection-item pointer in effect
@@ -161,39 +219,122 @@ module Poetry
         end
 
         # What a client-side evaluator needs to run the checks as the user
-        # types: every checked component's rules with its bindings made
-        # absolute for its scope, the bound inputs by absolute path with
-        # their kinds, and the data model for paths no input carries.
+        # types: every checked component's rules in v1.0's spelling whatever
+        # the surface speaks (`{ "@path" }` made absolute for its scope,
+        # `{ "@call", "args" }`, a literal `@` key doubled) with the path its
+        # control binds, the bound inputs by absolute path with their kinds,
+        # the data model for paths no input carries, and the surface's
+        # version, whose functions the rules run.
         #
-        # @return [Hash] `{ "checks" => { key => { "kind", "rules" } }, "inputs" => { path => kind }, "model" => data }`
+        # @return [Hash] `{ "version", "checks" => { key => { "kind", "rules", "path" } },
+        #   "inputs" => { path => kind }, "model" => data }`
         def program
           checks = {}
           walk do |component, scope|
-            rules = Array(component["checks"]).grep(Hash).select { |rule| rule["condition"] }
+            rules = Array(component["checks"]).grep(Hash).select { |rule| Checks.condition(rule, dialect) }
             next if rules.empty?
 
-            checks[source_key(component, scope)] = {
+            entry = {
               "kind" => component["action"].is_a?(Hash) ? "button" : "input",
               "rules" => rules.map do |rule|
-                { "condition" => absolutize(rule["condition"], scope), "message" => rule["message"] }
+                { "condition" => program_value(Checks.condition(rule, dialect), scope), "message" => rule["message"] }
               end
             }
+            bound = Array(catalog_of(component)&.inputs(component, scope, dialect)).first
+            entry["path"] = bound[:path] if bound
+            checks[source_key(component, scope)] = entry
           end
-          { "checks" => checks, "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
+          { "version" => dialect.version, "checks" => checks,
+            "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
         end
 
-        # Whether a value is a data binding.
+        # The catalog a component renders through, or nil when it names one
+        # the surface cannot resolve ({#catalog_problem} says why).
+        # @param component [Hash]
+        # @return [Object, nil]
+        def catalog_of(component)
+          lookup(component).first
+        end
+
+        # The catalog a component or a call resolves to: in v1.0 the one it
+        # names (a call nested in another's arguments names its own), else
+        # the surface's default; nil with the problem when there is none.
+        # @param owner [Hash, nil] the component or the call object (nil for a call written in a formatString)
+        # @return [Array(Object, String)] `[binding, nil]` or `[nil, problem]`
+        def lookup(owner)
+          return default_catalog unless dialect.v1? && owner.is_a?(Hash) && owner.key?("catalogId")
+
+          catalog_id = owner["catalogId"]
+          return [nil, "catalogId must be a string"] unless catalog_id.is_a?(String)
+
+          catalogs[catalog_id] ? [catalogs[catalog_id], nil] : [nil, "Catalog not found: #{catalog_id}"]
+        end
+
+        # Why a component, or a call anywhere in its properties, names a
+        # catalog the surface cannot resolve; nil when every one resolves.
+        # `@index` belongs to no catalog, but the calls in its arguments do.
+        # @param component [Hash]
+        # @return [String, nil]
+        def catalog_problem(component)
+          own = lookup(component).last
+          return own if own
+
+          component.except("id", "component", "catalogId").each_value.lazy.filter_map do |value|
+            call_catalog_problem(value)
+          end.first
+        end
+
+        # Why a call in a value names a catalog the surface cannot resolve, or nil.
         # @param value [Object]
-        # @return [Boolean] whether the value is a `{ "path" => ... }` data binding
+        # @return [String, nil]
+        def call_catalog_problem(value)
+          case value
+          when Array then value.lazy.filter_map { |item| call_catalog_problem(item) }.first
+          when Hash
+            own = function_call?(value) && dialect.call_name(value) != "@index" ? lookup(value).last : nil
+            own || value.each_value.lazy.filter_map { |item| call_catalog_problem(item) }.first
+          end
+        end
+
+        # A component's agent event: its action's `event`, or on a v0.9
+        # surface the `{ "name", "context" }` shorthand the v0.9 docs write
+        # (the action itself, with no `functionCall`).
+        # @param component [Hash]
+        # @return [Hash, nil]
+        def event_of(component)
+          action = component["action"]
+          return unless action.is_a?(Hash)
+          return action["event"] if action["event"].is_a?(Hash)
+
+          action if shorthand?(action)
+        end
+
+        # Whether an action is v0.9's `{ "name", "context" }` shorthand for an event.
+        # @param action [Hash]
+        # @return [Boolean]
+        def shorthand?(action)
+          !dialect.v1? && action["name"].is_a?(String) && !action.key?("event") && !action.key?("functionCall")
+        end
+
+        # Whether a value is a data binding in the surface's version.
+        # @param value [Object]
+        # @return [Boolean]
         def binding?(value)
-          value.is_a?(Hash) && value.key?("path") && !value.key?("componentId")
+          dialect.binding?(value)
         end
 
-        # Whether a value is a function call.
+        # A binding's pointer in the surface's version, or nil when the value is not one.
         # @param value [Object]
-        # @return [Boolean] whether the value is a `{ "call" => ... }` function call
+        # @return [String, nil]
+        def binding_path(value)
+          dialect.path(value)
+        end
+
+        # Whether a value is a function call in the surface's version.
+        # @param value [Object]
+        # @return [Boolean]
         def function_call?(value)
-          value.is_a?(Hash) && value.key?("call")
+          dialect.call?(value)
         end
 
         # Whether a value is a component template.
@@ -252,7 +393,7 @@ module Poetry
         def inputs
           result = []
           walk do |component, scope|
-            result.concat(Array(catalog.inputs(component, scope)))
+            result.concat(Array(catalog_of(component)&.inputs(component, scope, dialect)))
           end
           result.uniq { |input| input[:path] }
         end
@@ -266,21 +407,40 @@ module Poetry
 
         private
 
+        # The default catalog, or the problem a surface without one has.
+        def default_catalog
+          catalog ? [catalog, nil] : [nil, "Surface '#{id}' has no default catalogId"]
+        end
+
         # Advances the version.
         def bump!
           @version += 1
         end
 
-        # Rewrites every binding in a value to its absolute pointer.
-        def absolutize(value, scope)
+        # A rule's value in the program's spelling (v1.0's): a binding made
+        # absolute, a call with its arguments rewritten, a literal object with
+        # its keys escaped as v1.0 escapes them.
+        def program_value(value, scope)
           case value
-          when Array then value.map { |item| absolutize(item, scope) }
+          when Array then value.map { |item| program_value(item, scope) }
           when Hash
-            return { "path" => Pointer.absolute(value["path"].to_s, scope) } if binding?(value)
+            return { "@path" => Pointer.absolute(binding_path(value), scope) } if binding?(value)
+            return program_call(value, scope) if function_call?(value)
 
-            value.transform_values { |item| absolutize(item, scope) }
+            value.to_h { |key, item| [program_key(key), program_value(item, scope)] }
           else value
           end
+        end
+
+        # A call in the program's spelling, its arguments rewritten.
+        def program_call(call, scope)
+          args = call["args"].is_a?(Hash) ? call["args"] : {}
+          { "@call" => dialect.call_name(call), "args" => args.transform_values { |item| program_value(item, scope) } }
+        end
+
+        # A literal key in v1.0's spelling: a v0.9 key that starts with `@` is doubled.
+        def program_key(key)
+          !dialect.v1? && key.start_with?("@") ? "@#{key}" : key
         end
 
         # Yields each component reachable from an id in a scope, once per component and scope.
@@ -292,7 +452,7 @@ module Poetry
           return unless component
 
           yield component, scope
-          Array(catalog.references(component)).each do |reference|
+          Array(catalog_of(component)&.references(component)).each do |reference|
             expand(reference, scope).each do |child_id, child_scope|
               walk_from(child_id, child_scope, stack + [key], &)
             end
@@ -306,45 +466,60 @@ module Poetry
 
           id = component["id"]
           name = component["component"]
-          return error(path, "id (string) is required") unless id.is_a?(String) && !id.empty?
-          return error("#{path}/component", "component (string) is required") unless name.is_a?(String)
+          return error(path, "Component at #{path} is missing an 'id'") unless id.is_a?(String) && !id.empty?
+          return error("#{path}/component", "Cannot create component #{id} without a type") unless name.is_a?(String)
           return error("#{path}/component", "#{name.inspect} is not an identifier") unless name.match?(NAME_PATTERN)
-          return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved") if name == RESERVED_COMPONENT
+          if name == RESERVED_COMPONENT && dialect.v1?
+            return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved")
+          end
 
-          nil
+          problem = catalog_problem(component)
+          return unless problem
+
+          { code: problem.start_with?("catalogId must") ? "VALIDATION_FAILED" : "CATALOG_ERROR", path: path,
+            message: "#{id}: #{problem}" }
         end
 
         # Static edges (template components count) coloured depth-first.
-        def cycle_errors
+        def cycle_errors(components)
           state = {}
           errors = []
-          @components.each_key do |component_id|
-            visit(component_id, state, [], errors)
+          components.each_key do |component_id|
+            visit(component_id, components, state, [], errors)
           end
           errors
         end
 
-        # Depth-first visits a component's static children, recording a circular reference as an error.
-        def visit(component_id, state, stack, errors)
+        # Depth-first visits a component's static children, recording a
+        # circular reference as an error, worded as the spec's processors word it.
+        def visit(component_id, components, state, stack, errors)
           return if state[component_id] == :done
 
           if state[component_id] == :open
-            errors << error("/components/#{component_id}",
-                            "circular reference: #{(stack + [component_id]).join(" -> ")}")
+            message = if stack.last == component_id
+                        "Circular reference detected: Component '#{component_id}' references itself " \
+                          "(Self-reference detected)"
+                      else
+                        "Circular reference detected involving component '#{component_id}': " \
+                          "#{(stack + [component_id]).join(" -> ")}"
+                      end
+            errors << { code: "RECURSION_ERROR", path: "/components/#{component_id}", message: message }
             return
           end
 
           state[component_id] = :open
-          static_children(component_id).each { |child| visit(child, state, stack + [component_id], errors) }
+          static_children(component_id, components).each do |child|
+            visit(child, components, state, stack + [component_id], errors)
+          end
           state[component_id] = :done
         end
 
         # The ids a component references directly, templates excluded.
-        def static_children(component_id)
-          component = @components[component_id]
+        def static_children(component_id, components)
+          component = components[component_id]
           return [] unless component
 
-          children = Array(catalog.references(component)).flat_map do |reference|
+          children = Array(catalog_of(component)&.references(component)).flat_map do |reference|
             case reference
             when String then [reference]
             when Array then reference.grep(String)
@@ -352,7 +527,7 @@ module Poetry
             else []
             end
           end
-          children.select { |child| @components.key?(child) }
+          children.select { |child| components.key?(child) }
         end
 
         # A validation error at a path.

@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"thread-agentic_chat-backend_tool","runId":"a2bd2110-62d2-4330-ba55-eba2504219b7","protocolVersion":"1.0"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"1f9e31d7-bcc3-48f1-a15b-7cb61269ec5d","role":"user","content":"backend_tool"},{"id":"0bced177-59c7-46d3-8482-a3a62d3cc3ea","role":"assistant","toolCalls":[{"id":"3ffdde00-bb2f-4e32-b60e-d66ecbf1ef80","type":"function","function":{"name":"lookup_weather","arguments":"{\"city\": \"San Francisco\", \"weather\": \"sunny\"}"}}]},{"id":"112fae1e-e2ff-4947-af62-8f80a25c3004","role":"tool","content":"The weather in San Francisco is sunny.","toolCallId":"3ffdde00-bb2f-4e32-b60e-d66ecbf1ef80"}]}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-agentic_chat-backend_tool","runId":"a2bd2110-62d2-4330-ba55-eba2504219b7"}
+

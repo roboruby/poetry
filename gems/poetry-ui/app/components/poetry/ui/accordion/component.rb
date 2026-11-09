@@ -60,12 +60,7 @@ module Poetry
               value :type
               value :collapsible
             end
-            controller :roving_focus do
-              register
-              value :orientation, "vertical"
-              value :manage_tabindex, false
-              action :keydown, on: :keydown
-            end
+            behavior :roving_focus, orientation: "vertical", manage_tabindex: false
           end
           on :trigger do
             controller(:accordion) { action :toggle, on: :click }

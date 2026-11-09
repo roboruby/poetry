@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"thread-backend_tool_rendering","runId":"73301be6-9362-404e-8e83-01460519919d","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"6884f645-0288-472e-a0c0-0d484c1a3b08","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"6884f645-0288-472e-a0c0-0d484c1a3b08","delta":"Retrieved weather information!"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"6884f645-0288-472e-a0c0-0d484c1a3b08"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-backend_tool_rendering","runId":"73301be6-9362-404e-8e83-01460519919d"}
+

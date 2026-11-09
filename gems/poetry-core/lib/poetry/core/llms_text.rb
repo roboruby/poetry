@@ -11,7 +11,30 @@ module Poetry
     #
     # @api private
     class LlmsText
-      PREAMBLE = <<~TEXT
+      # The five usage rules every llms surface prints at the top: the docs
+      # site's root llms.txt, a host's /poetry/llms.txt and llms-full.txt,
+      # and the cold-start prompt (`bin/rails poetry:prompt`). One fetch of
+      # any of them carries the doctrine the skills and the AGENTS.md
+      # section teach at length - the one-fetch agent that reads only an
+      # index used to leave with none of it.
+      USAGE_RULES = [
+        "Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw hex/oklch colors or " \
+        "off-scale arbitrary values - tokens and variants carry the design.",
+        "Start a screen from a block (the MCP `compose` tool, or `bin/rails g poetry:block --list`) and adapt " \
+        "it in place; compose components only for what no block covers, slots over custom HTML.",
+        "Model-bound forms go through the Poetry form builder, one `f.input` per attribute - the builder " \
+        "derives label, value, error and required from the object; never hand-wire a field inside one.",
+        "State lives in the record, the form, the URL, a cookie or an attribute on the element, never in a " \
+        "client-side store - a Turbo morph keeps what the client changed.",
+        "Check comes LAST: run `bin/rails poetry:check` as the final action after the last edit - it validates " \
+        "components, options, variants, icon names and Stimulus wiring against these contracts, and an edit " \
+        "made after the last check is unverified markup."
+      ].freeze
+
+      # The rules as the markdown section the surfaces print.
+      USAGE_RULES_SECTION = "## Usage rules\n\n#{USAGE_RULES.map { |rule| "- #{rule}" }.join("\n")}\n".freeze
+
+      PREAMBLE = <<~TEXT.freeze
         # Poetry for Rails
 
         > poetry is an AI-native, Rails-first component library: accessible,
@@ -22,9 +45,8 @@ module Poetry
         variants > one-off classes; slots > custom HTML. Render components
         with their `poetry_<name>` helpers.
 
-        Verify your markup with `poetry check` (rake poetry:check) before it
-        renders - it validates components, options, variants, and Stimulus
-        wiring against these contracts. Testing doctrine: the Testing guide on the poetry docs site.
+        #{USAGE_RULES_SECTION}
+        Testing doctrine: the Testing guide on the poetry docs site.
       TEXT
 
       # host_registry: the app's own components (HostComponents.registry),
@@ -106,6 +128,20 @@ module Poetry
         "#{lines.join("\n")}\n"
       end
 
+      # The behaviors a component uses (Poetry::Core::Behavior), one line
+      # each - shared with describe_component so no surface can lag.
+      #
+      # @param entry [Hash] a registry entry
+      # @return [Array<String>]
+      def self.behavior_lines(entry)
+        (entry["behaviors"] || []).map do |behavior|
+          where = if behavior["runtime"] then "activated by its JS"
+                  elsif behavior["elements"] then "on #{behavior["elements"].join(", ")}"
+                  end
+          "- BEHAVIOR #{behavior["name"]}#{" (#{where})" if where} - #{behavior["description"]}"
+        end
+      end
+
       private
 
       # The helper is poetry_ + the path under the ui/ namespace, so
@@ -153,6 +189,7 @@ module Poetry
                    "(MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch."
         end
         lines.concat(wiring_lines(entry))
+        lines.concat(LlmsText.behavior_lines(entry))
         lines.concat(tool_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
@@ -171,11 +208,21 @@ module Poetry
             facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
             "#{name} (#{facets.join(", ")})"
           end
-          facets = [tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"]
+          facets = [tool_hints(tool).join(", ")]
           facets << "params: #{params.join(", ")}" if params.any?
           "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
             "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
         end
+      end
+
+      # The words for a tool's hints: read-only or mutating, then the hints set.
+      def tool_hints(tool)
+        annotations = tool["annotations"] || {}
+        words = [annotations["readOnlyHint"] ? "read-only" : "mutating"]
+        words << "untrusted content" if annotations["untrustedContentHint"]
+        words << "consequential" if annotations["consequentialHint"]
+        words << "debugging" if annotations["debugging"]
+        words
       end
 
       # The styling contract: every data-slot part with its state

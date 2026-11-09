@@ -10,37 +10,40 @@ module Poetry
     module A2uiShowcase
       BASIC = Poetry::Agent::A2UI::Catalogs::Basic::ID
       NATIVE = Poetry::Agent::A2UI::Catalog::DEFAULT_ID
+      # The id AG-UI's A2UI toolkits send for the v0.9 basic catalog.
+      BASIC_V0_9 = Poetry::Agent::A2UI::Catalogs::Basic::V0_9_IDS.last
 
       # The sign-in surface: the basic catalog with checks the browser enforces.
       SIGN_IN = [
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "createSurface" => {
             "surfaceId" => "signin", "catalogId" => BASIC, "sendDataModel" => true,
             "dataModel" => { "email" => "", "password" => "", "remember" => true },
             "components" => [
               { "id" => "root", "component" => "Column", "children" => %w[title email password remember submit] },
               { "id" => "title", "component" => "Text", "text" => "## Sign in" },
-              { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" },
+              { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "@path" => "/email" },
                 "placeholder" => "you@example.com",
                 "checks" => [
-                  { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/email" } } },
+                  { "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/email" } } },
                     "message" => "Email is required" },
-                  { "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                  { "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } },
                     "message" => "Enter a valid email" }
                 ] },
               { "id" => "password", "component" => "TextField", "label" => "Password", "variant" => "obscured",
-                "value" => { "path" => "/password" },
-                "checks" => [ { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/password" } } } } ] },
+                "value" => { "@path" => "/password" },
+                "checks" => [ { "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/password" } } },
+                                "message" => "Password is required" } ] },
               { "id" => "remember", "component" => "CheckBox", "label" => "Remember this device",
-                "value" => { "path" => "/remember" } },
+                "value" => { "@path" => "/remember" } },
               { "id" => "submit", "component" => "Button", "child" => "submit_label", "variant" => "primary",
                 "action" => { "event" => { "name" => "sign_in",
-                                           "context" => { "email" => { "path" => "/email" },
-                                                          "remember" => { "path" => "/remember" } } } },
+                                           "context" => { "email" => { "@path" => "/email" },
+                                                          "remember" => { "@path" => "/remember" } } } },
                 "checks" => [
-                  { "condition" => { "call" => "not",
-                                     "args" => { "value" => { "call" => "regex",
-                                                              "args" => { "value" => { "path" => "/email" },
+                  { "condition" => { "@call" => "not",
+                                     "args" => { "value" => { "@call" => "regex",
+                                                              "args" => { "value" => { "@path" => "/email" },
                                                                           "pattern" => "@example\\.com$" } } } },
                     "message" => "Use your work email, not an example.com address." }
                 ] },
@@ -51,24 +54,51 @@ module Poetry
 
       # The plan card: Poetry's own catalog, rendered straight from the registry.
       PLAN = [
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "createSurface" => {
             "surfaceId" => "plan", "catalogId" => NATIVE,
             "dataModel" => { "name" => "Team", "seats" => 5, "price" => "$12 a seat, billed monthly" },
             "components" => [
               { "id" => "root", "component" => "Card", "title" => "title", "description" => "description",
                 "footer" => "cta", "children" => %w[badge seats] },
-              { "id" => "title", "component" => "Typeset", "text" => { "path" => "/name" } },
-              { "id" => "description", "component" => "Typeset", "text" => { "path" => "/price" } },
+              { "id" => "title", "component" => "Typeset", "text" => { "@path" => "/name" } },
+              { "id" => "description", "component" => "Typeset", "text" => { "@path" => "/price" } },
               { "id" => "badge", "component" => "Badge", "variant" => "secondary", "text" => "most popular" },
               { "id" => "seats", "component" => "Field", "label_text" => "Seats", "children" => [ "seats_input" ] },
-              { "id" => "seats_input", "component" => "Input", "type" => "number", "value" => { "path" => "/seats" } },
+              { "id" => "seats_input", "component" => "Input", "type" => "number", "value" => { "@path" => "/seats" } },
               { "id" => "cta", "component" => "Button", "variant" => "default", "text" => "Choose plan",
                 "action" => { "event" => { "name" => "choose_plan",
-                                           "context" => { "seats" => { "path" => "/seats" },
-                                                          "plan" => { "path" => "/name" } } } } }
+                                           "context" => { "seats" => { "@path" => "/seats" },
+                                                          "plan" => { "@path" => "/name" } } } } }
             ]
           } }
+      ].freeze
+
+      # The feedback card: a v0.9 surface as AG-UI's A2UI middleware sends
+      # one (its basic catalog id, `path` and `call`, a heading variant),
+      # beside the v1.0 surfaces. Each surface speaks its own version.
+      FEEDBACK = [
+        { "version" => "v0.9", "createSurface" => { "surfaceId" => "feedback", "catalogId" => BASIC_V0_9 } },
+        { "version" => "v0.9",
+          "updateComponents" => {
+            "surfaceId" => "feedback",
+            "components" => [
+              { "id" => "root", "component" => "Card", "child" => "body" },
+              { "id" => "body", "component" => "Column", "children" => %w[heading rating note send] },
+              { "id" => "heading", "component" => "Text", "variant" => "h3", "text" => "How was this guide?" },
+              { "id" => "rating", "component" => "ChoicePicker", "label" => "Rating", "variant" => "mutuallyExclusive",
+                "displayStyle" => "chips", "value" => { "path" => "/rating" },
+                "options" => [ { "label" => "Clear", "value" => "clear" }, { "label" => "Confusing", "value" => "confusing" } ] },
+              { "id" => "note", "component" => "TextField", "label" => "Anything to add?", "variant" => "longText",
+                "value" => { "path" => "/note" } },
+              { "id" => "send", "component" => "Button", "child" => "send_label", "variant" => "primary",
+                "action" => { "event" => { "name" => "send_feedback", "context" => { "rating" => { "path" => "/rating" } } } },
+                "checks" => [ { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/rating" } } },
+                                "message" => "Pick a rating" } ] },
+              { "id" => "send_label", "component" => "Text", "text" => "Send" }
+            ]
+          } },
+        { "version" => "v0.9", "updateDataModel" => { "surfaceId" => "feedback", "value" => { "rating" => [], "note" => "" } } }
       ].freeze
 
       # The order card, streamed the way an agent streams: the surface, then its
@@ -76,8 +106,8 @@ module Poetry
       # the demo; the tests run instantly). Its text runs through the catalog
       # functions: formatString, formatDate, formatCurrency, pluralize, @index.
       STREAM = [
-        { "version" => "v1.0", "createSurface" => { "surfaceId" => "order", "catalogId" => BASIC }, "_sleep" => 400 },
-        { "version" => "v1.0",
+        { "version" => "1.0", "createSurface" => { "surfaceId" => "order", "catalogId" => BASIC }, "_sleep" => 400 },
+        { "version" => "1.0",
           "updateComponents" => {
             "surfaceId" => "order",
             "components" => [
@@ -86,13 +116,13 @@ module Poetry
               { "id" => "tabs", "component" => "Tabs",
                 "tabs" => [ { "title" => "Items", "child" => "items" }, { "title" => "Note", "child" => "note" } ] },
               { "id" => "note", "component" => "TextField", "label" => "Delivery note", "variant" => "longText",
-                "value" => { "path" => "/note" } },
+                "value" => { "@path" => "/note" } },
               { "id" => "heading", "component" => "Text",
-                "text" => { "call" => "formatString",
+                "text" => { "@call" => "formatString",
                             "args" => { "value" => "### Order #${/number}, placed " \
                                                    "${formatDate(value: ${/placedAt}, format: 'MMM d, HH:mm')}" } } },
               { "id" => "status", "component" => "Text", "variant" => "caption",
-                "text" => { "call" => "formatString",
+                "text" => { "@call" => "formatString",
                             "args" => { "value" => "${/status}: ${/count} " \
                                                    "${pluralize(value: ${/count}, one: 'item', other: 'items')}, " \
                                                    "${formatCurrency(value: ${/total}, currency: 'USD')}" } } },
@@ -100,37 +130,37 @@ module Poetry
               { "id" => "item", "component" => "Row", "justify" => "spaceBetween",
                 "children" => %w[item_num item_name item_qty] },
               { "id" => "item_num", "component" => "Text", "variant" => "caption",
-                "text" => { "call" => "formatString", "args" => { "value" => "${@index(offset: 1)}." } } },
-              { "id" => "item_name", "component" => "Text", "text" => { "path" => "name" }, "weight" => 1 },
+                "text" => { "@call" => "formatString", "args" => { "value" => "${@index(offset: 1)}." } } },
+              { "id" => "item_name", "component" => "Text", "text" => { "@path" => "name" }, "weight" => 1 },
               { "id" => "item_qty", "component" => "Text", "variant" => "caption",
-                "text" => { "call" => "formatString", "args" => { "value" => "x${qty}" } } }
+                "text" => { "@call" => "formatString", "args" => { "value" => "x${qty}" } } }
             ]
           }, "_sleep" => 600 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order",
                                  "value" => { "number" => 4821, "placedAt" => "2026-09-01T18:05:00Z",
                                               "status" => "Preparing", "count" => 0, "total" => 0, "items" => [],
                                               "note" => "" } },
           "_sleep" => 700 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order", "path" => "/items",
                                  "value" => [ { "name" => "Flat white", "qty" => 2 },
                                               { "name" => "Almond croissant", "qty" => 1 } ] },
           "_sleep" => 300 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order", "path" => "/count", "value" => 3 }, "_sleep" => 100 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order", "path" => "/total", "value" => 14.5 }, "_sleep" => 900 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order", "path" => "/status", "value" => "Out for delivery" },
           "_sleep" => 900 },
-        { "version" => "v1.0",
+        { "version" => "1.0",
           "updateDataModel" => { "surfaceId" => "order", "path" => "/status", "value" => "Delivered" } }
       ].freeze
 
       # The session holding the two server-rendered surfaces.
       def self.session
-        Poetry::Agent::A2UI::Session.new.tap { |session| session.apply_all(SIGN_IN + PLAN) }
+        Poetry::Agent::A2UI::Session.new.tap { |session| session.apply_all(SIGN_IN + PLAN + FEEDBACK) }
       end
 
       # The scripted agent's reply to a user action: A2UI messages for the
@@ -141,7 +171,7 @@ module Poetry
         case message["name"]
         when "sign_in"
           note = context["remember"] ? "This device is remembered." : "You will sign in again next time."
-          [ { "version" => "v1.0",
+          [ { "version" => "1.0",
              "updateComponents" => { "surfaceId" => "signin",
                                      "components" => [
                                        { "id" => "root", "component" => "Column", "children" => %w[welcome note] },
@@ -151,12 +181,20 @@ module Poetry
                                      ] } } ]
         when "choose_plan"
           seats = context["seats"]
-          [ { "version" => "v1.0",
+          [ { "version" => "1.0",
              "updateDataModel" => { "surfaceId" => "plan", "path" => "/name", "value" => "#{context["plan"]}, #{seats} seats" } },
-           { "version" => "v1.0",
+           { "version" => "1.0",
              "updateComponents" => { "surfaceId" => "plan",
                                      "components" => [ { "id" => "cta", "component" => "Button", "variant" => "secondary",
                                                         "disabled" => true, "text" => "Chosen: #{seats} seats" } ] } } ]
+        when "send_feedback"
+          [ { "version" => "v0.9",
+              "updateComponents" => { "surfaceId" => "feedback",
+                                      "components" => [
+                                        { "id" => "body", "component" => "Column", "children" => %w[thanks] },
+                                        { "id" => "thanks", "component" => "Text",
+                                          "text" => "Thanks: noted as #{Array(context["rating"]).first}." }
+                                      ] } } ]
         else
           []
         end

@@ -1,0 +1,567 @@
+{
+  "source": "chunks/__tests__/expansion-never-repairs.test.ts",
+  "vectors": [
+    {
+      "name": "a chunk carrying a null delta, with no shim installed (expansion after enforcement) > fails the run (TEXT_MESSAGE_CHUNK)",
+      "line": 116,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal; expansion MUST NOT repair it (null delta read as \"\")",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. Rejected by enforcement first on the canonical order. The TS assertion fragments are zod issue text and not portable: the message contains '\"delta\"' and 'received null'. A port's message should name the delta field."
+    },
+    {
+      "name": "a chunk carrying a null delta, with no shim installed (expansion after enforcement) > fails the run (TOOL_CALL_CHUNK)",
+      "line": 116,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "delta": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal; expansion MUST NOT repair it (null delta read as \"\")",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. Rejected by enforcement first on the canonical order. The TS assertion fragments are zod issue text and not portable: the message contains '\"delta\"' and 'received null'. A port's message should name the delta field."
+    },
+    {
+      "name": "a chunk carrying a null delta, with no shim installed (expansion after enforcement) > fails the run (REASONING_MESSAGE_CHUNK)",
+      "line": 116,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "rm1",
+          "delta": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal; expansion MUST NOT repair it (null delta read as \"\")",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. Rejected by enforcement first on the canonical order. The TS assertion fragments are zod issue text and not portable: the message contains '\"delta\"' and 'received null'. A port's message should name the delta field."
+    },
+    {
+      "name": "a chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > is stripped with a warning naming it",
+      "line": 133,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "!",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "!"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. The TS test asserts acceptance and a warning naming futureField; the delivered events are the exact TS output.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "a chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > is warned about even on a chunk that synthesises nothing else",
+      "line": 151,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. On this path enforcement strips futureField from the chunk before expansion, so the continuation expands to nothing (no zero-delta CONTENT): the strip is what is warned.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "a chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > does not let the unrecognised material reach application code",
+      "line": 169,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "!",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "!"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. Neither CONTENT carries futureField; deltas are 'hi' and '!'.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "an OPENING chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > is warned about rather than dropped in silence (TEXT_MESSAGE_CHUNK)",
+      "line": 235,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. An opener-only chunk (no delta, no rawEvent) expands to a bare *_START; the TS test asserts the opener type is delivered and futureField is warned.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "an OPENING chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > is warned about rather than dropped in silence (TOOL_CALL_CHUNK)",
+      "line": 235,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "search"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. An opener-only chunk (no delta, no rawEvent) expands to a bare *_START; the TS test asserts the opener type is delivered and futureField is warned.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "an OPENING chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > is warned about rather than dropped in silence (REASONING_MESSAGE_CHUNK)",
+      "line": 235,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "rm1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "rm1",
+          "futureField": "from 1.1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "rm1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "rm1"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "rm1",
+            "role": "reasoning"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "rm1"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "rm1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. An opener-only chunk (no delta, no rawEvent) expands to a bare *_START; the TS test asserts the opener type is delivered and futureField is warned.",
+      "warnings": [
+        "futureField"
+      ]
+    },
+    {
+      "name": "an OPENING chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > announces a remainder key the synthesized opener itself declares",
+      "line": 243,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "rm1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "rm1",
+          "role": "wizard"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "rm1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "rm1"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "rm1",
+            "role": "reasoning"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "rm1"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "rm1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. REASONING_MESSAGE_CHUNK describes no role, so a producer's role is unrecognised material: on this path enforcement strips '/role' from the chunk (warned) and the synthesized REASONING_MESSAGE_START keeps role 'reasoning'. The collision warning ('already describes') is middleware-path only.",
+      "warnings": [
+        "role"
+      ]
+    },
+    {
+      "name": "an OPENING chunk carrying an unrecognised property, with no shim installed (expansion after enforcement) > does not claim a collision for a key that only Object.prototype has",
+      "line": 279,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "toString": "shadow?"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "chunk-run"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "chunk-run"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unknown property is stripped, with a warning naming its path, and MUST NOT reach application code",
+      "notes": "The TS test drives a whole HttpAgent run (compatibility boundary -> enforcement -> expansion -> verification); this is its unpinned path. The pinned 0.0.45 path (expansion inside the middleware chain) is skipped: the runner installs no middleware. 'toString' is an ordinary unknown property: stripped and warned by name. The TS-specific half (Object.prototype keys must not be reported as a collision; no warning contains 'already describes') has no counterpart in a Ruby port.",
+      "warnings": [
+        "toString"
+      ]
+    }
+  ]
+}

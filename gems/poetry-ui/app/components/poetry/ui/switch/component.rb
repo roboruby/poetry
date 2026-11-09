@@ -42,11 +42,7 @@ module Poetry
         # event), then reflects the new state onto the control.
         use_stimulus do
           on :root do
-            controller :checked do
-              register
-              value :input_id, if: :form_participant?
-              action :toggle, on: :click
-            end
+            behavior :checked
           end
         end
 

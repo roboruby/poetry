@@ -1,0 +1,18 @@
+<%# The relay's own rows for the AG-UI 1.0 states the scripted run does not
+    reach (Poetry::Docs::AguiStates): attachments, a tool result of parts,
+    a declined call, a failed subagent, a cancelled run, and a stream the
+    page stopped reading - each a real event stream through a strict
+    Pipeline into a Transcript. %>
+<div class="flex w-full max-w-2xl flex-col gap-4">
+  <% Poetry::Docs::AguiStates.all.each do |state| %>
+    <%= poetry_card(id: "agui-state-#{state.id}") do |card| %>
+      <% card.with_title { state.title } %>
+      <% card.with_description { state.note } %>
+      <div class="flex flex-col gap-4">
+        <% state.transcript.messages.each do |message| %>
+          <%= render "poetry/docs/agui_relay/row", message: message, version: message.version, transcript: state.transcript %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

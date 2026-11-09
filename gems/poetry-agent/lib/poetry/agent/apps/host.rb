@@ -1,0 +1,520 @@
+# frozen_string_literal: true
+
+require "json"
+require "securerandom"
+require "active_support"
+require "active_support/message_verifier"
+require_relative "host/csp"
+require "mcp"
+require "mcp/client"
+require_relative "host/in_process"
+require_relative "host/sandbox"
+require_relative "host/rpc_app"
+require_relative "host/oauth"
+
+module Poetry
+  module Agent
+    module Apps
+      # The host side of MCP Apps: other servers' apps inside a Rails page.
+      # A host knows its servers (an id, a URL, the headers it holds for
+      # them), reads their tools and app resources through the `mcp` gem's
+      # client (cached), calls tools for the page, answers an app's own requests
+      # through an allowlist and the tool visibility the server declared,
+      # and serves the sandbox proxy page the app runs in, on a second
+      # origin by default, with the resource's policy as a header.
+      #
+      # The browser half is the `poetry--agent--mcp-app-host` controller:
+      # it mounts the frame an app renders in, speaks the bridge, and sends
+      # the app's requests to {RpcApp} (or a controller of the application's
+      # own that calls {#rpc} with the signed-in user's headers).
+      #
+      # @example config/routes.rb
+      #   host = Poetry::Agent::Apps::Host.new(
+      #     servers: { "shop" => { url: "https://shop.example/mcp" } },
+      #     origin: "https://chat.example", sandbox_origin: "https://apps.chat.example"
+      #   )
+      #   constraints(host: "apps.chat.example") { mount host.sandbox_app => host.sandbox_path }
+      #   mount host.rpc_app => host.rpc_path
+      class Host
+        # An app's request the host will not make: a method outside the
+        # allowlist, a tool the server hides from apps, a server it does
+        # not know. Carries the JSON-RPC code the app is answered with.
+        class Refused < StandardError
+          # The JSON-RPC code the app is answered with.
+          # @return [Integer]
+          attr_reader :code
+
+          # Names the refusal and the code it answers with.
+          # @param message [String] what was refused and why
+          # @param code [Integer] the JSON-RPC code (invalid params by default)
+          def initialize(message, code: -32_602)
+            super(message)
+            @code = code
+          end
+        end
+
+        # The person must authorize the server first; the URL starts it.
+        class AuthorizationRequired < StandardError
+          # The JSON-RPC code an app is answered with.
+          CODE = -32_001
+
+          # The server's id.
+          # @return [String]
+          attr_reader :server
+
+          # Where to send the person.
+          # @return [String]
+          attr_reader :url
+
+          # Names the server and the URL that starts its authorization.
+          # @param server [String] the server's id
+          # @param url [String] the authorization URL
+          def initialize(server:, url:)
+            super("authorization required for #{server}")
+            @server = server
+            @url = url
+          end
+
+          # The JSON-RPC code an app is answered with.
+          # @return [Integer]
+          def code = CODE
+        end
+
+        # One server the host knows.
+        #
+        # @attr id [String] the id the page and the apps name it by
+        # @attr url [String] the MCP endpoint
+        # @attr headers [Hash] the headers the host holds for it
+        # @attr credentials [#headers, #call, nil] what turns a context (the signed-in person) into headers
+        #   for it: an {OAuth}, or a callable `(context, server) -> headers`
+        Server = Struct.new(:id, :url, :headers, :credentials, keyword_init: true)
+
+        # An app resource as read: the HTML and its `_meta.ui`.
+        #
+        # @attr uri [String] the resource's `ui://` uri
+        # @attr html [String] the app's document
+        # @attr ui [Hash] the resource's `_meta.ui` (string keys), `{}` when none
+        Resource = Struct.new(:uri, :html, :ui, keyword_init: true)
+
+        # A tool call the page made, with everything the frame needs.
+        #
+        # @attr server [String] the server's id
+        # @attr tool [String] the tool's name
+        # @attr input [Hash] the arguments
+        # @attr result [Hash] the `CallToolResult`
+        # @attr resource_uri [String, nil] the app's resource, when the tool has one
+        Call = Struct.new(:server, :tool, :input, :result, :resource_uri, keyword_init: true) do
+          # Whether the tool has an app to show.
+          # @return [Boolean]
+          def app? = !resource_uri.nil?
+        end
+
+        # A small store with expiry, for a host without a Rails cache.
+        class Store
+          # An empty store.
+          def initialize
+            @entries = {}
+            @mutex = Mutex.new
+          end
+
+          # The value under a key, computed and kept for `expires_in` seconds when absent or stale.
+          #
+          # @param key [String]
+          # @param expires_in [Numeric]
+          # @yieldreturn [Object] the value to keep
+          # @return [Object]
+          def fetch(key, expires_in:)
+            @mutex.synchronize do
+              entry = @entries[key]
+              return entry[:value] if entry && entry[:until] > Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            end
+            value = yield
+            @mutex.synchronize { @entries[key] = { value: value, until: Process.clock_gettime(Process::CLOCK_MONOTONIC) + expires_in } }
+            value
+          end
+
+          # Forgets everything.
+          # @return [void]
+          def clear = @mutex.synchronize { @entries.clear }
+        end
+
+        # The methods an app may send through the host.
+        APP_METHODS = %w[tools/call resources/read ping notifications/message].freeze
+
+        # How long a server's tool list is kept.
+        TOOLS_TTL = 60
+
+        # How long a resource is kept.
+        RESOURCES_TTL = 600
+
+        # How long a sandbox token stays valid, in seconds.
+        TOKEN_TTL = 3600
+
+        # The Stimulus controller the frame carries.
+        CONTROLLER = "poetry--agent--mcp-app-host"
+
+        # The host page's origin.
+        # @return [String]
+        attr_reader :origin
+
+        # The apps origin, or nil for the inline mode.
+        # @return [String, nil]
+        attr_reader :sandbox_origin
+
+        # Where the sandbox app is mounted.
+        # @return [String]
+        attr_reader :sandbox_path
+
+        # Where the RPC app is mounted.
+        # @return [String]
+        attr_reader :rpc_path
+
+        # The servers by id.
+        # @return [Hash{String => Server}]
+        attr_reader :servers
+
+        # A host over its servers.
+        #
+        # @param servers [Hash{String => Hash}] by id: `url:`, optional `headers:` held for every request, and
+        #   optional `credentials:` (an {OAuth} or a callable `(context, server) -> headers`) turning the
+        #   context a call passes (the signed-in person) into that person's headers
+        # @param origin [String] the host page's origin (`https://chat.example`)
+        # @param sandbox_origin [String, nil] the apps origin serving the proxy page; nil runs the
+        #   degraded inline mode (the proxy page as an opaque frame on the host page: no storage,
+        #   no real origin for the app)
+        # @param sandbox_path [String] where {#sandbox_app} is mounted on the apps origin
+        # @param rpc_path [String] where {#rpc_app} (or the application's endpoint) answers
+        # @param secret [String, nil] what signs the sandbox tokens; the application's secret key base by default
+        # @param cache [#fetch, nil] a store answering `fetch(key, expires_in:) { }`; a {Store} by default
+        # @param name [String] the client name servers see
+        # @param http_client_customizer [#call, nil] a hook on the gem's Faraday connection to every server: an
+        #   adapter ({InProcess.customizer} for a server in this process, a test adapter) or middleware
+        def initialize(servers:, origin:, sandbox_origin: nil, sandbox_path: "/mcp-apps/sandbox", # rubocop:disable Metrics/ParameterLists
+                       rpc_path: "/mcp-apps/rpc", secret: nil, cache: nil, name: "poetry-agent",
+                       http_client_customizer: nil)
+          @servers = servers.to_h do |id, config|
+            [id.to_s, Server.new(id: id.to_s, url: config.fetch(:url) { config.fetch("url") },
+                                 headers: (config[:headers] || config["headers"] || {}).to_h,
+                                 credentials: config[:credentials] || config["credentials"])]
+          end
+          @origin = origin.to_s.delete_suffix("/")
+          @sandbox_origin = sandbox_origin&.to_s&.delete_suffix("/")
+          @sandbox_path = sandbox_path
+          @rpc_path = rpc_path
+          @cache = cache || Store.new
+          @name = name
+          @http_client_customizer = http_client_customizer
+          @verifier = ActiveSupport::MessageVerifier.new(secret || default_secret, serializer: JSON)
+        end
+
+        # A server by id.
+        #
+        # @param id [String]
+        # @return [Server]
+        # @raise [Refused] for an unknown id
+        def server(id)
+          @servers.fetch(id.to_s) { raise Refused, "unknown server: #{id}" }
+        end
+
+        # A connected client for a server, the `mcp` gem's: the server's
+        # headers, the context's through the server's credentials, this
+        # request's; the handshake declares the ui extension.
+        #
+        # @param id [String]
+        # @param headers [Hash] headers for this request over the rest
+        # @param context [Object, nil] what the server's credentials turn into headers (the signed-in person)
+        # @return [::MCP::Client]
+        # @raise [AuthorizationRequired] when the credentials want the person sent to authorize first
+        # @raise [::MCP::Client::RequestHandlerError] when the server refuses the handshake or cannot be reached
+        def client(id, headers: {}, context: nil)
+          held = server(id)
+          merged = held.headers.merge(credential_headers(held, context)).merge(headers.to_h)
+          transport = ::MCP::Client::HTTP.new(url: held.url, headers: merged, &@http_client_customizer)
+          # The `initialize` handshake outright (the extension is declared there, SEP-2133); the gem's
+          # default probes `server/discover` first, one request more per client against every server.
+          ::MCP::Client.new(transport: transport).tap do |client|
+            client.connect(client_info: { name: @name, version: Poetry::Agent::VERSION }, mode: :legacy,
+                           capabilities: { extensions: Apps.capabilities.to_h[:extensions] })
+          end
+        end
+
+        # Whether the context holds credentials for the server (true for a server without credentials).
+        #
+        # @param id [String]
+        # @param context [Object, nil]
+        # @return [Boolean]
+        def authorized?(id, context: nil)
+          credentials = server(id).credentials
+          return true unless credentials.respond_to?(:authorized?)
+
+          credentials.authorized?(context, server(id))
+        end
+
+        # The URL that starts the context's authorization toward a server.
+        #
+        # @param id [String]
+        # @param context [Object, nil]
+        # @return [String]
+        # @raise [ArgumentError] for a server whose credentials run no authorization
+        def authorization_url(id, context: nil)
+          held = server(id)
+          unless held.credentials.respond_to?(:authorization_url)
+            raise ArgumentError,
+                  "#{id} has no authorization to start"
+          end
+
+          held.credentials.authorization_url(context, held)
+        end
+
+        # Finishes the context's authorization toward a server with the callback's query.
+        #
+        # @param id [String]
+        # @param context [Object, nil]
+        # @param params [Hash] the callback's query parameters, as they arrived
+        # @return [Boolean] whether tokens were saved
+        # @raise [ArgumentError] for a server whose credentials run no authorization
+        def finish_authorization(id, context: nil, params: {})
+          held = server(id)
+          raise ArgumentError, "#{id} has no authorization to finish" unless held.credentials.respond_to?(:finish)
+
+          held.credentials.finish(context, held, params)
+        end
+
+        # The server's tools with their app metadata, cached (per server, not per context).
+        #
+        # @param id [String]
+        # @param headers [Hash]
+        # @param context [Object, nil]
+        # @return [Array<Hash>] `name:`, `description:`, `input_schema:`, `resource_uri:`, `visibility:`
+        def tools(id, headers: {}, context: nil)
+          @cache.fetch("poetry/apps/host/tools/#{id}", expires_in: TOOLS_TTL) do
+            with_client(id, headers: headers, context: context, &:tools).map do |tool|
+              ui = tool.meta.to_h["ui"] || {}
+              { name: tool.name, description: tool.description, input_schema: tool.input_schema,
+                resource_uri: ui["resourceUri"], visibility: ui["visibility"] }
+            end
+          end
+        end
+
+        # Whether an app may call the tool: a visibility that names `app`, or none declared.
+        #
+        # @param id [String]
+        # @param name [String]
+        # @param context [Object, nil]
+        # @return [Boolean]
+        def app_callable?(id, name, context: nil)
+          tool = tools(id, context: context).find { |held| held[:name] == name }
+          !tool.nil? && (tool[:visibility].nil? || tool[:visibility].include?("app"))
+        end
+
+        # Whether the model (the page acting for it) may call the tool.
+        #
+        # @param id [String]
+        # @param name [String]
+        # @param context [Object, nil]
+        # @return [Boolean]
+        def model_visible?(id, name, context: nil)
+          tool = tools(id, context: context).find { |held| held[:name] == name }
+          !tool.nil? && (tool[:visibility].nil? || tool[:visibility].include?("model"))
+        end
+
+        # An app resource, cached.
+        #
+        # @param id [String]
+        # @param uri [String]
+        # @param headers [Hash]
+        # @param context [Object, nil]
+        # @return [Resource]
+        # @raise [Refused] for a resource that is not an app
+        def resource(id, uri, headers: {}, context: nil)
+          @cache.fetch("poetry/apps/host/resource/#{id}/#{uri}", expires_in: RESOURCES_TTL) do
+            read = with_client(id, headers: headers, context: context) { |client| client.read_resource(uri: uri) }
+            contents = read.first
+            raise Refused.new("no resource at #{uri}", code: -32_002) unless contents
+
+            mime = contents["mimeType"].to_s
+            raise Refused, "not an app resource: #{mime}" unless mime == ::MCP::Apps::RESOURCE_MIME_TYPE
+
+            html = contents["text"] || contents["blob"]&.unpack1("m")
+            Resource.new(uri: uri, html: html.to_s, ui: (contents.dig("_meta", "ui") || {}).to_h)
+          end
+        end
+
+        # A tool call made for the page (the model's side): the result and the app's resource uri.
+        #
+        # @param id [String]
+        # @param name [String]
+        # @param arguments [Hash]
+        # @param headers [Hash]
+        # @param context [Object, nil]
+        # @return [Call]
+        # @raise [Refused] for a tool the model may not call
+        def call(id, name, arguments = {}, headers: {}, context: nil)
+          raise Refused, "not a model-visible tool: #{name}" unless model_visible?(id, name, context: context)
+
+          tool = tools(id, context: context).find { |held| held[:name] == name }
+          result = with_client(id, headers: headers, context: context) do |client|
+            client.call_tool(name: name, arguments: arguments || {})["result"]
+          end
+          Call.new(server: id.to_s, tool: name, input: arguments || {}, result: result,
+                   resource_uri: tool[:resource_uri])
+        end
+
+        # An app's own request: through the allowlist and the visibility check.
+        #
+        # @param id [String]
+        # @param method [String]
+        # @param params [Hash]
+        # @param headers [Hash]
+        # @param context [Object, nil]
+        # @return [Hash, Array] the result
+        # @raise [Refused] for a method outside the allowlist or a tool the app may not call
+        def rpc(id, method, params = {}, headers: {}, context: nil)
+          unless APP_METHODS.include?(method)
+            raise Refused.new("not a method an app may send: #{method}",
+                              code: -32_601)
+          end
+
+          params = (params || {}).to_h
+          case method
+          when "tools/call"
+            name = params["name"].to_s
+            raise Refused, "not a tool an app may call: #{name}" unless app_callable?(id, name, context: context)
+
+            with_client(id, headers: headers, context: context) do |client|
+              client.call_tool(name: name, arguments: params["arguments"] || {})["result"]
+            end
+          when "resources/read"
+            contents = with_client(id, headers: headers, context: context) do |client|
+              client.read_resource(uri: params["uri"].to_s)
+            end
+            { "contents" => contents }
+          when "ping" then {}
+          when "notifications/message" then { "success" => true }
+          end
+        end
+
+        # A signed claim on a resource for the sandbox page, carrying the
+        # resource's policy when given, so the page needs no read of its own.
+        #
+        # @param id [String]
+        # @param uri [String]
+        # @param csp [Hash, nil] the resource's `_meta.ui.csp`
+        # @return [String]
+        def sandbox_token(id, uri, csp: nil)
+          claim = { "server" => id.to_s, "uri" => uri.to_s, "exp" => Time.now.to_i + TOKEN_TTL }
+          claim["csp"] = csp if csp
+          @verifier.generate(claim)
+        end
+
+        # The claim a token carries, or nil.
+        #
+        # @param token [String]
+        # @return [Hash, nil] `"server"` and `"uri"`
+        def verify_sandbox_token(token)
+          claim = @verifier.verified(token.to_s)
+          return nil unless claim.is_a?(Hash) && @servers.key?(claim["server"]) && claim["exp"].to_i > Time.now.to_i
+
+          claim.slice("server", "uri", "csp")
+        end
+
+        # The sandbox page's URL for a resource, or nil in the inline mode.
+        #
+        # @param id [String]
+        # @param uri [String]
+        # @param csp [Hash, nil] the resource's `_meta.ui.csp`, carried in the token
+        # @return [String, nil]
+        def sandbox_url(id, uri, csp: nil)
+          sandbox_origin && "#{sandbox_origin}#{sandbox_path}/#{sandbox_token(id, uri, csp: csp)}"
+        end
+
+        # The sandbox proxy page's app, to mount on the apps origin.
+        #
+        # @return [Sandbox]
+        def sandbox_app
+          @sandbox_app ||= Sandbox.new(self)
+        end
+
+        # The RPC endpoint, to mount on the host origin.
+        #
+        # @return [RpcApp]
+        def rpc_app
+          @rpc_app ||= RpcApp.new(self)
+        end
+
+        # The proxy page for the inline mode, with the resource's policy as a meta element.
+        #
+        # @param resource [Resource]
+        # @return [String]
+        def inline_sandbox_page(resource)
+          sandbox_app.page(csp: Csp.header(resource.ui, frame_ancestors: nil))
+        end
+
+        # The frame element's data attributes: the controller and its values.
+        #
+        # @param call [Call] a call whose tool has an app
+        # @param rpc_url [String, nil] where the app's requests go; {#rpc_path} by default
+        # @param context [Object, nil] what the server's credentials turn into headers, as the call passed it;
+        #   the app's resource is read here, with it, and its policy travels in the sandbox token
+        # @return [Hash] for `tag.div(data: ...)`
+        def frame_data(call, rpc_url: nil, context: nil)
+          data = { controller: CONTROLLER, "mcp-app-host" => "",
+                   "#{CONTROLLER}-server-value" => call.server,
+                   "#{CONTROLLER}-tool-value" => call.tool,
+                   "#{CONTROLLER}-resource-value" => call.resource_uri,
+                   "#{CONTROLLER}-input-value" => JSON.generate(call.input),
+                   "#{CONTROLLER}-result-value" => JSON.generate(call.result),
+                   "#{CONTROLLER}-rpc-url-value" => rpc_url || rpc_path }
+          held = resource(call.server, call.resource_uri, context: context)
+          if (url = sandbox_url(call.server, call.resource_uri, csp: held.ui["csp"]))
+            data["#{CONTROLLER}-sandbox-url-value"] = url
+            data["#{CONTROLLER}-sandbox-origin-value"] = sandbox_origin
+          else
+            data["#{CONTROLLER}-sandbox-page-value"] = inline_sandbox_page(held)
+          end
+          data
+        end
+
+        # Forgets the cached tools and resources.
+        # @return [void]
+        def clear_cache
+          @cache.clear if @cache.respond_to?(:clear)
+        end
+
+        private
+
+        # The context's headers through the server's credentials: an object answering `headers`, a callable,
+        # or nothing.
+        def credential_headers(held, context)
+          credentials = held.credentials
+          return {} if credentials.nil?
+          return credentials.headers(context, held).to_h if credentials.respond_to?(:headers)
+
+          credentials.call(context, held).to_h
+        end
+
+        # Runs a block over a client; a 401 from the server is tried once more
+        # after the credentials refreshed, else the person is sent to authorize.
+        def with_client(id, headers:, context:)
+          yield client(id, headers: headers, context: context)
+        rescue ::MCP::Client::RequestHandlerError => e
+          held = server(id)
+          raise unless e.error_type == :unauthorized && held.credentials.respond_to?(:refresh)
+          return yield client(id, headers: headers, context: context) if held.credentials.refresh(context, held)
+          raise unless held.credentials.respond_to?(:authorization_url)
+
+          raise AuthorizationRequired.new(server: held.id, url: held.credentials.authorization_url(context, held))
+        end
+
+        # The application's secret when there is one, else a secret for this process.
+        def default_secret
+          if defined?(Rails) && Rails.respond_to?(:application) && Rails.application.respond_to?(:secret_key_base)
+            Rails.application.secret_key_base
+          else
+            SecureRandom.hex(32)
+          end
+        end
+      end
+    end
+  end
+end

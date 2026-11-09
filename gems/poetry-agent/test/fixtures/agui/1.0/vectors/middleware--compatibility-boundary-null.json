@@ -1,0 +1,1787 @@
+{
+  "source": "middleware/__tests__/compatibility-boundary-null.test.ts",
+  "vectors": [
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [BaseEvent.rawEvent]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "x",
+          "value": null,
+          "rawEvent": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "CUSTOM",
+            "name": "x",
+            "value": null
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "rawEvent: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [RUN_FINISHED.result (together with rawEvent and legacy outcome)]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "result": null,
+          "rawEvent": null,
+          "outcome": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "rawEvent: null",
+        "RUN_FINISHED.result: null",
+        "RUN_FINISHED.outcome: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [SUBAGENT_FINISHED.result]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s",
+          "name": "child"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s",
+          "result": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s",
+            "name": "child"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "SUBAGENT_FINISHED.result: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [RunAgentInput.forwardedProps]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [],
+            "context": [],
+            "forwardedProps": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "RunAgentInput.forwardedProps: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [Tool.parameters]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [
+              {
+                "name": "tool",
+                "description": "description",
+                "parameters": null
+              }
+            ],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [],
+              "tools": [
+                {
+                  "name": "tool",
+                  "description": "description"
+                }
+              ],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "Tool.parameters: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [ResumeEntry.payload]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [],
+            "context": [],
+            "resume": [
+              {
+                "interruptId": "i",
+                "status": "resolved",
+                "payload": null
+              }
+            ]
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [],
+              "tools": [],
+              "context": [],
+              "resume": [
+                {
+                  "interruptId": "i",
+                  "status": "resolved"
+                }
+              ]
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "ResumeEntry.payload: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [imageInputContent.metadata]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/media"
+                  },
+                  "metadata": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "image input content.metadata: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [audioInputContent.metadata]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "user",
+              "content": [
+                {
+                  "type": "audio",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/media"
+                  },
+                  "metadata": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "audio",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "audio input content.metadata: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [videoInputContent.metadata]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "user",
+              "content": [
+                {
+                  "type": "video",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/media"
+                  },
+                  "metadata": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "video",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "video input content.metadata: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [documentInputContent.metadata]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "user",
+              "content": [
+                {
+                  "type": "document",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/media"
+                  },
+                  "metadata": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "document",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "document input content.metadata: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [subagentRunId on an event]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "x",
+          "value": 1,
+          "subagentRunId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "CUSTOM",
+            "name": "x",
+            "value": 1
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "subagentRunId: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [RUN_STARTED.parentRunId and RUN_STARTED.input]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "parentRunId": null,
+          "input": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "RUN_STARTED.parentRunId: null",
+        "RUN_STARTED.input: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [TOOL_CALL_RESULT.role]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "m",
+          "toolCallId": "c",
+          "content": "x",
+          "role": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_RESULT",
+            "messageId": "m",
+            "toolCallId": "c",
+            "content": "x"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "TOOL_CALL_RESULT.role: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [RUN_FINISHED.outcome.pendingToolCallIds and RUN_FINISHED.usage[] fields]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": null
+          },
+          "usage": [
+            {
+              "model": "m",
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "totalTokens": 2,
+              "provider": null,
+              "reasoningTokens": null,
+              "cachedInputTokens": null,
+              "cacheWriteInputTokens": null
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r",
+            "outcome": {
+              "type": "success"
+            },
+            "usage": [
+              {
+                "model": "m",
+                "inputTokens": 1,
+                "outputTokens": 1,
+                "totalTokens": 2
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "RUN_FINISHED.outcome.pendingToolCallIds: null",
+        "RUN_FINISHED.usage[].provider: null",
+        "RUN_FINISHED.usage[].reasoningTokens: null",
+        "RUN_FINISHED.usage[].cachedInputTokens: null",
+        "RUN_FINISHED.usage[].cacheWriteInputTokens: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > accepts $name, omits the field and finishes the run [media metadata inside RUN_STARTED.input]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": null
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "m",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "url",
+                        "value": "https://example.test/media"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "image input content.metadata: null"
+      ],
+      "notes": "TS runs this row through three paths (runAgent, connectAgent, and HttpAgent reading literal SSE); one Ruby pipeline covers all three. TS also asserts every delivered event validates against the schema, that a middleware sees the converted events too (the boundary is innermost), that the producer's objects are not mutated, and that a warning mentions 'null'."
+    },
+    {
+      "name": "legacy optional nulls through {run,connect,sse} > preserves required nulls and nulls within application data",
+      "line": 223,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [
+              {
+                "name": "tool",
+                "description": "d",
+                "parameters": {
+                  "rawEvent": null,
+                  "result": null,
+                  "metadata": null,
+                  "forwardedProps": null
+                }
+              }
+            ],
+            "context": [],
+            "state": {
+              "rawEvent": null,
+              "result": null,
+              "metadata": null,
+              "forwardedProps": null
+            },
+            "forwardedProps": {
+              "rawEvent": null,
+              "result": null,
+              "metadata": null,
+              "forwardedProps": null
+            },
+            "resume": [
+              {
+                "interruptId": "i",
+                "status": "resolved",
+                "payload": {
+                  "rawEvent": null,
+                  "result": null,
+                  "metadata": null,
+                  "forwardedProps": null
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "RAW",
+          "event": null
+        },
+        {
+          "type": "CUSTOM",
+          "name": "x",
+          "value": null,
+          "rawEvent": {
+            "rawEvent": null,
+            "result": null,
+            "metadata": null,
+            "forwardedProps": null
+          },
+          "metadata": {
+            "rawEvent": null,
+            "result": null,
+            "metadata": null,
+            "forwardedProps": null
+          }
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "x": "before"
+          }
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/x",
+              "value": null
+            }
+          ]
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": null
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/media"
+                  },
+                  "metadata": {
+                    "rawEvent": null,
+                    "result": null,
+                    "metadata": null,
+                    "forwardedProps": null
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "result": {
+            "rawEvent": null,
+            "result": null,
+            "metadata": null,
+            "forwardedProps": null
+          }
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "state": {
+                "rawEvent": null,
+                "result": null,
+                "metadata": null,
+                "forwardedProps": null
+              },
+              "messages": [],
+              "tools": [
+                {
+                  "name": "tool",
+                  "description": "d",
+                  "parameters": {
+                    "rawEvent": null,
+                    "result": null,
+                    "metadata": null,
+                    "forwardedProps": null
+                  }
+                }
+              ],
+              "context": [],
+              "forwardedProps": {
+                "rawEvent": null,
+                "result": null,
+                "metadata": null,
+                "forwardedProps": null
+              },
+              "resume": [
+                {
+                  "interruptId": "i",
+                  "status": "resolved",
+                  "payload": {
+                    "rawEvent": null,
+                    "result": null,
+                    "metadata": null,
+                    "forwardedProps": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "RAW",
+            "event": null
+          },
+          {
+            "type": "CUSTOM",
+            "rawEvent": {
+              "rawEvent": null,
+              "result": null,
+              "metadata": null,
+              "forwardedProps": null
+            },
+            "metadata": {
+              "rawEvent": null,
+              "result": null,
+              "metadata": null,
+              "forwardedProps": null
+            },
+            "name": "x",
+            "value": null
+          },
+          {
+            "type": "STATE_SNAPSHOT",
+            "snapshot": {
+              "x": "before"
+            }
+          },
+          {
+            "type": "STATE_DELTA",
+            "delta": [
+              {
+                "op": "replace",
+                "path": "/x",
+                "value": null
+              }
+            ]
+          },
+          {
+            "type": "STATE_SNAPSHOT",
+            "snapshot": null
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": {
+                      "rawEvent": null,
+                      "result": null,
+                      "metadata": null,
+                      "forwardedProps": null
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r",
+            "result": {
+              "rawEvent": null,
+              "result": null,
+              "metadata": null,
+              "forwardedProps": null
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing (DEPRECATIONS.md: the tolerance is a closed list of whole optional fields; nulls inside application data — state, forwardedProps contents, tool parameters, resume payloads, rawEvent/result/metadata VALUES, CUSTOM.value, RAW.event, patch values — are never touched)",
+      "notes": "Delivered events equal the input exactly. TS also asserts NO warning at all (console.warn not called); the soft warnings check cannot express absence, so a port should assert on_warning stayed silent itself.",
+      "noWarnings": true
+    },
+    {
+      "name": "the internal request compatibility helper > normalizes every legacy request position without changing application data or the caller's object",
+      "line": 246,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "image",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": null
+                  }
+                ]
+              },
+              {
+                "id": "audio",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "audio",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": null
+                  }
+                ]
+              },
+              {
+                "id": "video",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "video",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": null
+                  }
+                ]
+              },
+              {
+                "id": "document",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "document",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/media"
+                    },
+                    "metadata": null
+                  }
+                ]
+              }
+            ],
+            "tools": [
+              {
+                "name": "tool",
+                "description": "d",
+                "parameters": null
+              },
+              {
+                "name": "opaque",
+                "description": "d",
+                "parameters": {
+                  "metadata": null,
+                  "payload": null,
+                  "forwardedProps": null
+                }
+              }
+            ],
+            "context": [],
+            "state": null,
+            "forwardedProps": null,
+            "resume": [
+              {
+                "interruptId": "i",
+                "status": "resolved",
+                "payload": null,
+                "metadata": {
+                  "metadata": null,
+                  "payload": null,
+                  "forwardedProps": null
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "image",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "url",
+                        "value": "https://example.test/media"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "audio",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "audio",
+                      "source": {
+                        "type": "url",
+                        "value": "https://example.test/media"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "video",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "video",
+                      "source": {
+                        "type": "url",
+                        "value": "https://example.test/media"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "document",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "document",
+                      "source": {
+                        "type": "url",
+                        "value": "https://example.test/media"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [
+                {
+                  "name": "tool",
+                  "description": "d"
+                },
+                {
+                  "name": "opaque",
+                  "description": "d",
+                  "parameters": {
+                    "metadata": null,
+                    "payload": null,
+                    "forwardedProps": null
+                  }
+                }
+              ],
+              "context": [],
+              "resume": [
+                {
+                  "interruptId": "i",
+                  "status": "resolved",
+                  "metadata": {
+                    "metadata": null,
+                    "payload": null,
+                    "forwardedProps": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "RunAgentInput.forwardedProps: null",
+        "Tool.parameters: null",
+        "ResumeEntry.payload: null",
+        "image input content.metadata: null",
+        "audio input content.metadata: null",
+        "video input content.metadata: null",
+        "document input content.metadata: null"
+      ],
+      "notes": "TS calls the internal normalizeLegacyRunAgentInput helper directly; the boundary applies the same helper to the inbound RUN_STARTED.input echo, so this vector feeds the legacy input that way. Converted: RunAgentInput.forwardedProps, Tool.parameters, ResumeEntry.payload and each media part's metadata nulls; untouched: nulls inside an opaque tool's parameters and a resume entry's metadata. RunAgentInput.state: null is delivered ABSENT: that is the pre-existing state:null parser tolerance (DEPRECATIONS.md), applied by enforcement, not the boundary. TS also asserts idempotence and that the caller's object is not mutated (TS-internal)."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [42]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": 42
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [[]]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": []
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [tools: null]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": null,
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [messages: [null]]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              null
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. TS ODDITY: the boundary itself crashes on the null message with a TypeError ('null is not an object') before enforcement runs, so the TS rejection is a crash, not a protocol verdict; a port should reject it as a ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [parentRunId: null]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [],
+            "context": [],
+            "parentRunId": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [tool description: null]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [
+              {
+                "name": "tool",
+                "description": null
+              }
+            ],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [message content: null]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": null
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "the internal request compatibility helper > leaves malformed requests invalid: %j [message metadata: null]",
+      "line": 284,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": "hello",
+                "metadata": null
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS asserts the helper's output still fails RunAgentInput validation; inbound, the same value on RUN_STARTED.input is rejected. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "existing null restrictions > keeps the pre-existing $field:null restriction [metadata]",
+      "line": 300,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "metadata": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS (literal SSE through HttpAgent) asserts rejects.toThrow(\"metadata\"): the rejection names the field. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. A null in an optional field NOT on the DEPRECATIONS.md list stays fatal."
+    },
+    {
+      "name": "existing null restrictions > keeps the pre-existing $field:null restriction [timestamp]",
+      "line": 300,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "timestamp": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS (literal SSE through HttpAgent) asserts rejects.toThrow(\"timestamp\"): the rejection names the field. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. A null in an optional field NOT on the DEPRECATIONS.md list stays fatal."
+    },
+    {
+      "name": "existing null restrictions > keeps the pre-existing $field:null restriction [parentRunId]",
+      "line": 300,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [],
+            "tools": [],
+            "context": [],
+            "parentRunId": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS (literal SSE through HttpAgent) asserts rejects.toThrow(\"parentRunId\"): the rejection names the field. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. A null in an optional field NOT on the DEPRECATIONS.md list stays fatal."
+    },
+    {
+      "name": "existing null restrictions > keeps the pre-existing $field:null restriction [content]",
+      "line": 300,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "m",
+                "role": "user",
+                "content": null
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal",
+      "notes": "TS (literal SSE through HttpAgent) asserts rejects.toThrow(\"content\"): the rejection names the field. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. A null in an optional field NOT on the DEPRECATIONS.md list stays fatal."
+    },
+    {
+      "name": "normalizes incoming nulls before the legacy CopilotKit bridge",
+      "line": 352,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "rawEvent": null,
+          "result": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "rawEvent: null",
+        "RUN_FINISHED.result: null"
+      ],
+      "notes": "TS drives the legacy CopilotKit bridge (legacy_to_be_removed_runAgentBridged) and asserts what a middleware sees; the stream-level outcome is the same as the plain pipeline."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"thread-agentic_chat-frontend_tool","runId":"2942e795-9d23-4c10-8fae-a8cf1915b16f","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"9a9033b3-9794-4453-8152-cc57332bb5a9","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"9a9033b3-9794-4453-8152-cc57332bb5a9","delta":"background changed ✓"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"9a9033b3-9794-4453-8152-cc57332bb5a9"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-agentic_chat-frontend_tool","runId":"2942e795-9d23-4c10-8fae-a8cf1915b16f"}
+

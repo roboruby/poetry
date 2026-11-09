@@ -1,0 +1,345 @@
+{
+  "source": "apply/__tests__/run-started-input.test.ts",
+  "vectors": [
+    {
+      "name": "RunStartedEvent with input.messages > should add messages from RunStartedEvent.input that are not already present",
+      "line": 29,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-1",
+            "messages": [
+              {
+                "id": "msg-1",
+                "role": "user",
+                "content": "Hello"
+              },
+              {
+                "id": "msg-2",
+                "role": "user",
+                "content": "How are you?"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "user",
+            "content": "Hello"
+          },
+          {
+            "id": "msg-2",
+            "role": "user",
+            "content": "How are you?"
+          }
+        ],
+        "newMessageIds": [
+          "msg-1",
+          "msg-2"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent."
+    },
+    {
+      "name": "RunStartedEvent with input.messages > should not duplicate messages that already exist (by ID)",
+      "line": 82,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "user",
+            "content": "Existing message"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-1",
+            "messages": [
+              {
+                "id": "msg-1",
+                "role": "user",
+                "content": "Duplicate message (should be ignored)"
+              },
+              {
+                "id": "msg-2",
+                "role": "user",
+                "content": "New message"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "user",
+            "content": "Existing message"
+          },
+          {
+            "id": "msg-2",
+            "role": "user",
+            "content": "New message"
+          }
+        ],
+        "newMessageIds": [
+          "msg-2"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent. The echo only adds ids the consumer lacks; a held message keeps its content."
+    },
+    {
+      "name": "RunStartedEvent with input.messages > should handle RunStartedEvent without input field",
+      "line": 144,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "newMessageIds": []
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent."
+    },
+    {
+      "name": "RunStartedEvent with input.messages > should handle RunStartedEvent with input but no messages",
+      "line": 172,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-1",
+            "messages": [],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "newMessageIds": []
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent."
+    },
+    {
+      "name": "RunStartedEvent with input.messages > should add messages before other events in the same run",
+      "line": 257,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-1",
+            "messages": [
+              {
+                "id": "msg-from-input",
+                "role": "user",
+                "content": "From input"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-streamed",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-streamed",
+          "delta": "Streamed response"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-streamed"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-from-input",
+            "role": "user",
+            "content": "From input"
+          },
+          {
+            "id": "msg-streamed",
+            "role": "assistant",
+            "content": "Streamed response"
+          }
+        ],
+        "newMessageIds": [
+          "msg-from-input",
+          "msg-streamed"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent."
+    },
+    {
+      "name": "RunStartedEvent with input.messages > should handle multiple runs with input.messages",
+      "line": 318,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-1",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-1",
+            "messages": [
+              {
+                "id": "msg-1",
+                "role": "user",
+                "content": "First message"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "run-2",
+          "input": {
+            "threadId": "test-thread",
+            "runId": "run-2",
+            "messages": [
+              {
+                "id": "msg-1",
+                "role": "user",
+                "content": "First message (duplicate)"
+              },
+              {
+                "id": "msg-2",
+                "role": "user",
+                "content": "Second message"
+              },
+              {
+                "id": "msg-3",
+                "role": "user",
+                "content": "Third message"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "run-2"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "user",
+            "content": "First message"
+          },
+          {
+            "id": "msg-2",
+            "role": "user",
+            "content": "Second message"
+          },
+          {
+            "id": "msg-3",
+            "role": "user",
+            "content": "Third message"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_started: RUN_STARTED MAY echo the input the run was started from; /spec/1.0/events/lifecycle#several-runs-on-one-stream",
+      "notes": "The TS test drives AbstractAgent.runAgent (the middleware path); the oracle uses the connect-path operator order, which the spike showed equivalent. The TS test calls runAgent twice on one agent; here the two runs share one stream, which the reducer treats the same way (messages persist across runs). The per-run newMessages ([msg-1], then [msg-2, msg-3]) are not asserted, since one stream has one baseline."
+    }
+  ],
+  "excluded": [
+    {
+      "name": "RunStartedEvent with input.messages > should respect stopPropagation from subscribers",
+      "line": 208,
+      "reason": "ts-subscriber-api",
+      "detail": "A subscriber's stopPropagation on RUN_STARTED keeps the echo out; no Ruby counterpart."
+    }
+  ]
+}

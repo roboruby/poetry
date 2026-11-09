@@ -28,6 +28,9 @@ Rails.application.routes.draw do
   # The StableId architectural gate (rake test:morph_identity) - permanent
   # for the same reload-safety reason as /phost below.
   get "/sgate" => "stable_id_gate#index"
+  # The morph state gate (rake test:morph_state) - permanent for the same reason.
+  get "/mgate" => "morph_state_gate#index"
+  post "/mgate" => "morph_state_gate#save"
 
   get "/phost/kaminari" => "pagination_host#kaminari_page"
   get "/phost/kaminari_options" => "pagination_host#kaminari_options_page"

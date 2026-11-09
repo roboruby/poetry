@@ -1,0 +1,11 @@
+<%= poetry_layout_group do %>
+  <%= poetry_toggle_group(type: :single, default: "week", label: "Range") do |group| %>
+    <% %w[day week month].each do |range| %>
+      <% group.with_item(value: range, class: "relative") do %>
+        <span data-slot="layout-group-item" data-layout-id="range" aria-hidden="true"
+              class="absolute inset-x-2 -bottom-1 hidden h-0.5 rounded-full bg-primary in-aria-checked:block"></span>
+        <%= range.capitalize %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

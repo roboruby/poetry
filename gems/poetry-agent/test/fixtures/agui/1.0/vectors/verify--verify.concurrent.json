@@ -1,0 +1,741 @@
+{
+  "source": "verify/__tests__/verify.concurrent.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents concurrent operations > should allow concurrent text messages with different IDs",
+      "line": 23,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Content for message 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Content for message 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: items with distinct identifiers are independent; they may be open at once and close in any order",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should allow concurrent tool calls with different IDs",
+      "line": 100,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"expression\":\"1+1\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: items with distinct identifiers are independent; they may be open at once and close in any order",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should allow overlapping text messages and tool calls",
+      "line": 179,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Thinking..."
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Based on the search..."
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TOOL_CALL_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_END",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: messages and tool calls MAY interleave freely",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should allow lifecycle events during concurrent messages and tool calls",
+      "line": 272,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "search_step"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "analysis_step"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Searching..."
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "analysis_step"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "search_step"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "TEXT_MESSAGE_START",
+          "TOOL_CALL_START",
+          "STEP_STARTED",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_END",
+          "STEP_FINISHED",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: steps MAY overlap each other and anything else in the run",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject starting a text message with an ID already in progress",
+      "line": 367,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_START' event: A text message with ID 'msg1' is already in progress"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT open an item whose identifier is already open",
+      "notes": "TS also asserts RUN_STARTED and the first TEXT_MESSAGE_START were delivered before the rejection, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject starting a tool call with an ID already in progress",
+      "line": 409,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "calculate"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_START' event: A tool call with ID 'tool1' is already in progress"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT open an item whose identifier is already open",
+      "notes": "The second start names a different toolCallName; the rejection is about the open id, not the name. TS also asserts the two events before the rejection were delivered, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject content for non-existent message ID",
+      "line": 453,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "nonexistent",
+          "delta": "test content"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_CONTENT' event: No active text message found with ID 'nonexistent'"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content event for an identifier that is not open",
+      "notes": "TS also asserts RUN_STARTED was delivered before the rejection, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject args for non-existent tool call ID",
+      "line": 491,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "nonexistent",
+          "delta": "{\"test\":\"value\"}"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TOOL_CALL_ARGS' event: No active tool call found with ID 'nonexistent'"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content event for an identifier that is not open",
+      "notes": "TS also asserts RUN_STARTED was delivered before the rejection, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject RUN_FINISHED while text messages are still active",
+      "line": 529,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_FINISHED' while text messages are still active: msg1, msg2"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: every item a producer opens MUST be closed before the run finishes",
+      "notes": "The fragment lists every open message id, in opening order, joined by ', '. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to). TS also asserts the three events before the rejection were delivered."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should reject RUN_FINISHED while tool calls are still active",
+      "line": 577,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_FINISHED' while tool calls are still active: tool1, tool2"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: every item a producer opens MUST be closed before the run finishes",
+      "notes": "The fragment lists every open tool call id, in opening order, joined by ', '. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to). TS also asserts the three events before the rejection were delivered."
+    },
+    {
+      "name": "verifyEvents concurrent operations > should handle complex concurrent scenario with many overlapping events",
+      "line": 627,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg5"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "test_tool"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "test_tool"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool3",
+          "toolCallName": "test_tool"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool4",
+          "toolCallName": "test_tool"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool5",
+          "toolCallName": "test_tool"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Content 0 for msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Content 0 for msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg3",
+          "delta": "Content 0 for msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg4",
+          "delta": "Content 0 for msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg5",
+          "delta": "Content 0 for msg5"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"step\":0}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"step\":0}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool3",
+          "delta": "{\"step\":0}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool4",
+          "delta": "{\"step\":0}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool5",
+          "delta": "{\"step\":0}"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Content 1 for msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Content 1 for msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg3",
+          "delta": "Content 1 for msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg4",
+          "delta": "Content 1 for msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg5",
+          "delta": "Content 1 for msg5"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"step\":1}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"step\":1}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool3",
+          "delta": "{\"step\":1}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool4",
+          "delta": "{\"step\":1}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool5",
+          "delta": "{\"step\":1}"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Content 2 for msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Content 2 for msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg3",
+          "delta": "Content 2 for msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg4",
+          "delta": "Content 2 for msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg5",
+          "delta": "Content 2 for msg5"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"step\":2}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"step\":2}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool3",
+          "delta": "{\"step\":2}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool4",
+          "delta": "{\"step\":2}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool5",
+          "delta": "{\"step\":2}"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg5"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool5"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool4"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool3"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_START",
+          "TOOL_CALL_START",
+          "TOOL_CALL_START",
+          "TOOL_CALL_START",
+          "TOOL_CALL_START",
+          "TOOL_CALL_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_END",
+          "TOOL_CALL_END",
+          "TOOL_CALL_END",
+          "TOOL_CALL_END",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: items with distinct identifiers are independent; they may be open at once and close in any order",
+      "notes": "Five messages and five tool calls open at once, 30 interleaved continuations, closed in reverse order: 52 events. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    }
+  ]
+}

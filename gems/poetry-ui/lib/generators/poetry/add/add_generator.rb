@@ -3,12 +3,14 @@
 require "rails/generators"
 require "yaml"
 require_relative "../block/block_generator"
+require_relative "../registry_planning"
 
 module Poetry
   # `rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier
   # plus the ecosystem address scheme.
   #
-  # Bare names and @poetry/* are the installed gems' own items: component
+  # Bare names and the @poetry/* names the gems ship are the installed
+  # gems' own items: component
   # source copies into app/components where Rails autoload precedence
   # shadows the gem ("own the code"; dependencies resolve recursively,
   # existing files are SKIPPED - local edits win, always), and block names
@@ -19,11 +21,18 @@ module Poetry
   # recursively and writes in topo order, poetry components satisfy at
   # RUNTIME (the gem provides them - no copy), targets are
   # traversal-checked, and gem dependencies are REPORTED, never installed.
-  # Every install records provenance in the manifest.
+  # Every install records provenance in the manifest; an item from a
+  # registry also records the version it states and a digest of each file
+  # it wrote, what the app's copy started from. An @poetry name the
+  # gems do not ship is a community item, fetched from poetryui.com (or the
+  # manifest's community: template); a port also lands its origin's
+  # license in the host's THIRD_PARTY_NOTICES.md.
   #
   # @example
   #   bin/rails g poetry:add button
   class AddGenerator < Rails::Generators::Base
+    include RegistryPlanning
+
     argument :addresses, type: :array,
                          banner: "Component|@registry/item|https://…/item.json|./item.json ..."
 
@@ -31,13 +40,18 @@ module Poetry
     # registry items emit the same map as registryDependencies).
     DEPENDENCIES = Poetry::Ui::COMPONENT_DEPENDENCIES
 
-    # The copy-in provenance manifest poetry:install seeds.
-    MANIFEST = "config/poetry_components.yml"
     # The host's Tailwind entry stylesheet (for @source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
     # Where an item's Stimulus controllers land; a write here refreshes the
     # app's controllers manifest.
     CONTROLLERS_DIR = "app/javascript/controllers/"
+    # Where an item's other JavaScript lands (an island's module, a
+    # kernel); a write here pins the directory in the host's importmap once.
+    COMMUNITY_MODULES_DIR = "app/javascript/community/"
+    # The pin that serves app/javascript/community as community/*.
+    COMMUNITY_PIN = %(pin_all_from "app/javascript/community", under: "community")
+    # The host's credits for the ports it installed.
+    NOTICES = "THIRD_PARTY_NOTICES.md"
 
     desc "Copy poetry components/blocks (plus dependencies) into the app, from the gems or any registry address"
 
@@ -53,12 +67,15 @@ module Poetry
 
     private
 
-    # Bare names and @poetry/* resolve against the installed gems; anything
-    # the gems don't ship is a hard error for @poetry (never a fetch - the
-    # gem IS the official registry on a poetry host) and a hard error with
-    # the classic message for bare names.
+    # Bare names resolve against the installed gems, an unknown one a hard
+    # error. Names under @poetry do too when the gems ship them; any other
+    # name under @poetry is a community item and fetches.
     def local?(address)
-      address.kind == :bare || (address.kind == :namespace && address.namespace == "@poetry")
+      return true if address.kind == :bare
+      return false unless address.kind == :namespace && address.namespace == "@poetry"
+
+      name = address.name
+      gem_components.include?(name) || gem_blocks.include?(name) || gem_recipes.include?(name)
     end
 
     # Installs local names: components, blocks and recipes; raises for unknown ones.
@@ -67,7 +84,10 @@ module Poetry
       components, rest = names.partition { |name| source_dir(name).directory? }
       blocks, rest = rest.partition { |name| gem_blocks.include?(name.tr("_", "-")) }
       recipes, missing = rest.partition { |name| gem_recipes.include?(name.tr("_", "-")) }
-      raise ArgumentError, "unknown component(s): #{missing.join(", ")}" if missing.any?
+      if missing.any?
+        raise ArgumentError, "unknown component(s): #{missing.join(", ")} - for a community item, " \
+                             "add it as @poetry/#{missing.first.tr("_", "-")}"
+      end
 
       copy_components(components) if components.any?
       blocks.each { |name| install_block(name.tr("_", "-")) }
@@ -115,13 +135,70 @@ module Poetry
     # -- the remote path ----------------------------------------------------
 
     def install_remote(remote)
-      plan = build_plan(remote)
-      plan.writes.each { |write| create_file write.target, write.content, skip: true }
+      install_plan(build_plan(remote))
+    end
+
+    # Everything a plan asks for: the files, the blocks, the stylesheets,
+    # the controllers manifest, the pins, the report, the credits and the
+    # record.
+    def install_plan(plan)
+      plan.writes.each { |write| place(write.target, write.content) }
       plan.block_installs.each { |name| install_block(name) }
       apply_css(plan)
       refresh_controllers_manifest(plan)
+      pin_community_modules(plan)
       report(plan)
-      record_in_manifest(plan.manifest)
+      credit_origins(plan)
+      record_in_manifest(plan.manifest) { |entry, recorded| installed(entry, recorded) }
+    end
+
+    # An item's record as the app now holds it. The plan's entry names the
+    # version the item states and the digest of every file it ships; the
+    # record takes a file's digest when the app's copy matches the item's
+    # (written just now, or the same already), and the version once every
+    # file does. A file the app keeps in another form (an edit this run
+    # skipped) keeps the digest on record, so each digest names what that
+    # file was copied from, and a reinstall (the file deleted and added
+    # again, or --force) moves the record to the item as it stands now.
+    # A name another source installed keeps its record.
+    def installed(entry, recorded)
+      return recorded unless recorded.nil? || (recorded.is_a?(Hash) && recorded["source"] == entry["source"])
+
+      shipped = entry.fetch("files", {})
+      matched = shipped.select { |target, digest| digest_at(target) == digest }
+      return entry if matched.size == shipped.size
+
+      kept = recorded || entry.except("version", "files")
+      files = (kept["files"] || {}).merge(matched)
+      files.any? ? kept.merge("files" => files) : kept
+    end
+
+    # One file of an item into the app: written where there is none, and
+    # left alone where there is one. poetry:update decides otherwise.
+    def place(target, content)
+      create_file target, content, skip: true
+    end
+
+    # Each port's origins, licenses and copyrights in the host's notices,
+    # with the license texts, once per item: the notice MIT asks to travel
+    # with the copy, kept even after the host edits the files. A bundle
+    # credits every library inside it.
+    def credit_origins(plan)
+      plan.provenance.select { |record| record.origins.any? }.each do |record|
+        marker = "<!-- poetry:add #{record.name} -->"
+        path = File.join(destination_root, NOTICES)
+        next if File.exist?(path) && File.read(path).include?(marker)
+
+        create_file NOTICES, "# Third-party notices\n", skip: true unless File.exist?(path)
+        entry = ["", marker, "## #{record.name}", ""]
+        record.origins.each do |origin|
+          entry += ["Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), " \
+                    "#{origin["repository"]}.",
+                    "License: #{origin["license"]}. #{origin["copyright"]}", ""]
+          entry += ["```", origin["notice"].strip, "```", ""] if origin["notice"]
+        end
+        append_to_file NOTICES, entry.join("\n")
+      end
     end
 
     # An item that brings a Stimulus controller joins the app's controllers
@@ -142,22 +219,30 @@ module Poetry
       end
     end
 
-    # The install plan for remote addresses through the registry client.
-    def build_plan(remote)
-      config = manifest_config
-      client = Poetry::Core::RegistryClient.new(
-        registries: config["registries"] || {}, directory: config["directory"],
-        base_dir: destination_root
-      )
-      Poetry::Core::RegistryInstaller.new(
-        client: client, destination_root: destination_root,
-        local_components: gem_components, local_blocks: gem_blocks
-      ).plan(remote)
+    # An item that brings a JavaScript module outside the controllers (an
+    # island's bundle, a kernel) lands under app/javascript/community/, and
+    # the host's importmap pins that directory once, as community/*, so the
+    # module loads by the specifier the item's component names.
+    def pin_community_modules(plan)
+      return if options[:pretend] || behavior == :revoke
+      return unless plan.writes.any? { |write| write.target.to_s.start_with?(COMMUNITY_MODULES_DIR) }
+
+      importmap = "config/importmap.rb"
+      unless File.exist?(File.join(destination_root, importmap))
+        say_status :note, "no #{importmap} - serve app/javascript/community from your bundler as community/*",
+                   :yellow
+        return
+      end
+      return if File.read(File.join(destination_root, importmap)).include?(COMMUNITY_PIN)
+
+      append_to_file importmap, "#{COMMUNITY_PIN}\n"
+      say_status :importmap, "pinned app/javascript/community as community/* - the item's module loads by that name",
+                 :green
     end
 
     # Writes the plan's stylesheets and adds their import lines to the Tailwind entry.
     def apply_css(plan)
-      plan.css_writes.each { |css| create_file css[:path], css[:content], skip: true }
+      plan.css_writes.each { |css| place(css[:path], css[:content]) }
       return if plan.entry_lines.empty?
 
       unless File.exist?(File.join(destination_root, TAILWIND_ENTRY))
@@ -176,6 +261,12 @@ module Poetry
         say_status :gemfile, "this item needs gem #{dep.inspect} - add it to your Gemfile (never run for you)", :yellow
       end
       plan.docs.each { |docs| say_status :docs, docs, :blue }
+      plan.provenance.select(&:community).each do |record|
+        credits = record.origins.map { |origin| "#{origin["registry"]}/#{origin["item"]} (#{origin["license"]})" }
+        origin = credits.any? ? " - adapted from #{credits.join(", ")}" : ""
+        say_status :community, "#{record.name}: a community item, reviewed and checked in CI, not audited#{origin}",
+                   :cyan
+      end
     end
 
     # Runs the block generator for a name.
@@ -203,44 +294,15 @@ module Poetry
       @gem_recipes ||= Poetry::Ui.recipe_items.names
     end
 
-    # The gems' own item names (kebab), read boot-free from the committed
-    # registries - what "provided at runtime" means on this host.
-    def gem_components
-      @gem_components ||= gem_item_sources.flat_map do |root, prefix|
-        registry = YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH))
-        (registry["components"] || {}).keys.map { |path| path.delete_prefix(prefix).tr("/", "_").tr("_", "-") }
-      end
-    end
-
-    # The block names the gem ships.
-    def gem_blocks
-      @gem_blocks ||= begin
-        registry = YAML.safe_load_file(Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH))
-        (registry["blocks"] || {}).keys
-      end
-    end
-
-    # The gem roots and path prefixes that provide items.
-    def gem_item_sources
-      sources = [[Poetry::Ui.root, "poetry/ui/"]]
-      sources << [Poetry::Charts.root, "poetry/charts/"] if defined?(Poetry::Charts::Engine)
-      sources
-    end
-
-    # The manifest as a hash, empty when absent. The overrides ledger
-    # writes `created:` as a bare YAML date, so the load permits Date
-    # (the design task does the same).
-    def manifest_config
-      path = File.join(destination_root, MANIFEST)
-      config = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
-      config.is_a?(Hash) ? config : {}
-    end
-
-    # Records entries in a manifest section, keeping existing ones.
+    # Records entries in a manifest section, keeping existing ones; a block
+    # decides the record instead, from the entry and the one on record.
     def record_in_manifest(entries, section: "components")
       manifest = manifest_config
       manifest[section] = {} unless manifest[section].is_a?(Hash)
-      entries.each { |name, record| manifest[section][name] ||= record }
+      entries.each do |name, record|
+        recorded = manifest[section][name]
+        manifest[section][name] = block_given? ? yield(record, recorded) : (recorded || record)
+      end
       create_file MANIFEST, YAML.dump(manifest), force: true
     end
 

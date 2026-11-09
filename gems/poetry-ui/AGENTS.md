@@ -1,6 +1,6 @@
 # AGENTS.md — poetry-ui
 
-The component gem: the 88-component shadcn-parity catalog on ViewComponent +
+The component gem: the 89-component shadcn-parity catalog on ViewComponent +
 Stimulus (machinery from poetry-core), themed by the cn-* layer — nine complete
 visual fragments under `themes/`.
 
@@ -42,8 +42,17 @@ visual fragments under `themes/`.
   is more than 2px larger than its box (an unsized icon falls back to
   24px). The dialog family is shot opened as well as closed.
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
-  (`POETRY_CHECK_DESIGN=1` adds the 23 design-slop rules); `design:lint`
+  (`POETRY_CHECK_DESIGN=1` adds the 27 design-slop rules); `design:lint`
   runs design-slop over the gem's own templates and previews.
+- `bin/rails poetry:audit` (in a host) — the consumer-app audit
+  (`Poetry::Ui::Audit` over `Poetry::Core::Audit`'s analyzers): components
+  and declared axes used, raw colors, off-scale lengths, font sizes, icons,
+  the check's and the design tier's findings, partials nothing renders
+  (Herb's render analyzer), routes, pages and flow edges with unresolved
+  targets recorded by kind. Writes `.poetry/audit/{summary,inventory,health,
+  flows}.json` and `report.html` (Poetry components rendered through the
+  app's own controller, the compiled stylesheet inlined); the report
+  template under `app/views/poetry/ui/` is in the safelist scan.
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the
   card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm

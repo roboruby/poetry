@@ -7,17 +7,23 @@ require_relative "functions"
 module Poetry
   module Agent
     module A2UI
-      # Resolves dynamic values in a scope: a `{ "path" }` binding reads
-      # the data model, a `{ "call", "args" }` invokes a registered
-      # function with its arguments resolved first (a string argument with
-      # `${}` blocks interpolates, an array resolves item by item), and
-      # `@index` reads the collection index the scope carries. Problems
-      # (an unknown function, a bad argument, a malformed expression)
-      # resolve to nil and reach the `on_error` callback.
+      # Resolves dynamic values in a scope, spelled as the surface's
+      # protocol version spells them ({Dialect}): a binding reads the data
+      # model, a call invokes a registered function with its arguments
+      # resolved first (a string argument with `${}` blocks interpolates, an
+      # array resolves item by item), and `@index` reads the collection index
+      # the scope carries. Problems (an unknown function, a bad argument, a
+      # malformed expression, a v1.0 reserved key) resolve to nil and reach
+      # the `on_error` callback.
       #
       # @example
-      #   Evaluator.new(surface, "/items/2").resolve({ "call" => "@index", "args" => { "offset" => 1 } }) # => 3
+      #   Evaluator.new(surface, "/items/2").resolve({ "@call" => "@index", "args" => { "offset" => 1 } }) # => 3
       class Evaluator
+        # Why a call to another `@` name fails: the namespace is the system's.
+        SYSTEM_FUNCTIONS = "the @ namespace holds system functions, and @index is the only one"
+        # Why `@index` fails outside a template.
+        OUTSIDE_TEMPLATE = "@index function can only be evaluated inside a collection template iteration scope."
+
         # The surface whose data model the evaluator reads.
         # @return [Surface]
         attr_reader :surface
@@ -29,27 +35,34 @@ module Poetry
         # @param surface [Surface]
         # @param scope [String, nil]
         # @param on_error [#call, nil] receives each problem's message
-        def initialize(surface, scope = nil, on_error: nil)
+        # @param gesture [Boolean] whether a user's gesture runs the evaluation
+        #   (a button's action), so a function that needs one (`openUrl`) may run
+        def initialize(surface, scope = nil, on_error: nil, gesture: false)
           @surface = surface
           @scope = scope
           @on_error = on_error
+          @gesture = gesture
         end
 
-        # Resolves a component property: bindings and calls resolve,
-        # everything else is a literal.
+        # Resolves a component property: bindings and calls resolve, a list
+        # or a plain object resolves what it holds, anything else is a literal.
         #
         # @param value [Object]
         # @return [Object, nil]
         def resolve(value)
-          return value unless value.is_a?(Hash)
-          return surface.read(value["path"], scope) if surface.binding?(value)
-          return call(value["call"], value["args"]) if surface.function_call?(value)
+          case value
+          when Hash
+            return surface.read(surface.binding_path(value), scope) if surface.binding?(value)
+            return call(surface.dialect.call_name(value), value["args"], via: value) if surface.function_call?(value)
 
-          value
+            plain(value) { |item| resolve(item) }
+          when Array then value.map { |item| resolve(item) }
+          else value
+          end
         end
 
         # Resolves a function argument: like {#resolve}, plus strings
-        # interpolate and arrays and plain objects resolve inside.
+        # interpolate.
         #
         # @param value [Object]
         # @return [Object, nil]
@@ -60,7 +73,7 @@ module Poetry
           when Hash
             return resolve(value) if surface.binding?(value) || surface.function_call?(value)
 
-            value.transform_values { |item| argument(item) }
+            plain(value) { |item| argument(item) }
           else value
           end
         end
@@ -70,14 +83,27 @@ module Poetry
         # @param name [String]
         # @param args [Hash, nil] raw arguments (resolved here unless `resolved:`)
         # @param resolved [Boolean] whether the arguments are already resolved
+        # @param via [Hash, nil] the call object, whose `catalogId` names the catalog in v1.0 (nil: the default)
         # @return [Object, nil]
-        def call(name, args, resolved: false)
+        def call(name, args, resolved: false, via: nil)
           args = (args.is_a?(Hash) ? args : {}).to_h { |key, value| [key.to_s, resolved ? value : argument(value)] }
           return index_of(args) if name == "@index"
+          return fail!("function #{name.inspect}: #{SYSTEM_FUNCTIONS}") if name.to_s.start_with?("@")
+          return fail!("function #{name.inspect}: a function name is an identifier") if name.to_s.empty?
 
-          surface.catalog.functions.call(name.to_s, args, self)
+          catalog, problem = surface.lookup(via)
+          return fail!("function #{name.inspect}: #{problem}") unless catalog
+          if !@gesture && catalog.functions.activation?(name.to_s)
+            return fail!("Function '#{name}' requires user activation context to execute.")
+          end
+
+          catalog.functions.call(name.to_s, args, self)
         rescue Functions::Error, Expression::SyntaxError => e
           fail!("function #{name.inspect}: #{e.message}")
+        rescue StandardError => e
+          # A function that raises on its arguments (a host's, or a
+          # built-in handed a value it cannot use) fails the call, not the render.
+          fail!("function #{name.inspect} raised #{e.class}: #{e.message}")
         end
 
         # Interpolates a `formatString` template.
@@ -129,9 +155,18 @@ module Poetry
 
         # The item index with the offset argument applied; raises outside a template.
         def index_of(args)
-          position = index or raise Functions::Error, "@index is only available inside a template"
+          position = index or raise Functions::Error, OUTSIDE_TEMPLATE
 
           position + (Functions.number(args["offset"]) || 0)
+        end
+
+        # A plain object with its values resolved by the block. In v1.0 a
+        # reserved key fails it, and a doubled `@@` key reads as its literal.
+        def plain(object)
+          reserved = surface.dialect.reserved_keys(object)
+          return fail!("reserved key #{reserved.first.inspect}: a literal @ key is escaped as @@") if reserved.any?
+
+          object.to_h { |key, item| [surface.dialect.unescape(key), yield(item)] }
         end
 
         # Reports a problem and returns nil.

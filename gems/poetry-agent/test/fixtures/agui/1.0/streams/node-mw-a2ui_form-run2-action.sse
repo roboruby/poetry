@@ -1,0 +1,28 @@
+data: {"type":"RUN_STARTED","threadId":"a2ui-form-162309","runId":"300a894e-3c55-4b88-a33c-c303df75b87e","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"Agent saw to"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"ol: User per"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"formed actio"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"n \"submit_fo"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"rm\" on surfa"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"ce \"signup\" "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"(component: "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"submit). Con"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"text: {\"name"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1","delta":"\":\"Alice\"}"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"3288e849-9d26-4cc1-bb92-d3e03e214ea1"}
+
+data: {"type":"RUN_FINISHED","threadId":"a2ui-form-162309","runId":"300a894e-3c55-4b88-a33c-c303df75b87e"}
+

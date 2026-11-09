@@ -1,0 +1,200 @@
+data: {"type":"RUN_STARTED","threadId":"rb-reasoning-162943","runId":"cc9f3cfa-45ec-4577-8bd2-67ab3dba2f29"}
+
+data: {"type":"REASONING_START","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b"}
+
+data: {"type":"REASONING_MESSAGE_START","role":"reasoning","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"The us"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"er wan"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ts a c"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ar rec"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ommend"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ation."}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":" I sho"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"uld co"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"nsider"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":" relia"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"bility"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":", valu"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"e, fue"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"l econ"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"omy, a"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"nd dri"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ving e"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"xperie"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"nce. T"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"oyota "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"Camry "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"scores"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":" highe"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"st ove"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"rall. "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"Honda "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"Civic "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"is bes"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"t for "}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"fuel e"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"conomy"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":". Mazd"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"a3 for"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":" drivi"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"ng fee"}
+
+data: {"type":"REASONING_MESSAGE_CONTENT","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b","delta":"l."}
+
+data: {"type":"REASONING_MESSAGE_END","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b"}
+
+data: {"type":"REASONING_END","messageId":"ecee6812-3d61-44b4-9756-2c556bcc190b"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"Based "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"on my "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"analys"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"is, he"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"re are"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"op rec"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ommend"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ations"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":":\n\n1. "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"**Toyo"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ta Cam"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ry** -"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" Best "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"overal"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"l valu"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"e with"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" excel"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"lent r"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"eliabi"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"lity\n2"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":". **Ho"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"nda Ci"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"vic** "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"- Grea"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"t fuel"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" econo"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"my and"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" low m"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ainten"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ance c"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"osts\n3"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":". **Ma"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"zda3**"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" - Bes"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"t driv"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ing ex"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"perien"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ce in "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"its cl"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ass\n\nT"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"he Toy"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ota Ca"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"mry st"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ands o"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ut for"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":" its c"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ombina"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"tion o"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"f reli"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"abilit"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"y, res"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"ale va"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"lue, a"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"nd com"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80","delta":"fort."}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"010b6ed9-cef6-42a8-8b01-e459d648fa80"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-reasoning-162943","runId":"cc9f3cfa-45ec-4577-8bd2-67ab3dba2f29"}
+

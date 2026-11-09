@@ -29,6 +29,7 @@ Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - WIRING list: `poetry--core--autocomplete` targets list
 - WIRING empty: `poetry--core--autocomplete` targets empty
 - WIRING item: `poetry--core--autocomplete` actions itemPress on pointerdown, itemEnter on pointerenter
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - RULE: The input IS the value: name: is the param key and free text submits as-is - suggestions are conveniences, not constraints (constrained pick = Combobox).
 - RULE: Items via with_item(label:) - label is what filtering matches and what commit writes; value: overrides the committed text when it differs from the label.
 - RULE: empty_text: renders the no-matches state (hidden while anything matches).
@@ -136,6 +137,7 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - PART `checkbox` - The visual button[role=checkbox] - reflects the hidden input via aria-checked plus the checked triple | states: data-checked (checked (the controller reflects every toggle here, aria-checked in step)); data-unchecked (unchecked - the indicator goes invisible); data-indeterminate (checked: :indeterminate (server/programmatic only; the first toggle resolves it to checked))
 - PART `checkbox-indicator` - Centering span around the check glyph (minus when indeterminate) - CSS-hidden while unchecked, never unmounted | states: data-checked (mirrors the control (the controller reflects state on every part wearing the triple)); data-unchecked (mirrors the control - the indicator is invisible); data-indeterminate (mirrors the control - the glyph swaps to minus)
 - WIRING root: `poetry--core--checked` registers; values input_id (if form_participant?); actions toggle on click
+- BEHAVIOR checked (on root) - A click toggles the checked state and keeps the form input in step.
 - RULE: A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all (the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan out and re-derive automatically.
 - RULE: Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with hand-written Tailwind, and never a hand-rolled button[role=checkbox].
 - RULE: Always give it a name: in forms - a checkbox without one submits nothing (visual-only mode is for controlled UI like DataTable row selection ONLY).
@@ -209,6 +211,9 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING clear: `poetry--core--combobox` actions clear on click
 - WIRING chip: `poetry--core--combobox` actions chipKeydown on keydown
 - WIRING chip_remove: `poetry--core--combobox` actions removeChip on click
+- BEHAVIOR focus_scope (activated by its JS) - Focus moves into the open layer, stays inside a modal one and returns on close.
+- BEHAVIOR dismissable (activated by its JS) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - tool set_value (mutating; params: value (string, required)) - Select the option whose value matches; the schema lists the rendered options, and clear selects nothing. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#setValue]
 - tool clear (mutating) - Clear the current selection. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#clear]
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
@@ -364,30 +369,50 @@ A control for selecting, previewing, and removing files to upload.
 
 Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
 - `variant:` (symbol) - one of input|dropzone, default "input" - :input is the compact native control; :dropzone the drag-and-drop surface.
-- `accept:` (string) - The native accept filter (e.g. "image/*,.pdf").
+- `accept:` (string) - The native accept filter (e.g. "image/*,.pdf"); the dropzone rejects a file outside it at intake.
+- `camera:` (symbol) - one of user|environment - Opens a camera on mobile, as the native capture attribute: :user (front) or :environment (back); needs an image, audio or video accept:.
 - `described_by:` (string) - Ids for the native input's aria-describedby (Field wires this).
+- `direct_upload:` (boolean) - default false - Uploads go straight to the storage service through Active Storage's direct uploads endpoint, as Rails' file_field direct_upload: true.
+- `direct_upload_url:` (string) - A direct uploads endpoint other than Rails' own (an authenticated subclass's route); implies direct_upload: true.
+- `directory:` (boolean) - default false - Dropped folders are walked for their files, and the picker selects folders.
 - `disabled:` (boolean) - default false - Disables the native input and dims the dropzone.
 - `hint:` (string) - Muted constraints copy under the prompt (formats, size limits).
 - `id:` (string) - The native input's id (Field/FormBuilder wire it to the label).
 - `invalid:` (boolean) - default false - Marks the control aria-invalid (set by Field/FormBuilder from model errors).
+- `max_files:` (integer) - The most files the dropzone holds (multiple: true); the surplus is rejected file by file.
+- `max_size:` (integer) - The largest file the dropzone takes, in bytes (10.megabytes).
+- `min_size:` (integer) - The smallest file the dropzone takes, in bytes.
 - `multiple:` (boolean) - default false - Allows selecting several files; forwarded to the native input.
 - `name:` (string) - The native input's name - the submitted param (multiple: true wants a name ending in [] for Rails params).
+- `overlay:` (boolean) - default false - The whole page is the drop target: a fixed overlay shows while files are dragged over the window.
+- `paste:` (boolean) - default false - Files pasted over the dropzone land in it (a chat composer, a screenshot).
+- `preview:` (boolean) - default false - Image files show a thumbnail in their chip, from an object URL released when the chip goes.
 - `prompt:` (string) - The dropzone's instruction line - overrides the translated default.
-- PART `file-input` - The dropzone root - wraps the zone, the selection list, and clear | states: data-variant=dropzone (always on the dropzone root (the input variant renders the Input component instead)); data-dragging (a file drag is over the zone (controller-written, enter/leave counted)); data-populated (the native input holds at least one file (controller-written))
+- `upload:` (symbol) - one of on_submit|immediate, default "on_submit" - When direct uploads run: :on_submit, Rails' own flow at form submit, or :immediate, each file as it lands with progress, cancel, retry and remove, the form posting signed ids.
+- PART `file-input` - The dropzone root - the drop target, wrapping the zone, the chips, the rejections and clear | states: data-variant=dropzone (always on the dropzone root (the input variant renders the Input component instead)); data-dragging (a file drag is over the zone (controller-written, enter/leave counted)); data-drag-reject (the drag carries only files the accept filter or the count would reject (controller-written, best effort mid-drag)); data-drag-global (overlay: true and files are dragged anywhere over the window (controller-written)); data-populated (the native input holds at least one file (controller-written))
 - PART `file-input-dropzone` - The <label> drop surface - dashed, platform click-to-browse; its text is the control's accessible name
-- PART `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants
+- PART `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants | states: data-direct-upload-url (direct_upload: true or direct_upload_url: with the default upload: :on_submit - Rails' own submit-time upload handler reads it)
 - PART `file-input-prompt` - The zone's instruction line (prompt: overrides the default)
 - PART `file-input-hint` - Muted constraints copy under the prompt (hint: - formats, size)
-- PART `file-input-list` - The selected-file <ul> the controller fills (name + size per item; items are controller-built, not server parts)
+- PART `file-input-items` - The chips' container the controller fills - one Attachment per selected file, cloned from the template (chips are controller-built, not server parts)
+- PART `file-input-item-template` - The <template> holding one Attachment chip the controller clones per file: media, title, description, progress, retry and remove
+- PART `file-input-errors` - The rejections <ul> (role=alert) the controller fills - one line per file the accept, size or count checks refused; hidden when empty
+- PART `file-input-overlay` - The fixed full-window drop surface (overlay: true) - decorative, shown while data-drag-global is on the root
 - PART `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker
-- WIRING root: `poetry--core--file-input` registers; values multiple
-- WIRING dropzone: `poetry--core--file-input` actions dragenter on dragenter, dragover on dragover, dragleave on dragleave, drop on drop
-- WIRING control: `poetry--core--file-input` actions changed on change; targets input
-- WIRING list: `poetry--core--file-input` targets list
+- WIRING root: `poetry--core--file-drop` registers; values accept, multiple, max_files, max_size, min_size, paste, overlay, directory, messages | `poetry--core--file-input` registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files
+- WIRING control: `poetry--core--file-drop` targets input | `poetry--core--file-input` targets input
+- WIRING items: `poetry--core--file-input` targets items
+- WIRING template: `poetry--core--file-input` targets template
+- WIRING errors: `poetry--core--file-input` targets errors
 - WIRING clear: `poetry--core--file-input` actions clear on click; targets clear
+- WIRING item_remove: `poetry--core--file-input` actions remove on click
+- WIRING item_retry: `poetry--core--file-input` actions retry on click
+- BEHAVIOR file_drop (on root) - Files arrive by drop, picker or paste and are checked against accept, size and count before they land in the native input.
+- RULE: Client-side accept, size and count limits are advisory: validate the attachment on the model as well.
 - RULE: File selection is a FileInput: variant: :input for compact forms, :dropzone when dragging is expected (uploads as the page's point) - never a hand-rolled drop div.
-- RULE: The native input is the form value: set name: (multiple: true wants a name ending in [] for Rails params); ActiveStorage direct upload attaches to it as usual.
-- RULE: The dropzone's selected-file list and clear button are controller-rendered - compose prompt:/hint: copy instead of adding your own list markup.
+- RULE: The native input is the form value: set name: (multiple: true wants a name ending in [] for Rails params); direct_upload: true runs Active Storage's direct uploads at submit, upload: :immediate as files land.
+- RULE: The dropzone's chips, rejections and clear button are controller-rendered - compose prompt:/hint: copy instead of adding your own list markup.
+- RULE: Limits are options, never prose alone: accept:, max_size: and max_files: reject the file at intake; the hint: tells people the same limits in words.
 - RULE: In a Field, prefer form.file_input (the builder wires id/label/errors); the bare component suits standalone dropzones.
 
 ## input (`poetry_input`)
@@ -593,6 +618,7 @@ Slots: items (One item per option: a real button[role=radio] carrying its own hi
 - WIRING root: `poetry--core--radio-group` registers; values value (if value?); actions entryCheck on poetry--core--roving-focus:entry | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
 - WIRING item: `poetry--core--radio-group` actions check on click
 - WIRING input: `poetry--core--radio-group` targets input
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
 - RULE: Every item MUST have a unique value: (ArgumentError on duplicates).
 - RULE: The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup is an APG violation (ArgumentError).
@@ -675,6 +701,9 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING native: `poetry--core--select` actions nativeChanged on change
 - WIRING viewport: `poetry--core--select` actions syncScrollButtons on scroll
 - WIRING scroll_button: `poetry--core--select` actions scrollHoldStart on pointerenter, scrollHoldStop on pointerleave
+- BEHAVIOR focus_scope (activated by its JS) - Focus moves into the open layer, stays inside a modal one and returns on close.
+- BEHAVIOR dismissable (activated by its JS) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
 - RULE: Options are VALUES. If activating an option should DO something beyond setting a value, it's a DropdownMenu item.
 - RULE: In forms, ALWAYS go through f.poetry_select - it wires name/id/value/errors/required; bare poetry_select in a form is a smell.
@@ -771,6 +800,7 @@ Class: Poetry::Ui::Switch::Component - BEM block `poetry-ui-switch`.
 - PART `switch` - The visual button[role=switch] - reflects the hidden input via aria-checked plus the checked pair (never indeterminate) | states: data-checked (on (the shared checked controller reflects every toggle here, aria-checked in step)); data-unchecked (off (the server-rendered default)); data-size=default|sm (always - the resolved size (the thumb reads it via group/switch selectors))
 - PART `switch-thumb` - The sliding knob - travel is pure CSS off the checked pair | states: data-checked (mirrors the control (the controller reflects state on every part wearing the pair)); data-unchecked (mirrors the control - the thumb sits at the start)
 - WIRING root: `poetry--core--checked` registers; values input_id (if form_participant?); actions toggle on click
+- BEHAVIOR checked (on root) - A click toggles the checked state and keeps the form input in step.
 - RULE: Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces on/off; that's the point).
 - RULE: Switch = instant effect; Checkbox = staged for submit. If nothing happens until a Save button, use Checkbox.
 - RULE: Every switch needs an accessible name (Label/Field for= or label:).
@@ -864,6 +894,7 @@ Slots: items (Declares one item: value: (unique - duplicates raise), label: (req
 - PART `toggle-group-item` - One dumb <button> under the group machine - Toggle-styled, no per-item controller | states: data-pressed (pressed (bare presence boolean - absent when off; the controller rederives the type-correct aria attribute from it)); data-disabled (the item (or the whole group) is disabled - the roving-focus collection filter); data-value (the item's key in the value set (always present, unique)); data-variant=default|outline (cascaded from the root); data-size=default|sm|lg (cascaded from the root); data-spacing (cascaded from the root - keys the segmented corner/border chain)
 - WIRING root: `poetry--core--toggle-group` registers; values type | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
 - WIRING item: `poetry--core--toggle-group` actions toggle on click
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity logic.
 - RULE: ToggleGroup is UI state, NOT form data: submitting single-select -> RadioGroup; submitting multi-select -> Checkbox group. No name: exists; don't route around it.
 - RULE: Every item MUST have a unique value: (ArgumentError on duplicates); icon-only items MUST pass label: (state-invariant).

@@ -40,7 +40,8 @@ module Poetry
         # The Stimulus controller that runs a surface's checks as the user types.
         SURFACE_CONTROLLER = "poetry--agent--a2ui-surface"
         # The form events that re-run the checks.
-        EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#evaluate change->#{SURFACE_CONTROLLER}#evaluate".freeze
+        EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#touch change->#{SURFACE_CONTROLLER}#touch " \
+                           "turbo:morph-element->#{SURFACE_CONTROLLER}#morphed".freeze
 
         # The surface being rendered.
         # @return [Surface]
@@ -113,7 +114,10 @@ module Poetry
 
           previous = @current_key
           @current_key = surface.source_key(component, scope)
-          surface.catalog.render(component, scope, self) || blank
+          catalog, problem = surface.lookup(component)
+          return warn("#{component["component"]} #{component_id.inspect}: #{problem}") unless catalog
+
+          catalog.render(component, scope, self) || blank
         rescue *COMPONENT_ERRORS, Poetry::Core::Error => e
           warn("#{component["component"]} #{component_id.inspect}: #{e.message}")
         ensure
@@ -184,6 +188,21 @@ module Poetry
           Evaluator.new(surface, scope, on_error: method(:warn)).call(name, args)
         end
 
+        # The address an `openUrl` action links to: its `url` argument
+        # resolved, when it is one the function opens. The call itself runs,
+        # so a URL it refuses warns and the action links nowhere.
+        #
+        # @param call [Hash] the action's function call
+        # @param scope [String, nil]
+        # @return [String, nil]
+        def link_target(call, scope = nil)
+          args = call["args"].is_a?(Hash) ? call["args"] : {}
+          evaluator = Evaluator.new(surface, scope, on_error: method(:warn), gesture: true)
+          url = evaluator.argument(args["url"])
+          evaluator.call("openUrl", { "url" => url }, resolved: true)
+          Functions.openable?(url) ? url.strip : nil
+        end
+
         # The first check failure's message for a component, or nil.
         # @param component [Hash]
         # @param scope [String, nil]
@@ -231,6 +250,22 @@ module Poetry
 
           label = text(accessibility["label"], scope)
           label.empty? ? nil : label
+        end
+
+        # A component's accessibility attributes for a Poetry component's
+        # `aria:`: its label and description, a live region's politeness,
+        # and hidden when it is hidden from assistive technology.
+        # @param component [Hash]
+        # @param scope [String, nil]
+        # @return [Hash{Symbol => String}]
+        def aria(component, scope = nil)
+          accessibility = component["accessibility"]
+          return {} unless accessibility.is_a?(Hash)
+
+          description = text(accessibility["description"], scope)
+          { label: aria_label(component, scope), description: description.empty? ? nil : description,
+            live: %w[polite assertive].include?(accessibility["live"]) ? accessibility["live"] : nil,
+            hidden: resolve(accessibility["hidden"], scope) == true ? "true" : nil }.compact
         end
 
         # Markdown text as HTML-safe markup.

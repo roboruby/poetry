@@ -30,6 +30,9 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
+        # Escape and an outside press close the open layer (activated by the JS on open).
+        use_behavior :dismissable
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
@@ -84,14 +87,8 @@ module Poetry
               value :open_delay
               value :close_delay
             end
-            controller :popper do
-              register
-              value :side
-              value :align
-              value :side_offset
-              value :align_offset
-              value :avoid_collisions
-            end
+            behavior :popper, side: :option, align: :option, side_offset: :option, align_offset: :option,
+                              avoid_collisions: :option
           end
           # The trigger handlers: pointerenter/leave pair
           # timers (touch excluded), focus opens immediately / blur closes,

@@ -260,9 +260,13 @@ module Poetry
       # input is the form value, so ActiveStorage attaches as usual, and
       # the form flips to multipart (Rails' own file_field line). A block
       # renders beside the control inside the Field - the seat for the
-      # current attachment's preview.
+      # current attachments (poetry_attachments_for). With
+      # active_storage_validations loaded, the attribute's content type,
+      # size and limit validators set accept:, max_size:, min_size: and
+      # max_files: unless the call passes its own.
       def file_input(method, hint: nil, **options, &block)
         self.multipart = true
+        options = attachment_limits(method).merge(options.transform_keys(&:to_sym))
         field_component = field_for(method, hint: hint, label: take_label!(options))
         describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
@@ -998,6 +1002,65 @@ module Poetry
             ) + @template.poetry_label(for_id: item_id) { label.to_s }
           end
         end
+      end
+
+      # The limits active_storage_validations declares on the attribute,
+      # as FileInput options: a content type validator's types as accept:
+      # (the gem's own reading: a type as is, an extension or symbol through
+      # Marcel, a `\Aimage/.*\z` pattern as image/*), a size validator's
+      # bounds as max_size: and min_size:, a limit validator's max as
+      # max_files:. Empty without the gem, a model, or validators; a Proc
+      # bound is left alone.
+      def attachment_limits(method)
+        return {} unless defined?(::ActiveStorageValidations) && object.class.respond_to?(:validators_on)
+
+        object.class.validators_on(method).each_with_object({}) do |validator, limits|
+          case validator.class.name
+          when "ActiveStorageValidations::ContentTypeValidator"
+            limits[:accept] ||= accept_from_validator(validator).presence
+          when "ActiveStorageValidations::SizeValidator"
+            limits.merge!(size_limits_from_validator(validator)) { |_key, mine, _theirs| mine }
+          when "ActiveStorageValidations::LimitValidator"
+            limits[:max_files] ||= validator.options[:max] if validator.options[:max].is_a?(Integer)
+          end
+        end.compact
+      end
+
+      # The accept list a content type validator implies.
+      def accept_from_validator(validator)
+        types = Array(validator.options[:with]) + Array(validator.options[:in])
+        types.filter_map do |type|
+          case type
+          when String then type.include?("/") ? type : marcel_type(type)
+          when Symbol then marcel_type(type.to_s)
+          when Regexp
+            match = type.source.match(%r{\A\\A([a-z]+)/\.\*\\z\z})
+            "#{match[1]}/*" if match
+          end
+        end.uniq.join(",")
+      end
+
+      # A content type by extension, through Marcel when it is around.
+      def marcel_type(extension)
+        require "marcel" unless defined?(::Marcel::MimeType)
+        ::Marcel::MimeType.for(declared_type: extension, extension: extension)
+      rescue LoadError
+        nil
+      end
+
+      # The byte bounds a size validator implies, exclusive bounds moved by one.
+      def size_limits_from_validator(validator)
+        bounds = validator.options
+        limits = {}
+        limits[:max_size] = bounds[:less_than_or_equal_to] if bounds[:less_than_or_equal_to].is_a?(Integer)
+        limits[:max_size] = bounds[:less_than] - 1 if bounds[:less_than].is_a?(Integer)
+        limits[:min_size] = bounds[:greater_than_or_equal_to] if bounds[:greater_than_or_equal_to].is_a?(Integer)
+        limits[:min_size] = bounds[:greater_than] + 1 if bounds[:greater_than].is_a?(Integer)
+        if bounds[:between].is_a?(Range) && bounds[:between].begin.is_a?(Integer) && bounds[:between].end.is_a?(Integer)
+          limits[:min_size] = bounds[:between].begin
+          limits[:max_size] = bounds[:between].exclude_end? ? bounds[:between].end - 1 : bounds[:between].end
+        end
+        limits
       end
 
       # The dual-key error read: company_id also reads errors on :company

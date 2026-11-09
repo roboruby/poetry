@@ -1,11 +1,21 @@
+<%# A header with the file's name and the copy button, line numbers, and
+    the lines a change touches highlighted. %>
 <% code = <<~RUBY
-  class Invoice < ApplicationRecord
-    belongs_to :customer
+  class ChatsController < ApplicationController
+    def create
+      chat = Current.user.chats.create!(model: "claude-sonnet-4.5")
 
-    scope :settled, -> { where(status: "settled") }
+      chat.ask(params.require(:message)) do |chunk|
+        Turbo::StreamsChannel.broadcast_append_to(chat, target: "messages", html: chunk.content)
+      end
+
+      head :accepted
+    end
   end
 RUBY
 %>
 <div class="w-full max-w-xl">
-  <%= poetry_code_block(code: code, language: "ruby", label: "Invoice model") %>
+  <%= poetry_code_block(code: code, language: "ruby", line_numbers: true, highlight_lines: [5, 6, 7]) do |block| %>
+    <% block.with_title do %><%= poetry_icon(name: :"file-code") %>app/controllers/chats_controller.rb<% end %>
+  <% end %>
 </div>

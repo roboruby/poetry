@@ -346,8 +346,67 @@ module Poetry
                          green: %(<h1 class="text-8xl font-semibold">Ship faster</h1>))
       end
 
+      # --- tranche 3: the craft floor ------------------------------------
+
+      def test_undersized_ui_text_from_classes_and_inline_styles
+        assert_red_green("undersized-ui-text",
+                         red: %(<span class="text-[10px] uppercase tracking-wide">New</span>),
+                         green: %(<span class="text-xs uppercase tracking-wide">New</span>))
+        assert_red_green("undersized-ui-text",
+                         red: %(<small style="font-size: 0.6rem">fine print</small>),
+                         green: %(<small style="font-size: 11px">at the floor</small>))
+        # A variant-scoped size counts; an under-floor token is one finding,
+        # the floor's, never a second off-scale one.
+        assert_includes rules_hit(%(<span class="md:text-[9px]">x</span>)), "undersized-ui-text"
+        assert_equal ["undersized-ui-text"], rules_hit(%(<span class="text-[10px]">x</span>))
+      end
+
+      def test_blinking_cursor_glyph_and_bar
+        assert_red_green("blinking-cursor",
+                         red: %(<h1 class="text-5xl">Build faster<span class="animate-pulse">|</span></h1>),
+                         green: %(<h1 class="text-5xl">Build faster</h1><p class="animate-pulse">Loading</p>))
+        bar = %(<span class="ml-1 inline-block h-8 w-0.5 animate-caret-blink bg-current"></span>)
+
+        assert_red_green("blinking-cursor",
+                         red: %(<h1>Ship#{bar}</h1>),
+                         green: %(<div data-slot="input-otp-slot"><div class="w-px animate-caret-blink"></div></div>))
+      end
+
+      def test_content_hidden_at_rest_hover_only_or_never
+        assert_red_green("content-hidden-at-rest",
+                         red: %(<div class="opacity-0 group-hover:opacity-100"><button>Delete</button></div>),
+                         green: %(<div class="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">) +
+                                %(<button>Delete</button></div>))
+        assert_red_green("content-hidden-at-rest",
+                         red: %(<p class="translate-y-4 opacity-0 transition">Revealed on scroll</p>),
+                         green: %(<div class="opacity-0 data-open:opacity-100">menu</div>))
+        # The sanctioned shapes: a native control over a styled one, a
+        # decorative crossfade glyph, an empty element.
+        green = <<~HTML
+          <input class="absolute inset-0 opacity-0" type="file">
+          <span class="scale-0 opacity-0 transition-all" aria-hidden="true"><svg viewBox="0 0 24 24"></svg></span>
+          <span class="absolute opacity-0"></span>
+        HTML
+
+        refute_includes rules_hit(green), "content-hidden-at-rest"
+      end
+
+      def test_radial_halo_gradient_glow_and_blob
+        assert_red_green("radial-halo",
+                         red: %(<div class="bg-[radial-gradient(circle_at_top,oklch(0.6_0.2_280),#0000)]">x</div>),
+                         green: %(<div class="bg-muted">x</div>))
+        assert_red_green("radial-halo",
+                         red: %(<div class="shadow-[0_0_40px_rgba(99,102,241,.5)]">x</div>),
+                         green: %(<div class="shadow-lg ring-2 ring-ring">x</div>))
+        assert_red_green("radial-halo",
+                         red: %(<div class="absolute -z-10 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>),
+                         green: %(<div class="h-72 w-72 rounded-full bg-primary/30"></div>))
+        # bg-radial is the halo, never a second gradient finding.
+        assert_equal ["radial-halo"], rules_hit(%(<div class="bg-radial from-primary/40 to-transparent">x</div>))
+      end
+
       def test_rules_registry_documents_every_rule_with_a_rationale
-        assert_equal 23, DesignLint::RULES.size
+        assert_equal 27, DesignLint::RULES.size
         DesignLint::RULES.each do |id, (tier, rationale)|
           assert_includes %i[ast dom], tier, id
           assert_operator rationale.to_s.length, :>=, 15,

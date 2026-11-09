@@ -24,11 +24,12 @@ review.
 
 - **create** (`references/anatomy.md`) - author a new component: the
   section order, what each DSL declares, and a complete skeleton to
-  start from.
+  start from. `references/behaviors.md` lists the shared behaviors to
+  declare before writing wiring of your own, and how to write one.
 - **document** (`references/documentation.md`) - the documentation
   standard: the class docblock, YARD on public methods, and how to write
-  the projected strings (part descriptions, agent rules) that machines
-  consume verbatim.
+  the projected strings (part descriptions, agent rules, a behavior's
+  rules) that machines consume verbatim.
 - **audit** (`references/checklist.md`) - review an existing component
   against the anatomy and the documentation standard; the checklist is
   ordered so violations surface in file order.

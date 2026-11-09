@@ -159,6 +159,32 @@
       "file": "lib/poetry/core.rb",
       "methods": [
         {
+          "name": "javascript_path",
+          "scope": "class",
+          "group": null,
+          "signature": "javascript_path(gem_root)",
+          "docstring": "The JavaScript tree a family gem serves through Propshaft and the\nimportmap: the minified copy a released gem carries in\ndist/javascript (built by the release, a source map beside each\nfile), else the source in app/javascript. Both trees hold the same\nfiles under the same names, so the pins never change.",
+          "params": [
+            {
+              "name": "gem_root",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the gem's root directory"
+            }
+          ],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core.rb",
+          "line": 38
+        },
+        {
           "name": "loader",
           "scope": "class",
           "group": null,
@@ -173,7 +199,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core.rb",
-          "line": 33
+          "line": 46
         },
         {
           "name": "root",
@@ -275,6 +301,485 @@
           "docstring": "The docstring line that hides a namespace from the reference."
         }
       ]
+    },
+    {
+      "path": "Poetry::Core::Behavior",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The declaration side of a Poetry behavior: a named, reusable piece of\na component's client behavior (arrow-key focus movement, dismissal on\nEscape and outside press) that several components share. A behavior\nmodule extends this and declares its name, a one-line description,\nthe rules agents must follow where it is used, and the wiring it\nadds to the element that uses it:\n\n  module Poetry::Core::Behaviors::RovingFocus\n    extend Poetry::Core::Behavior\n\n    behavior :roving_focus, \"Arrow keys move focus across the items.\"\n\n    wiring do |orientation: nil, loop: nil|\n      controller :roving_focus do\n        register\n        behavior_value :orientation, orientation\n        behavior_value :loop, loop\n        action :keydown, on: :keydown\n      end\n    end\n  end\n\nA component uses it inside an element of its use_stimulus block,\nwhere it lands in declaration order beside the element's own\ncontrollers, or at class level with use_behavior:\n\n  use_stimulus do\n    on(:list) { behavior :roving_focus, orientation: :option, loop: true }\n  end\n  use_behavior :dismissable\n\nA runtime behavior (`runtime: true`) is one the JavaScript activates\non its own, the overlay layers added when a popup opens. It declares\nno wiring: it is named, described and ruled, and the JS suite proves\nit, since no preview renders it.\n\nPoetry behaviors are Ruby declarations over Stimulus controllers and\nthe JS behaviors under poetry/core/behaviors. They are not Herb's\nclient behaviors, which follow elements the client adds and removes.",
+      "examples": [],
+      "file": "lib/poetry/core/behavior.rb",
+      "methods": [
+        {
+          "name": "namespaces",
+          "scope": "class",
+          "group": null,
+          "signature": "namespaces",
+          "docstring": "The namespaces a behavior name resolves in, one per gem that ships\nbehaviors. A gem adds its own at load (`Behavior.namespaces <<\n\"Poetry::Motion::Behaviors\"`); a name two namespaces define is an\nerror, so cross-gem names never shadow each other.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 63
+        },
+        {
+          "name": "resolve",
+          "scope": "class",
+          "group": null,
+          "signature": "resolve(name)",
+          "docstring": "The behavior module for a name, or the module itself.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String",
+                "Module"
+              ],
+              "text": "a behavior name or module"
+            }
+          ],
+          "return": {
+            "types": [
+              "Module"
+            ],
+            "text": "a module extended with {Behavior}"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 72
+        },
+        {
+          "name": "agent_rule",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_rule(rule)",
+          "docstring": "Adds a rule agents must follow wherever the behavior is used. Rules\nproject into every using component's agent rules, ahead of the\ncomponent's own, in the order the component uses its behaviors.",
+          "params": [
+            {
+              "name": "rule",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 135
+        },
+        {
+          "name": "agent_rules",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_rules",
+          "docstring": "The declared agent rules, in order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 144
+        },
+        {
+          "name": "behavior",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior(name, description, runtime: false)",
+          "docstring": "Names the behavior and describes it in one line.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "snake_case; components use the behavior by it"
+            },
+            {
+              "name": "description",
+              "types": [
+                "String"
+              ],
+              "text": "what the behavior does, for the\nregistry, llms.txt and the docs"
+            },
+            {
+              "name": "runtime",
+              "types": [
+                "Boolean"
+              ],
+              "text": "true when the JS activates the behavior on\nits own, so it declares no wiring"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 100
+        },
+        {
+          "name": "behavior_description",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior_description",
+          "docstring": "The declared description.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 120
+        },
+        {
+          "name": "behavior_name",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior_name",
+          "docstring": "The declared name.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 116
+        },
+        {
+          "name": "contributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "contributes(&block)",
+          "docstring": "Class-level additions the behavior makes to every component that\nuses it (parts, options, methods), run once per using class.",
+          "params": [],
+          "return": {
+            "types": [
+              "Proc",
+              "nil"
+            ],
+            "text": "the declared block when called without one"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 167
+        },
+        {
+          "name": "runtime?",
+          "scope": "instance",
+          "group": null,
+          "signature": "runtime?",
+          "docstring": "Whether the JS activates this behavior on its own.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 125
+        },
+        {
+          "name": "wiring",
+          "scope": "instance",
+          "group": null,
+          "signature": "wiring(&block)",
+          "docstring": "The wiring the behavior adds to the element that uses it, as a\nblock evaluated in that element's use_stimulus context (controller,\nevent, and the behavior_value helper) with the caller's options as\nkeywords. Runtime behaviors declare none.",
+          "params": [],
+          "return": {
+            "types": [
+              "Proc",
+              "nil"
+            ],
+            "text": "the declared block when called without one"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 155
+        }
+      ],
+      "constants": [
+        {
+          "name": "DESCRIPTION_LIMIT",
+          "value": "200",
+          "docstring": "The agent-legibility budget for a behavior's description."
+        },
+        {
+          "name": "NAME_PATTERN",
+          "value": "/\\A[a-z][a-z0-9_]*\\z/",
+          "docstring": "The behavior name grammar: snake_case."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Behavior::Error",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "Raised at class load for an invalid behavior declaration or use.",
+      "examples": [],
+      "file": "lib/poetry/core/behavior.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behavior::Use",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One use of a behavior: the module, the element it wires (nil for\na runtime behavior) and the caller's options.",
+      "examples": [],
+      "file": "lib/poetry/core/behavior.rb",
+      "methods": [
+        {
+          "name": "behavior",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior",
+          "docstring": "Returns the value of attribute behavior",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of behavior"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        },
+        {
+          "name": "behavior=",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior=(value)",
+          "docstring": "Sets the attribute behavior",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute behavior to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        },
+        {
+          "name": "element",
+          "scope": "instance",
+          "group": null,
+          "signature": "element",
+          "docstring": "Returns the value of attribute element",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of element"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        },
+        {
+          "name": "element=",
+          "scope": "instance",
+          "group": null,
+          "signature": "element=(value)",
+          "docstring": "Sets the attribute element",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute element to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        },
+        {
+          "name": "options",
+          "scope": "instance",
+          "group": null,
+          "signature": "options",
+          "docstring": "Returns the value of attribute options",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of options"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        },
+        {
+          "name": "options=",
+          "scope": "instance",
+          "group": null,
+          "signature": "options=(value)",
+          "docstring": "Sets the attribute options",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute options to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/behavior.rb",
+          "line": 50
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The behaviors poetry-core ships ({Poetry::Core::Behavior}).",
+      "examples": [],
+      "file": "app/components/poetry/core/behaviors/popper.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors::Checked",
+      "type": "module",
+      "superclass": null,
+      "docstring": "A two-state control (the checked controller): a click toggles the\nchecked state, and a form participant mirrors it into its hidden\ninput. The using component defines `form_participant?`.",
+      "examples": [
+        {
+          "title": "Checkbox",
+          "text": "on(:root) { behavior :checked }"
+        }
+      ],
+      "file": "app/components/poetry/core/behaviors/checked.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors::Dismissable",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Dismissal of an open layer (the dismissable controller): Escape\nand a press outside close it, the topmost layer first. The\ncomponent's controller activates it when the layer opens, so no\npreview renders it and the JS suite proves it.",
+      "examples": [],
+      "file": "app/components/poetry/core/behaviors/dismissable.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors::FileDrop",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Files arriving by drop, picker or paste (the file-drop controller):\nthe element is the drop target, the native file input inside it is\nthe form value, and every file is checked against accept, size and\ncount before it lands there. The controller reports each change\nthrough its files event, with the accepted files and the rejected\nones by code, and the drag verdict through its drag event. Each\nvalue is set only when the component passes it: `:option` reads\nthe component's own option, a Hash passes from:, anything else is\na literal.",
+      "examples": [
+        {
+          "title": "FileInput: the root takes drops for the input it wraps",
+          "text": "on(:root) { behavior :file_drop, accept: :option, multiple: :option, max_files: :option }"
+        }
+      ],
+      "file": "app/components/poetry/core/behaviors/file_drop.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "VALUES",
+          "value": "%i[accept multiple max_files max_size min_size paste overlay directory prevent_document_drop\nmessages].freeze",
+          "docstring": "The values a component may set, in the order they declare."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Behaviors::FocusScope",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Focus held inside an open layer (the focus-scope controller):\nfocus moves in when the layer opens, Tab stays inside a modal one,\nand focus returns to the trigger on close. The component's\ncontroller activates it when the layer opens.",
+      "examples": [],
+      "file": "app/components/poetry/core/behaviors/focus_scope.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors::Popper",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Anchored positioning (the popper controller): the panel opens on a\nside of its anchor and flips and shifts to stay in the viewport.\nEach value is set only when the component passes it: `:option`\nreads the component's own option, a Hash passes value's from:,\nif: and unless:, and anything else is a literal. The anchor,\ncontent and arrow targets stay on the component's own elements.",
+      "examples": [
+        {
+          "title": "A popover reading its placement options",
+          "text": "on(:root) do\n  behavior :popper, side: :option, align: :option, side_offset: :option,\n                    align_offset: :option, avoid_collisions: :option\nend"
+        }
+      ],
+      "file": "app/components/poetry/core/behaviors/popper.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Behaviors::RovingFocus",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Arrow-key focus movement across a group's items (the roving-focus\ncontroller): Arrow, Home and End move focus, and by default the\ngroup is one Tab stop. Each value is set only when the component\npasses it: `:option` reads the component's own option, anything\nelse is a literal.",
+      "examples": [
+        {
+          "title": "Tabs: the list reads the orientation option and loops",
+          "text": "on(:list) { behavior :roving_focus, orientation: :option, loop: true }"
+        }
+      ],
+      "file": "app/components/poetry/core/behaviors/roving_focus.rb",
+      "methods": [],
+      "constants": []
     },
     {
       "path": "Poetry::Core::Box",
@@ -444,7 +949,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 202
+          "line": 203
         },
         {
           "name": "component_module",
@@ -466,7 +971,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 191
+          "line": 192
         },
         {
           "name": "component_path",
@@ -488,7 +993,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 182
+          "line": 183
         },
         {
           "name": "component_title",
@@ -510,7 +1015,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 212
+          "line": 213
         },
         {
           "name": "config",
@@ -527,7 +1032,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 171
+          "line": 172
         },
         {
           "name": "helper",
@@ -558,7 +1063,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "helper_name",
@@ -576,7 +1081,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 163
+          "line": 164
         },
         {
           "name": "internal_component!",
@@ -598,7 +1103,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 80
+          "line": 81
         },
         {
           "name": "required_content",
@@ -616,7 +1121,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 236
+          "line": 237
         },
         {
           "name": "requires_content",
@@ -646,7 +1151,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 229
+          "line": 230
         },
         {
           "name": "attributes",
@@ -663,7 +1168,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 646
+          "line": 647
         },
         {
           "name": "classname_merger",
@@ -680,7 +1185,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 722
+          "line": 723
         },
         {
           "name": "classnames",
@@ -710,7 +1215,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 714
+          "line": 715
         },
         {
           "name": "component_data_attributes",
@@ -727,7 +1232,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 271
+          "line": 272
         },
         {
           "name": "content",
@@ -745,7 +1250,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 413
+          "line": 414
         },
         {
           "name": "dom_id_token",
@@ -771,7 +1276,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 756
+          "line": 757
         },
         {
           "name": "element_attributes",
@@ -820,7 +1325,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 348
+          "line": 349
         },
         {
           "name": "ensure_content!",
@@ -837,7 +1342,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 379
+          "line": 380
         },
         {
           "name": "html_attributes",
@@ -859,7 +1364,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 672
+          "line": 673
         },
         {
           "name": "initialize",
@@ -897,7 +1402,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 474
+          "line": 475
         },
         {
           "name": "persisted?",
@@ -914,7 +1419,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 446
+          "line": 447
         },
         {
           "name": "poetry_instance_id",
@@ -939,7 +1444,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 691
+          "line": 692
         },
         {
           "name": "render_in",
@@ -964,7 +1469,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 392
+          "line": 393
         },
         {
           "name": "root_attributes",
@@ -998,7 +1503,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 306
+          "line": 307
         },
         {
           "name": "root_slot",
@@ -1015,7 +1520,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 316
+          "line": 317
         },
         {
           "name": "script_json",
@@ -1041,7 +1546,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 742
+          "line": 743
         },
         {
           "name": "slot_data_attributes",
@@ -1067,7 +1572,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 280
+          "line": 281
         },
         {
           "name": "stable_key",
@@ -1085,7 +1590,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 69
+          "line": 70
         },
         {
           "name": "to_html",
@@ -1107,7 +1612,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 769
+          "line": 770
         }
       ],
       "constants": [
@@ -1172,6 +1677,11 @@
           "docstring": "The parameter kinds counted toward positional arity."
         },
         {
+          "name": "RESERVED_OPTION_NAMES",
+          "value": "%i[capture content render helpers view_context output_buffer controller\nrequest].freeze",
+          "docstring": "Option names that would shadow a method the rendering itself\ncalls: an option named `capture` once blanked every block a\ntemplate captured. Declaring one raises at class load."
+        },
+        {
           "name": "STATE_ATTRIBUTE",
           "value": "/\\Adata-[a-z][a-z0-9-]*\\z/",
           "docstring": "The data-* shape a declared state attribute must match."
@@ -1217,7 +1727,7 @@
       "path": "Poetry::Core::Concerns::AgentTools",
       "type": "module",
       "superclass": null,
-      "docstring": "The agent-tool contract: class-level declarations of the\ncomponent's agent-callable tools - the \"operate\" projection of the\ncomponent's Stimulus surface. A tool names one action an in-page\nagent may invoke on a rendered instance (WebMCP's\n`document.modelContext`, or any client that reads the registry),\ndescribed in MCP `Tool` shape: name, description, JSON-Schema\ninput, and safety annotations.\n\n  tool :set_value,\n       description: \"Select the option whose value matches.\",\n       params: { value: { type: \"string\", required: true,\n                          description: \"The option value to select.\" } },\n       executes: :set_value,\n       mutating: true\n\nDeclarations are validated at CLASS LOAD, like use_stimulus:\n`executes:` resolves through {Concerns::Stimulus#stimulus_action}\nagainst the component's declared controllers and the controllers\nmanifest, so a tool can never name an action the JS does not\ndefine - declare `use_stimulus` before `tool`. The resolved\ndescriptor (\"poetry--core--combobox#setValue\") is the tool's wire\nform: registration runtimes dispatch it verbatim.\n\nSafety doctrine (non-negotiable): tools are read-only unless\ndeclared `mutating: true` (`annotations.readOnlyHint` inverts it),\n`untrusted_content: true` marks tools whose output carries\nuser-authored content, and declaring a tool exposes NOTHING by\nitself - emission is opt-in per rendered instance, owned by the\nregistration runtime, never default-on.\n\nProjection: {ClassMethods#tool_definitions} feeds the registry's\nper-component `tools` section (plain strings, YAML-safe), which\nthe agent surfaces (llms.txt, MCP server, skills, docs) and the\nWebMCP registration payload all read - one contract, every\nsurface.",
+      "docstring": "The agent-tool contract: class-level declarations of the\ncomponent's agent-callable tools - the \"operate\" projection of the\ncomponent's Stimulus surface. A tool names one action an in-page\nagent may invoke on a rendered instance (WebMCP's\n`document.modelContext`, or any client that reads the registry),\ndescribed in MCP `Tool` shape: name, description, JSON-Schema\ninput, and safety annotations.\n\n  tool :set_value,\n       description: \"Select the option whose value matches.\",\n       params: { value: { type: \"string\", required: true,\n                          description: \"The option value to select.\" } },\n       executes: :set_value,\n       mutating: true\n\nDeclarations are validated at CLASS LOAD, like use_stimulus:\n`executes:` resolves through {Concerns::Stimulus#stimulus_action}\nagainst the component's declared controllers and the controllers\nmanifest, so a tool can never name an action the JS does not\ndefine - declare `use_stimulus` before `tool`. The resolved\ndescriptor (\"poetry--core--combobox#setValue\") is the tool's wire\nform: registration runtimes dispatch it verbatim.\n\nSafety doctrine (non-negotiable): tools are read-only unless\ndeclared `mutating: true` (`annotations.readOnlyHint` inverts it),\n`untrusted_content: true` marks tools whose output carries\nuser-authored content, `consequential: true` marks a tool whose\neffect is significant or hard to undo (`annotations.consequentialHint`,\nwhich an agent confirms before calling), `debugging: true` keeps a\ndeveloper tool out of end-user agents (`annotations.debugging`), and\ndeclaring a tool exposes NOTHING by itself - emission is opt-in per\nrendered instance, owned by the registration runtime, never\ndefault-on.\n\nProjection: {ClassMethods#tool_definitions} feeds the registry's\nper-component `tools` section (plain strings, YAML-safe), which\nthe agent surfaces (llms.txt, MCP server, skills, docs) and the\nWebMCP registration payload all read - one contract, every\nsurface.",
       "examples": [],
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [
@@ -1236,7 +1746,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 141
+          "line": 155
         },
         {
           "name": "resolve_tool_action",
@@ -1261,13 +1771,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 199
+          "line": 215
         },
         {
           "name": "tool",
           "scope": "class",
           "group": null,
-          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)",
+          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false, consequential: false, debugging: false)",
           "docstring": "Declares one agent-callable tool of this component.",
           "params": [
             {
@@ -1329,6 +1839,20 @@
                 "Boolean"
               ],
               "text": "declare true when the\ntool's output can carry user-authored content"
+            },
+            {
+              "name": "consequential",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true when invoking the\ntool has a significant, real-world or hard-to-undo effect\n(`annotations.consequentialHint`); an agent confirms such a\ncall before making it"
+            },
+            {
+              "name": "debugging",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true for a tool meant for\ndeveloper tooling rather than end users\n(`annotations.debugging`)"
             }
           ],
           "return": {
@@ -1344,7 +1868,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 121
+          "line": 132
         },
         {
           "name": "tool_definitions",
@@ -1361,7 +1885,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 177
+          "line": 191
         },
         {
           "name": "tools",
@@ -1378,7 +1902,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 149
+          "line": 163
         },
         {
           "name": "webmcp_enabled?",
@@ -1395,7 +1919,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 346
+          "line": 362
         },
         {
           "name": "webmcp_name",
@@ -1413,7 +1937,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 359
+          "line": 375
         },
         {
           "name": "webmcp_tool_definition",
@@ -1438,7 +1962,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 387
+          "line": 403
         },
         {
           "name": "webmcp_tools",
@@ -1455,7 +1979,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 377
+          "line": 393
         }
       ],
       "constants": [
@@ -1500,6 +2024,90 @@
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [
         {
+          "name": "consequential",
+          "scope": "instance",
+          "group": null,
+          "signature": "consequential",
+          "docstring": "Returns the value of attribute consequential",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of consequential"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "consequential=",
+          "scope": "instance",
+          "group": null,
+          "signature": "consequential=(value)",
+          "docstring": "Sets the attribute consequential",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute consequential to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "debugging",
+          "scope": "instance",
+          "group": null,
+          "signature": "debugging",
+          "docstring": "Returns the value of attribute debugging",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of debugging"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
+          "name": "debugging=",
+          "scope": "instance",
+          "group": null,
+          "signature": "debugging=(value)",
+          "docstring": "Sets the attribute debugging",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute debugging to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 59
+        },
+        {
           "name": "description",
           "scope": "instance",
           "group": null,
@@ -1514,7 +2122,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "description=",
@@ -1539,7 +2147,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "executes",
@@ -1556,7 +2164,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "executes=",
@@ -1581,7 +2189,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "input_schema",
@@ -1598,7 +2206,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "input_schema=",
@@ -1623,7 +2231,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "mutating",
@@ -1640,7 +2248,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "mutating=",
@@ -1665,7 +2273,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "name",
@@ -1682,7 +2290,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "name=",
@@ -1707,7 +2315,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "title",
@@ -1724,7 +2332,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "title=",
@@ -1749,7 +2357,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "untrusted_content",
@@ -1766,7 +2374,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "untrusted_content=",
@@ -1791,7 +2399,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 55
+          "line": 59
         }
       ],
       "constants": []
@@ -1804,6 +2412,131 @@
       "examples": [],
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Concerns::Behaviors",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The behaviors a component uses ({Poetry::Core::Behavior}): recorded\nat class load, folded through inheritance like tools and wiring,\nand projected into the registry's `behaviors` section and the\ncomponent's agent rules.\n\nTwo ways in. Inside a use_stimulus element, `behavior :name,\n**options` adds the behavior's wiring to that element in\ndeclaration order; at class level, `use_behavior :name` records a\nruntime behavior, one the JS activates on its own, or adds a wired\none to an element with `on:`.",
+      "examples": [],
+      "file": "app/components/poetry/core/concerns/behaviors.rb",
+      "methods": [
+        {
+          "name": "agent_rules",
+          "scope": "class",
+          "group": null,
+          "signature": "agent_rules",
+          "docstring": "The rules agents must follow with this component: each used\nbehavior's rules in use order, then the component's own\nAGENT_RULES.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/behaviors.rb",
+          "line": 81
+        },
+        {
+          "name": "behavior_definitions",
+          "scope": "class",
+          "group": null,
+          "signature": "behavior_definitions",
+          "docstring": "The registry-shaped projection: one entry per behavior, with the\nelements it wires (plain string keys, YAML-safe).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/behaviors.rb",
+          "line": 66
+        },
+        {
+          "name": "behavior_uses",
+          "scope": "class",
+          "group": null,
+          "signature": "behavior_uses",
+          "docstring": "The effective behavior uses after inheritance: ancestors first.\nAn inherited use on an element this class redeclares without\nextend: true goes with the element's inherited wiring.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Poetry::Core::Behavior::Use>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/behaviors.rb",
+          "line": 56
+        },
+        {
+          "name": "own_behavior_uses",
+          "scope": "class",
+          "group": null,
+          "signature": "own_behavior_uses",
+          "docstring": "This class's own behavior uses, in declaration order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Poetry::Core::Behavior::Use>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/behaviors.rb",
+          "line": 47
+        },
+        {
+          "name": "use_behavior",
+          "scope": "class",
+          "group": null,
+          "signature": "use_behavior(name, on: nil, **options)",
+          "docstring": "Uses a behavior on this component.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "Module"
+              ],
+              "text": "the behavior's name or module"
+            },
+            {
+              "name": "on",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": "the element a wired behavior attaches\nto, appended after the element's declared controllers"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Hash"
+              ],
+              "text": "the behavior's own options"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "use_behavior :dismissable"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/behaviors.rb",
+          "line": 31
+        }
+      ],
       "constants": []
     },
     {
@@ -2196,7 +2929,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 141
+          "line": 151
         },
         {
           "name": "option",
@@ -2257,7 +2990,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 87
+          "line": 93
         },
         {
           "name": "option_attributes",
@@ -2274,7 +3007,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 125
+          "line": 135
         },
         {
           "name": "option_attributes_with_defaults",
@@ -2291,7 +3024,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 103
+          "line": 113
         },
         {
           "name": "option_attributes_with_proc_defaults",
@@ -2308,7 +3041,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 118
+          "line": 128
         },
         {
           "name": "option_attributes_with_static_defaults",
@@ -2325,7 +3058,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 110
+          "line": 120
         },
         {
           "name": "option_docs",
@@ -2342,7 +3075,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 133
+          "line": 143
         },
         {
           "name": "option_format",
@@ -2369,7 +3102,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 160
+          "line": 170
         },
         {
           "name": "option_type",
@@ -2396,7 +3129,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 149
+          "line": 159
         },
         {
           "name": "initialized_option_attributes",
@@ -2413,7 +3146,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 244
+          "line": 254
         },
         {
           "name": "option_attribute?",
@@ -2439,7 +3172,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 230
+          "line": 240
         },
         {
           "name": "option_attribute_initialized?",
@@ -2465,7 +3198,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 252
+          "line": 262
         },
         {
           "name": "option_attributes",
@@ -2482,7 +3215,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 237
+          "line": 247
         },
         {
           "name": "option_attributes_status",
@@ -2499,7 +3232,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 259
+          "line": 269
         },
         {
           "name": "options",
@@ -2516,7 +3249,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 268
+          "line": 278
         }
       ],
       "constants": [
@@ -2524,6 +3257,11 @@
           "name": "BASE_COMPONENT_CLASS",
           "value": "Poetry::Core::Component",
           "docstring": "Where ancestor walks stop: declarations above the base component\nclass are nobody's."
+        },
+        {
+          "name": "RESERVED_OPTION_NAMES",
+          "value": "%i[capture content render helpers view_context output_buffer controller\nrequest].freeze",
+          "docstring": "Option names that would shadow a method the rendering itself\ncalls: an option named `capture` once blanked every block a\ntemplate captured. Declaring one raises at class load."
         }
       ]
     },
@@ -2640,7 +3378,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 74
+          "line": 75
         },
         {
           "name": "resolve_stimulus_identifier",
@@ -2667,7 +3405,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 123
+          "line": 124
         },
         {
           "name": "stimulus_action",
@@ -2711,7 +3449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 149
+          "line": 150
         },
         {
           "name": "stimulus_definitions",
@@ -2728,7 +3466,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "stimulus_elements",
@@ -2745,7 +3483,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 85
+          "line": 86
         },
         {
           "name": "stimulus_event",
@@ -2770,7 +3508,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 162
+          "line": 163
         },
         {
           "name": "stimulus_identifiers",
@@ -2787,7 +3525,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "use_stimulus",
@@ -2841,7 +3579,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 300
+          "line": 301
         },
         {
           "name": "stimulus_attributes",
@@ -2866,7 +3604,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 280
+          "line": 281
         },
         {
           "name": "stimulus_attributes_for",
@@ -2892,7 +3630,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 244
+          "line": 245
         },
         {
           "name": "stimulus_event",
@@ -2909,7 +3647,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 309
+          "line": 310
         }
       ],
       "constants": []
@@ -4673,6 +5411,66 @@
       "file": "lib/poetry/core/icons.rb",
       "methods": [
         {
+          "name": "comment_safe",
+          "scope": "class",
+          "group": null,
+          "signature": "comment_safe(text)",
+          "docstring": "An attribution as HTML-comment text: nil stays nil; text that\ncould end or break a comment is refused.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the attribution"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 253
+        },
+        {
+          "name": "not_found",
+          "scope": "class",
+          "group": null,
+          "signature": "not_found(name, names)",
+          "docstring": "The error for a well-formed name a set does not have, with a\ndid-you-mean when one is close.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the unknown name"
+            },
+            {
+              "name": "names",
+              "types": [
+                "Enumerable"
+              ],
+              "text": "every name the set serves, to suggest from"
+            }
+          ],
+          "return": {
+            "types": [
+              "Poetry::Core::IconNotFound"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 266
+        },
+        {
           "name": "register",
           "scope": "class",
           "group": null,
@@ -4708,7 +5506,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 137
+          "line": 316
         },
         {
           "name": "registry",
@@ -4725,7 +5523,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 115
+          "line": 294
         },
         {
           "name": "set",
@@ -4752,7 +5550,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 148
+          "line": 327
         },
         {
           "name": "suggest",
@@ -4786,10 +5584,21 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 101
+          "line": 280
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "DEFAULT_SVG_ATTRIBUTES",
+          "value": "{\n  \"width\" => \"24\",\n  \"height\" => \"24\",\n  \"viewBox\" => \"0 0 24 24\",\n  \"fill\" => \"none\",\n  \"stroke\" => \"currentColor\",\n  \"stroke-width\" => \"2\",\n  \"stroke-linecap\" => \"round\",\n  \"stroke-linejoin\" => \"r",
+          "docstring": "The <svg> wrapper attributes a set draws with when it names none:\nLucide's 24-unit stroke style, the family's default. A set whose\nicons are filled, thinner or on another grid passes its own\n`svg_attributes:`; the Icon component lays them under the caller's."
+        },
+        {
+          "name": "NAME_FORMAT",
+          "value": "/\\A[a-z0-9][a-z0-9-]*\\z/",
+          "docstring": "The kebab-case shape every icon name must match before it touches\nthe filesystem."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::Icons::FileSet",
@@ -4800,16 +5609,56 @@
       "file": "lib/poetry/core/icons.rb",
       "methods": [
         {
+          "name": "aliases",
+          "scope": "instance",
+          "group": null,
+          "signature": "aliases",
+          "docstring": "Old names the upstream renamed, each to the name it renders as.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 61
+        },
+        {
+          "name": "attribution",
+          "scope": "instance",
+          "group": null,
+          "signature": "attribution",
+          "docstring": "The credit a set's license requires on every copy, or nil. The Icon\ncomponent renders it as an HTML comment inside each svg, so a host\nserving the icons carries it without doing anything.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 68
+        },
+        {
           "name": "dir",
           "scope": "instance",
           "group": null,
           "signature": "dir",
-          "docstring": "Returns the value of attribute dir.",
+          "docstring": "The directory the set reads from.",
           "params": [],
-          "return": null,
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 29
+          "line": 51
         },
         {
           "name": "fetch",
@@ -4835,14 +5684,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 57
+          "line": 105
         },
         {
           "name": "include?",
           "scope": "instance",
           "group": null,
           "signature": "include?(name)",
-          "docstring": "Whether the set has an icon of this name: the name must be\nwell-formed and its SVG present on disk.",
+          "docstring": "Whether the set has an icon of this name, or an alias for one: the\nname must be well-formed and its SVG present on disk.",
           "params": [
             {
               "name": "name",
@@ -4861,13 +5710,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 46
+          "line": 94
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:)",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -4877,6 +5726,28 @@
                 "Pathname"
               ],
               "text": "the directory holding the SVGs"
+            },
+            {
+              "name": "svg_attributes",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
+            },
+            {
+              "name": "aliases",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "old name => current name;\nan old name still renders, and `poetry check` warns with the rename"
+            },
+            {
+              "name": "attribution",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the credit the icons' license\nrequires, rendered as a comment inside every svg"
             }
           ],
           "return": {
@@ -4887,7 +5758,193 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 35
+          "line": 80
+        },
+        {
+          "name": "names",
+          "scope": "instance",
+          "group": null,
+          "signature": "names",
+          "docstring": "Every current icon name in the set, sorted (aliases are not names).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Symbol>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 119
+        },
+        {
+          "name": "svg_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "svg_attributes",
+          "docstring": "The attributes the <svg> wrapper draws this set with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 56
+        }
+      ],
+      "constants": [
+        {
+          "name": "NAME_FORMAT",
+          "value": "Icons::NAME_FORMAT",
+          "docstring": "The kebab-case shape every icon name must match (kept here too:\n`poetry check` reads it as FileSet::NAME_FORMAT)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Icons::PackedSet",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One file holding a whole vendored set, one icon per line:\n`<name>\\t<inner markup>\\n`, sorted by name. A large set ships as a\nhandful of files instead of thousands. The first read indexes the\nnames and their byte offsets; each icon's markup is read once, by\noffset, and cached. Same contract and errors as {FileSet}.",
+      "examples": [],
+      "file": "lib/poetry/core/icons.rb",
+      "methods": [
+        {
+          "name": "aliases",
+          "scope": "instance",
+          "group": null,
+          "signature": "aliases",
+          "docstring": "Old names the upstream renamed, each to the name it renders as.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 160
+        },
+        {
+          "name": "attribution",
+          "scope": "instance",
+          "group": null,
+          "signature": "attribution",
+          "docstring": "The credit a set's license requires on every copy, or nil. The Icon\ncomponent renders it as an HTML comment inside each svg, so a host\nserving the icons carries it without doing anything.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 167
+        },
+        {
+          "name": "fetch",
+          "scope": "instance",
+          "group": null,
+          "signature": "fetch(name)",
+          "docstring": "The inner SVG markup of one icon, read once and cached.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the icon name"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the icon's inner SVG markup"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 199
+        },
+        {
+          "name": "include?",
+          "scope": "instance",
+          "group": null,
+          "signature": "include?(name)",
+          "docstring": "Whether the set has an icon of this name, or an alias for one.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the icon name"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 190
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)",
+          "docstring": "A set over one packed file of sanitized inner markup.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": "the packed file"
+            },
+            {
+              "name": "svg_attributes",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
+            },
+            {
+              "name": "aliases",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "old name => current name"
+            },
+            {
+              "name": "attribution",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the credit the icons' license\nrequires, rendered as a comment inside every svg"
+            }
+          ],
+          "return": {
+            "types": [
+              "PackedSet"
+            ],
+            "text": "a new instance of PackedSet"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 177
         },
         {
           "name": "names",
@@ -4904,14 +5961,165 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 75
+          "line": 217
+        },
+        {
+          "name": "path",
+          "scope": "instance",
+          "group": null,
+          "signature": "path",
+          "docstring": "The packed file the set reads from.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 150
+        },
+        {
+          "name": "svg_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "svg_attributes",
+          "docstring": "The attributes the <svg> wrapper draws this set with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 155
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Icons::Vendor",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The vendor-time pipeline that makes an upstream SVG safe to render\n`html_safe`: the icon gems' fetch scripts run every file through it,\nand a host vendoring its own set should too (see the SECURITY note on\n{Icons}). Render time never parses; this runs once, at vendor time.\n\nIt keeps only the <svg>'s inner markup (the Icon component owns the\nwrapper), removes <script>, <foreignObject>, <title>, <desc> and\ncomments, removes <use>/<image> pointing outside the document, strips\nevery `on*` handler, drops clip paths that clip nothing (a rect over\nthe whole canvas, which also repeats element ids on a page), and with\n`current_color: true` turns every hardcoded fill and stroke colour\ninto `currentColor` so the icon takes the text colour (masks and\nclip paths keep theirs: there white and black mean shown and hidden).",
+      "examples": [],
+      "file": "lib/poetry/core/icons/vendor.rb",
+      "methods": [
+        {
+          "name": "github_files",
+          "scope": "class",
+          "group": null,
+          "signature": "github_files(repository, commit, pattern)",
+          "docstring": "The files of a GitHub repository at one commit whose paths match,\nread from its tarball. Pin a commit SHA, never a tag or branch: the\nsame call must return the same bytes forever.",
+          "params": [
+            {
+              "name": "repository",
+              "types": [
+                "String"
+              ],
+              "text": "\"owner/name\""
+            },
+            {
+              "name": "commit",
+              "types": [
+                "String"
+              ],
+              "text": "a full 40-character commit SHA"
+            },
+            {
+              "name": "pattern",
+              "types": [
+                "Regexp"
+              ],
+              "text": "matched against each path inside the repository"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": "path => content, for regular files"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 61
+        },
+        {
+          "name": "inner_markup",
+          "scope": "class",
+          "group": null,
+          "signature": "inner_markup(svg_source, current_color: false)",
+          "docstring": "The sanitized inner markup of one SVG, on a single line.",
+          "params": [
+            {
+              "name": "svg_source",
+              "types": [
+                "String"
+              ],
+              "text": "a whole upstream SVG file"
+            },
+            {
+              "name": "current_color",
+              "types": [
+                "Boolean"
+              ],
+              "text": "rewrite hardcoded fill and stroke\ncolours to currentColor"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the inner markup, no newlines or tabs"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 36
+        },
+        {
+          "name": "packed",
+          "scope": "class",
+          "group": null,
+          "signature": "packed(icons)",
+          "docstring": "A packed set file's text: one `name\\tmarkup` line per icon, sorted.",
+          "params": [
+            {
+              "name": "icons",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "name => inner markup"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 87
         }
       ],
       "constants": [
         {
-          "name": "NAME_FORMAT",
-          "value": "/\\A[a-z0-9][a-z0-9-]*\\z/",
-          "docstring": "The kebab-case shape every icon name must match before it touches\nthe filesystem."
+          "name": "HREF_ELEMENTS",
+          "value": "%w[use image].freeze",
+          "docstring": "Elements that may reference another document."
+        },
+        {
+          "name": "KEPT_PAINT",
+          "value": "%w[none currentColor transparent inherit].freeze",
+          "docstring": "Paint values left as they are by `current_color: true`."
+        },
+        {
+          "name": "REMOVED",
+          "value": "%w[script foreignObject title desc metadata].freeze",
+          "docstring": "Elements removed with their content."
         }
       ]
     },
@@ -4952,7 +6160,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 86
+          "line": 147
         },
         {
           "name": "gem_roots",
@@ -4986,7 +6194,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 178
+          "line": 239
         },
         {
           "name": "helper_for",
@@ -5019,7 +6227,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 107
+          "line": 168
         },
         {
           "name": "invalid_at?",
@@ -5045,7 +6253,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 141
+          "line": 202
         },
         {
           "name": "merged",
@@ -5079,7 +6287,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 196
+          "line": 257
         },
         {
           "name": "published_at?",
@@ -5105,7 +6313,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 151
+          "line": 212
         },
         {
           "name": "read_file",
@@ -5132,7 +6340,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 123
+          "line": 184
         },
         {
           "name": "roots",
@@ -5149,7 +6357,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 163
+          "line": 224
         },
         {
           "name": "blocks",
@@ -5161,7 +6369,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 270
+          "line": 331
         },
         {
           "name": "components",
@@ -5173,7 +6381,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 266
+          "line": 327
         },
         {
           "name": "entries",
@@ -5190,7 +6398,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 283
+          "line": 344
         },
         {
           "name": "form_builder",
@@ -5202,7 +6410,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 277
+          "line": 338
         },
         {
           "name": "generate!",
@@ -5228,7 +6436,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 308
+          "line": 369
         },
         {
           "name": "helper_args",
@@ -5240,7 +6448,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 273
+          "line": 334
         },
         {
           "name": "initialize",
@@ -5328,7 +6536,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 251
+          "line": 312
         },
         {
           "name": "source_root",
@@ -5340,7 +6548,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 270
+          "line": 331
         },
         {
           "name": "to_yaml",
@@ -5357,7 +6565,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 292
+          "line": 353
         },
         {
           "name": "verified?",
@@ -5383,7 +6591,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 319
+          "line": 380
         }
       ],
       "constants": [
@@ -5427,7 +6635,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "entries",
@@ -5439,7 +6647,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "form_builder",
@@ -5451,7 +6659,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "helper_args",
@@ -5463,7 +6671,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "helpers",
@@ -5475,7 +6683,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         },
         {
           "name": "initialize",
@@ -5553,7 +6761,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 68
+          "line": 129
         },
         {
           "name": "internal",
@@ -5565,7 +6773,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 47
+          "line": 108
         },
         {
           "name": "internals",
@@ -5582,7 +6790,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 53
+          "line": 114
         },
         {
           "name": "source_root",
@@ -5594,10 +6802,99 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 43
+          "line": 104
         }
       ],
       "constants": []
+    },
+    {
+      "path": "Poetry::Core::Registry::ContentScan",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The source scan behind the entry's content fact: whether a class or\nmodule body, or a template, calls the block (`content`, `content?`).",
+      "examples": [],
+      "file": "lib/poetry/core/registry.rb",
+      "methods": [
+        {
+          "name": "source?",
+          "scope": "class",
+          "group": null,
+          "signature": "source?(source, line)",
+          "docstring": "Whether the class or module defined at a line calls the block in\nits own body (a nested class's or module's body is its own).",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "String"
+              ],
+              "text": "the file's Ruby"
+            },
+            {
+              "name": "line",
+              "types": [
+                "Integer"
+              ],
+              "text": "the line the definition starts on"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 56
+        },
+        {
+          "name": "template?",
+          "scope": "class",
+          "group": null,
+          "signature": "template?(erb)",
+          "docstring": "Whether a template's Ruby calls the block.",
+          "params": [
+            {
+              "name": "erb",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 65
+        }
+      ],
+      "constants": [
+        {
+          "name": "COMMENT",
+          "value": "/<%#.*?%>/m",
+          "docstring": "A template's comments, dropped before the tags are read."
+        },
+        {
+          "name": "NAMES",
+          "value": "%i[content content?].freeze",
+          "docstring": "The calls that read the block."
+        },
+        {
+          "name": "TAG",
+          "value": "/<%(?!#)=?(.*?)-?%>/m",
+          "docstring": "A template's tags, their Ruby captured."
+        },
+        {
+          "name": "TEMPLATE_CALL",
+          "value": "/(?<![\\w.:@$])content\\??(?![\\w:(])(?!\\s*=[^=~>])/",
+          "docstring": "A template tag's call: a bare `content` or `content?`, not\n`content_for`, `.content`, `:content`, `content:` or `content =`."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::RegistryAddress",
@@ -5857,6 +7154,152 @@
           "name": "NAMESPACED",
           "value": "%r{\\A(@[a-z0-9][a-z0-9_-]*)/([A-Za-z0-9_-]+)\\z}",
           "docstring": "The `@namespace/item-name` address shape (`@acme/fancy-chart`): a\nregistry namespace, a slash, an item name."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::RegistryDrift",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Where an app's copy of a registry item stands: each file the install\nrecord names, and each file the registry's item names now, against\nthe file the app holds. The record carries a digest of every file as\nit was installed (RegistryInstaller's manifest entry), which is what\ntells an edit made in the app from a change made in the registry.",
+      "examples": [
+        {
+          "title": "",
+          "text": "drift = Poetry::Core::RegistryDrift.new(recorded: record[\"files\"], current: entry[\"files\"]) do |target|\n  digest_of(target)\nend\ndrift.files   # => { \"app/components/acme/chart/component.rb\" => :upstream }\ndrift.update? # => true"
+        }
+      ],
+      "file": "lib/poetry/core/registry_drift.rb",
+      "methods": [
+        {
+          "name": "asked?",
+          "scope": "instance",
+          "group": null,
+          "signature": "asked?",
+          "docstring": "Whether the registry was asked for the item as it stands now.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 55
+        },
+        {
+          "name": "changes",
+          "scope": "instance",
+          "group": null,
+          "signature": "changes",
+          "docstring": "The files that are not as installed, with their states.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Symbol}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 71
+        },
+        {
+          "name": "edited?",
+          "scope": "instance",
+          "group": null,
+          "signature": "edited?",
+          "docstring": "Whether the app changed a file since it was installed.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 65
+        },
+        {
+          "name": "files",
+          "scope": "instance",
+          "group": null,
+          "signature": "files",
+          "docstring": "The state of each file the record or the registry's item names.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Symbol}"
+            ],
+            "text": "a key of STATES, by target"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 33
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(recorded:, current: nil, &digest_at)",
+          "docstring": "Compares the app's files with the record and, when given, with the\nregistry's item now.",
+          "params": [
+            {
+              "name": "recorded",
+              "types": [
+                "Hash{String => String}",
+                "nil"
+              ],
+              "text": "the digest of each file\nas installed, by target, from the install record"
+            },
+            {
+              "name": "current",
+              "types": [
+                "Hash{String => String}",
+                "nil"
+              ],
+              "text": "the digest of each file\nof the registry's item now; nil when the registry was not asked"
+            }
+          ],
+          "return": {
+            "types": [
+              "RegistryDrift"
+            ],
+            "text": "a new instance of RegistryDrift"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 44
+        },
+        {
+          "name": "update?",
+          "scope": "instance",
+          "group": null,
+          "signature": "update?",
+          "docstring": "Whether the registry's item has something this copy lacks.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry_drift.rb",
+          "line": 59
+        }
+      ],
+      "constants": [
+        {
+          "name": "STATES",
+          "value": "{\n  same: \"as installed\",\n  edited: \"edited here\",\n  missing: \"missing here\",\n  upstream: \"changed in the registry\",\n  both: \"changed in the registry, and edited here\",\n  added: \"new in the registry\",",
+          "docstring": "What each state says of a file, for a report."
+        },
+        {
+          "name": "UPDATES",
+          "value": "%i[upstream both added missing].freeze",
+          "docstring": "The states an update has something to do about."
         }
       ]
     },
@@ -6843,6 +8286,44 @@
       "file": "lib/poetry/core/stimulus/declarations.rb",
       "methods": [
         {
+          "name": "behavior",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior(name, **options)",
+          "docstring": "Adds a Poetry behavior's wiring to this element, here in\ndeclaration order, and records the use for the registry and\nthe agent rules ({Poetry::Core::Behavior}).",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "Module"
+              ],
+              "text": "the behavior's name or module"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Hash"
+              ],
+              "text": "the behavior's own options"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "on(:list) { behavior :roving_focus, orientation: :option, loop: true }"
+            }
+          ],
+          "file": "lib/poetry/core/stimulus/declarations.rb",
+          "line": 331
+        },
+        {
           "name": "controller",
           "scope": "instance",
           "group": null,
@@ -6874,7 +8355,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 319
+          "line": 355
         },
         {
           "name": "event",
@@ -6908,13 +8389,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 335
+          "line": 371
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(declaring, element)",
+          "signature": "initialize(declaring, element, behavior_uses = [])",
           "docstring": "Binds the DSL to the element its block fills.",
           "params": [
             {
@@ -6930,6 +8411,13 @@
                 "Element"
               ],
               "text": "the element being wired"
+            },
+            {
+              "name": "behavior_uses",
+              "types": [
+                "Array"
+              ],
+              "text": "the harvest the element's behavior\nuses join"
             }
           ],
           "return": {
@@ -6940,7 +8428,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 306
+          "line": 314
         }
       ],
       "constants": []
@@ -7217,16 +8705,38 @@
       "file": "lib/poetry/core/stimulus/declarations.rb",
       "methods": [
         {
+          "name": "behavior_uses",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior_uses",
+          "docstring": "The behaviors the elements used, in declaration order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Poetry::Core::Behavior::Use>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/stimulus/declarations.rb",
+          "line": 256
+        },
+        {
           "name": "elements",
           "scope": "instance",
           "group": null,
           "signature": "elements",
-          "docstring": "Returns the value of attribute elements.",
+          "docstring": "The declared elements.",
           "params": [],
-          "return": null,
+          "return": {
+            "types": [
+              "Array<Element>"
+            ],
+            "text": ""
+          },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 251
+          "line": 253
         },
         {
           "name": "event",
@@ -7260,7 +8770,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 295
+          "line": 301
         },
         {
           "name": "initialize",
@@ -7285,7 +8795,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 257
+          "line": 262
         },
         {
           "name": "on",
@@ -7330,7 +8840,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 280
+          "line": 286
         }
       ],
       "constants": []
@@ -7529,7 +9039,39 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 413
+          "line": 468
+        },
+        {
+          "name": "behavior_value",
+          "scope": "instance",
+          "group": null,
+          "signature": "behavior_value(name, given)",
+          "docstring": "A behavior's value from the option its user passed: nil declares\nnothing, `:option` reads the component's same-named option, a\nHash passes from:, if: and unless: through to {#value}, and\nanything else is a literal. Behavior wiring blocks call it so a\ncomponent decides which values it sets and how.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the value name"
+            },
+            {
+              "name": "given",
+              "types": [
+                "Object"
+              ],
+              "text": "the option the component passed"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/stimulus/declarations.rb",
+          "line": 446
         },
         {
           "name": "event",
@@ -7563,7 +9105,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 435
+          "line": 490
         },
         {
           "name": "initialize",
@@ -7595,7 +9137,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 350
+          "line": 386
         },
         {
           "name": "register",
@@ -7620,7 +9162,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 362
+          "line": 398
         },
         {
           "name": "target",
@@ -7652,7 +9194,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 424
+          "line": 479
         },
         {
           "name": "value",
@@ -7699,7 +9241,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 384
+          "line": 420
         }
       ],
       "constants": []

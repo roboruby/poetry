@@ -53,14 +53,17 @@ module Poetry
 
       def test_the_resolving_exe_checks_icon_membership_and_helper_arity
         replies = call_exe([
-                             check_request(1, %(<%= poetry_icon(name: :filter) %>)),
-                             check_request(2, %(<%= poetry_link "Meridian", href: "/" %>))
+                             check_request(1, %(<%= poetry_icon(name: :"circle-alrt") %>)),
+                             check_request(2, %(<%= poetry_link "Meridian", href: "/" %>)),
+                             check_request(3, %(<%= poetry_icon(name: :filter) %>))
                            ])
         texts = replies.to_h { |reply| [reply["id"], reply.dig("result", "content", 0, "text")] }
 
         assert_match(/FAIL/, texts[1])
-        assert_match(/not in the icon set/, texts[1],
-                     "membership, not just shape - the data_table :filter crash class")
+        assert_match(/not in the icon set/, texts[1], "membership, not just shape")
+        assert_match(/PASS/, texts[3])
+        assert_match(/renamed :funnel/, texts[3],
+                     "the data_table :filter crash class now renders through Lucide's alias, with a warning")
         assert_match(/FAIL/, texts[2])
         assert_match(/no positional arguments/, texts[2],
                      "helper arity reaches the boot-free path - the site_nav crash class")

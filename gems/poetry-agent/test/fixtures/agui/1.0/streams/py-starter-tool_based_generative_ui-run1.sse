@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"thread-tool_based_generative_ui","runId":"fd1e907d-bb5c-4004-b1f3-71df0d755566","protocolVersion":"1.0"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d394cee8-d392-4549-8f0e-3fd33c60b221","role":"user","content":"write a haiku"},{"id":"ccf45f88-1e4e-4e8f-b5ae-c0751f07a15a","role":"assistant","toolCalls":[{"id":"6b300557-775b-4831-96b0-80a706f32652","type":"function","function":{"name":"generate_haiku","arguments":"{\"japanese\": [\"\\u30a8\\u30fc\\u30a2\\u30a4\\u306e\", \"\\u6a4b\\u3064\\u306a\\u3050\\u9053\", \"\\u30b3\\u30d1\\u30ad\\u30c3\\u30c8\"], \"english\": [\"From AI's realm\", \"A bridge-road linking us\\u2014\", \"CopilotKit.\"]}"}}]},{"id":"85e75c34-9b65-4413-9ca4-b8e921dc69c5","role":"tool","content":"Haiku created","toolCallId":"6b300557-775b-4831-96b0-80a706f32652"}]}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-tool_based_generative_ui","runId":"fd1e907d-bb5c-4004-b1f3-71df0d755566"}
+

@@ -1,0 +1,15 @@
+<%# The Community section's tabs (the engine's one, or the ones a host
+    names for the pages it serves there itself), and the way to the
+    guides. The tab a page is under is the longest path its own begins
+    with. %>
+<% current = community_tab %>
+<nav aria-label="Community" data-community-tabs class="mb-8 flex items-center gap-1 overflow-x-auto border-b">
+  <% community_tabs.each do |title, path| %>
+    <% active = current && current.last == path %>
+    <%= link_to title, path, aria: { current: ("page" if active) },
+                class: class_names("-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                                   active ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground") %>
+  <% end %>
+  <%= link_to "Guide", poetry_docs.community_items_path,
+              class: "-mb-px ml-auto shrink-0 border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" %>
+</nav>

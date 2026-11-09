@@ -14,7 +14,7 @@ module Poetry
         "/llms.txt" => { summary: "Site index for agents: every docs page with a one-line description", type: "text/markdown" },
         "/poetry/llms.txt" => { summary: "Component catalog for agents", type: "text/markdown" },
         "/poetry/llms-full.txt" => { summary: "Full component contracts + Stimulus wiring + agent tools", type: "text/markdown" },
-        "/mcp" => { summary: "The poetry MCP server over HTTP: POST JSON-RPC 2.0 (initialize, tools/list, tools/call) - the same read-only tools as `bundle exec poetry-agent`, for in-page bridges", type: "application/json", method: :post },
+        "/mcp" => { summary: "The poetry MCP server over HTTP: POST JSON-RPC 2.0 (initialize, tools/list, tools/call; stateless, `Accept: application/json`) - the same read-only tools as `bundle exec poetry-agent`, for in-page bridges", type: "application/json", method: :post },
         "/r/registry.json" => { summary: "Registry index (shadcn registry schema)", type: "application/json" },
         "/r/registries.json" => { summary: "Directory of registries", type: "application/json" },
         "/r/{name}" => { summary: "One registry item as <name>.json (shadcn registry-item schema: https://ui.shadcn.com/schema/registry-item.json)", type: "application/json" },
@@ -45,7 +45,11 @@ module Poetry
       # Absolute URLs derive from the request host - the site has no fixed
       # production domain, so nothing is hardcoded.
       def sitemap
-        urls = ([ "/", "/docs" ] + DocsCatalog.all.map(&:path)).map do |path|
+        # The community items' pages are the host's own: listed where the
+        # host serves a community registry, absent where it serves none.
+        community = CommunityRegistry.items.map { |item| "/community/components/#{item.name}" }
+        paths = [ "/", "/docs" ] + DocsCatalog.all.map(&:path) + community + Poetry::Docs.config.host_sitemap_paths
+        urls = paths.uniq.map do |path|
           "  <url><loc>#{request.base_url}#{path}</loc></url>"
         end
         xml = [ %(<?xml version="1.0" encoding="UTF-8"?>),

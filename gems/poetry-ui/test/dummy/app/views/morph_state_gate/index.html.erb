@@ -1,0 +1,30 @@
+<div class="mx-auto flex max-w-xl flex-col gap-6 p-8">
+  <span id="details-flag" data-details="<%= @details ? "1" : "0" %>" class="text-sm font-medium">details cookie: <%= @details ? "1" : "0" %></span>
+
+  <%= poetry_tabs(id: "gate-tabs", label: "Gate tabs", default: "one") do |tabs| %>
+    <% tabs.with_tab("One", value: "one") { "Panel one" } %>
+    <% tabs.with_tab("Two", value: "two") { "Panel two" } %>
+  <% end %>
+
+  <%= poetry_input(id: "gate-input", name: "note", "aria-label" => "Note") %>
+
+  <%= poetry_collapsible(id: "gate-local", open: false) do |collapsible| %>
+    <% collapsible.with_trigger(variant: :ghost, size: :sm) { "Local" } %>
+    <div id="gate-local-body">Local body</div>
+  <% end %>
+
+  <%# Server-driven: the cookie the dialog's form sets decides this one. %>
+  <%= poetry_collapsible(id: "gate-details", open: @details) do |collapsible| %>
+    <% collapsible.with_trigger(variant: :ghost, size: :sm) { "Details" } %>
+    <div id="gate-details-body">Details body</div>
+  <% end %>
+
+  <%= poetry_dialog(id: "gate-dialog") do |dialog| %>
+    <% dialog.with_trigger { "Open dialog" } %>
+    <% dialog.with_title { "Gate dialog" } %>
+    <%= form_with url: "/mgate", id: "gate-form" do |form| %>
+      <%= form.hidden_field :details, value: "1" %>
+      <%= form.submit "Save", id: "gate-save" %>
+    <% end %>
+  <% end %>
+</div>

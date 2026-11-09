@@ -5,6 +5,7 @@
 
 import { registerBridgeEvents } from "@poetry/controllers/helpers/portal"
 import { guardPoetryRegistration } from "@poetry/controllers/helpers/registration_guard"
+import { installMorphGuard } from "@poetry/controllers/helpers/morph_guard"
 import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
@@ -20,6 +21,7 @@ import PopperController from "@poetry/controllers/popper_controller"
 import MenuController from "@poetry/controllers/menu_controller"
 import ContextMenuController from "@poetry/controllers/context_menu_controller"
 import DateFieldController from "@poetry/controllers/date_field_controller"
+import FileDropController from "@poetry/controllers/file_drop_controller"
 import FileInputController from "@poetry/controllers/file_input_controller"
 import MaskController from "@poetry/controllers/mask_controller"
 import MenubarController from "@poetry/controllers/menubar_controller"
@@ -73,6 +75,7 @@ export { default as PopperController } from "@poetry/controllers/popper_controll
 export { default as MenuController } from "@poetry/controllers/menu_controller"
 export { default as ContextMenuController } from "@poetry/controllers/context_menu_controller"
 export { default as DateFieldController } from "@poetry/controllers/date_field_controller"
+export { default as FileDropController } from "@poetry/controllers/file_drop_controller"
 export { default as FileInputController } from "@poetry/controllers/file_input_controller"
 export { default as MaskController } from "@poetry/controllers/mask_controller"
 export { default as MenubarController } from "@poetry/controllers/menubar_controller"
@@ -121,6 +124,7 @@ export * from "@poetry/controllers/helpers/scroller_geometry"
 export * from "@poetry/controllers/helpers/announce"
 export * from "@poetry/controllers/helpers/typeahead"
 export * from "@poetry/controllers/helpers/filter_rank"
+export * from "@poetry/controllers/helpers/morph_guard"
 
 /**
  * identifier -> controller class, for every sidecar controller poetry
@@ -146,6 +150,7 @@ export const controllers = {
   "poetry--core--menu": MenuController,
   "poetry--core--context-menu": ContextMenuController,
   "poetry--core--date-field": DateFieldController,
+  "poetry--core--file-drop": FileDropController,
   "poetry--core--file-input": FileInputController,
   "poetry--core--mask": MaskController,
   "poetry--core--menubar": MenubarController,
@@ -196,7 +201,7 @@ registerBridgeEvents(Object.values(controllers).flatMap((controller) => controll
  * host's Stimulus application (importmap hosts get the same
  * registrations via the engine's pins + this same call in their
  * controllers/index.js), arms the portal event bridge, and installs the
- * unregistered-controller warning.
+ * unregistered-controller warning and the morph guard.
  *
  * @param {import("@hotwired/stimulus").Application} application
  * @returns {import("@hotwired/stimulus").Application} the application,
@@ -214,5 +219,8 @@ export function registerPoetryControllers(application) {
   // Warn (once per identifier) about poetry controllers on the page that
   // nothing registered - the silent-inert failure nothing else surfaces.
   guardPoetryRegistration(application)
+  // The morph guard, once per document: what the client changed on an
+  // element survives a Turbo morph (helpers/morph_guard.js).
+  installMorphGuard()
   return application
 }

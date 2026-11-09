@@ -59,13 +59,46 @@ module Poetry
           card = catalog.components.fetch("Card")
 
           assert_equal "#{COMMON_TYPES}ComponentId", card.dig("properties", "title", "$ref")
-          assert card["properties"].key?("children"), "the card body is a content cell"
+          assert card["properties"].key?("children"), "the card renders its block"
           refute card["properties"].key?("content_class"), "styling escape hatches stay out"
+          assert catalog.components.fetch("Field")["properties"].key?("children"), "a Field's block is its control"
+          refute catalog.components.fetch("Tabs")["properties"].key?("children"), "Tabs fill from their slots"
+          refute catalog.components.fetch("Input")["properties"].key?("children")
 
           badge = catalog.components.fetch("Badge")
 
-          assert_equal [{ "required" => ["text"] }, { "required" => ["children"] }], badge["anyOf"]
+          refute badge.key?("anyOf"), "v1.0's meta-schema refuses a root anyOf; the renderer requires the content"
+          assert_match(/Give it text or children\./, badge["description"])
           assert_equal "AlertDialog", catalog.component_name("poetry/ui/alert_dialog")
+        end
+
+        def test_the_v1_0_document_obeys_the_catalog_meta_schema
+          require "json_schemer"
+          path = "../../../fixtures/a2ui/upstream/specification/v1_0/json/catalog_definition.json"
+          meta = JSON.parse(File.read(File.expand_path(path, __dir__)))
+          drafts = JSONSchemer::Draft202012::Meta::SCHEMAS.to_h { |uri, schema| [uri.to_s, schema] }
+          drafts[JSONSchemer::Draft202012::BASE_URI.to_s] = JSONSchemer::Draft202012::SCHEMA
+          schemer = JSONSchemer.schema(meta, ref_resolver: proc { |uri| drafts.fetch(uri.to_s.sub(/#.*\z/, "")) })
+          problems = schemer.validate(catalog.to_h).map { |error| "#{error["data_pointer"]} #{error["type"]}" }
+
+          assert_empty problems.first(5)
+        end
+
+        def test_the_v0_9_document_is_the_same_catalog_in_v0_9s_form
+          doc = catalog.to_h(version: "v0.9")
+
+          assert_equal Catalog::V0_9_ID, doc["catalogId"]
+          assert_equal %w[$schema $id title description catalogId components functions $defs], doc.keys
+          assert_equal %w[CatalogComponentCommon theme anyComponent anyFunction], doc["$defs"].keys
+          assert_equal catalog.components.keys, doc["components"].keys
+          text = doc.dig("components", "Button", "allOf")
+
+          assert_equal "#{COMMON_TYPES_V0_9}ComponentCommon", text[0]["$ref"]
+          assert_equal "#{COMMON_TYPES_V0_9}DynamicString", text[2].dig("properties", "label", "$ref")
+          assert_equal({ "const" => "boolean" }, doc.dig("functions", "email", "properties", "returnType"))
+          refute_includes JSON.generate(doc), "\"$ref\":\"common_types.json", "every common type is named absolutely"
+          assert_equal Catalog::V0_9_ID, catalog.inline(version: "v0.9")["catalogId"]
+          assert_raises(ArgumentError) { Catalog.new(entries: {}, catalog_id: "urn:x").to_h(version: "v0.9") }
         end
 
         def test_inline_form_and_exclusions
@@ -81,6 +114,38 @@ module Poetry
           assert_equal %w[Badge], trimmed.components.keys
           assert_equal "urn:test", trimmed.to_h["$id"]
           assert_raises(ArgumentError) { Catalog.from_registry("/nowhere") }
+        end
+
+        def test_legacy_inline_is_the_reference_s_shape_for_a_v0_9_agent
+          button = { "type" => "object", "description" => "A button", "required" => ["label"],
+                     "properties" => { "id" => { "type" => "string" }, "label" => { "type" => "string" } } }
+          wrapped = { "allOf" => [{ "$ref" => "x" }] }
+          components = { "Button" => button, "Bare" => { "type" => "object" }, "Wrapped" => wrapped }
+          add = { "returnType" => "number",
+                  "parameters" => { "type" => "object", "properties" => { "a" => { "type" => "number" } } } }
+          shout = { "description" => "Loud",
+                    "properties" => { "@call" => { "const" => "shout" }, "args" => { "type" => "object" } } }
+          theme = { "type" => "object", "properties" => { "color" => { "type" => "string" } } }
+          document = { "catalogId" => "cat", "components" => components, "theme" => theme,
+                       "functions" => { "add" => add, "shout" => shout, "ping" => {} } }
+          inline = Catalog.legacy_inline(document, catalog_id: "bound-as")
+          envelope = { "$ref" => "common_types.json#/$defs/ComponentCommon" }
+          pinned = { "properties" => { "component" => { "const" => "Button" }, "label" => { "type" => "string" } },
+                     "required" => %w[component label] }
+
+          assert_equal "bound-as", inline["catalogId"]
+          assert_equal({ "allOf" => [envelope, pinned] }, inline["components"]["Button"])
+          assert_equal %w[component], inline["components"]["Bare"]["allOf"].last["required"]
+          assert_equal({ "allOf" => [{ "$ref" => "x" }] }, inline["components"]["Wrapped"], "an allOf passes as it is")
+          assert_equal(%w[add shout ping], inline["functions"].map { |function| function["name"] })
+          assert_equal({ "name" => "add", "returnType" => "number", "parameters" => add["parameters"] },
+                       inline["functions"][0])
+          assert_equal({ "name" => "shout", "description" => "Loud", "returnType" => "any",
+                         "parameters" => { "type" => "object" } }, inline["functions"][1])
+          assert_equal({ "name" => "ping", "returnType" => "any",
+                         "parameters" => { "type" => "object", "properties" => {} } }, inline["functions"][2])
+          assert_equal({ "color" => { "type" => "string" } }, inline["theme"])
+          refute Catalog.legacy_inline({ "catalogId" => "empty" }, catalog_id: "empty").key?("components")
         end
       end
     end

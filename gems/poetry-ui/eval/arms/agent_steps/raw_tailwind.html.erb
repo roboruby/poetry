@@ -1,0 +1,11 @@
+<%# The raw-Tailwind arm for the same steps - realistic, not a strawman:
+    plausible layout and copy, with the typical tells (the disclosure is a
+    styled div with an onclick and no expanded state, the icons are exposed
+    to AT, one arbitrary hex). %>
+<div class="flex flex-col gap-2 text-sm text-gray-500">
+  <div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><circle cx="11" cy="11" r="8"/></svg>Searched the docs for "pending migrations" <span class="text-gray-400">3 results</span></div>
+  <div class="flex items-center gap-2 animate-pulse">Running bin/rails test</div>
+  <div class="cursor-pointer text-[#dc2626]" onclick="toggleStep(this)">Failed to run bin/rails db:migrate ›</div>
+  <div class="ml-2 border-l pl-4"><div class="rounded-md border border-red-200 px-3 py-2 font-mono text-xs text-red-600">ActiveRecord::PendingMigrationError</div></div>
+  <a href="/files/db/schema.rb" class="flex items-center gap-2 hover:text-gray-900">Edited db/schema.rb <span class="text-gray-400">+2 -1</span></a>
+</div>

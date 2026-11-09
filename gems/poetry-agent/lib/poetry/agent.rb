@@ -7,9 +7,11 @@ require_relative "agent/config"
 require_relative "agent/mcp/server"
 require_relative "agent/mcp/bundled"
 require_relative "agent/mcp/http"
+require_relative "agent/mcp/auth"
 require_relative "agent/webmcp"
 require_relative "agent/agui"
 require_relative "agent/a2ui"
+require_relative "agent/apps"
 require_relative "agent/engine" if defined?(Rails::Engine)
 
 # The poetry namespace.
@@ -18,7 +20,8 @@ module Poetry
   # surfaces through which agents reach the component contract, built
   # once (the registry) and projected many ways:
   #
-  # - {MCP::Server} - the boot-free `poetry-agent` MCP server (discover:
+  # - {MCP::Server} - the boot-free `poetry-agent` MCP server, on the
+  #   official `mcp` gem (discover:
   #   list_components / describe_component / check / compose / build_page
   #   / get_skill) for coding agents in editors.
   # - {WebMCP} - the in-page runtime: rendered components' declared tools

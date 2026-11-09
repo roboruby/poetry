@@ -304,6 +304,9 @@ module Poetry
         # gem the token is inert and the browser's own submission runs.
         options[:data] = (options[:data] || {}).dup
         options[:data][:controller] = [options[:data][:controller], Webmcp::FORM_CONTROLLER].compact.join(" ")
+        # What the controller says when the browser reports an agent's fill
+        # or its cancellation, in the app's language.
+        options[:data].merge!(Webmcp.form_messages)
         form_with(**options, &)
       end
 
@@ -1313,17 +1316,34 @@ module Poetry
       end
 
       # Server-rendered highlighted code panel (rouge, soft dependency):
-      # language:, CSS-counter line_numbers:, highlight_lines:, and a
-      # copy affordance reading the rendered code. Inline code stays
-      # plain <code> typography.
+      # language:, CSS-counter line_numbers:, highlight_lines:, diff:,
+      # wrap:, and a copy affordance; the block sets the title, actions
+      # and footer slots. Inline code stays plain <code> typography.
       #
       # @example
       #     poetry_code_block(
       #       code: "puts \"hello\"", language: "ruby"
       #     )
+      # @example A header
+      #     poetry_code_block(code: source, language: "ruby") do |block|
+      #       block.with_title { "app/models/user.rb" }
+      #     end
       # @see Poetry::Ui::CodeBlock::Component
-      def poetry_code_block(**)
-        render(Poetry::Ui::CodeBlock::Component.new(**))
+      def poetry_code_block(**, &)
+        render(Poetry::Ui::CodeBlock::Component.new(**), &)
+      end
+
+      # The steps an agent takes, one line each: icon, title, description,
+      # a status (:running shimmers, :error, :pending); a step's block is
+      # detail it discloses.
+      #
+      # @example
+      #     poetry_trace do |trace|
+      #       trace.with_step("Ran the tests", icon: :"flask-conical", description: "2.1s")
+      #     end
+      # @see Poetry::Ui::Trace::Component
+      def poetry_trace(**, &)
+        render(Poetry::Ui::Trace::Component.new(**), &)
       end
 
       # Secret shown-on-demand (API keys, tokens): masked container is the
@@ -1432,8 +1452,8 @@ module Poetry
       #
       # @example A text-alignment switcher
       #     poetry_toggle_group(value: "left", label: "Text alignment") do |group|
-      #       group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
-      #       group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #       group.with_item(value: "left", label: "Align left") { icon(:"text-align-start") }
+      #       group.with_item(value: "center", label: "Align center") { icon(:"text-align-center") }
       #     end
       # @see Poetry::Ui::ToggleGroup::Component
       def poetry_toggle_group(**, &)
@@ -1495,6 +1515,55 @@ module Poetry
       # @see Poetry::Ui::Attachment::Component
       def poetry_attachment_group(**attrs, &)
         poetry_chat_group(Poetry::Ui::Attachment::Style, "attachment-group", **attrs, &)
+      end
+
+      # One Active Storage attachment as a chip through its lifecycle:
+      # processing until the blob is analyzed and the variant processed,
+      # done with the representation as the media (or an icon by type),
+      # error when an image was analyzed without dimensions. Takes an
+      # Attached::One, an Attachment or a Blob; renders nothing when
+      # nothing is attached. The chip's id is the broadcasts' target.
+      #
+      # @example A thumbnail with a download link
+      #   <%= poetry_attachment_for @post.cover, variant: :thumb, download: true %>
+      # @example Extra actions
+      #   <%= poetry_attachment_for photo, variant: :thumb do |chip| %>
+      #     <% chip.with_action(label: "Remove", href: remove_path, tag: :a) { poetry_icon(name: :x) } %>
+      #   <% end %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachment_for(attachment, variant: nil, download: false, **options, &block)
+        lifecycle = Poetry::Ui::AttachmentLifecycle.new(attachment, variant: variant)
+        return "".html_safe unless lifecycle.present?
+
+        attrs = { state: lifecycle.state }
+        attrs[:id] = lifecycle.dom_id if lifecycle.dom_id && !options.key?(:id)
+        render(Poetry::Ui::Attachment::Component.new(**attrs, **options)) do |chip|
+          if lifecycle.image_ready?
+            chip.with_media(variant: :image) { image_tag(lifecycle.representation, alt: "") }
+          else
+            chip.with_media { poetry_icon(name: lifecycle.icon) }
+          end
+          chip.with_title { lifecycle.filename }
+          chip.with_description { lifecycle.description(self) }
+          if download && (href = lifecycle.download_path(self))
+            # The stretched trigger's text is for screen readers: the chip
+            # itself is what people see.
+            chip.with_trigger(tag: :a, href: href) do
+              tag.span(t("poetry.attachment.download_file", name: lifecycle.filename), class: "sr-only")
+            end
+          end
+          block&.call(chip, lifecycle)
+        end
+      end
+
+      # Every attachment of a has_many_attached as chips, each through
+      # poetry_attachment_for.
+      #
+      # @example
+      #   <%= poetry_attachments_for @post.photos, variant: :thumb %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachments_for(attachments, **, &)
+        safe_join(Array(attachments).map { |attachment| poetry_attachment_for(attachment, **, &) })
       end
 
       # A streaming-aware transcript that keeps the latest message in view.

@@ -1,0 +1,4549 @@
+{
+  "source": "apply/__tests__/default.activity.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with activity events > creates and updates activity messages via snapshot and delta [after snapshot]",
+      "line": 60,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "search"
+            ]
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "search"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test. TS-only: the count of emitted mutations (`updates.length`)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > creates and updates activity messages via snapshot and delta [after delta]",
+      "line": 84,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "search"
+            ]
+          }
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/tasks/0",
+              "value": "✓ search"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "✓ search"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_delta",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[1] of the TS test."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > appends operations via delta when snapshot starts with an empty array [after snapshot]",
+      "line": 116,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "content": {
+            "operations": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-ops",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "operations": []
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > appends operations via delta when snapshot starts with an empty array [after first delta]",
+      "line": 117,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "content": {
+            "operations": []
+          }
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "add",
+              "path": "/operations/-",
+              "value": {
+                "id": "op-1",
+                "status": "PENDING"
+              }
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-ops",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "operations": [
+                {
+                  "id": "op-1",
+                  "status": "PENDING"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_delta",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > appends operations via delta when snapshot starts with an empty array [after second delta]",
+      "line": 120,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "content": {
+            "operations": []
+          }
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "add",
+              "path": "/operations/-",
+              "value": {
+                "id": "op-1",
+                "status": "PENDING"
+              }
+            }
+          ]
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "activity-ops",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "add",
+              "path": "/operations/-",
+              "value": {
+                "id": "op-2",
+                "status": "COMPLETED"
+              }
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-ops",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "operations": [
+                {
+                  "id": "op-1",
+                  "status": "PENDING"
+                },
+                {
+                  "id": "op-2",
+                  "status": "COMPLETED"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_delta",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > does not replace existing activity message when replace is false",
+      "line": 126,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "initial"
+              ]
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "updated"
+            ]
+          },
+          "replace": false
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "initial"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: an explicit replace: false leaves an existing activity as it stands",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The existing activity is in the consumer's history."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > adds activity message when replace is false and none exists",
+      "line": 145,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "first"
+            ]
+          },
+          "replace": false
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "first"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: the snapshot's own values apply when it creates the message",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > replaces existing activity message when replace is true",
+      "line": 161,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "initial"
+              ]
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "updated"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "updated"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > replaces non-activity message when replace is true",
+      "line": 185,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "user",
+            "content": "placeholder"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "first"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "first"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot (silent on a snapshot naming a non-activity message); /spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule)",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The reference turns the user message into the activity. The spec does not say what a snapshot naming an existing non-activity message does; the producer has broken id uniqueness."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > does not alter non-activity message when replace is false",
+      "line": 205,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "user",
+            "content": "placeholder"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "first"
+            ]
+          },
+          "replace": false
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "user",
+            "content": "placeholder"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: replace: false leaves the existing message as it stands",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). replace: false against a non-activity message leaves it alone."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > maintains replace semantics across runs [second run, replace false]",
+      "line": 268,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "initial"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test-2"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "updated"
+            ]
+          },
+          "replace": false
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test-2"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "initial"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot; /spec/1.0/events/state#cross-run-behaviour (messages accumulate across runs)",
+      "notes": "The TS test runs a second reducer seeded with the first run's messages; here the two runs share one stream (second runId 'run-test-2'), so the activity carries over the same way."
+    },
+    {
+      "name": "defaultApplyEvents with activity events > maintains replace semantics across runs [second run, final]",
+      "line": 269,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "initial"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test-2"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "updated"
+            ]
+          },
+          "replace": false
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "activity-1",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "final"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test-2"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "activity-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "final"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot",
+      "notes": "As above; the final replace: true snapshot replaces."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves activity message between conversation messages",
+      "line": 274,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "a"
+              ]
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > keeps activity message ordering after its anchor",
+      "line": 292,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "q1"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "x": 1
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "a1"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "q1"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "a1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves activity at start of messages (null anchor)",
+      "line": 310,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "act-0",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "step": 0
+            }
+          },
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act-0",
+            "role": "activity"
+          },
+          {
+            "id": "m1",
+            "role": "user"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves multiple activities with different anchors",
+      "line": 324,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "act-a",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "a": 1
+            }
+          },
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "q"
+          },
+          {
+            "id": "act-b",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "b": 2
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "a"
+          },
+          {
+            "id": "act-c",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "c": 3
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "q"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "a"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act-a",
+            "role": "activity"
+          },
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-b",
+            "role": "activity"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          },
+          {
+            "id": "act-c",
+            "role": "activity"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves activity position when its preceding message is removed",
+      "line": 342,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "q"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "x": 1
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "a"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "a"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). m1 is dropped (omitted); the activity keeps its place before m2."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > keeps activities in position when new messages are added by snapshot",
+      "line": 357,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "q"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "x": 1
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "a"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "q"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "a"
+            },
+            {
+              "id": "m3",
+              "role": "user",
+              "content": "q2"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          },
+          {
+            "id": "m3",
+            "role": "user"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves reasoning messages after MESSAGES_SNAPSHOT",
+      "line": 374,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Let me think about this..."
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "hi there"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "hi there"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "Let me think about this..."
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves both activity and reasoning messages after MESSAGES_SNAPSHOT",
+      "line": 393,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "explain this"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "research"
+              ]
+            }
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "The user wants an explanation..."
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "Here is the explanation"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "explain this"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "Here is the explanation"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > reasoning messages are not replaced by snapshot data",
+      "line": 413,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "original reasoning"
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "response"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "response"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "original reasoning"
+          },
+          {
+            "id": "m2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The TS test asserts only r1; the other ids and the length are the full-pipeline outcome."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT preserves client-only messages > preserves activity position when a message ID changes in snapshot",
+      "line": 431,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "create a dashboard"
+          },
+          {
+            "id": "asst-1",
+            "role": "assistant",
+            "content": "I'll create that for you"
+          },
+          {
+            "id": "tool-stream",
+            "role": "tool",
+            "content": "{\"a2ui\": true}",
+            "toolCallId": "tc-stream"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "A2UI_SURFACE",
+            "content": {
+              "surface": "dashboard"
+            }
+          },
+          {
+            "id": "asst-2",
+            "role": "assistant",
+            "content": "Here's your dashboard"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "create a dashboard"
+            },
+            {
+              "id": "asst-1",
+              "role": "assistant",
+              "content": "I'll create that for you"
+            },
+            {
+              "id": "tool-canon",
+              "role": "tool",
+              "content": "{\"a2ui\": true}",
+              "toolCallId": "tc-canon"
+            },
+            {
+              "id": "asst-2",
+              "role": "assistant",
+              "content": "Here's your dashboard"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "asst-1",
+            "role": "assistant"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "asst-2",
+            "role": "assistant"
+          },
+          {
+            "id": "tool-canon",
+            "role": "tool"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). 'tool-stream' is dropped (omitted) and 'tool-canon' appended; no message issues tc-canon, so the orphan tool message stays at the end."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied reasoning > replaces streamed reasoning with the snapshot's canonical copy when ids differ",
+      "line": 466,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "What is the best car to buy?"
+          },
+          {
+            "id": "uuid-a",
+            "role": "reasoning",
+            "content": "The user wants a car recommendation."
+          },
+          {
+            "id": "lc-1",
+            "role": "assistant",
+            "content": "Based on my analysis…"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "What is the best car to buy?"
+            },
+            {
+              "id": "rs-1",
+              "role": "reasoning",
+              "content": "The user wants a car recommendation."
+            },
+            {
+              "id": "resp-1",
+              "role": "assistant",
+              "content": "Based on my analysis…"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "rs-1",
+            "role": "reasoning"
+          },
+          {
+            "id": "resp-1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The snapshot carries reasoning, so the local reasoning it omits is dropped."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied reasoning > replaces streamed reasoning when the snapshot arrives before the assistant streamed",
+      "line": 484,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "What is the best car to buy?"
+          },
+          {
+            "id": "uuid-a",
+            "role": "reasoning",
+            "content": "The user wants a car recommendation."
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "What is the best car to buy?"
+            },
+            {
+              "id": "rs-1",
+              "role": "reasoning",
+              "content": "The user wants a car recommendation."
+            },
+            {
+              "id": "resp-1",
+              "role": "assistant",
+              "content": "Based on my analysis…"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "rs-1",
+            "role": "reasoning"
+          },
+          {
+            "id": "resp-1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied reasoning > converges multi-turn reasoning to one message per turn",
+      "line": 501,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "q1"
+          },
+          {
+            "id": "rs-1",
+            "role": "reasoning",
+            "content": "thinking about q1"
+          },
+          {
+            "id": "resp-1",
+            "role": "assistant",
+            "content": "a1"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "q2"
+          },
+          {
+            "id": "uuid-b",
+            "role": "reasoning",
+            "content": "thinking about q2"
+          },
+          {
+            "id": "lc-2",
+            "role": "assistant",
+            "content": "a2"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "q1"
+            },
+            {
+              "id": "rs-1",
+              "role": "reasoning",
+              "content": "thinking about q1"
+            },
+            {
+              "id": "resp-1",
+              "role": "assistant",
+              "content": "a1"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "q2"
+            },
+            {
+              "id": "rs-2",
+              "role": "reasoning",
+              "content": "thinking about q2"
+            },
+            {
+              "id": "resp-2",
+              "role": "assistant",
+              "content": "a2"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user"
+          },
+          {
+            "id": "rs-1",
+            "role": "reasoning"
+          },
+          {
+            "id": "resp-1",
+            "role": "assistant"
+          },
+          {
+            "id": "u2",
+            "role": "user"
+          },
+          {
+            "id": "rs-2",
+            "role": "reasoning"
+          },
+          {
+            "id": "resp-2",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied reasoning > still preserves activity messages when the snapshot carries reasoning",
+      "line": 528,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "a"
+              ]
+            }
+          },
+          {
+            "id": "uuid-a",
+            "role": "reasoning",
+            "content": "thinking"
+          },
+          {
+            "id": "lc-1",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "rs-1",
+              "role": "reasoning",
+              "content": "thinking"
+            },
+            {
+              "id": "resp-1",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity"
+          },
+          {
+            "id": "rs-1",
+            "role": "reasoning"
+          },
+          {
+            "id": "resp-1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied reasoning > updates an id-stable reasoning message with the snapshot version",
+      "line": 548,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "thinking"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "thinking",
+              "encryptedValue": "enc-1"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "encryptedValue": "enc-1"
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Also pins /spec/1.0/events/reasoning#reasoning_encrypted_value: a snapshot restating the message replaces it wholesale, encryptedValue included."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied activity > replaces an existing activity message with the snapshot version",
+      "line": 575,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "stale"
+              ]
+            }
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "act-1",
+              "role": "activity",
+              "activityType": "PLAN",
+              "content": {
+                "tasks": [
+                  "fresh"
+                ]
+              }
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "fresh"
+              ]
+            }
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied activity > appends an activity message the client does not have yet",
+      "line": 595,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "act-1",
+              "role": "activity",
+              "activityType": "PLAN",
+              "content": {
+                "tasks": [
+                  "fresh"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "fresh"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied activity > drops a local activity the snapshot leaves out once the snapshot carries activity",
+      "line": 609,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "act-gone",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "gone"
+              ]
+            }
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "stale"
+              ]
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "act-1",
+              "role": "activity",
+              "activityType": "PLAN",
+              "content": {
+                "tasks": [
+                  "fresh"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "fresh"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "MESSAGES_SNAPSHOT with snapshot-supplied activity > keeps client activity when the snapshot carries none",
+      "line": 627,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user",
+            "content": "hello"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "local"
+              ]
+            }
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": "hello"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "user"
+          },
+          {
+            "id": "act-1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "local"
+              ]
+            }
+          },
+          {
+            "id": "a1",
+            "role": "assistant"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "TEXT_MESSAGE_* against an activity message's id > leaves the activity message intact instead of streaming text into it",
+      "line": 666,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "shared-id",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "shared-id",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The TEXT_MESSAGE_* events under the activity's id are dropped with a warning."
+    },
+    {
+      "name": "TEXT_MESSAGE_* against an activity message's id > keeps the activity message's own metadata off the text event's",
+      "line": 677,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          },
+          "metadata": {
+            "origin": "activity"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "shared-id",
+          "metadata": {
+            "origin": "text"
+          },
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            },
+            "metadata": {
+              "origin": "activity"
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice; /spec/1.0/basic/metadata#where-each-event-s-metadata-lands (ACTIVITY_SNAPSHOT metadata lands on the activity message)",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Adapted: the TS test leaves the text message open; a TEXT_MESSAGE_END is added so RUN_FINISHED is accepted."
+    },
+    {
+      "name": "TEXT_MESSAGE_* against an activity message's id > warns on the id collision from each text handler",
+      "line": 702,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "shared-id",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "shared-id",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          }
+        ],
+        "warnings": [
+          "TEXT_MESSAGE_START:",
+          "TEXT_MESSAGE_CONTENT:",
+          "TEXT_MESSAGE_END:"
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Warning fragments are the TS assertion's prefixes (console.warn); the full text is \"TEXT_MESSAGE_START: Message 'shared-id' is an activity message — message ids must be unique across activity and text messages\". Soft."
+    },
+    {
+      "name": "TEXT_MESSAGE_* against an activity message's id > still streams text normally when the id does not collide",
+      "line": 713,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "free-id",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "free-id",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "free-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          },
+          {
+            "id": "free-id",
+            "role": "assistant",
+            "content": "Hello"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "REASONING_MESSAGE_* against an activity message's id > leaves the activity message intact instead of streaming reasoning into it",
+      "line": 747,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "shared-id",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "shared-id",
+          "delta": "thinking"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Required field completed for enforcement: role 'reasoning' on REASONING_MESSAGE_START. The REASONING_MESSAGE_* events under the activity's id are dropped with a warning."
+    },
+    {
+      "name": "REASONING_MESSAGE_* against an activity message's id > keeps the activity message's own metadata off the reasoning event's",
+      "line": 758,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          },
+          "metadata": {
+            "origin": "activity"
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "shared-id",
+          "metadata": {
+            "origin": "reasoning"
+          },
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            },
+            "metadata": {
+              "origin": "activity"
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice; /spec/1.0/basic/metadata#where-each-event-s-metadata-lands (ACTIVITY_SNAPSHOT metadata lands on the activity message)",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Required field completed for enforcement: role 'reasoning' on REASONING_MESSAGE_START. Adapted: the TS test leaves the reasoning message open; a REASONING_MESSAGE_END is added so RUN_FINISHED is accepted."
+    },
+    {
+      "name": "REASONING_MESSAGE_* against an activity message's id > warns on the id collision from each reasoning handler",
+      "line": 783,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "shared-id",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "shared-id",
+          "delta": "thinking"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "shared-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          }
+        ],
+        "warnings": [
+          "REASONING_MESSAGE_START:",
+          "REASONING_MESSAGE_CONTENT:",
+          "REASONING_MESSAGE_END:"
+        ]
+      },
+      "spec": "/spec/1.0/basic#identifiers: a messageId MUST be unique within its thread (producer rule); dropping the colliding text or reasoning and keeping the activity is the reference's consumer choice",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Required field completed for enforcement: role 'reasoning' on REASONING_MESSAGE_START. Warning fragments are the TS assertion's prefixes (console.warn); the full text is \"REASONING_MESSAGE_START: Message 'shared-id' is an activity message — message ids must be unique across activity and reasoning messages\". Soft."
+    },
+    {
+      "name": "REASONING_MESSAGE_* against an activity message's id > still streams reasoning normally when the id does not collide",
+      "line": 794,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "shared-id",
+          "activityType": "PLAN",
+          "content": {
+            "tasks": [
+              "plan"
+            ]
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "free-id",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "free-id",
+          "delta": "thinking"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "free-id"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "shared-id",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "tasks": [
+                "plan"
+              ]
+            }
+          },
+          {
+            "id": "free-id",
+            "role": "reasoning",
+            "content": "thinking"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Required field completed for enforcement: role 'reasoning' on REASONING_MESSAGE_START."
+    },
+    {
+      "name": "preserves existing order and appends new activities when replacing an owned set",
+      "line": 805,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "prompt"
+          },
+          {
+            "id": "foreign",
+            "role": "activity",
+            "activityType": "other",
+            "content": {}
+          },
+          {
+            "id": "a",
+            "role": "assistant",
+            "content": "answer"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "prompt"
+            },
+            {
+              "id": "owned",
+              "role": "activity",
+              "activityType": "a2ui-surface",
+              "content": {}
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "content": "answer"
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "a2ui-surface"
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user"
+          },
+          {
+            "id": "foreign",
+            "role": "activity"
+          },
+          {
+            "id": "a",
+            "role": "assistant"
+          },
+          {
+            "id": "owned",
+            "role": "activity"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events).",
+      "specConflict": "The snapshot carries an activity message, so state.mdx says the consumer's activity messages it omits are dropped ([u, a, owned]); the reference keeps 'foreign' because the snapshot's metadata scopes its authority to a2ui-surface."
+    },
+    {
+      "name": "keeps prior subagent positions when Python LangGraph appends them to a later snapshot",
+      "line": 830,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "first"
+          },
+          {
+            "id": "sub-a",
+            "role": "assistant",
+            "content": "subagent answer",
+            "subagentRunId": "sub-run"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "first answer"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "first"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "first answer"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "second"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "second answer"
+            },
+            {
+              "id": "sub-a",
+              "role": "assistant",
+              "content": "subagent answer",
+              "subagentRunId": "sub-run"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "first"
+          },
+          {
+            "id": "sub-a",
+            "role": "assistant",
+            "content": "subagent answer",
+            "subagentRunId": "sub-run"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "first answer"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "second"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "second answer"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). Asserted with toEqual: full objects, subagentRunId included."
+    },
+    {
+      "name": "keeps prior subagent positions when Python LangGraph appends them to a later snapshot [again]",
+      "line": 846,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "first"
+          },
+          {
+            "id": "sub-a",
+            "role": "assistant",
+            "content": "subagent answer",
+            "subagentRunId": "sub-run"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "first answer"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "second"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "second answer"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "first"
+            },
+            {
+              "id": "a1",
+              "role": "assistant",
+              "content": "first answer"
+            },
+            {
+              "id": "u2",
+              "role": "user",
+              "content": "second"
+            },
+            {
+              "id": "a2",
+              "role": "assistant",
+              "content": "second answer"
+            },
+            {
+              "id": "sub-a",
+              "role": "assistant",
+              "content": "subagent answer",
+              "subagentRunId": "sub-run"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "first"
+          },
+          {
+            "id": "sub-a",
+            "role": "assistant",
+            "content": "subagent answer",
+            "subagentRunId": "sub-run"
+          },
+          {
+            "id": "a1",
+            "role": "assistant",
+            "content": "first answer"
+          },
+          {
+            "id": "u2",
+            "role": "user",
+            "content": "second"
+          },
+          {
+            "id": "a2",
+            "role": "assistant",
+            "content": "second answer"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). The TS test's second assertion: the same snapshot over the result."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with empty scope",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": []
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with empty scope [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": []
+            }
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": []
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with foreign scope",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned"
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with foreign scope [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned"
+              ]
+            }
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned"
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with mixed array",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned",
+                5
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with mixed array [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned",
+                5
+              ]
+            }
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "owned",
+                5
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with non-array field",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": "owned"
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with non-array field [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": "owned"
+            }
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": "owned"
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with null namespace",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with null namespace [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": null
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with array namespace",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with array namespace [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": []
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with primitive namespace",
+      "line": 883,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": true
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates[0] of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "updates matching IDs but preserves omitted foreign activities with primitive namespace [repeated]",
+      "line": 884,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 1
+            }
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": true
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "new",
+              "role": "activity",
+              "activityType": "owned",
+              "content": {}
+            },
+            {
+              "id": "same",
+              "role": "activity",
+              "activityType": "foreign",
+              "content": {
+                "version": 2
+              }
+            }
+          ],
+          "metadata": {
+            "@ag-ui/client": true
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "omitted",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {}
+          },
+          {
+            "id": "same",
+            "role": "activity",
+            "activityType": "foreign",
+            "content": {
+              "version": 2
+            }
+          },
+          {
+            "id": "new",
+            "role": "activity",
+            "activityType": "owned",
+            "content": {}
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events). updates.at(-1), after the same snapshot twice of the TS test; asserted with toEqual (full objects). Any present @ag-ui/client declaration that does not name 'foreign' grants no deletion of it.",
+      "specConflict": "The snapshot carries activity messages, so state.mdx says the omitted activity 'omitted' is dropped ([same, new]); the reference keeps it because the snapshot's metadata carries an @ag-ui/client declaration (even an invalid one)."
+    },
+    {
+      "name": "reconciles empty snapshots with explicit authority null",
+      "line": 889,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "file",
+            "role": "activity",
+            "activityType": "dsh-deliverables",
+            "content": {}
+          },
+          {
+            "id": "surface",
+            "role": "activity",
+            "activityType": "a2ui-surface",
+            "content": {}
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": null
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": []
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events).",
+      "specConflict": "An empty snapshot carries no activity, so state.mdx keeps the consumer's activity messages ([file, surface]); the reference drops [\"file\", \"surface\"] because the metadata declares authority over every type."
+    },
+    {
+      "name": "reconciles empty snapshots with explicit authority []",
+      "line": 890,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "file",
+            "role": "activity",
+            "activityType": "dsh-deliverables",
+            "content": {}
+          },
+          {
+            "id": "surface",
+            "role": "activity",
+            "activityType": "a2ui-surface",
+            "content": {}
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": []
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "file",
+            "role": "activity"
+          },
+          {
+            "id": "surface",
+            "role": "activity"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events)."
+    },
+    {
+      "name": "reconciles empty snapshots with explicit authority [\"a2ui-surface\"]",
+      "line": 891,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "file",
+            "role": "activity",
+            "activityType": "dsh-deliverables",
+            "content": {}
+          },
+          {
+            "id": "surface",
+            "role": "activity",
+            "activityType": "a2ui-surface",
+            "content": {}
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [],
+          "metadata": {
+            "@ag-ui/client": {
+              "authoritativeActivityTypes": [
+                "a2ui-surface"
+              ]
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-test",
+          "runId": "run-test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "file",
+            "role": "activity"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the consumer's copy in place, an unseen one is appended in snapshot order, a held message the snapshot omits is dropped; reference-only: the @ag-ui/client snapshot metadata convention (activity-history.ts, authoritativeActivityTypes) scopes which activity types a MESSAGES_SNAPSHOT may delete; not in the spec",
+      "notes": "Wrapped in RUN_STARTED/RUN_FINISHED (the TS test feeds the reducer bare events).",
+      "specConflict": "An empty snapshot carries no activity, so state.mdx keeps the consumer's activity messages ([file, surface]); the reference drops [\"surface\"] because the metadata declares authority over a2ui-surface."
+    }
+  ],
+  "excluded": []
+}

@@ -12,6 +12,18 @@
     "path": "/installation#install"
   },
   {
+    "title": "Hand it to an assistant",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#prompts"
+  },
+  {
+    "title": "Prompts to try",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#prompts-to-try"
+  },
+  {
     "title": "Installing into an app that already has CSS",
     "page": "Installation",
     "section": "docs",
@@ -318,6 +330,12 @@
     "path": "/stimulus#declare"
   },
   {
+    "title": "4b. Compose a Poetry behavior into your controller",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#behaviors"
+  },
+  {
     "title": "5. Change what a Poetry controller does",
     "page": "Stimulus",
     "section": "docs",
@@ -334,6 +352,54 @@
     "page": "Stimulus",
     "section": "docs",
     "path": "/stimulus#tooling"
+  },
+  {
+    "title": "Where State Lives",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives"
+  },
+  {
+    "title": "Durable: the record and the form",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#durable"
+  },
+  {
+    "title": "Addressable: the URL",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#addressable"
+  },
+  {
+    "title": "Preference: a cookie, or localStorage before first paint",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#preference"
+  },
+  {
+    "title": "Template state, on a ReActionView host",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#template"
+  },
+  {
+    "title": "Transient: attributes on the element",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#transient"
+  },
+  {
+    "title": "Why there is no useState",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#usestate"
+  },
+  {
+    "title": "What a morph does to each tier",
+    "page": "Where State Lives",
+    "section": "docs",
+    "path": "/where-state-lives#morph"
   },
   {
     "title": "Form Builder",
@@ -370,6 +436,54 @@
     "page": "Form Builder",
     "section": "docs",
     "path": "/forms#layout"
+  },
+  {
+    "title": "Uploads",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads"
+  },
+  {
+    "title": "Three modes",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#modes"
+  },
+  {
+    "title": "Setup",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#setup"
+  },
+  {
+    "title": "Limits and intake",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#limits"
+  },
+  {
+    "title": "Rendering attachments",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#attachments"
+  },
+  {
+    "title": "Processing with Hot Cell",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#hot-cell"
+  },
+  {
+    "title": "Turbo broadcasts",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#broadcasts"
+  },
+  {
+    "title": "Security, Turbo and native apps",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#security"
   },
   {
     "title": "Pagination",
@@ -580,6 +694,138 @@
     "page": "Recipes",
     "section": "docs",
     "path": "/recipes#skill-poetry-design"
+  },
+  {
+    "title": "Community components",
+    "page": "Community components",
+    "section": "docs",
+    "path": "/community"
+  },
+  {
+    "title": "0\n      items",
+    "page": "Community components",
+    "section": "docs",
+    "path": "/community#items"
+  },
+  {
+    "title": "Using community items",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items"
+  },
+  {
+    "title": "What a community item is",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#what-they-are"
+  },
+  {
+    "title": "Install",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#install"
+  },
+  {
+    "title": "Use it",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#use"
+  },
+  {
+    "title": "How items are named",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#names"
+  },
+  {
+    "title": "What the install records",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#record"
+  },
+  {
+    "title": "Reviewed, not audited",
+    "page": "Using community items",
+    "section": "docs",
+    "path": "/community-items#reviewed-not-audited"
+  },
+  {
+    "title": "Updating community items",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates"
+  },
+  {
+    "title": "See what changed",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#see-what-changed"
+  },
+  {
+    "title": "Update",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#update"
+  },
+  {
+    "title": "The record follows the files",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#the-record"
+  },
+  {
+    "title": "Taking a change into a file you edited",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#merging-an-edit"
+  },
+  {
+    "title": "Copies of Poetry's own components",
+    "page": "Updating community items",
+    "section": "docs",
+    "path": "/community-updates#gem-components"
+  },
+  {
+    "title": "Publishing components",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing"
+  },
+  {
+    "title": "A registry at your own address",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#your-own-registry"
+  },
+  {
+    "title": "A private registry",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#private"
+  },
+  {
+    "title": "The item",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#the-item"
+  },
+  {
+    "title": "Names and helpers",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#names-and-helpers"
+  },
+  {
+    "title": "Versions",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#versions"
+  },
+  {
+    "title": "The Poetry registry",
+    "page": "Publishing components",
+    "section": "docs",
+    "path": "/community-publishing#the-poetry-registry"
   },
   {
     "title": "Page Agent",
@@ -966,7 +1212,7 @@
     "path": "/herb#stimulus"
   },
   {
-    "title": "Open upstream, on 2026-09-29",
+    "title": "Upstream, on 2026-11-09",
     "page": "Herb and ReActionView",
     "section": "docs",
     "path": "/herb#upstream"
@@ -1176,10 +1422,22 @@
     "path": "/ag-ui#run"
   },
   {
+    "title": "What the client checks",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#pipeline"
+  },
+  {
     "title": "Render the transcript",
     "page": "AG-UI Relay",
     "section": "docs",
     "path": "/ag-ui#render"
+  },
+  {
+    "title": "What a message carries",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#carries"
   },
   {
     "title": "Frontend tools",
@@ -1194,7 +1452,13 @@
     "path": "/ag-ui#interrupts"
   },
   {
-    "title": "A2UI surfaces in the stream",
+    "title": "Stopping a run",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#stopping"
+  },
+  {
+    "title": "A2UI surfaces and MCP Apps in the stream",
     "page": "AG-UI Relay",
     "section": "docs",
     "path": "/ag-ui#surfaces"
@@ -1222,6 +1486,12 @@
     "page": "A2UI Surfaces",
     "section": "docs",
     "path": "/a2ui#catalogs"
+  },
+  {
+    "title": "Two versions",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#versions"
   },
   {
     "title": "Fold the envelope",
@@ -1278,6 +1548,60 @@
     "path": "/a2ui#setup"
   },
   {
+    "title": "MCP Apps",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps"
+  },
+  {
+    "title": "What an app is",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#what"
+  },
+  {
+    "title": "Serve a document",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#serve"
+  },
+  {
+    "title": "The page",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#page"
+  },
+  {
+    "title": "Assets and the sandbox",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#assets"
+  },
+  {
+    "title": "Theme and the host's styles",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#theme"
+  },
+  {
+    "title": "Per-user authorization",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#auth"
+  },
+  {
+    "title": "Host: other servers' apps in your page",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#host"
+  },
+  {
+    "title": "Try it",
+    "page": "MCP Apps",
+    "section": "docs",
+    "path": "/mcp-apps#try"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",
@@ -1324,6 +1648,12 @@
     "page": "Accordion",
     "section": "components",
     "path": "/components/accordion#non-collapsible"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#behaviors"
   },
   {
     "title": "Wiring",
@@ -1506,6 +1836,12 @@
     "path": "/components/attachment#idle-dropzone"
   },
   {
+    "title": "Progress",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#progress"
+  },
+  {
     "title": "Sizes",
     "page": "Attachment",
     "section": "components",
@@ -1552,6 +1888,12 @@
     "page": "Autocomplete",
     "section": "components",
     "path": "/components/autocomplete#value-override"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#behaviors"
   },
   {
     "title": "Wiring",
@@ -2136,6 +2478,12 @@
     "path": "/components/checkbox#with-description"
   },
   {
+    "title": "Behaviors",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Checkbox",
     "section": "components",
@@ -2190,10 +2538,82 @@
     "path": "/components/code-block#default"
   },
   {
-    "title": "Numbered and highlighted",
+    "title": "Actions",
     "page": "Code Block",
     "section": "components",
-    "path": "/components/code-block#numbered-and-highlighted"
+    "path": "/components/code-block#actions"
+  },
+  {
+    "title": "Basic",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#basic"
+  },
+  {
+    "title": "Destructive",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#destructive"
+  },
+  {
+    "title": "Diff",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#diff"
+  },
+  {
+    "title": "Floating actions",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#floating-actions"
+  },
+  {
+    "title": "Header",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#header"
+  },
+  {
+    "title": "Height",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#height"
+  },
+  {
+    "title": "Highlighted lines",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#highlighted-lines"
+  },
+  {
+    "title": "Line numbers",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#line-numbers"
+  },
+  {
+    "title": "Size",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#size"
+  },
+  {
+    "title": "Start line",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#start-line"
+  },
+  {
+    "title": "Trace",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#trace"
+  },
+  {
+    "title": "Wrap",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#wrap"
   },
   {
     "title": "Wiring",
@@ -2218,6 +2638,12 @@
     "page": "Collapsible",
     "section": "components",
     "path": "/components/collapsible#default"
+  },
+  {
+    "title": "Animated",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#animated"
   },
   {
     "title": "File tree",
@@ -2338,6 +2764,12 @@
     "page": "Combobox",
     "section": "components",
     "path": "/components/combobox#agent-tools"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#behaviors"
   },
   {
     "title": "Wiring",
@@ -2524,6 +2956,12 @@
     "page": "Context Menu",
     "section": "components",
     "path": "/components/context-menu#with-icon"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#behaviors"
   },
   {
     "title": "Wiring",
@@ -2928,6 +3366,12 @@
     "path": "/components/dropdown-menu#with-icons"
   },
   {
+    "title": "Behaviors",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Dropdown Menu",
     "section": "components",
@@ -3174,6 +3618,24 @@
     "path": "/components/file-input#dropzone"
   },
   {
+    "title": "Limits",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#limits"
+  },
+  {
+    "title": "Previews",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#previews"
+  },
+  {
+    "title": "Behaviors",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "File Input",
     "section": "components",
@@ -3208,6 +3670,12 @@
     "page": "Hover Card",
     "section": "components",
     "path": "/components/hover-card#sides"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#behaviors"
   },
   {
     "title": "Wiring",
@@ -3804,6 +4272,12 @@
     "path": "/components/menubar#submenu"
   },
   {
+    "title": "Behaviors",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Menubar",
     "section": "components",
@@ -4218,6 +4692,12 @@
     "path": "/components/popover#with-form"
   },
   {
+    "title": "Behaviors",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Popover",
     "section": "components",
@@ -4392,6 +4872,12 @@
     "path": "/components/radio-group#with-description"
   },
   {
+    "title": "Behaviors",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Radio Group",
     "section": "components",
@@ -4558,6 +5044,12 @@
     "page": "Select",
     "section": "components",
     "path": "/components/select#valued"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#behaviors"
   },
   {
     "title": "Wiring",
@@ -4998,6 +5490,12 @@
     "path": "/components/switch#states"
   },
   {
+    "title": "Behaviors",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Switch",
     "section": "components",
@@ -5094,6 +5592,12 @@
     "path": "/components/tabs#agent-tools"
   },
   {
+    "title": "Behaviors",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Tabs",
     "section": "components",
@@ -5122,6 +5626,12 @@
     "page": "Tag Group",
     "section": "components",
     "path": "/components/tag-group#as-form-value"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#behaviors"
   },
   {
     "title": "Wiring",
@@ -5454,6 +5964,12 @@
     "path": "/components/toggle-group#vertical"
   },
   {
+    "title": "Behaviors",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Toggle Group",
     "section": "components",
@@ -5538,10 +6054,58 @@
     "path": "/components/tooltip#with-label"
   },
   {
+    "title": "Behaviors",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Tooltip",
     "section": "components",
     "path": "/components/tooltip#wiring"
+  },
+  {
+    "title": "Trace",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace"
+  },
+  {
+    "title": "Installation",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#default"
+  },
+  {
+    "title": "Links",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#links"
+  },
+  {
+    "title": "Tool states",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#tool-states"
+  },
+  {
+    "title": "With detail",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#with-detail"
+  },
+  {
+    "title": "Wiring",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#wiring"
   },
   {
     "title": "Tree",
@@ -5676,6 +6240,12 @@
     "path": "/charts/area#legend-toggle"
   },
   {
+    "title": "Behaviors",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Area Chart",
     "section": "charts",
@@ -5742,6 +6312,12 @@
     "path": "/charts/bar#stacked"
   },
   {
+    "title": "Behaviors",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Bar Chart",
     "section": "charts",
@@ -5770,6 +6346,12 @@
     "page": "Composed Chart",
     "section": "charts",
     "path": "/charts/composed#full-mix"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#behaviors"
   },
   {
     "title": "Wiring",
@@ -5838,6 +6420,12 @@
     "path": "/charts/line#step"
   },
   {
+    "title": "Behaviors",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Line Chart",
     "section": "charts",
@@ -5896,6 +6484,12 @@
     "page": "Pie Chart",
     "section": "charts",
     "path": "/charts/pie#stacked"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#behaviors"
   },
   {
     "title": "Wiring",
@@ -5964,6 +6558,12 @@
     "path": "/charts/radar#multiple"
   },
   {
+    "title": "Behaviors",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Radar Chart",
     "section": "charts",
@@ -6018,6 +6618,12 @@
     "path": "/charts/radial-bar#text"
   },
   {
+    "title": "Behaviors",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Radial Bar Chart",
     "section": "charts",
@@ -6060,10 +6666,616 @@
     "path": "/charts/scatter#reference-zones"
   },
   {
+    "title": "Behaviors",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Scatter Chart",
     "section": "charts",
     "path": "/charts/scatter#wiring"
+  },
+  {
+    "title": "Animated List",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list"
+  },
+  {
+    "title": "Installation",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#wiring"
+  },
+  {
+    "title": "Background",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background"
+  },
+  {
+    "title": "Installation",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#default"
+  },
+  {
+    "title": "Effects",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#effects"
+  },
+  {
+    "title": "Confetti",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti"
+  },
+  {
+    "title": "Installation",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#wiring"
+  },
+  {
+    "title": "Dock",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock"
+  },
+  {
+    "title": "Installation",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#wiring"
+  },
+  {
+    "title": "Draggable",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable"
+  },
+  {
+    "title": "Installation",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#wiring"
+  },
+  {
+    "title": "Globe",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe"
+  },
+  {
+    "title": "Installation",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#wiring"
+  },
+  {
+    "title": "Layout Group",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#wiring"
+  },
+  {
+    "title": "Magnetic",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic"
+  },
+  {
+    "title": "Installation",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#wiring"
+  },
+  {
+    "title": "Marquee",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee"
+  },
+  {
+    "title": "Installation",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#default"
+  },
+  {
+    "title": "Vertical",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#wiring"
+  },
+  {
+    "title": "Number Ticker",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker"
+  },
+  {
+    "title": "Installation",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#default"
+  },
+  {
+    "title": "Currency",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#currency"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#wiring"
+  },
+  {
+    "title": "Parallax",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax"
+  },
+  {
+    "title": "Installation",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#wiring"
+  },
+  {
+    "title": "Particles",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles"
+  },
+  {
+    "title": "Installation",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#wiring"
+  },
+  {
+    "title": "Scramble",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble"
+  },
+  {
+    "title": "Installation",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#wiring"
+  },
+  {
+    "title": "Scroll Progress",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress"
+  },
+  {
+    "title": "Installation",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#wiring"
+  },
+  {
+    "title": "Shared Element",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element"
+  },
+  {
+    "title": "Installation",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element#default"
+  },
+  {
+    "title": "Spotlight Card",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#wiring"
+  },
+  {
+    "title": "Swipe Cards",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards"
+  },
+  {
+    "title": "Installation",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#wiring"
+  },
+  {
+    "title": "Text Reveal",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal"
+  },
+  {
+    "title": "Installation",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#wiring"
+  },
+  {
+    "title": "Tilt Card",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#wiring"
+  },
+  {
+    "title": "Typewriter",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter"
+  },
+  {
+    "title": "Installation",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#wiring"
+  },
+  {
+    "title": "Word Rotate",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate"
+  },
+  {
+    "title": "Installation",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#wiring"
   },
   {
     "title": "Action bar",
@@ -6288,6 +7500,24 @@
     "path": "/demos/agui-relay#default"
   },
   {
+    "title": "States",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay#states"
+  },
+  {
+    "title": "MCP App",
+    "page": "MCP App",
+    "section": "demos",
+    "path": "/demos/mcp-app"
+  },
+  {
+    "title": "Default",
+    "page": "MCP App",
+    "section": "demos",
+    "path": "/demos/mcp-app#default"
+  },
+  {
     "title": "A2UI Surface",
     "page": "A2UI Surface",
     "section": "demos",
@@ -6408,6 +7638,24 @@
     "path": "/api/poetry-agent-controllers"
   },
   {
+    "title": "Bridge",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#bridge"
+  },
+  {
+    "title": "HostBridge",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#hostbridge"
+  },
+  {
+    "title": "HostError",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers#hosterror"
+  },
+  {
     "title": "poetry-ui",
     "page": "poetry-ui",
     "section": "api",
@@ -6436,6 +7684,30 @@
     "page": "@poetry/charts",
     "section": "api",
     "path": "/api/poetry-charts-controllers"
+  },
+  {
+    "title": "poetry-motion",
+    "page": "poetry-motion",
+    "section": "api",
+    "path": "/api/poetry-motion"
+  },
+  {
+    "title": "@poetry/motion",
+    "page": "@poetry/motion",
+    "section": "api",
+    "path": "/api/poetry-motion-controllers"
+  },
+  {
+    "title": "poetry-island",
+    "page": "poetry-island",
+    "section": "api",
+    "path": "/api/poetry-island"
+  },
+  {
+    "title": "@poetry/island",
+    "page": "@poetry/island",
+    "section": "api",
+    "path": "/api/poetry-island-controllers"
   },
   {
     "title": "poetry-agent",
@@ -6690,6 +7962,114 @@
     "path": "/libraries/charts#palette"
   },
   {
+    "title": "Motion",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion"
+  },
+  {
+    "title": "What it is",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#install"
+  },
+  {
+    "title": "What it costs a page",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#payload"
+  },
+  {
+    "title": "The motion policy",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#policy"
+  },
+  {
+    "title": "Tokens",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#tokens"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#behaviors"
+  },
+  {
+    "title": "This is CSS",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#this-is-css"
+  },
+  {
+    "title": "Islands",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island"
+  },
+  {
+    "title": "What it is",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#install"
+  },
+  {
+    "title": "The module",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#contract"
+  },
+  {
+    "title": "Fill and flow",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#modes"
+  },
+  {
+    "title": "State leaves through the form",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#form"
+  },
+  {
+    "title": "A React island",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#react"
+  },
+  {
+    "title": "The Turbo lifecycle, handled once",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#lifecycle"
+  },
+  {
+    "title": "The check",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#check"
+  },
+  {
+    "title": "When not to",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#when-not"
+  },
+  {
     "title": "Agent",
     "page": "Agent",
     "section": "libraries",
@@ -6886,5 +8266,221 @@
     "page": "Lucide",
     "section": "icons",
     "path": "/icons/lucide#pin"
+  },
+  {
+    "title": "Tabler Icons",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler"
+  },
+  {
+    "title": "Install",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#pin"
+  },
+  {
+    "title": "Hugeicons",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons"
+  },
+  {
+    "title": "Install",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#pin"
+  },
+  {
+    "title": "Phosphor",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor"
+  },
+  {
+    "title": "Install",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#pin"
+  },
+  {
+    "title": "Heroicons",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons"
+  },
+  {
+    "title": "Install",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#pin"
+  },
+  {
+    "title": "Simple Icons",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons"
+  },
+  {
+    "title": "Install",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#pin"
+  },
+  {
+    "title": "Solar",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar"
+  },
+  {
+    "title": "Install",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#usage"
+  },
+  {
+    "title": "Attribution",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#attribution"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#pin"
+  },
+  {
+    "title": "Blode Icons",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode"
+  },
+  {
+    "title": "Install",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#pin"
   }
 ]

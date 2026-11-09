@@ -1,0 +1,20 @@
+data: {"type":"RUN_STARTED","threadId":"rb-text-162943","runId":"b2f17038-19f1-471d-8a41-4e8e9f8680dc"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":"Hello!"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":" How c"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":"an I a"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":"ssist "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":"you to"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52","delta":"day?"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"186528b1-16f9-40d7-ab68-479ed0e01b52"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-text-162943","runId":"b2f17038-19f1-471d-8a41-4e8e9f8680dc"}
+

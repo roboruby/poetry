@@ -46,7 +46,7 @@ task :notes do
   puts path
 end
 
-desc "Build all nine gems into pkg/, reproducibly from the commit time of REF (default HEAD)"
+desc "Build every published gem into pkg/, reproducibly from the commit time of REF (default HEAD)"
 task :build do
   Releaser::Build.check_umbrella!(ROOT)
   epoch = Releaser::Build.epoch(ROOT, ref)
@@ -113,4 +113,17 @@ desc "Push every gem in pkg/ to RubyGems (idempotent), then wait until each inst
 task :push do
   Releaser::Push.all(ROOT, version, PKG)
   Releaser::Push.await(version)
+end
+
+namespace :minify do
+  desc "Write each JavaScript gem's minified dist/ tree, to serve and inspect locally (the build makes its own)"
+  task :write do
+    Releaser::Minify.gems(ROOT).each { |name| puts Releaser::Minify.run(ROOT, name) }
+  end
+
+  desc "Remove every dist/ tree, so the gems serve source again"
+  task :clean do
+    Releaser::Minify.clean(ROOT)
+    puts "minify: dist/ removed from #{Releaser::Minify.gems(ROOT).join(', ')}"
+  end
 end

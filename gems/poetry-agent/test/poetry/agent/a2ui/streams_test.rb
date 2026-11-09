@@ -14,12 +14,13 @@ class StreamsTest < Minitest::Test
 
   def test_first_appearance_appends_into_the_container_then_replaces
     streams = A2UI::Streams.new(session: @session, render: @render, container: "surfaces")
-    first = streams.apply({ "createSurface" => { "surfaceId" => "s" } })
+    first = streams.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
 
     assert_includes first, '<turbo-stream action="append" target="surfaces">'
     assert_includes first, 'data-version="0"'
 
-    second = streams.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/a", "value" => 1 } })
+    second = streams.apply({ "version" => "1.0",
+                             "updateDataModel" => { "surfaceId" => "s", "path" => "/a", "value" => 1 } })
 
     assert_includes second, '<turbo-stream action="vreplace" target="a2ui-s" method="morph">'
     assert_includes second, 'data-version="1"'
@@ -28,14 +29,14 @@ class StreamsTest < Minitest::Test
   def test_morph_can_be_switched_off
     streams = A2UI::Streams.new(session: @session, render: @render, morph: false)
 
-    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }),
+    assert_includes streams.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } }),
                     '<turbo-stream action="vreplace" target="a2ui-s">'
   end
 
   def test_without_a_container_every_change_replaces
     streams = A2UI::Streams.new(session: @session, render: @render)
 
-    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }),
+    assert_includes streams.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } }),
                     'action="vreplace" target="a2ui-s" method="morph"'
   end
 
@@ -43,23 +44,24 @@ class StreamsTest < Minitest::Test
     streams = A2UI::Streams.new(session: @session, render: @render, container: "surfaces")
     streams.mark_seen("s")
 
-    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }), 'action="vreplace"'
+    assert_includes streams.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } }),
+                    'action="vreplace"'
   end
 
   def test_deletion_removes_and_rejections_stream_nothing
     streams = A2UI::Streams.new(session: @session, render: @render)
-    streams.apply({ "createSurface" => { "surfaceId" => "s" } })
+    streams.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
 
     assert_equal '<turbo-stream action="remove" target="a2ui-s"></turbo-stream>',
-                 streams.apply({ "deleteSurface" => { "surfaceId" => "s" } })
-    assert_equal "", streams.apply({ "deleteSurface" => { "surfaceId" => "nope" } })
+                 streams.apply({ "version" => "1.0", "deleteSurface" => { "surfaceId" => "s" } })
+    assert_equal "", streams.apply({ "version" => "1.0", "deleteSurface" => { "surfaceId" => "nope" } })
   end
 
   def test_apply_all_streams_each_changed_surface_once
     streams = A2UI::Streams.new(session: @session, render: @render, container: "c")
-    html = streams.apply_all([{ "createSurface" => { "surfaceId" => "a" } },
-                              { "updateDataModel" => { "surfaceId" => "a", "value" => {} } },
-                              { "createSurface" => { "surfaceId" => "b" } }])
+    html = streams.apply_all([{ "version" => "1.0", "createSurface" => { "surfaceId" => "a" } },
+                              { "version" => "1.0", "updateDataModel" => { "surfaceId" => "a", "value" => {} } },
+                              { "version" => "1.0", "createSurface" => { "surfaceId" => "b" } }])
 
     assert_equal 2, html.scan("<turbo-stream ").length
     assert_equal 2, html.scan('action="append" target="c"').length

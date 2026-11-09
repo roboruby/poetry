@@ -35,6 +35,8 @@ module Poetry
   # safelist pass picks the chart dictionaries up on its own; what a host
   # still needs by hand is the motion stylesheet in the Tailwind entry and
   # the Stimulus registration, and that is exactly what the flag does).
+  # `--motion` does the same for poetry-motion: its tokens stylesheet and
+  # the controller registration, which installs the motion policy.
   #
   # @example
   #   bin/rails g poetry:install --theme vega
@@ -58,6 +60,8 @@ module Poetry
 
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
+    class_option :motion, type: :boolean, default: false,
+                          desc: %(Also wire poetry-motion (requires gem "poetry-motion" in the bundle))
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
     # --no-preflight: the host imports Tailwind without preflight (its own
@@ -176,6 +180,15 @@ module Poetry
 
       raise Thor::Error, "--charts needs poetry-charts in the bundle - add " \
                          '`gem "poetry-charts"` to the Gemfile, bundle, and re-run'
+    end
+
+    # The same fail-fast for --motion.
+    # @api private
+    def verify_motion_gem
+      return if !options[:motion] || motion_available?
+
+      raise Thor::Error, "--motion needs poetry-motion in the bundle - add " \
+                         '`gem "poetry-motion"` to the Gemfile, bundle, and re-run'
     end
 
     # Same fail-fast for --theme: an unknown name (or one poetry-charts
@@ -314,6 +327,29 @@ module Poetry
       register_agent_runtime(index)
     end
 
+    # Direct uploads: FileInput's upload modes load @rails/activestorage
+    # through the importmap, and Rails' own submit-time flow needs
+    # ActiveStorage.start() - the two lines Active Storage's install leaves
+    # to the app. Only when Active Storage is in the app; idempotent.
+    # @api private
+    def wire_active_storage
+      return unless active_storage_available?
+
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        pinned = File.read(File.join(destination_root, importmap)).match?(%r{pin\s+["']@rails/activestorage["']})
+        append_to_file importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve @rails/activestorage from your bundler for FileInput's " \
+                          "direct uploads", :yellow
+      end
+      entry = "app/javascript/application.js"
+      return unless File.exist?(File.join(destination_root, entry))
+      return if File.read(File.join(destination_root, entry)).include?("@rails/activestorage")
+
+      append_to_file entry, %(import * as ActiveStorage from "@rails/activestorage"\nActiveStorage.start()\n)
+    end
+
     # --charts: the two host-side wires the charts engine cannot do itself.
     # The motion stylesheet is COPIED (tailwindcss-rails compiles standalone;
     # a gem-path @import would not resolve) - vendored artifact, force like
@@ -350,6 +386,64 @@ module Poetry
         import { registerPoetryChartsControllers } from "@poetry/charts"
         registerPoetryChartsControllers(application)
       JS
+    end
+
+    # --motion: the tokens stylesheet, copied and imported like charts.css,
+    # and the controller registration, which installs the motion policy. The
+    # engine's pins (the animation engine without preload) come from the gem.
+    # @api private
+    def wire_motion
+      return unless motion?
+
+      unless motion_available? && Poetry::Motion.respond_to?(:root)
+        say_status :note, "poetry/motion.css is installed but poetry-motion is not in the bundle - " \
+                          "the motion files were not refreshed (add the gem, or delete the file)", :yellow
+        return
+      end
+
+      create_file "app/assets/tailwind/poetry/motion.css",
+                  Poetry::Motion.root.join("app/assets/stylesheets/poetry-motion.css").read, force: true
+      inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/motion.css";))
+
+      index = "app/javascript/controllers/index.js"
+      unless File.exist?(File.join(destination_root, index))
+        say_status :note, "no #{index} - register the motion controllers yourself: " \
+                          "registerPoetryMotionControllers(application) from \"@poetry/motion\"", :yellow
+        return
+      end
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryMotionControllers } from "@poetry/motion"
+        registerPoetryMotionControllers(application)
+      JS
+    end
+
+    # poetry-island, when bundled: the island controller registered beside
+    # core's, and the app's own islands directory pinned as islands/*, so
+    # app/javascript/islands/map.js is `import: "islands/map"`. Idempotent.
+    # @api private
+    def wire_island
+      return unless island_available?
+
+      index = "app/javascript/controllers/index.js"
+      if File.exist?(File.join(destination_root, index))
+        inject_unless_present(index, <<~JS.strip)
+          import { registerPoetryIslandControllers } from "@poetry/island"
+          registerPoetryIslandControllers(application)
+        JS
+      else
+        say_status :note, "no #{index} - register the island controller yourself: " \
+                          "registerPoetryIslandControllers(application) from \"@poetry/island\"", :yellow
+      end
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        source = File.read(File.join(destination_root, importmap))
+        pinned = source.match?(%r{pin_all_from\s+["']app/javascript/islands["']})
+        append_to_file importmap, %(pin_all_from "app/javascript/islands", under: "islands"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve your islands from your bundler and name them with import:", :yellow
+      end
+      create_file "app/javascript/islands/.keep", "", skip: true
     end
 
     # poetry-agent's stylesheet (the WebMCP agent-focus states) rides along
@@ -421,6 +515,19 @@ module Poetry
       apply_poetry_skills
     end
 
+    # `poetry:audit` writes its files under .poetry/audit/, regenerated on
+    # every run and disposable - ignored once, like any built artifact.
+    # @api private
+    def ignore_audit_folder
+      line = "#{Poetry::Ui::Audit::OUTPUT}/"
+      gitignore = File.join(destination_root, ".gitignore")
+      if File.exist?(gitignore)
+        append_to_file ".gitignore", "#{line}\n" unless File.read(gitignore).lines.map(&:strip).include?(line)
+      else
+        create_file ".gitignore", "#{line}\n"
+      end
+    end
+
     # Dark mode is one layout line, but nothing else in the install touches
     # the layout - without the pointer the theme never applies before first
     # paint and hosts rediscover the flash-of-light-mode pothole.
@@ -441,6 +548,17 @@ module Poetry
                         "<head> before using poetry_optimistic_form (the Optimistic Forms guide)", :cyan
     end
 
+    # The cold start for an assistant that has none of this in front of it
+    # yet (a hosted agent, a teammate's editor before the skills landed):
+    # the prompt names the surfaces the install just wrote and ends on
+    # check, and the clipboard is one pipe away.
+    # @api private
+    def announce_prompt
+      say_status :note, "cold start: `bin/rails poetry:prompt | pbcopy` copies the prompt that points an " \
+                        "assistant without the skills or MCP server at poetry's workflow " \
+                        "(verify, catalog, usage rules, check last)", :cyan
+    end
+
     private
 
     # Whether this install vendors the reset floor: asked for now, or
@@ -450,6 +568,11 @@ module Poetry
     # vendored artifact, and a theme switch swaps the chart fragment too.
     def charts?
       options[:charts] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"))
+    end
+
+    # --motion, or a motion stylesheet already vendored (the upgrade path).
+    def motion?
+      options[:motion] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"))
     end
 
     # Whether preflight is skipped: by option, or a reset file is present.
@@ -492,6 +615,21 @@ module Poetry
     # Whether the charts gem is bundled.
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
+    end
+
+    # Whether the motion gem is bundled.
+    def motion_available?
+      defined?(Poetry::Motion::Engine) ? true : false
+    end
+
+    # Whether the island gem is bundled.
+    def island_available?
+      defined?(Poetry::Island::Engine) ? true : false
+    end
+
+    # Whether Active Storage is in the app (its engine loaded).
+    def active_storage_available?
+      defined?(::ActiveStorage::Engine) ? true : false
     end
 
     # Whether the agent gem is bundled.

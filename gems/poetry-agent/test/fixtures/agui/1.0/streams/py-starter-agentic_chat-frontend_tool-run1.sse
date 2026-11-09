@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"thread-agentic_chat-frontend_tool","runId":"74db80d2-7156-4f81-bdde-e8eb1807550b","protocolVersion":"1.0"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"2a15603e-c4b4-45e7-83cf-bc1fb06e5d7c","toolCallName":"change_background"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"2a15603e-c4b4-45e7-83cf-bc1fb06e5d7c","delta":"{\"background\": \"linear-gradient(135deg, #667eea 0%, #764ba2 100%)\"}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"2a15603e-c4b4-45e7-83cf-bc1fb06e5d7c"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-agentic_chat-frontend_tool","runId":"74db80d2-7156-4f81-bdde-e8eb1807550b"}
+

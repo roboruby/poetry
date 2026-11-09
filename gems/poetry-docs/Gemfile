@@ -4,6 +4,9 @@ source "https://rubygems.org"
 
 gemspec
 
+# The site's assets answer with CORS headers: an MCP App's sandbox loads them cross-origin.
+gem "rack-cors"
+
 # The family from the tree beside this gem; a published install resolves
 # the same names from RubyGems.
 sibling = lambda do |name|
@@ -12,8 +15,17 @@ sibling = lambda do |name|
 end
 gem "poetry-core", **sibling.call("poetry-core")
 gem "poetry-lucide", **sibling.call("poetry-lucide")
+gem "poetry-tabler", **sibling.call("poetry-tabler")
+gem "poetry-hugeicons", **sibling.call("poetry-hugeicons")
+gem "poetry-phosphor", **sibling.call("poetry-phosphor")
+gem "poetry-heroicons", **sibling.call("poetry-heroicons")
+gem "poetry-simple_icons", **sibling.call("poetry-simple_icons")
+gem "poetry-solar", **sibling.call("poetry-solar")
+gem "poetry-blode", **sibling.call("poetry-blode")
 gem "poetry-ui", **sibling.call("poetry-ui")
 gem "poetry-charts", **sibling.call("poetry-charts")
+gem "poetry-motion", **sibling.call("poetry-motion")
+gem "poetry-island", **sibling.call("poetry-island")
 gem "poetry-agent", **sibling.call("poetry-agent")
 
 if ENV["POETRY_RAILS"] == "main"
@@ -27,6 +39,6 @@ gem "rake", "~> 13.0"
 gem "minitest"
 gem "bundler-audit", require: false
 gem "rubocop-rails-omakase", require: false
-gem "herb", "~> 0.11.0", require: false # poetry:check's parser and the herb:compile gate
+gem "herb", "~> 0.11.2", require: false # poetry:check's parser and the herb:compile gate
 gem "tailwindcss-ruby" # rake poetry_docs:css builds the committed stylesheet
 gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

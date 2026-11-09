@@ -45,7 +45,9 @@ export default class extends Controller {
     name.textContent = tool.name
     const hint = document.createElement("span")
     hint.className = "text-xs text-muted-foreground"
-    hint.textContent = tool.annotations?.readOnlyHint ? "read-only" : "mutating"
+    const annotations = tool.annotations ?? {}
+    hint.textContent = [annotations.readOnlyHint ? "read-only" : "mutating", annotations.consequentialHint && "consequential",
+      annotations.debugging && "debugging"].filter(Boolean).join(", ")
     head.append(name, hint)
 
     const description = document.createElement("p")

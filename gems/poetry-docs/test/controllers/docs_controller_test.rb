@@ -98,6 +98,40 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_match "human_attribute_name", response.body
   end
 
+  test "the Stimulus guide composes a Poetry behavior into a host controller" do
+    get "/stimulus"
+
+    assert_response :success
+    assert_select "h2#behaviors"
+    assert_select "[data-slot=code-block-code]", text: /behavior :roving_focus, orientation: :vertical/
+    assert_select "[data-slot=code-block-code]", text: /useEscape\(this/
+    assert_select "[data-slot=code-block-code]", text: /teardown\(this\)/
+    assert_select "a[href=?]", where_state_lives_path
+
+    get "/stimulus.md"
+
+    assert_includes response.body, "4b. Compose a Poetry behavior"
+    assert_includes response.body, "teardown(this)"
+  end
+
+  test "the Where State Lives guide names the tiers and answers the useState question" do
+    get "/where-state-lives"
+
+    assert_response :success
+    assert_select "h1", "Where State Lives"
+    %w[durable addressable preference template transient usestate morph].each do |id|
+      assert_select "h2##{id}"
+    end
+    assert_select "[data-slot=code-block-code]", text: /cookies\[:sidebar_state\]/
+    assert_select "a[href=?]", herb_guide_path(anchor: "reactive-templates")
+    assert_select "a[href=?]", stimulus_path(anchor: "herb")
+
+    get "/where-state-lives.md"
+
+    assert_includes response.body, "Poetry has no `useState`"
+    assert_includes response.body, "data-turbo-permanent"
+  end
+
   test "the Herb guide says what is guaranteed and where reactive templates stop" do
     get "/herb"
 
@@ -123,6 +157,22 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "p#reactive-templates a[href=?]", herb_guide_path(anchor: "reactive-templates")
+  end
+
+  test "the uploads guide renders its sections, a live dropzone and its markdown mirror" do
+    get uploads_path
+
+    assert_response :success
+    %w[modes setup limits attachments hot-cell broadcasts security].each { |id| assert_select "h2##{id}" }
+    assert_select "[data-slot=file-input][data-poetry--core--file-drop-max-files-value]"
+    assert_select "[data-slot=code-block-code]", text: /upload: :immediate/
+    assert_select "[data-slot=code-block-code]", text: /broadcasts_attachment_updates_for/
+
+    get "/uploads.md"
+
+    assert_response :success
+    assert_match "poetry_attachment_for", response.body
+    assert_match "Hot Cell", response.body
   end
 
   test "the landing badge links the launch essay" do
@@ -210,7 +260,23 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2[id=?]", "upgrade" # the runbook anchor feeds search
     assert_select "h2[id=?]", "ownership"
     assert_select "[data-slot=code-block]", minimum: 4 # Gemfile/install/upgrade/diff snippets
-    assert_select "code.font-mono", text: /poetry:diff/
+    assert_select "[data-slot=code-block-code]", text: /poetry:diff/
+  end
+
+  test "the installation guide hands an assistant the cold-start prompt and four prompts to try" do
+    get "/installation"
+
+    assert_response :success
+    assert_select "h2#prompts", 1
+    assert_select "[data-slot=code-block-code]", text: /bin\/rails poetry:verify/, count: 1
+    assert_select "[data-slot=code-block-code]", text: /poetry:check` as your last step/, count: 4
+
+    get "/installation.md"
+
+    assert_response :success
+    assert_includes response.body, "## Hand it to an assistant"
+    assert_includes response.body, Poetry::Ui::Prompt.cold_start.rstrip
+    Poetry::Docs::Prompts::TO_TRY.each { |entry| assert_includes response.body, entry.text }
   end
 
   test "a block page renders the real gem template and its exact source" do
@@ -325,7 +391,9 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes text, "Poetry::Agent::A2UI::Streams.new"
     assert_includes text, "session.action("
     assert_select "a[href='/demos/a2ui-surface']"
-    assert_select "a[href='/a2ui/catalog.json']"
+    assert_select "a[href='/a2ui/v1_0/catalog.json']"
+    assert_select "a[href='/a2ui/v0_9/catalog.json']"
+    assert_select "h2#versions", "Two versions"
     assert_select "a[href='/ag-ui']"
 
     get "/a2ui.md"
@@ -334,9 +402,86 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Functions.basic"
   end
 
+test "the MCP Apps guide renders with its mirror" do
+  get "/mcp-apps"
+
+  assert_response :success
+  assert_includes response.body, "Serve a document"
+  assert_includes response.body, "Per-user authorization"
+  assert_includes response.body, "auth.well_known_path"
+  get "/mcp-apps.md"
+
+  assert_response :success
+  assert_includes response.body, "Poetry::Agent::Apps"
+end
+
+test "the site's MCP server serves the plans app beside the roster" do
+  headers = { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }
+  post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json, headers: headers
+  tools = JSON.parse(response.body).dig("result", "tools")
+
+  assert_equal "ui://poetry-docs/plans", tools.find { |t| t["name"] == "show_plans" }.dig("_meta", "ui", "resourceUri")
+  assert_equal [ "app" ], tools.find { |t| t["name"] == "choose_plan" }.dig("_meta", "ui", "visibility")
+  post "/mcp", params: { jsonrpc: "2.0", id: 2, method: "resources/read", params: { uri: "ui://poetry-docs/plans" } }.to_json,
+               headers: headers
+  contents = JSON.parse(response.body).dig("result", "contents", 0)
+
+  assert_equal "text/html;profile=mcp-app", contents["mimeType"]
+  assert_includes contents["text"], %(data-mcp-region="plans")
+  assert_includes contents["text"], %(href="http://www.example.com/assets/poetry_docs)
+  assert_includes contents["text"], %("@poetry/agent/mcp_app": "http://www.example.com/assets/poetry/agent/mcp_app)
+  assert_includes contents["text"], %(class="style-default")
+  assert_equal [ "http://www.example.com" ], contents.dig("_meta", "ui", "csp", "resourceDomains")
+  post "/mcp", params: { jsonrpc: "2.0", id: 3, method: "tools/call",
+                         params: { name: "show_plans", arguments: { team_size: 8 } } }.to_json, headers: headers
+  result = JSON.parse(response.body)["result"]
+
+  assert_includes result.dig("content", 0, "text"), "Recommended for 8: Pro."
+  assert_equal "pro", result.dig("structuredContent", "recommended")
+  fragment = result.dig("_meta", "poetry", "fragments", 0)
+
+  assert_equal "plans", fragment["target"]
+  assert_includes fragment["html"], "Recommended"
+  assert_includes fragment["html"], %(data-mcp-tool="choose_plan")
+  assert_includes fragment["html"], %(class="cn-table-cell whitespace-normal")
+  assert_includes fragment["html"], "up to 10 seats"
+  post "/mcp", params: { jsonrpc: "2.0", id: 4, method: "tools/call",
+                         params: { name: "choose_plan", arguments: { plan: "pro", billing: "yearly" } } }.to_json,
+               headers: headers
+
+  assert_includes JSON.parse(response.body).dig("result", "_meta", "poetry", "fragments", 0, "html"), "Pro chosen"
+end
+
+test "the site hosts its own app: the demo renders the frame and the endpoint answers the app's calls" do
+  get "/demos/mcp-app?team_size=12"
+
+  assert_response :success
+  assert_includes response.body, %(data-controller="poetry--agent--mcp-app-host")
+  assert_includes response.body, %(data-poetry--agent--mcp-app-host-rpc-url-value="/mcp-apps/rpc")
+  assert_includes response.body, %(data-poetry--agent--mcp-app-host-debug-value="true")
+  assert_includes response.body, "Recommended for 12: Team."
+  assert_includes response.body, "Inline sandbox mode"
+  headers = { "CONTENT_TYPE" => "application/json", "HTTP_SEC_FETCH_SITE" => "same-origin" }
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "tools/call", params: { name: "choose_plan", arguments: { plan: "pro", billing: "yearly" } } }.to_json, headers: headers
+
+  assert_response :success
+  assert_includes JSON.parse(response.body).dig("result", "_meta", "poetry", "fragments", 0, "html"), "Pro chosen"
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "tools/list", params: {} }.to_json, headers: headers
+
+  assert_response :forbidden
+  assert_equal(-32_601, JSON.parse(response.body).dig("error", "code"))
+  post "/mcp-apps/rpc", params: { server: "poetry-docs", method: "resources/read", params: { uri: "ui://poetry-docs/plans" } }.to_json, headers: headers
+
+  assert_response :success
+  assert_includes JSON.parse(response.body).dig("result", "contents", 0, "text"), %(data-mcp-region="plans")
+  post "/mcp-apps/rpc", params: "nope", headers: headers
+
+  assert_response :bad_request
+end
+
   test "the site's MCP server answers at /mcp" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
-                 headers: { "CONTENT_TYPE" => "application/json" }
+                 headers: { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }
 
     assert_response :success
     assert_includes JSON.parse(response.body).dig("result", "tools").map { |t| t["name"] }, "describe_component"

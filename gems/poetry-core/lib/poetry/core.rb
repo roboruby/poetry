@@ -27,6 +27,19 @@ module Poetry
         @root ||= Pathname.new(File.expand_path("../..", __dir__))
       end
 
+      # The JavaScript tree a family gem serves through Propshaft and the
+      # importmap: the minified copy a released gem carries in
+      # dist/javascript (built by the release, a source map beside each
+      # file), else the source in app/javascript. Both trees hold the same
+      # files under the same names, so the pins never change.
+      #
+      # @param gem_root [Pathname, String] the gem's root directory
+      # @return [Pathname]
+      def javascript_path(gem_root)
+        minified = Pathname.new(gem_root).join("dist/javascript")
+        minified.directory? ? minified : Pathname.new(gem_root).join("app/javascript")
+      end
+
       # The dedicated Zeitwerk loader for poetry-core's lib/ tree.
       #
       # @return [Zeitwerk::Loader]
