@@ -40,6 +40,8 @@
 
 ### Changed
 
+- The Herb and ReActionView guide is current for Herb 0.11.2 and ReActionView 0.6.1: marcoroth/herb#2708 (fixed in 0.11.1) and marcoroth/reactionview#179 (fixed in Herb 0.11.2) move to the fixed column, the three issues filed from the optimistic form walk (herb 2772 and 2773, reactionview 188) join the table, and the editors guide's `.herb.yml` has every rule on.
+- The Community partials declare their locals with `<%# locals: (...) %>`; `_media` takes its group's classes as `group_class:` (was `class:`).
 - The header drops the divider between its appearance controls and the project's links on a phone, where it made every page 2 px wider than the screen.
 - The docs header's nav no longer has a Get Started panel: Introduction, Components and Charts are in the sidebar, and the header keeps Community and Resources, which leaves the breadcrumb its room at a laptop's width.
 - The Where State Lives guide's morph section and the Stable IDs guide's list of what morph identity preserves describe Poetry's morph guard: a state attribute the client changed and a control whose value differs from the rendered one survive a morph on a node the morph keeps, a change the server made still lands, a dialog closes on its own form's success, and `data-turbo-permanent` remains the answer for a subtree a morph must not touch. The A2UI and AG-UI guides credit the guard to core and keep the MCP App frame guard with the agent runtime.
