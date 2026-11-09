@@ -150,7 +150,7 @@
         </li>
       </ul>
       <p>
-        The versions these hold for are Herb 0.11 and ReActionView 0.6.
+        The versions these hold for are Herb 0.11.2 and ReActionView 0.6.1.
         Reactive templates are experimental upstream, and their markers,
         payload and client may change between releases.
       </p>
@@ -300,8 +300,8 @@
         <strong>a Poetry component is rendered by the server.</strong> The
         browser cannot run the helper, so it cannot build a component, and
         it cannot change what a component's block reads. Everything below
-        follows from that. Each line was walked in a browser on the
-        versions named above.
+        follows from that. Each line was walked in a browser on ReActionView
+        0.6.0 and Herb 0.11.0; what 0.6.1 fixes, the table at the end says.
       </p>
       <h3 id="add-a-row">A form that adds a row</h3>
       <p>
@@ -332,8 +332,9 @@
           a row that was never saved.
         </li>
         <li>
-          <strong>Keep a partial out of <code>form_with</code>.</strong> The
-          server's answer fails when one is rendered inside the block.
+          <strong>A partial inside <code>form_with</code> needs Herb 0.11.2.</strong>
+          On ReActionView 0.6.0 the server's answer failed when one was
+          rendered inside the block; 0.6.1 carries the fix.
         </li>
       </ul>
       <h3 id="toggle">A toggle</h3>
@@ -378,9 +379,9 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <h2 id="upstream">Open upstream, on 2026-09-29</h2>
+      <h2 id="upstream">Upstream, on 2026-11-09</h2>
       <p>
-        What this page works around, and where each one is tracked.
+        What this page works around, what upstream has fixed since, and where each one is tracked.
       </p>
       <table>
         <thead>
@@ -390,17 +391,27 @@
           <tr>
             <td><%= link_to "herb 2737", "https://github.com/marcoroth/herb/issues/2737" %></td>
             <td>Attributes handed to a tag helper in a splat are dropped under slots</td>
-            <td>Templates use <code>element_tag</code></td>
+            <td>Templates use <code>element_tag</code>; a fix is proposed upstream</td>
           </tr>
           <tr>
             <td><%= link_to "herb 2738", "https://github.com/marcoroth/herb/issues/2738" %></td>
             <td>A tag name held in a variable stops the template compiling under slots</td>
-            <td>Templates use <code>element_tag</code></td>
+            <td>Templates use <code>element_tag</code>; a fix is proposed upstream</td>
           </tr>
           <tr>
             <td><%= link_to "herb 2708", "https://github.com/marcoroth/herb/issues/2708" %></td>
-            <td>The linter reads a form inside a block helper as a form inside a form</td>
-            <td>The rule is off in the <code>.herb.yml</code> that <code>poetry:editor</code> writes</td>
+            <td>The linter read a form inside a block helper as a form inside a form</td>
+            <td>Fixed in Herb 0.11.1; the <code>.herb.yml</code> that <code>poetry:editor</code> writes has every rule on</td>
+          </tr>
+          <tr>
+            <td><%= link_to "herb 2772", "https://github.com/marcoroth/herb/issues/2772" %></td>
+            <td>A form with <code>data-herb-into</code> sends nothing from a template that declares no state</td>
+            <td>Declare a state, as above</td>
+          </tr>
+          <tr>
+            <td><%= link_to "herb 2773", "https://github.com/marcoroth/herb/issues/2773" %></td>
+            <td>A row that failed to send is dropped when a branch in it needs the server</td>
+            <td>Keep state branches in plain markup, as above</td>
           </tr>
           <tr>
             <td><%= link_to "herb 1111", "https://github.com/marcoroth/herb/issues/1111" %></td>
@@ -414,13 +425,18 @@
           </tr>
           <tr>
             <td><%= link_to "reactionview 179", "https://github.com/marcoroth/reactionview/issues/179" %></td>
-            <td>A partial inside a block helper fails the server's answer</td>
-            <td>Nothing: keep the partial out of the block</td>
+            <td>A partial inside a block helper failed the server's answer</td>
+            <td>Fixed in Herb 0.11.2, which ReActionView 0.6.1 requires</td>
           </tr>
           <tr>
             <td><%= link_to "reactionview 180", "https://github.com/marcoroth/reactionview/issues/180" %></td>
             <td>A server answer replaces markup that changed on the page</td>
             <td>Nothing: keep state branches in plain markup</td>
+          </tr>
+          <tr>
+            <td><%= link_to "reactionview 188", "https://github.com/marcoroth/reactionview/issues/188" %></td>
+            <td>The embedded dev server crashes a server started with <code>-d</code> on macOS</td>
+            <td>Nothing: set <code>config.dev_server = false</code> in that host</td>
           </tr>
           <tr>
             <td><%= link_to "view_component 2717", "https://github.com/ViewComponent/view_component/issues/2717" %></td>
