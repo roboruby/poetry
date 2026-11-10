@@ -367,6 +367,119 @@ class AgentCallsTest < Minitest::Test
     assert_empty held.expire_agent_calls, "nothing is due yet"
   end
 
+  # ---- the agent's functions answered in this process
+
+  def in_process(handlers)
+    A2UI::Session.new(catalogs: { "shop" => Shop.new }, agent_functions: handlers).tap do |held|
+      created = { "surfaceId" => "s", "catalogId" => "shop", "dataModel" => { "base" => "EUR" } }
+      held.apply({ "version" => "1.0", "createSurface" => created })
+    end
+  end
+
+  def test_a_handler_in_this_process_answers_a_call_the_moment_it_is_made
+    asked = []
+    held = in_process("fetchRate" => ->(args) { asked << args and 1.08 },
+                      :quote => ->(args, call) { [args, call.surface_id, call.catalog_id, call.id[0, 3]] })
+    version = held.surface("s").version
+
+    assert_in_delta 1.08, read(held, rate), 0.001, "nothing waits"
+    assert_in_delta 1.08, read(held, rate), 0.001
+    assert_equal [{ "base" => "EUR" }], asked, "identical calls are answered once for the surface"
+    assert_equal version + 1, held.surface("s").version
+    assert_equal [{ "symbol" => "GOOG", "currency" => "USD" }, "s", "shop", "fn-"],
+                 read(held, { "@call" => "quote", "args" => { "symbol" => "GOOG" } }),
+                 "a declared function's defaults are filled in, and a handler may take the call"
+    assert_empty held.agent_calls, "nothing is sent"
+    assert_empty held.errors
+    direct = held.call_agent_function(surface_id: "s", catalog_id: "shop", name: "fetchRate")
+
+    assert_equal [:settled, 1.08], [direct.state, direct.value]
+  end
+
+  def test_a_handler_fails_its_call_and_a_function_without_one_is_unknown
+    failure = A2UI::AgentCalls::Failure.new("Provider PRV-102 was not found", code: "NOT_FOUND")
+    held = in_process("lookup" => ->(_args) { raise failure }, "crash" => ->(_args) { raise IOError, "disk on fire" },
+                      "clock" => ->(_args) { Time.now.to_f / 0 })
+    said = lambda do |name|
+      node = { "@call" => name }
+      [read(held, node), read(held, node), held.errors.last.dig("error", "message")]
+    end
+
+    assert_equal [nil, nil, "Provider PRV-102 was not found"], said.call("lookup")
+    assert_equal [nil, nil, "An error occurred during function execution (IOError)."], said.call("crash")
+    assert_equal [nil, nil, "No such function: missing"], said.call("missing")
+    assert_match(/\AAn error occurred during function execution \(JSON::/, said.call("clock").last,
+                 "a value with no JSON form is a failure")
+    assert_equal ["EXPRESSION_ERROR"] * 4, held.errors.map { |error| error.dig("error", "code") },
+                 "each reported once, as an agent's error is: the binding does not ask again as it stands"
+    assert(held.errors.all? { |error| error["error"].key?("functionCallId") })
+  end
+
+  def test_an_action_over_handlers_is_finished_when_it_comes_back
+    order = []
+    handlers = { "fetchRate" => ->(_args) { order << :rate and 1.08 }, "lookup" => ->(_args) { order << :stock and 3 },
+                 "greeting" => ->(_args) { order << :greeting and "Ada is checking out" },
+                 "submitOrder" => ->(args) { { "accepted" => args["id"] } } }
+    held = in_process(handlers)
+    event = { "name" => "checkout", "userMessage" => { "@call" => "greeting" },
+              "context" => { "rate" => rate, "stock" => { "@call" => "lookup" } } }
+    held.apply({ "version" => "1.0",
+                 "updateComponents" => { "surfaceId" => "s", "components" => button({ "event" => event }) } })
+    action = held.action(surface_id: "s", source: "root")
+
+    refute_predicate action, :pending?
+    assert_predicate action, :valid?
+    assert_equal({ "rate" => 1.08, "stock" => 3 }, action.to_h.dig("action", "context"))
+    assert_equal "Ada is checking out", action.to_h.dig("action", "userMessage")
+    assert_equal %i[rate stock greeting], order, "in the order the event writes them"
+    held.action(surface_id: "s", source: "root")
+
+    assert_equal 6, order.size, "every press asks afresh"
+    call = { "functionCall" => { "@call" => "submitOrder", "args" => { "id" => "o-1" } } }
+    held.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s", "components" => button(call) } })
+    pressed = held.action(surface_id: "s", source: "root")
+
+    refute_predicate pressed, :pending?
+    assert_equal({ "accepted" => "o-1" }, pressed.value)
+    assert_empty held.errors
+  end
+
+  def test_an_action_over_handlers_ends_where_a_handler_fails
+    reached = []
+    held = in_process("fetchRate" => ->(_args) { raise "feed offline" }, "lookup" => ->(_args) { reached << :stock })
+    event = { "name" => "checkout", "context" => { "rate" => rate, "stock" => { "@call" => "lookup" } } }
+    held.apply({ "version" => "1.0",
+                 "updateComponents" => { "surfaceId" => "s", "components" => button({ "event" => event }) } })
+    action = held.action(surface_id: "s", source: "root")
+
+    refute_predicate action, :pending?
+    refute_predicate action, :valid?
+    assert_equal({ "action" => "An error occurred during function execution (RuntimeError)." }, action.errors)
+    assert_empty reached, "no later entry is read"
+    assert_equal 1, held.errors.size
+  end
+
+  def test_a_check_rule_over_a_handler_is_judged_at_once
+    held = in_process("isFree" => ->(args) { args["name"] != "ada" })
+    field = lambda do |name|
+      { "id" => name, "component" => "TextField", "label" => name, "value" => name,
+        "checks" => [{ "message" => "Name is taken",
+                       "condition" => { "@call" => "isFree", "args" => { "name" => name } } }] }
+    end
+    root = { "id" => "root", "component" => "Column", "children" => %w[ada bo] }
+    components = [root, field.call("ada"), field.call("bo")]
+    held.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s", "components" => components } })
+
+    assert_equal(%w[ada], held.surface("s").failures.keys)
+  end
+
+  def test_a_session_takes_the_agent_as_a_switch_or_as_handlers
+    error = assert_raises(ArgumentError) { A2UI::Session.new(agent_functions: "yes") }
+
+    assert_equal "agent_functions is true, false or the agent's handlers by function name", error.message
+    assert_empty A2UI::Session.new(agent_functions: {}).agent_calls
+  end
+
   def test_a_host_calls_the_agent_itself
     held = session
     call = held.call_agent_function(surface_id: "s", catalog_id: "shop", name: "inventory", args: { "sku" => "A-1" },

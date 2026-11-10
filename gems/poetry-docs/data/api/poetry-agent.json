@@ -133,7 +133,7 @@
       "path": "Poetry::Agent::A2UI::AgentCalls",
       "type": "class",
       "superclass": "Object",
-      "docstring": "A session's calls to the agent's functions (A2UI v1.0's\n`callAgentFunction`): a function a surface calls that no catalog of\nthe renderer implements is sent to the agent, and its value is\nnothing until the agent's `agentFunctionResponse` arrives.\n\nTwo kinds of evaluation wait on the agent, and they differ:\n\n- A binding or a check rule is evaluated again on every render, so\n  its calls are shared and kept: identical calls on a surface (the\n  same catalog, name and resolved arguments) ride one request, a\n  settled answer serves every later evaluation, and a binding whose\n  call failed does not send it again until its arguments change. The\n  id of such a call is derived from the surface, the call and how\n  many times it has failed, so a session rebuilt from its messages\n  asks nothing twice: an answer that arrived before the call was made\n  again is kept in hand and settles it at once.\n- An action runs once: each of its calls is sent fresh, under an id\n  of its own, and neither reads nor fills what the surface holds.\n\nThe session owns one of these when it was built to reach the agent\n(`Session.new(agent_functions: true)`), hands it to its v1.0\nsurfaces, and sends what gathers in {#outbox}.",
+      "docstring": "A session's calls to the agent's functions (A2UI v1.0's\n`callAgentFunction`): a function a surface calls that no catalog of\nthe renderer implements is sent to the agent, and its value is\nnothing until the agent's `agentFunctionResponse` arrives.\n\nTwo kinds of evaluation wait on the agent, and they differ:\n\n- A binding or a check rule is evaluated again on every render, so\n  its calls are shared and kept: identical calls on a surface (the\n  same catalog, name and resolved arguments) ride one request, a\n  settled answer serves every later evaluation, and a binding whose\n  call failed does not send it again until its arguments change. The\n  id of such a call is derived from the surface, the call and how\n  many times it has failed, so a session rebuilt from its messages\n  asks nothing twice: an answer that arrived before the call was made\n  again is kept in hand and settles it at once.\n- An action runs once: each of its calls is sent fresh, under an id\n  of its own, and neither reads nor fills what the surface holds.\n\nThe session owns one of these when it was built to reach the agent\n(`Session.new(agent_functions: true)`), hands it to its v1.0\nsurfaces, and sends what gathers in {#outbox}.\n\nWhere the agent's functions are Ruby in this process\n(`Session.new(agent_functions: { \"quote\" => ->(args) { ... } })`),\nnothing is sent and nothing waits: a call is answered by its\nfunction's handler the moment it is made, and settles as the\nagent's answer would have settled it.",
       "examples": [],
       "file": "lib/poetry/agent/a2ui/agent_calls.rb",
       "methods": [
@@ -160,7 +160,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 278
+          "line": 312
         },
         {
           "name": "key",
@@ -199,7 +199,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 271
+          "line": 305
         },
         {
           "name": "call",
@@ -261,7 +261,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 194
+          "line": 228
         },
         {
           "name": "cancel",
@@ -286,7 +286,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 235
+          "line": 269
         },
         {
           "name": "dispose",
@@ -303,7 +303,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 252
+          "line": 286
         },
         {
           "name": "expire",
@@ -328,7 +328,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 220
+          "line": 254
         },
         {
           "name": "forget",
@@ -353,7 +353,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 244
+          "line": 278
         },
         {
           "name": "held",
@@ -400,7 +400,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 177
+          "line": 211
         },
         {
           "name": "imperative",
@@ -453,13 +453,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 162
+          "line": 196
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(timeout: 30, version: \"1.0\", clock: nil, on_failure: nil, on_change: nil)",
+          "signature": "initialize(timeout: 30, version: \"1.0\", clock: nil, on_failure: nil, on_change: nil, handlers: nil)",
           "docstring": "A ledger for one session.",
           "params": [
             {
@@ -496,6 +496,14 @@
                 "#call"
               ],
               "text": "receives a surface's id when a binding's call on it got its answer or\nfailed, so what the surface shows changed"
+            },
+            {
+              "name": "handlers",
+              "types": [
+                "Hash{String => #call}",
+                "nil"
+              ],
+              "text": "the agent's functions by name, where they are answered\nin this process: each takes the resolved arguments (and, as a second parameter, the {Call}) and\nreturns the value. With handlers nothing joins {#outbox}, and a function without one fails as\nthe agent's `UNKNOWN_FUNCTION`"
             }
           ],
           "return": {
@@ -506,7 +514,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 110
+          "line": 142
         },
         {
           "name": "outbox",
@@ -523,7 +531,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 100
+          "line": 128
         },
         {
           "name": "pending",
@@ -540,7 +548,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 261
+          "line": 295
         },
         {
           "name": "reactive",
@@ -601,7 +609,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 138
+          "line": 172
         },
         {
           "name": "respond",
@@ -627,7 +635,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 205
+          "line": 239
         }
       ],
       "constants": [
@@ -666,7 +674,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "args=",
@@ -691,7 +699,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "catalog_id",
@@ -708,7 +716,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "catalog_id=",
@@ -733,7 +741,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "deadline",
@@ -750,7 +758,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "deadline=",
@@ -775,7 +783,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "error",
@@ -792,7 +800,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "error=",
@@ -817,7 +825,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "id",
@@ -834,7 +842,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "id=",
@@ -859,7 +867,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "key",
@@ -876,7 +884,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "key=",
@@ -901,7 +909,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "message",
@@ -926,7 +934,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 50
+          "line": 78
         },
         {
           "name": "name",
@@ -943,7 +951,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "name=",
@@ -968,7 +976,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "node",
@@ -985,7 +993,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "node=",
@@ -1010,7 +1018,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "pending?",
@@ -1027,7 +1035,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 45
+          "line": 73
         },
         {
           "name": "run",
@@ -1044,7 +1052,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "run=",
@@ -1069,7 +1077,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "state",
@@ -1086,7 +1094,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "state=",
@@ -1111,7 +1119,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "surface_id",
@@ -1128,7 +1136,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "surface_id=",
@@ -1153,7 +1161,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "value",
@@ -1170,7 +1178,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "value=",
@@ -1195,7 +1203,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "waiters",
@@ -1212,7 +1220,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
         },
         {
           "name": "waiters=",
@@ -1237,7 +1245,72 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 41
+          "line": 69
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::AgentCalls::Failure",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "What a handler raises to fail its call with a message, and a code,\nof its own choosing, as an agent's error response carries them.\nAny other error a handler raises fails the call as an\n`EXECUTION_ERROR` that names only the error's class.",
+      "examples": [
+        {
+          "title": "",
+          "text": "raise Poetry::Agent::A2UI::AgentCalls::Failure.new(\"Provider PRV-102 was not found\", code: \"NOT_FOUND\")"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+      "methods": [
+        {
+          "name": "code",
+          "scope": "instance",
+          "group": null,
+          "signature": "code",
+          "docstring": "The agent's code for the failure.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 54
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message, code: \"EXECUTION_ERROR\")",
+          "docstring": "A failure with its message and its code.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String"
+              ],
+              "text": "what the surface's error reports"
+            },
+            {
+              "name": "code",
+              "types": [
+                "String"
+              ],
+              "text": "the agent's code for the failure"
+            }
+          ],
+          "return": {
+            "types": [
+              "Failure"
+            ],
+            "text": "a new instance of Failure"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 60
         }
       ],
       "constants": []
@@ -1265,7 +1338,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 86
+          "line": 114
         },
         {
           "name": "cancelled?",
@@ -1282,7 +1355,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 82
+          "line": 110
         },
         {
           "name": "initialize",
@@ -1315,7 +1388,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 72
+          "line": 100
         },
         {
           "name": "memo",
@@ -1332,7 +1405,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 63
+          "line": 91
         },
         {
           "name": "resume",
@@ -1349,7 +1422,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 95
+          "line": 123
         },
         {
           "name": "surface_id",
@@ -1366,7 +1439,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/agent_calls.rb",
-          "line": 66
+          "line": 94
         }
       ],
       "constants": []
@@ -7048,14 +7121,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 246
+          "line": 259
         },
         {
           "name": "agent_calls",
           "scope": "instance",
           "group": null,
           "signature": "agent_calls",
-          "docstring": "The renderer-to-agent `callAgentFunction` messages waiting to be\nsent, oldest first: a v1.0 surface called a function no catalog\nimplements here, and its value is nothing until the agent's\n`agentFunctionResponse` is applied. The host takes each message\nas it sends it (`session.agent_calls.shift`). Always empty unless\nthe session was built with `agent_functions: true`.",
+          "docstring": "The renderer-to-agent `callAgentFunction` messages waiting to be\nsent, oldest first: a v1.0 surface called a function no catalog\nimplements here, and its value is nothing until the agent's\n`agentFunctionResponse` is applied. The host takes each message\nas it sends it (`session.agent_calls.shift`). Always empty unless\nthe session was built with `agent_functions: true`: without the\nagent nothing is called, and with handlers in this process every\ncall is answered where it is made.",
           "params": [],
           "return": {
             "types": [
@@ -7065,7 +7138,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 103
+          "line": 105
         },
         {
           "name": "apply",
@@ -7097,7 +7170,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 165
+          "line": 178
         },
         {
           "name": "apply_activity",
@@ -7123,7 +7196,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 202
+          "line": 215
         },
         {
           "name": "apply_all",
@@ -7148,7 +7221,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 187
+          "line": 200
         },
         {
           "name": "call_agent_function",
@@ -7210,7 +7283,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 320
+          "line": 333
         },
         {
           "name": "cancel_agent_calls",
@@ -7235,7 +7308,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 292
+          "line": 305
         },
         {
           "name": "capabilities",
@@ -7267,7 +7340,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 344
+          "line": 357
         },
         {
           "name": "catalog_for",
@@ -7294,7 +7367,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 379
+          "line": 392
         },
         {
           "name": "catalogs",
@@ -7336,7 +7409,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 386
+          "line": 399
         },
         {
           "name": "deleted",
@@ -7370,7 +7443,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 301
+          "line": 314
         },
         {
           "name": "errors",
@@ -7413,7 +7486,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 280
+          "line": 293
         },
         {
           "name": "initialize",
@@ -7463,9 +7536,10 @@
             {
               "name": "agent_functions",
               "types": [
-                "Boolean"
+                "Boolean",
+                "Hash{String => #call}"
               ],
-              "text": "whether the host sends {#agent_calls} to the agent and applies\nits answers. When it does, a function a v1.0 surface calls that no catalog implements here is\nthe agent's (A2UI's `callAgentFunction`); when it does not, such a call fails where it is made"
+              "text": "how the session reaches the agent, if\nit does. With `true` the host sends {#agent_calls} to the agent and applies its answers. With\na hash, the agent's functions are Ruby in this process: each handler takes the resolved\narguments (and, as a second parameter, the call, for its `surface_id` and `catalog_id`) and\nreturns the value, so a call is answered the moment it is made, nothing is sent and nothing\nwaits; a handler fails its call by raising ({AgentCalls::Failure} to say why), and a function\nwithout a handler fails as the agent's `UNKNOWN_FUNCTION`. Either way, a function a v1.0\nsurface calls that no catalog implements here is the agent's (A2UI's `callAgentFunction`);\nwith `false`, such a call fails where it is made"
             },
             {
               "name": "agent_call_timeout",
@@ -7483,7 +7557,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 137
+          "line": 145
         },
         {
           "name": "renderer_data_model",
@@ -7509,7 +7583,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 366
+          "line": 379
         },
         {
           "name": "responses",
@@ -7544,7 +7618,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 111
+          "line": 113
         },
         {
           "name": "surface",
@@ -7570,7 +7644,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 223
+          "line": 236
         },
         {
           "name": "surfaces",

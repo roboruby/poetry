@@ -289,6 +289,21 @@ class RendererTest < Minitest::Test
     assert_empty session.agent_calls
   end
 
+  def test_a_text_bound_to_a_function_the_app_answers_itself_renders_its_answer_at_once
+    session = A2UI::Session.new(agent_functions: { "fetchGreeting" => ->(args) { "Hello, #{args["user"]}" } })
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => [{ "id" => "root", "component" => "Text",
+                                                            "text" => { "@call" => "fetchGreeting",
+                                                                        "args" => { "user" => "Ada" } } }] } })
+    html, renderer = render(session.surface("s"))
+
+    assert_includes html, "Hello, Ada"
+    assert_empty renderer.warnings
+    assert_empty session.agent_calls
+    assert_empty session.errors
+  end
+
   def test_a_boolean_property_reads_by_the_protocol_s_coercion
     box = lambda do |value|
       html, = render(basic_surface([{ "id" => "root", "component" => "Row", "children" => ["box"],

@@ -142,7 +142,17 @@
     ) { |args, _evaluator| args["value"].to_s.split.map { |word| word[0] }.join.upcase }
   CODE
   agent_function_source = <<~CODE
-    # A session that reaches the agent: a function no catalog implements here is the agent's
+    # The agent's functions as Ruby in this app: a call is answered where it is made
+    session = Poetry::Agent::A2UI::Session.new(
+      agent_functions: {
+        "quote" => ->(args) { Quotes.price(args["symbol"], currency: args["currency"]) },
+        "isFree" => ->(args) { User.where(username: args["name"]).none? }
+      }
+    )
+    session.apply_all(messages)
+    html = render_surface(session.surface("quote"))          # every binding has its answer already
+
+    # An agent elsewhere: the calls gather, you send them and apply the answers
     session = Poetry::Agent::A2UI::Session.new(agent_functions: true)
     session.apply_all(messages)
     html = render_surface(session.surface("quote"))          # a binding that needs the agent is sent, and renders empty
@@ -448,9 +458,21 @@
       <h3 id="agent-functions">Functions the agent runs</h3>
       <p>
         On a v1.0 surface, a function that no catalog implements here is the
-        agent's (the protocol's <code>callAgentFunction</code>). Build the
-        session with <code>agent_functions: true</code> and it sends the call
-        instead of failing it. The messages gather in
+        agent's (the protocol's <code>callAgentFunction</code>). Where your agent
+        is Ruby in the same app, hand the session its functions and nothing has
+        to travel: <code>agent_functions:</code> takes a handler for each, by
+        name. A handler receives the call's resolved arguments and returns the
+        value, and the call is answered the moment a binding, a check rule or an
+        action makes it, so the surface renders with its answers and an action
+        comes back finished. A handler that raises fails its call (raise
+        <code>Poetry::Agent::A2UI::AgentCalls::Failure</code> to say why, and
+        under which code), and a function without a handler fails as the agent's
+        unknown function.
+      </p>
+      <p>
+        Where the agent is elsewhere, build the session with
+        <code>agent_functions: true</code> and it sends the call instead of
+        failing it. The messages gather in
         <code>session.agent_calls</code>; a binding that waits renders as nothing
         and a check rule that waits does not fail; and when you apply the agent's
         <code>agentFunctionResponse</code>, the surface it changed comes back

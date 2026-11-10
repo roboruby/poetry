@@ -98,7 +98,9 @@ module Poetry
         # implements here, and its value is nothing until the agent's
         # `agentFunctionResponse` is applied. The host takes each message
         # as it sends it (`session.agent_calls.shift`). Always empty unless
-        # the session was built with `agent_functions: true`.
+        # the session was built with `agent_functions: true`: without the
+        # agent nothing is called, and with handlers in this process every
+        # call is answered where it is made.
         # @return [Array<Hash>]
         def agent_calls
           @agent ? @agent.outbox : []
@@ -129,16 +131,27 @@ module Poetry
         #   strict), else as given
         # @param allow_dangling_references [Boolean, nil] whether an update may reference a component the
         #   surface does not hold yet (`allowDanglingReferences`): the mode's default when nil, else as given
-        # @param agent_functions [Boolean] whether the host sends {#agent_calls} to the agent and applies
-        #   its answers. When it does, a function a v1.0 surface calls that no catalog implements here is
-        #   the agent's (A2UI's `callAgentFunction`); when it does not, such a call fails where it is made
+        # @param agent_functions [Boolean, Hash{String => #call}] how the session reaches the agent, if
+        #   it does. With `true` the host sends {#agent_calls} to the agent and applies its answers. With
+        #   a hash, the agent's functions are Ruby in this process: each handler takes the resolved
+        #   arguments (and, as a second parameter, the call, for its `surface_id` and `catalog_id`) and
+        #   returns the value, so a call is answered the moment it is made, nothing is sent and nothing
+        #   waits; a handler fails its call by raising ({AgentCalls::Failure} to say why), and a function
+        #   without a handler fails as the agent's `UNKNOWN_FUNCTION`. Either way, a function a v1.0
+        #   surface calls that no catalog implements here is the agent's (A2UI's `callAgentFunction`);
+        #   with `false`, such a call fails where it is made
         # @param agent_call_timeout [Numeric] seconds a call to the agent may wait before
         #   {#expire_agent_calls} fails it
         def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil, # rubocop:disable Metrics/ParameterLists
                        allow_dangling_references: nil, agent_functions: false, agent_call_timeout: 30)
+          unless [true, false, nil].include?(agent_functions) || agent_functions.is_a?(Hash)
+            raise ArgumentError, "agent_functions is true, false or the agent's handlers by function name"
+          end
+
           if agent_functions
             @agent = AgentCalls.new(timeout: agent_call_timeout, on_failure: method(:agent_failure),
-                                    on_change: ->(surface_id) { @surfaces[surface_id]&.touch })
+                                    on_change: ->(surface_id) { @surfaces[surface_id]&.touch },
+                                    handlers: agent_functions.is_a?(Hash) ? agent_functions : nil)
           end
           @catalogs = catalogs
           @fallback_catalog = fallback_catalog

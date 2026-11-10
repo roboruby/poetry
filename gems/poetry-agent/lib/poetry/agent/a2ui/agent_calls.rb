@@ -29,11 +29,39 @@ module Poetry
       # The session owns one of these when it was built to reach the agent
       # (`Session.new(agent_functions: true)`), hands it to its v1.0
       # surfaces, and sends what gathers in {#outbox}.
+      #
+      # Where the agent's functions are Ruby in this process
+      # (`Session.new(agent_functions: { "quote" => ->(args) { ... } })`),
+      # nothing is sent and nothing waits: a call is answered by its
+      # function's handler the moment it is made, and settles as the
+      # agent's answer would have settled it.
       class AgentCalls
         # The codes a call that will never be answered ends with.
         CODES = %w[TIMEOUT CANCELLED DISPOSED DUPLICATE NO_LISTENER].freeze
         # How many answers that match no call are kept in hand, and how many closed ids are remembered.
         KEPT = 256
+
+        # What a handler raises to fail its call with a message, and a code,
+        # of its own choosing, as an agent's error response carries them.
+        # Any other error a handler raises fails the call as an
+        # `EXECUTION_ERROR` that names only the error's class.
+        #
+        # @example
+        #   raise Poetry::Agent::A2UI::AgentCalls::Failure.new("Provider PRV-102 was not found", code: "NOT_FOUND")
+        class Failure < StandardError
+          # The agent's code for the failure.
+          # @return [String]
+          attr_reader :code
+
+          # A failure with its message and its code.
+          #
+          # @param message [String] what the surface's error reports
+          # @param code [String] the agent's code for the failure
+          def initialize(message, code: "EXECUTION_ERROR")
+            @code = code
+            super(message)
+          end
+        end
 
         # One call to the agent. `state` is `:pending`, `:settled`,
         # `:failed` or `:cancelled`; `error` is the agent's
@@ -107,7 +135,12 @@ module Poetry
         # @param on_failure [#call] receives `(call)` when the agent answered with an error or the call timed out
         # @param on_change [#call] receives a surface's id when a binding's call on it got its answer or
         #   failed, so what the surface shows changed
-        def initialize(timeout: 30, version: "1.0", clock: nil, on_failure: nil, on_change: nil)
+        # @param handlers [Hash{String => #call}, nil] the agent's functions by name, where they are answered
+        #   in this process: each takes the resolved arguments (and, as a second parameter, the {Call}) and
+        #   returns the value. With handlers nothing joins {#outbox}, and a function without one fails as
+        #   the agent's `UNKNOWN_FUNCTION`
+        def initialize(timeout: 30, version: "1.0", clock: nil, on_failure: nil, on_change: nil, handlers: nil)
+          @handlers = handlers&.to_h { |name, handler| [name.to_s, handler] }
           @timeout = timeout
           @version = version
           @clock = clock || -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
@@ -122,6 +155,7 @@ module Poetry
           @in_hand = {}
           @closed = {}
           @disposed = false
+          @launching = nil
         end
 
         # A binding's or a check rule's call: the surface's answer when it
@@ -304,9 +338,41 @@ module Poetry
           return close(call, refusal) if refusal
 
           @pending[id] = call
-          early = @in_hand.delete(id)
-          early ? respond(early) : @outbox << call.message(@version)
+          deliver(call)
           call
+        end
+
+        # Gets a call its answer, or on its way: from what is in hand,
+        # from its handler in this process, else into the outbox. An answer
+        # that comes at once settles the call before the evaluation that made
+        # it reads it, so that evaluation is not taken up a second time.
+        def deliver(call)
+          outer = @launching
+          @launching = call
+          early = @in_hand.delete(call.id)
+          if early then respond(early)
+          elsif @handlers then respond(handled(call))
+          else @outbox << call.message(@version)
+          end
+        ensure
+          @launching = outer
+        end
+
+        # A call answered in this process, as the response an agent would have sent: the handler's value,
+        # the failure it raised, or `UNKNOWN_FUNCTION` where the agent has no such function.
+        def handled(call)
+          handler = @handlers[call.name]
+          unknown = { "code" => "UNKNOWN_FUNCTION", "message" => "No such function: #{call.name}" }
+          return { "functionCallId" => call.id, "error" => unknown } unless handler
+
+          arity = handler.respond_to?(:arity) ? handler.arity : handler.method(:call).arity
+          value = arity == 1 ? handler.call(call.args) : handler.call(call.args, call)
+          { "functionCallId" => call.id, "value" => JSON.parse(JSON.generate(value)) }
+        rescue Failure => e
+          { "functionCallId" => call.id, "error" => { "code" => e.code, "message" => e.message } }
+        rescue StandardError => e
+          message = "An error occurred during function execution (#{e.class})."
+          { "functionCallId" => call.id, "error" => { "code" => "EXECUTION_ERROR", "message" => message } }
         end
 
         # Why a call cannot be made: the ledger was disposed, or its id is still in flight.
@@ -350,7 +416,7 @@ module Poetry
             @on_change&.call(call.surface_id)
           end
           @on_failure&.call(call) if call.waiters || call.run
-          call.run&.resume
+          call.run&.resume unless @launching.equal?(call)
           call
         end
 
@@ -378,7 +444,7 @@ module Poetry
           return unless call.run
 
           call.run.memo[call.node] = read(call)
-          call.run.resume if call.state == :settled
+          call.run.resume if call.state == :settled && !@launching.equal?(call)
         end
 
         # An answer to no call in flight: kept in hand unless its call already closed.
