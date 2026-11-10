@@ -108,7 +108,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui.rb",
-          "line": 47
+          "line": 48
         }
       ],
       "constants": [
@@ -606,7 +606,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 70
+          "line": 72
         },
         {
           "name": "document",
@@ -623,7 +623,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 82
+          "line": 84
         },
         {
           "name": "functions",
@@ -640,7 +640,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 94
+          "line": 96
         },
         {
           "name": "id",
@@ -657,7 +657,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 88
+          "line": 90
         },
         {
           "name": "initialize",
@@ -682,7 +682,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 75
+          "line": 77
         },
         {
           "name": "inputs",
@@ -722,7 +722,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 131
+          "line": 133
         },
         {
           "name": "reference_fields",
@@ -747,7 +747,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 111
+          "line": 113
         },
         {
           "name": "references",
@@ -772,7 +772,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 102
+          "line": 104
         },
         {
           "name": "render",
@@ -812,7 +812,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 145
+          "line": 147
         }
       ],
       "constants": [
@@ -867,6 +867,11 @@
           "docstring": "Main-axis alignment classes by the catalog's `justify` values."
         },
         {
+          "name": "LIST_STYLES",
+          "value": "{ \"ordered\" => [:ol, \"list-decimal ps-6\"], \"unordered\" => [:ul, \"list-disc ps-6\"] }.freeze",
+          "docstring": "The list element and its marker classes by a v0.9 List's `listStyle` (`none` stays a plain container)."
+        },
+        {
           "name": "V0_9_IDS",
           "value": "%w[https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json\nhttps://a2ui.org/specification/v0_9/basic_catalog.json].freeze",
           "docstring": "The v0.9 basic catalog's id, and the one AG-UI's A2UI toolkits send for it."
@@ -896,7 +901,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "label=",
@@ -921,7 +926,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "options",
@@ -938,7 +943,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "options=",
@@ -963,7 +968,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "path",
@@ -980,7 +985,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "path=",
@@ -1005,7 +1010,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "selected",
@@ -1022,7 +1027,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "selected=",
@@ -1047,7 +1052,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
-          "line": 63
+          "line": 65
         }
       ],
       "constants": []
@@ -1893,7 +1898,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 124
+          "line": 125
         },
         {
           "name": "index",
@@ -1911,7 +1916,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 149
+          "line": 150
         },
         {
           "name": "initialize",
@@ -1984,7 +1989,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "resolve",
@@ -2053,7 +2058,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 138
+          "line": 139
         },
         {
           "name": "surface",
@@ -2290,6 +2295,31 @@
       "file": "lib/poetry/agent/a2ui/functions.rb",
       "methods": [
         {
+          "name": "agent_only_refusal",
+          "scope": "class",
+          "group": null,
+          "signature": "agent_only_refusal(name)",
+          "docstring": "What a surface's call to an agent's function is told.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 93
+        },
+        {
           "name": "basic",
           "scope": "class",
           "group": null,
@@ -2330,7 +2360,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 100
+          "line": 110
         },
         {
           "name": "openable?",
@@ -2355,14 +2385,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 91
+          "line": 101
         },
         {
           "name": "truthy?",
           "scope": "class",
           "group": null,
-          "signature": "truthy?(value, dialect = Dialect::V1_0)",
-          "docstring": "The boolean reading of a value: strings by content, nil and false\nas false. In v1.0 a ValidationResult reads as its `valid`; in v0.9\nan object is simply present, so it reads as true.",
+          "signature": "truthy?(value, _dialect = Dialect::V1_0)",
+          "docstring": "The boolean reading of a value, the protocol's DynamicBoolean\ncoercion, the same in every version: a boolean as it is, a\nValidationResult as its `valid`, the string `\"true\"` in any letter\ncase as true and every other string as false, a number as whether\nit is not zero, and nil, a list or any other object as false.",
           "params": [
             {
               "name": "value",
@@ -2372,11 +2402,11 @@
               "text": ""
             },
             {
-              "name": "dialect",
+              "name": "_dialect",
               "types": [
                 "Dialect"
               ],
-              "text": "the surface's protocol version"
+              "text": "no longer read: every protocol version coerces alike"
             }
           ],
           "return": {
@@ -2387,7 +2417,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 78
+          "line": 80
         },
         {
           "name": "activation?",
@@ -2412,7 +2442,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 177
+          "line": 197
         },
         {
           "name": "agent_callable?",
@@ -2437,7 +2467,39 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 150
+          "line": 160
+        },
+        {
+          "name": "agent_only?",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_only?(name, dialect = Dialect::V1_0)",
+          "docstring": "Whether a declared function is the agent's alone: on a v1.0\nsurface no binding and no action may run it (v0.9 has no such\nboundary).",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "dialect",
+              "types": [
+                "Dialect"
+              ],
+              "text": "the protocol version of the surface the call is on"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether only an agent's `callRendererFunction` may invoke the function"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 171
         },
         {
           "name": "any_function",
@@ -2454,7 +2516,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 236
+          "line": 256
         },
         {
           "name": "argument_problem",
@@ -2494,7 +2556,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 162
+          "line": 182
         },
         {
           "name": "call",
@@ -2533,7 +2595,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 201
+          "line": 221
         },
         {
           "name": "declared?",
@@ -2558,7 +2620,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 190
+          "line": 210
         },
         {
           "name": "define",
@@ -2625,7 +2687,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 138
+          "line": 148
         },
         {
           "name": "initialize",
@@ -2642,7 +2704,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 112
+          "line": 122
         },
         {
           "name": "initialize_copy",
@@ -2662,7 +2724,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 119
+          "line": 129
         },
         {
           "name": "names",
@@ -2679,7 +2741,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 183
+          "line": 203
         },
         {
           "name": "schema",
@@ -2704,7 +2766,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 220
+          "line": 240
         }
       ],
       "constants": [
@@ -2781,7 +2843,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 291
+          "line": 311
         },
         {
           "name": "list",
@@ -2798,7 +2860,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 283
+          "line": 303
         }
       ],
       "constants": [
@@ -3460,6 +3522,495 @@
       "examples": [],
       "file": "lib/poetry/agent/a2ui/pointer.rb",
       "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The A2UI regex dialect: the portable subset of ECMAScript pattern\nsyntax (Unicode mode, no flags) the protocol defines for `regex`,\nwith the static safety check it runs before any matching. A pattern\nis parsed here and never handed raw to Ruby's engine: the tree\nanswers the safety rules, then is written out as the Ruby\nexpression that matches the same values (`^` and `$` as the ends of\nthe value, ASCII `\\d`, `\\w` and `\\b`, ECMAScript's `\\s` and `.`).\n\nA refused pattern raises {Rejected}, whose message opens with one\nof the protocol's tokens: `PATTERN_TOO_LONG`, `UNSUPPORTED_SYNTAX`,\n`NESTED_QUANTIFIER`, `OVERLAPPING_ALTERNATION`, `ADJACENT_OVERLAP`.",
+      "examples": [
+        {
+          "title": "",
+          "text": "RegexSubset.match?(\"^[a-z]+@[a-z]+\\\\.com$\", \"ada@example.com\") # => true\nRegexSubset.match?(\"^abc$\", \"abc\\n\")                           # => false\nRegexSubset.compile(\"(a+)+$\") # raises RegexSubset::Rejected, \"NESTED_QUANTIFIER: ...\""
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "compile",
+          "scope": "class",
+          "group": null,
+          "signature": "compile(pattern)",
+          "docstring": "The Ruby expression for a pattern, checked first.",
+          "params": [
+            {
+              "name": "pattern",
+              "types": [
+                "String"
+              ],
+              "text": "a pattern in the dialect"
+            }
+          ],
+          "return": {
+            "types": [
+              "Regexp"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 90
+        },
+        {
+          "name": "match?",
+          "scope": "class",
+          "group": null,
+          "signature": "match?(pattern, value)",
+          "docstring": "Whether the pattern matches anywhere in the value. A value past\n{MAX_VALUE} code points does not match, and neither does one the\nengine's time limit stops.",
+          "params": [
+            {
+              "name": "pattern",
+              "types": [
+                "String"
+              ],
+              "text": "a pattern in the dialect"
+            },
+            {
+              "name": "value",
+              "types": [
+                "String"
+              ],
+              "text": "the value searched"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 80
+        },
+        {
+          "name": "native",
+          "scope": "class",
+          "group": null,
+          "signature": "native(pattern)",
+          "docstring": "The HTML `pattern` attribute that holds an input to a pattern in\nthe browser's own constraint validation. The attribute wants the\nwhole value matched where the dialect searches, so the pattern\nsits between two runs of anything.",
+          "params": [
+            {
+              "name": "pattern",
+              "types": [
+                "String"
+              ],
+              "text": "a pattern in the dialect"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the attribute's value, or nil for a pattern the dialect or its\nsafety check refuses (an input never carries one of those)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 109
+        }
+      ],
+      "constants": [
+        {
+          "name": "CACHE_SIZE",
+          "value": "256",
+          "docstring": "How many compiled patterns are kept."
+        },
+        {
+          "name": "CLASSES",
+          "value": "{ \"d\" => DIGIT, \"D\" => Ranges.complement(DIGIT), \"w\" => WORD, \"W\" => Ranges.complement(WORD),\n\"s\" => SPACE, \"S\" => Ranges.complement(SPACE) }.freeze",
+          "docstring": "The class escapes, by letter."
+        },
+        {
+          "name": "CONTROLS",
+          "value": "{ \"t\" => 0x09, \"n\" => 0x0A, \"v\" => 0x0B, \"f\" => 0x0C, \"r\" => 0x0D }.freeze",
+          "docstring": "The control escapes, by letter."
+        },
+        {
+          "name": "DIGIT",
+          "value": "[[0x30, 0x39]].freeze",
+          "docstring": "`\\d`."
+        },
+        {
+          "name": "DOT",
+          "value": "Ranges.complement(LINE_ENDS).freeze",
+          "docstring": "`.`."
+        },
+        {
+          "name": "LINE_ENDS",
+          "value": "[[0x0A, 0x0A], [0x0D, 0x0D], [0x2028, 0x2029]].freeze",
+          "docstring": "What `.` leaves out: the line terminators."
+        },
+        {
+          "name": "MAX_BOUND",
+          "value": "65_535",
+          "docstring": "The largest count a `{n,m}` quantifier may name."
+        },
+        {
+          "name": "MAX_PATTERN",
+          "value": "256",
+          "docstring": "The longest pattern, in code points."
+        },
+        {
+          "name": "MAX_VALUE",
+          "value": "4096",
+          "docstring": "The longest value a pattern is matched against, in code points; a longer one does not match."
+        },
+        {
+          "name": "SPACE",
+          "value": "[[0x09, 0x0D], [0x20, 0x20], [0xA0, 0xA0], [0x1680, 0x1680], [0x2000, 0x200A], [0x2028, 0x2029],\n[0x202F, 0x202F], [0x205F, 0x205F], [0x3000, 0x3000], [0xFEFF, 0xFEFF]].freeze",
+          "docstring": "`\\s`: ECMAScript's WhiteSpace and LineTerminator."
+        },
+        {
+          "name": "SYNTAX",
+          "value": "%w[^ $ \\\\ . * + ? ( ) [ ] { } | /].freeze",
+          "docstring": "The characters an identity escape may name."
+        },
+        {
+          "name": "TIMEOUT",
+          "value": "0.05",
+          "docstring": "How long one match may run, in seconds: the engine's own limit, behind the static check."
+        },
+        {
+          "name": "WORD",
+          "value": "[[0x30, 0x39], [0x41, 0x5A], [0x5F, 0x5F], [0x61, 0x7A]].freeze",
+          "docstring": "`\\w`."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Alt",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "An alternation.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "branches",
+          "scope": "instance",
+          "group": null,
+          "signature": "branches",
+          "docstring": "Returns the value of attribute branches",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of branches"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 62
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Anchor",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A zero-width assertion: `:start`, `:end`, `:boundary` or `:not_boundary`.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "kind",
+          "scope": "instance",
+          "group": null,
+          "signature": "kind",
+          "docstring": "Returns the value of attribute kind",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of kind"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 58
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Chars",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A set of code points, as sorted ranges that neither touch nor overlap.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "ranges",
+          "scope": "instance",
+          "group": null,
+          "signature": "ranges",
+          "docstring": "Returns the value of attribute ranges",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of ranges"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 52
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Concat",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A sequence; the empty sequence matches the empty string.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "items",
+          "scope": "instance",
+          "group": null,
+          "signature": "items",
+          "docstring": "Returns the value of attribute items",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of items"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 60
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Group",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A group, capturing or not: the dialect has no backreferences, so the two read alike.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "child",
+          "scope": "instance",
+          "group": null,
+          "signature": "child",
+          "docstring": "Returns the value of attribute child",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of child"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 54
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Look",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A lookahead, `(?=...)` or `(?!...)`.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "child",
+          "scope": "instance",
+          "group": null,
+          "signature": "child",
+          "docstring": "Returns the value of attribute child",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of child"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 56
+        },
+        {
+          "name": "negated",
+          "scope": "instance",
+          "group": null,
+          "signature": "negated",
+          "docstring": "Returns the value of attribute negated",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of negated"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 56
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Rejected",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "A pattern the dialect or its safety check refuses.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(token, detail)",
+          "docstring": "A refusal by its token.",
+          "params": [
+            {
+              "name": "token",
+              "types": [
+                "String"
+              ],
+              "text": "which refusal this is, `NESTED_QUANTIFIER` for one"
+            },
+            {
+              "name": "detail",
+              "types": [
+                "String"
+              ],
+              "text": "what was refused"
+            }
+          ],
+          "return": {
+            "types": [
+              "Rejected"
+            ],
+            "text": "a new instance of Rejected"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 45
+        },
+        {
+          "name": "token",
+          "scope": "instance",
+          "group": null,
+          "signature": "token",
+          "docstring": "The refusal's token.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the protocol's token for the refusal"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 39
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::RegexSubset::Repeat",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "A quantified atom; `max` is nil when unbounded.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+      "methods": [
+        {
+          "name": "child",
+          "scope": "instance",
+          "group": null,
+          "signature": "child",
+          "docstring": "Returns the value of attribute child",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of child"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 64
+        },
+        {
+          "name": "lazy",
+          "scope": "instance",
+          "group": null,
+          "signature": "lazy",
+          "docstring": "Returns the value of attribute lazy",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of lazy"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 64
+        },
+        {
+          "name": "max",
+          "scope": "instance",
+          "group": null,
+          "signature": "max",
+          "docstring": "Returns the value of attribute max",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of max"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 64
+        },
+        {
+          "name": "min",
+          "scope": "instance",
+          "group": null,
+          "signature": "min",
+          "docstring": "Returns the value of attribute min",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of min"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/regex_subset.rb",
+          "line": 64
+        }
+      ],
       "constants": []
     },
     {
@@ -4908,8 +5459,8 @@
           "name": "action",
           "scope": "instance",
           "group": null,
-          "signature": "action(surface_id:, source:, values: {}, timestamp: Time.now.utc)",
-          "docstring": "Turns a submitted surface form into the agent's `action`\nmessage: bound input values are written to the data model first\n(two-way binding syncs on an action), then the source\ncomponent's event context resolves against the updated model.\nReturns nil when the source has no agent event (a local action,\nor an unknown component), and an invalid action - no message,\n`errors` by component key - when a `checks` rule fails.",
+          "signature": "action(surface_id:, source:, values: {}, timestamp: Time.now.utc, metadata: nil)",
+          "docstring": "Turns a submitted surface form into the agent's `action`\nmessage: bound input values are written to the data model first\n(two-way binding syncs on an action), then the source\ncomponent's event context resolves against the updated model.\nReturns nil when the source has no agent event (a local action,\nor an unknown component), and an invalid action - no message,\n`errors` by component key - when a `checks` rule fails or the\nmetadata is malformed.",
           "params": [
             {
               "name": "surface_id",
@@ -4938,6 +5489,14 @@
                 "Time"
               ],
               "text": ""
+            },
+            {
+              "name": "metadata",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "what a v1.0 action carries as `action.metadata`: an `extensions`\nobject keyed by UAX #31 identifiers (an attestation, an audit tag); a v0.9 action carries none"
             }
           ],
           "return": {
@@ -4949,7 +5508,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 206
+          "line": 212
         },
         {
           "name": "apply",
@@ -4981,14 +5540,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 132
+          "line": 134
         },
         {
           "name": "apply_activity",
           "scope": "instance",
           "group": null,
           "signature": "apply_activity(content)",
-          "docstring": "Applies the A2UI messages an AG-UI `a2ui-surface` activity\ncarries (an `a2ui_operations`, `messages`, or `operations` list,\nor one bare message). An activity that carries only a lifecycle\nstatus (`{ \"status\", \"progressTokens\" }`, while the agent builds the\nsurface) is recorded as {#status}, not an error. A replacing snapshot\ncarries every operation so far, so the `createSurface` that made a\nsurface is skipped when it comes again unchanged.",
+          "docstring": "Applies the A2UI messages an AG-UI `a2ui-surface` activity\ncarries (an `a2ui_operations`, `messages`, or `operations` list,\nor one bare message). An activity that carries only a lifecycle\nstatus (`{ \"status\", \"progressTokens\" }`, while the agent builds the\nsurface, or `{ \"status\", \"error\", \"errors\" }` once a build failed)\nis recorded as {#status}, not an error. A replacing snapshot\ncarries every operation so far, so the `createSurface` that made a\nsurface is skipped when it comes again unchanged.",
           "params": [
             {
               "name": "content",
@@ -5007,7 +5566,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 168
+          "line": 171
         },
         {
           "name": "apply_all",
@@ -5032,7 +5591,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 154
+          "line": 156
         },
         {
           "name": "capabilities",
@@ -5064,7 +5623,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 249
+          "line": 262
         },
         {
           "name": "catalog_for",
@@ -5091,7 +5650,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 284
+          "line": 297
         },
         {
           "name": "catalogs",
@@ -5133,7 +5692,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 291
+          "line": 304
         },
         {
           "name": "deleted",
@@ -5223,7 +5782,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 108
+          "line": 110
         },
         {
           "name": "renderer_data_model",
@@ -5249,7 +5808,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 271
+          "line": 284
         },
         {
           "name": "responses",
@@ -5273,7 +5832,7 @@
           "scope": "instance",
           "group": null,
           "signature": "status",
-          "docstring": "The last lifecycle status an AG-UI activity carried while no surface\nwas ready yet (`{ \"status\" => \"building\", \"progressTokens\" => 20 }`), or nil.",
+          "docstring": "The last lifecycle status an AG-UI activity carried while no surface\nwas ready yet (`{ \"status\" => \"building\", \"progressTokens\" => 20 }`), or\nnil. A build that failed says why: `{ \"status\" => \"failed\", \"error\" =>\n\"Invalid A2UI components: ...\", \"errors\" => [...] }`.",
           "params": [],
           "return": {
             "types": [
@@ -5284,7 +5843,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 87
+          "line": 89
         },
         {
           "name": "surface",
@@ -5310,7 +5869,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 189
+          "line": 192
         },
         {
           "name": "surfaces",
@@ -5834,7 +6393,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 108
+          "line": 125
         },
         {
           "name": "composition_problems",
@@ -5866,7 +6425,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 120
+          "line": 137
         },
         {
           "name": "identifier_problems",
@@ -5898,7 +6457,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 91
+          "line": 90
         },
         {
           "name": "limit_problem",
@@ -5941,6 +6500,39 @@
           "line": 44
         },
         {
+          "name": "metadata_problem",
+          "scope": "class",
+          "group": null,
+          "signature": "metadata_problem(metadata, owner)",
+          "docstring": "Why a v1.0 `metadata` object is malformed: it holds only\n`extensions`, an object whose keys are UAX #31 identifiers.",
+          "params": [
+            {
+              "name": "metadata",
+              "types": [
+                "Object"
+              ],
+              "text": "the metadata as written"
+            },
+            {
+              "name": "owner",
+              "types": [
+                "String"
+              ],
+              "text": "what carries it, for the message (`createSurface.metadata`)"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/strict.rb",
+          "line": 106
+        },
+        {
           "name": "named",
           "scope": "class",
           "group": null,
@@ -5970,7 +6562,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 142
+          "line": 159
         },
         {
           "name": "topology_problems",
@@ -12109,7 +12701,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 305
+          "line": 317
         },
         {
           "name": "authorization_url",
@@ -12142,7 +12734,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 259
+          "line": 271
         },
         {
           "name": "authorized?",
@@ -12175,7 +12767,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 246
+          "line": 258
         },
         {
           "name": "call",
@@ -12229,7 +12821,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 352
+          "line": 364
         },
         {
           "name": "clear_cache",
@@ -12246,14 +12838,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 480
+          "line": 492
         },
         {
           "name": "client",
           "scope": "instance",
           "group": null,
           "signature": "client(id, headers: {}, context: nil)",
-          "docstring": "A connected client for a server, the `mcp` gem's: the server's\nheaders, the context's through the server's credentials, this\nrequest's; the handshake declares the ui extension.",
+          "docstring": "A connected client for a server, the `mcp` gem's: the server's\nheaders, the context's through the server's credentials, this\nrequest's; the ui extension is declared in the handshake, or on\nevery request where the server's lifecycle has none.",
           "params": [
             {
               "name": "id",
@@ -12286,7 +12878,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 229
+          "line": 241
         },
         {
           "name": "finish_authorization",
@@ -12326,7 +12918,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 276
+          "line": 288
         },
         {
           "name": "frame_data",
@@ -12367,7 +12959,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 460
+          "line": 472
         },
         {
           "name": "initialize",
@@ -12381,7 +12973,7 @@
               "types": [
                 "Hash{String => Hash}"
               ],
-              "text": "by id: `url:`, optional `headers:` held for every request, and\noptional `credentials:` (an {OAuth} or a callable `(context, server) -> headers`) turning the\ncontext a call passes (the signed-in person) into that person's headers"
+              "text": "by id: `url:`, optional `headers:` held for every request,\noptional `credentials:` (an {OAuth} or a callable `(context, server) -> headers`) turning the\ncontext a call passes (the signed-in person) into that person's headers, and optional\n`lifecycle:` (one of {LIFECYCLES}; `:auto` by default, which opens every server)"
             },
             {
               "name": "origin",
@@ -12452,7 +13044,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 192
+          "line": 202
         },
         {
           "name": "inline_sandbox_page",
@@ -12477,7 +13069,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 449
+          "line": 461
         },
         {
           "name": "model_visible?",
@@ -12517,7 +13109,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 316
+          "line": 328
         },
         {
           "name": "origin",
@@ -12534,7 +13126,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 158
+          "line": 167
         },
         {
           "name": "resource",
@@ -12581,7 +13173,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 329
+          "line": 341
         },
         {
           "name": "rpc",
@@ -12636,7 +13228,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 372
+          "line": 384
         },
         {
           "name": "rpc_app",
@@ -12653,7 +13245,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 441
+          "line": 453
         },
         {
           "name": "rpc_path",
@@ -12670,7 +13262,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 170
+          "line": 179
         },
         {
           "name": "sandbox_app",
@@ -12687,7 +13279,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 434
+          "line": 446
         },
         {
           "name": "sandbox_origin",
@@ -12705,7 +13297,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 162
+          "line": 171
         },
         {
           "name": "sandbox_path",
@@ -12722,7 +13314,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 166
+          "line": 175
         },
         {
           "name": "sandbox_token",
@@ -12762,7 +13354,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 404
+          "line": 416
         },
         {
           "name": "sandbox_url",
@@ -12803,7 +13395,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 427
+          "line": 439
         },
         {
           "name": "server",
@@ -12828,7 +13420,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 215
+          "line": 226
         },
         {
           "name": "servers",
@@ -12845,7 +13437,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 174
+          "line": 183
         },
         {
           "name": "tools",
@@ -12885,7 +13477,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 289
+          "line": 301
         },
         {
           "name": "verify_sandbox_token",
@@ -12911,7 +13503,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 414
+          "line": 426
         }
       ],
       "constants": [
@@ -12924,6 +13516,11 @@
           "name": "CONTROLLER",
           "value": "\"poetry--agent--mcp-app-host\"",
           "docstring": "The Stimulus controller the frame carries."
+        },
+        {
+          "name": "LIFECYCLES",
+          "value": "%i[auto modern legacy].freeze",
+          "docstring": "How a client may open a server: `:auto` asks `server/discover`\nfirst and falls back to the handshake, so it opens every server;\n`:modern` is the stateless lifecycle of revision 2026-07-28 alone\n(no handshake, every request carries its version and the client's\ncapabilities); `:legacy` is the `initialize` handshake alone\n(protocol revisions through 2025-11-25), one request fewer against\na server that has no newer revision."
         },
         {
           "name": "RESOURCES_TTL",
@@ -13065,7 +13662,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 109
+          "line": 118
         },
         {
           "name": "input",
@@ -13082,7 +13679,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "input=",
@@ -13107,7 +13704,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "resource_uri",
@@ -13125,7 +13722,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "resource_uri=",
@@ -13152,7 +13749,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "result",
@@ -13169,7 +13766,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "result=",
@@ -13194,7 +13791,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "server",
@@ -13211,7 +13808,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "server=",
@@ -13236,7 +13833,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "tool",
@@ -13253,7 +13850,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "tool=",
@@ -13278,7 +13875,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 106
+          "line": 115
         }
       ],
       "constants": []
@@ -13894,7 +14491,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         },
         {
           "name": "html=",
@@ -13919,7 +14516,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         },
         {
           "name": "ui",
@@ -13936,7 +14533,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         },
         {
           "name": "ui=",
@@ -13961,7 +14558,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         },
         {
           "name": "uri",
@@ -13978,7 +14575,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         },
         {
           "name": "uri=",
@@ -14003,7 +14600,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 97
+          "line": 106
         }
       ],
       "constants": []
@@ -14322,6 +14919,48 @@
           "line": 90
         },
         {
+          "name": "lifecycle",
+          "scope": "instance",
+          "group": null,
+          "signature": "lifecycle",
+          "docstring": "Returns the value of attribute lifecycle",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of lifecycle"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 90
+        },
+        {
+          "name": "lifecycle=",
+          "scope": "instance",
+          "group": null,
+          "signature": "lifecycle=(value)",
+          "docstring": "Sets the attribute lifecycle",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute lifecycle to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/apps/host.rb",
+          "line": 90
+        },
+        {
           "name": "url",
           "scope": "instance",
           "group": null,
@@ -14389,7 +15028,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 138
+          "line": 147
         },
         {
           "name": "fetch",
@@ -14421,7 +15060,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 126
+          "line": 135
         },
         {
           "name": "initialize",
@@ -14438,7 +15077,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/apps/host.rb",
-          "line": 115
+          "line": 124
         }
       ],
       "constants": []

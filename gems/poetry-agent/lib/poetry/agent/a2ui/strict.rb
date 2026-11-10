@@ -72,8 +72,7 @@ module Poetry
             return missing if missing.any?
           end
 
-          depth = tree_depth(components, surface)
-          if depth > MAX_DEPTH
+          if tree_depth(components, surface) > MAX_DEPTH
             return [problem("RECURSION_ERROR", "Global recursion limit exceeded: logical depth > #{MAX_DEPTH}")]
           end
 
@@ -97,6 +96,24 @@ module Poetry
 
             problem("VALIDATION_FAILED", "Component id '#{id}' must be a valid UAX #31 identifier", "/components/#{id}")
           end
+        end
+
+        # Why a v1.0 `metadata` object is malformed: it holds only
+        # `extensions`, an object whose keys are UAX #31 identifiers.
+        # @param metadata [Object] the metadata as written
+        # @param owner [String] what carries it, for the message (`createSurface.metadata`)
+        # @return [String, nil]
+        def metadata_problem(metadata, owner)
+          return "#{owner} must be an object" unless metadata.is_a?(Hash)
+
+          other = (metadata.keys - ["extensions"]).first
+          return "#{owner} holds only 'extensions', not '#{other}'" if other
+
+          extensions = metadata.fetch("extensions", {})
+          return "#{owner}.extensions must be an object" unless extensions.is_a?(Hash)
+
+          key = extensions.keys.find { |name| !name.to_s.match?(IDENTIFIER) }
+          "Extension key '#{key}' must be a valid UAX #31 identifier" if key
         end
 
         # The call problems of incoming components: a v1.0 function name that
@@ -205,6 +222,9 @@ module Poetry
             return problem("VALIDATION_FAILED",
                            "Unrecognized function '#{name}'")
           end
+          if catalog.functions.agent_only?(name, surface.dialect)
+            return problem("VALIDATION_FAILED", Functions.agent_only_refusal(name))
+          end
 
           argument = catalog.functions.argument_problem(name, call["args"].is_a?(Hash) ? call["args"] : {},
                                                         surface.dialect)
@@ -242,14 +262,15 @@ module Poetry
           "[#{list.map { |name| "'#{name}'" }.join(", ")}]"
         end
 
-        # How deep the component tree under the root goes (a cycle stops the walk).
+        # How deep the component tree goes, the root at 0 (a cycle stops the walk).
         def tree_depth(components, surface, id = ROOT, seen = [])
           component = components[id]
-          return 0 if component.nil? || seen.include?(id)
+          return 0 if component.nil?
 
           fields = surface.catalog_of(component)&.then { |catalog| reference_fields(catalog, component) } || []
           children = fields.flat_map { |field, reference| named(field, reference).map(&:last) }
-          1 + (children.map { |child| tree_depth(components, surface, child, seen + [id]) }.max || 0)
+          below = children.select { |child| components.key?(child) && !seen.include?(child) && child != id }
+          below.map { |child| 1 + tree_depth(components, surface, child, seen + [id]) }.max || 0
         end
 
         # A component's references to components the set does not hold.

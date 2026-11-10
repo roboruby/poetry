@@ -265,7 +265,7 @@ module Poetry
           description = text(accessibility["description"], scope)
           { label: aria_label(component, scope), description: description.empty? ? nil : description,
             live: %w[polite assertive].include?(accessibility["live"]) ? accessibility["live"] : nil,
-            hidden: resolve(accessibility["hidden"], scope) == true ? "true" : nil }.compact
+            hidden: Functions.truthy?(resolve(accessibility["hidden"], scope)) ? "true" : nil }.compact
         end
 
         # Markdown text as HTML-safe markup.

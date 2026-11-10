@@ -68,20 +68,30 @@ module Poetry
           @basic ||= new.tap { |registry| Basic.install(registry) }
         end
 
-        # The boolean reading of a value: strings by content, nil and false
-        # as false. In v1.0 a ValidationResult reads as its `valid`; in v0.9
-        # an object is simply present, so it reads as true.
+        # The boolean reading of a value, the protocol's DynamicBoolean
+        # coercion, the same in every version: a boolean as it is, a
+        # ValidationResult as its `valid`, the string `"true"` in any letter
+        # case as true and every other string as false, a number as whether
+        # it is not zero, and nil, a list or any other object as false.
         #
         # @param value [Object]
-        # @param dialect [Dialect] the surface's protocol version
+        # @param _dialect [Dialect] no longer read: every protocol version coerces alike
         # @return [Boolean]
-        def self.truthy?(value, dialect = Dialect::V1_0)
+        def self.truthy?(value, _dialect = Dialect::V1_0)
           case value
-          when Hash then dialect.v1? && [true, false].include?(value["valid"]) ? value["valid"] : true
-          when String then !value.empty? && !%w[false 0].include?(value.downcase)
-          when nil, false then false
-          else true
+          when true, false then value
+          when Hash then value["valid"] == true
+          when String then value.casecmp?("true")
+          when Numeric then !value.zero?
+          else false
           end
+        end
+
+        # What a surface's call to an agent's function is told.
+        # @param name [String]
+        # @return [String]
+        def self.agent_only_refusal(name)
+          "Function '#{name}' cannot be called by renderer: its allowedCallers is agentOnly"
         end
 
         # A URL `openUrl` would open: a non-empty string whose scheme is one
@@ -150,6 +160,16 @@ module Poetry
         def agent_callable?(name)
           definition = @definitions[name]
           !definition.nil? && definition.callers != "rendererOnly"
+        end
+
+        # Whether a declared function is the agent's alone: on a v1.0
+        # surface no binding and no action may run it (v0.9 has no such
+        # boundary).
+        # @param name [String]
+        # @param dialect [Dialect] the protocol version of the surface the call is on
+        # @return [Boolean] whether only an agent's `callRendererFunction` may invoke the function
+        def agent_only?(name, dialect = Dialect::V1_0)
+          dialect.v1? && @definitions[name]&.callers == "agentOnly"
         end
 
         # What is wrong with a call's arguments before they resolve: a
@@ -447,14 +467,16 @@ module Poetry
             (min.nil? || number >= min) && (max.nil? || number <= max)
           end
 
-          # A regex validation with a match timeout; a bad pattern raises.
+          # A regex validation in the A2UI regex dialect ({RegexSubset}), in
+          # every protocol version: a pattern outside the dialect, or one
+          # its safety check refuses, raises; a value past the dialect's
+          # length cap does not match; the engine's time limit stands behind.
           # @api private
           def regex(value, pattern, evaluator)
-            expression = Regexp.new(pattern.to_s, timeout: 0.05)
-            result(expression.match?(value.to_s), evaluator)
+            result(RegexSubset.match?(pattern.to_s, value.to_s), evaluator)
           rescue Regexp::TimeoutError
             result(false, evaluator, code: "REGEX_TIMEOUT")
-          rescue RegexpError => e
+          rescue RegexSubset::Rejected => e
             raise Error, "regex: #{e.message}"
           end
 

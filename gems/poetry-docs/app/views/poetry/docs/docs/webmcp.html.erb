@@ -315,7 +315,8 @@
         your own, the two are <code>:where()</code>-wrapped. The runtime
         also listens for the browser's <code>toolactivated</code> and
         <code>toolcancel</code> events on <code>document.modelContext</code>
-        for the form's own tool: the form carries
+        for the form's own tool (the first fires once the tool has been
+        invoked, not before): the form carries
         <code>data-webmcp-agent="active"</code> while an agent's fill is
         pending (until the cancel, the person's submit, or the delivered
         answer of an agent's own submit),
@@ -360,6 +361,7 @@
       <ul>
         <li>Off by default: declaring a tool exposes nothing; a rendered instance opts in.</li>
         <li>Read-only by default: a tool is <code>mutating: true</code> only when declared so, and the annotation says which; <code>consequential: true</code> and <code>debugging: true</code> carry the spec's other two hints, an effect worth confirming and a developer tool.</li>
+        <li>A tool may say what it answers: <code>output_schema:</code> takes a JSON Schema for the action's return value and registers as the tool's <code>outputSchema</code>, which an agent reads before it calls.</li>
         <li><code>autosubmit</code> is GET-only; a mutating form keeps the person in the loop.</li>
         <li>A per-document registration budget; duplicate names are refused by the browser and skipped.</li>
         <li>Re-registration only when the payload changed, never under Turbo's cache preview - the two morph-time hazards the standard documents.</li>

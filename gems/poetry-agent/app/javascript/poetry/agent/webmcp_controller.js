@@ -132,6 +132,7 @@ export default class extends Controller {
       }
       if (tool.title) definition.title = tool.title
       if (tool.inputSchema) definition.inputSchema = tool.inputSchema
+      if (tool.outputSchema) definition.outputSchema = tool.outputSchema
 
       entry.names.push(name)
       pending.push(registerTool(definition, { signal: controller.signal }).catch((error) => {

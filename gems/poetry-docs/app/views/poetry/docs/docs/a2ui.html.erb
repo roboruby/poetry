@@ -320,7 +320,10 @@
         <code>functionCall</code> action never reaches the agent: it runs a catalog
         function on the renderer, under the user's gesture, and the surface's data
         may have changed, so <code>action.local?</code> means re-render the surface
-        and send nothing.
+        and send nothing. A v1.0 action carries what you pass as
+        <code>metadata:</code> (an attestation, an audit tag) as its
+        <code>metadata.extensions</code>, each key an identifier; a component's own
+        <code>metadata</code> is held to the same rule when it arrives.
       </p>
     <% end %>
     <%= poetry_code_block(code: action_source, language: "ruby", label: "The action endpoint") %>
@@ -379,6 +382,23 @@
         boolean in v0.9, a ValidationResult in v1.0, whose message a check shows
         before the rule's own.
       </p>
+      <p>
+        <code>regex</code> reads its pattern in the A2UI regex dialect, in every
+        version: a portable subset of ECMAScript patterns in which <code>^</code>
+        and <code>$</code> are the ends of the value, <code>\d</code>,
+        <code>\w</code> and <code>\b</code> are ASCII, and backreferences,
+        lookbehind, named groups and inline flags have no place. Before anything
+        is matched the pattern passes the protocol's safety check, so one that
+        could backtrack without bound (<code>(a+)+$</code>,
+        <code>\d+\s*\d+</code>) fails as an expression error instead of running,
+        as does a pattern past 256 characters; a value past 4,096 does not match.
+        The browser's copy applies the same dialect and the same check. A boolean
+        argument (<code>and</code>, <code>or</code>, <code>not</code>, a check's
+        condition) reads by the protocol's coercion, alike in every version: a
+        ValidationResult as its verdict, the string <code>"true"</code> in any
+        letter case as true and every other string as false, a number as whether
+        it is not zero, and anything else as false.
+      </p>
     <% end %>
     <%= poetry_code_block(code: interpolation_source, language: "json", label: "Interpolation") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
@@ -392,7 +412,10 @@
         isolated empty model when it names none, so nothing of any surface leaks
         into it. Pass
         <code>session.apply(message, user_activated: true)</code> when the message
-        answers the user's own gesture, so a function that needs one may run.
+        answers the user's own gesture, so a function that needs one may run. A
+        function declared <code>callers: "agentOnly"</code> is the agent's alone:
+        on a v1.0 surface a binding or an action that names it is refused, in
+        strict validation and again when it would run.
       </p>
     <% end %>
     <%= poetry_code_block(code: function_source, language: "ruby", label: "A function of your own") %>

@@ -256,6 +256,11 @@ class SessionTest < Minitest::Test
 
     assert_empty session.apply_activity({ "status" => "building", "progressTokens" => 20 })
     assert_equal({ "status" => "building", "progressTokens" => 20 }, session.status)
+    failed = { "status" => "failed", "error" => "Invalid A2UI components: Text needs text",
+               "errors" => [{ "message" => "Text needs text" }], "attempt" => 2 }
+
+    assert_empty session.apply_activity(failed)
+    assert_equal failed.except("attempt"), session.status, "a failed build says why"
     assert_equal ["signup"], session.apply_activity({ "a2ui_operations" => [create, components] })
     assert_equal ["signup"], session.apply_activity({ "a2ui_operations" => [create, components, data] })
     assert_empty session.errors, "a replacing snapshot repeats its createSurface"
@@ -447,6 +452,92 @@ class SessionTest < Minitest::Test
     strict_but_lenient.apply_all([create, dangling])
 
     assert_equal %w[root], strict_but_lenient.surface("s").components.keys, "a flag overrides the mode"
+  end
+
+  def test_an_action_carries_the_metadata_it_is_given_and_refuses_a_malformed_one
+    session = A2UI::Session.new
+    session.apply_all(fixture("00_simple-login-form"))
+    given = { "extensions" => { "com_example_attestation" => "signed" } }
+    sent = session.action(surface_id: "gallery-simple-login-form", source: "submit_button", metadata: given)
+
+    assert_equal given, sent.to_h.dig("action", "metadata")
+    refute_same given, sent.to_h.dig("action", "metadata"), "the action holds its own copy"
+    plain = session.action(surface_id: "gallery-simple-login-form", source: "submit_button")
+
+    refute plain.to_h["action"].key?("metadata"), "no metadata, no envelope"
+    refused = session.action(surface_id: "gallery-simple-login-form", source: "submit_button",
+                             metadata: { "extensions" => { "com-example-attestation" => "signed" } })
+
+    refute_predicate refused, :valid?
+    assert_nil refused.message
+    assert_equal({ "code" => "VALIDATION_FAILED", "surfaceId" => "gallery-simple-login-form",
+                   "path" => "/action/metadata",
+                   "message" => "Extension key 'com-example-attestation' must be a valid UAX #31 identifier" },
+                 session.errors.last["error"])
+  end
+
+  def test_a_v0_9_action_carries_no_metadata
+    session = A2UI::Session.new
+    id = A2UI::Catalogs::Basic::V0_9_IDS.first
+    session.apply({ "version" => "v0.9", "createSurface" => { "surfaceId" => "old", "catalogId" => id } })
+    session.apply({ "version" => "v0.9",
+                    "updateComponents" => { "surfaceId" => "old", "components" => [
+                      { "id" => "root", "component" => "Button", "child" => "t",
+                        "action" => { "event" => { "name" => "go" } } },
+                      { "id" => "t", "component" => "Text", "text" => "Go" }
+                    ] } })
+    sent = session.action(surface_id: "old", source: "root", metadata: { "extensions" => { "bad-key" => 1 } })
+
+    assert_predicate sent, :valid?
+    refute sent.to_h["action"].key?("metadata")
+  end
+
+  def test_a_v1_0_component_s_metadata_is_checked_and_a_refused_update_leaves_the_stored_one
+    session = A2UI::Session.new
+    text = lambda do |extensions|
+      { "version" => "1.0",
+        "updateComponents" => { "surfaceId" => "m", "components" => [
+          { "id" => "root", "component" => "Text", "text" => "Hello", "metadata" => { "extensions" => extensions } }
+        ] } }
+    end
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "m", "catalogId" => A2UI::Catalogs::Basic::ID } })
+    session.apply(text.call({ "com_example_trace" => "t1" }))
+
+    assert_empty session.errors
+    session.apply(text.call({ "com-example-trace" => "t2" }))
+
+    assert_equal({ "code" => "VALIDATION_FAILED", "surfaceId" => "m", "path" => "/components/0/metadata",
+                   "message" => "Extension key 'com-example-trace' must be a valid UAX #31 identifier" },
+                 session.errors.last["error"])
+    assert_equal({ "extensions" => { "com_example_trace" => "t1" } },
+                 session.surface("m").component("root")["metadata"])
+  end
+
+  # A binding whose functions add one of the agent's own.
+  class TokenCatalog < A2UI::Catalogs::Basic
+    def functions
+      @functions ||= A2UI::Functions.basic.dup.tap do |registry|
+        registry.define("readToken", description: "the session's token", returns: "string",
+                                     callers: "agentOnly") { |_args, _evaluator| "secret" }
+      end
+    end
+  end
+
+  def test_a_function_call_action_never_runs_a_function_that_is_the_agent_s_alone
+    session = A2UI::Session.new(catalogs: { "tokens" => TokenCatalog.new })
+    button = { "id" => "root", "component" => "Button", "child" => "t",
+               "action" => { "functionCall" => { "@call" => "readToken" } } }
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "p", "catalogId" => "tokens",
+                                         "components" => [button, { "id" => "t", "component" => "Text",
+                                                                    "text" => "x" }] } })
+    local = session.action(surface_id: "p", source: "root")
+
+    assert_predicate local, :local?
+    assert_equal({ "action" => "Function 'readToken' cannot be called by renderer: its allowedCallers is agentOnly" },
+                 local.errors)
+    assert_equal "EXECUTION_ERROR", session.errors.last.dig("error", "code")
   end
 
   def test_a_function_call_action_runs_locally_and_nothing_comes_back_without_an_event

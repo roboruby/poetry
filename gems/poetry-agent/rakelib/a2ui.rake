@@ -17,7 +17,8 @@ namespace :a2ui do
               rpc_functions validation_result validator_v0_9 validator_v1_0]
   catalogs = %w[catalogs/basic/v1/catalog.json specification/v0_9/catalogs/basic/catalog.json
                 specification/v0_9_1/catalogs/basic/catalog.json
-                conformance/test_data/catalogs/custom_catalog_v1_0.json]
+                conformance/test_data/catalogs/custom_catalog_v1_0.json
+                conformance/test_data/catalogs/allowed_callers_catalog_v1_0.json]
   examples = %w[catalogs/basic/v1/examples specification/v0_9/catalogs/basic/examples]
   schemas = %w[specification/v0_9/json specification/v0_9_1/json specification/v1_0/json]
   # What strict validation reads: each version's message schema, its common

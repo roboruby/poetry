@@ -87,7 +87,16 @@ module Poetry
         # @attr headers [Hash] the headers the host holds for it
         # @attr credentials [#headers, #call, nil] what turns a context (the signed-in person) into headers
         #   for it: an {OAuth}, or a callable `(context, server) -> headers`
-        Server = Struct.new(:id, :url, :headers, :credentials, keyword_init: true)
+        Server = Struct.new(:id, :url, :headers, :credentials, :lifecycle, keyword_init: true)
+
+        # How a client may open a server: `:auto` asks `server/discover`
+        # first and falls back to the handshake, so it opens every server;
+        # `:modern` is the stateless lifecycle of revision 2026-07-28 alone
+        # (no handshake, every request carries its version and the client's
+        # capabilities); `:legacy` is the `initialize` handshake alone
+        # (protocol revisions through 2025-11-25), one request fewer against
+        # a server that has no newer revision.
+        LIFECYCLES = %i[auto modern legacy].freeze
 
         # An app resource as read: the HTML and its `_meta.ui`.
         #
@@ -175,9 +184,10 @@ module Poetry
 
         # A host over its servers.
         #
-        # @param servers [Hash{String => Hash}] by id: `url:`, optional `headers:` held for every request, and
+        # @param servers [Hash{String => Hash}] by id: `url:`, optional `headers:` held for every request,
         #   optional `credentials:` (an {OAuth} or a callable `(context, server) -> headers`) turning the
-        #   context a call passes (the signed-in person) into that person's headers
+        #   context a call passes (the signed-in person) into that person's headers, and optional
+        #   `lifecycle:` (one of {LIFECYCLES}; `:auto` by default, which opens every server)
         # @param origin [String] the host page's origin (`https://chat.example`)
         # @param sandbox_origin [String, nil] the apps origin serving the proxy page; nil runs the
         #   degraded inline mode (the proxy page as an opaque frame on the host page: no storage,
@@ -195,7 +205,8 @@ module Poetry
           @servers = servers.to_h do |id, config|
             [id.to_s, Server.new(id: id.to_s, url: config.fetch(:url) { config.fetch("url") },
                                  headers: (config[:headers] || config["headers"] || {}).to_h,
-                                 credentials: config[:credentials] || config["credentials"])]
+                                 credentials: config[:credentials] || config["credentials"],
+                                 lifecycle: lifecycle_of(id, config[:lifecycle] || config["lifecycle"]))]
           end
           @origin = origin.to_s.delete_suffix("/")
           @sandbox_origin = sandbox_origin&.to_s&.delete_suffix("/")
@@ -218,7 +229,8 @@ module Poetry
 
         # A connected client for a server, the `mcp` gem's: the server's
         # headers, the context's through the server's credentials, this
-        # request's; the handshake declares the ui extension.
+        # request's; the ui extension is declared in the handshake, or on
+        # every request where the server's lifecycle has none.
         #
         # @param id [String]
         # @param headers [Hash] headers for this request over the rest
@@ -230,10 +242,10 @@ module Poetry
           held = server(id)
           merged = held.headers.merge(credential_headers(held, context)).merge(headers.to_h)
           transport = ::MCP::Client::HTTP.new(url: held.url, headers: merged, &@http_client_customizer)
-          # The `initialize` handshake outright (the extension is declared there, SEP-2133); the gem's
-          # default probes `server/discover` first, one request more per client against every server.
+          # The server's lifecycle: `:auto` unless its entry names another (`:legacy` spares a server that
+          # only has the `initialize` handshake the `server/discover` it would refuse first).
           ::MCP::Client.new(transport: transport).tap do |client|
-            client.connect(client_info: { name: @name, version: Poetry::Agent::VERSION }, mode: :legacy,
+            client.connect(client_info: { name: @name, version: Poetry::Agent::VERSION }, mode: held.lifecycle,
                            capabilities: { extensions: Apps.capabilities.to_h[:extensions] })
           end
         end
@@ -491,6 +503,14 @@ module Poetry
           return credentials.headers(context, held).to_h if credentials.respond_to?(:headers)
 
           credentials.call(context, held).to_h
+        end
+
+        # A server's lifecycle as configured: `:auto` when it names none.
+        def lifecycle_of(id, given)
+          lifecycle = (given || :auto).to_sym
+          return lifecycle if LIFECYCLES.include?(lifecycle)
+
+          raise ArgumentError, "server #{id}: lifecycle must be one of #{LIFECYCLES.join(", ")}, not #{given.inspect}"
         end
 
         # Runs a block over a client; a 401 from the server is tried once more

@@ -24,10 +24,31 @@
       ]
     },
     {
+      "path": "@poetry/agent/a2ui_regex",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The A2UI regex dialect in the browser: the portable subset of ECMAScript\npattern syntax (Unicode mode, no flags) the protocol defines for `regex`,\nwith the static safety check it runs before any matching. The server's\ncopy is Poetry::Agent::A2UI::RegexSubset; the two answer alike, so a check\nreads the same as the person types and when the form arrives.\n\nA pattern is parsed here first. One outside the dialect, or one the safety\ncheck refuses, is never compiled: `refusal` names why by the protocol's\ntoken, and `test` answers null so the server reports it. A pattern that\npasses runs on the browser's own engine in Unicode mode, which already\nreads the dialect as written (`$` as the end of the value, ASCII `\\d`,\n`\\w` and `\\b`).",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/a2ui_regex.js",
+      "methods": [],
+      "constants": [
+        {
+          "name": "refusal",
+          "value": "(pattern) => {",
+          "docstring": "Why the A2UI regex dialect or its safety check refuses a pattern."
+        },
+        {
+          "name": "test",
+          "value": "(pattern, value) => {",
+          "docstring": "Whether a pattern of the dialect matches anywhere in a value. A value past\n4,096 code points does not match."
+        }
+      ]
+    },
+    {
       "path": "@poetry/agent/adapter",
       "type": "module",
       "superclass": null,
-      "docstring": "The document.modelContext adapter - the ONE file that knows the WebMCP\nsurface's shape, so API churn (the spec changed twice over the summer of\n2026 and again through the autumn, and the shipping browser trails it)\nstays a one-file fix. Everything else in the runtime talks to this.\n\nSpec surface (rev 6838130ef, 2026-10-27; config/upstream_watch.json pins\nthe specification repository there, and the upstream watch test holds\nthis line to the pin): document.modelContext with\nregisterTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving\nRegisteredTool dictionaries whose inputSchema is an object,\nexecuteTool(tool, inputObject, {signal}) resolving the stringified\nresult, and the toolchange, toolactivated and toolcancel events on the\ncontext (an EventTarget). ToolAnnotations carries readOnlyHint,\nuntrustedContentHint, consequentialHint and debugging.\n\nShipping-browser deltas this file absorbs (Chrome 151, measured\n2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema\nas a serialized JSON string, and executeTool() parses ONLY a JSON-string\nargument - an object rejects with UnknownError(\"Failed to parse input\narguments\"), not a TypeError. Chrome 155 deprecates the string form, so\nthe object goes first and the string form is remembered only where a\nbrowser taught it.",
+      "docstring": "The document.modelContext adapter - the ONE file that knows the WebMCP\nsurface's shape, so API churn (the spec changed twice over the summer of\n2026 and again through the autumn, and the shipping browser trails it)\nstays a one-file fix. Everything else in the runtime talks to this.\n\nSpec surface (rev f2f2ae229, 2026-11-09; config/upstream_watch.json pins\nthe specification repository there, and the upstream watch test holds\nthis line to the pin): document.modelContext with\nregisterTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving\nRegisteredTool dictionaries whose inputSchema and outputSchema are\nobjects (the output's absent when the tool declared none),\nexecuteTool(tool, inputObject, {signal}) resolving the stringified\nresult, and the toolchange, toolactivated and toolcancel events on the\ncontext (an EventTarget); toolactivated fires once the tool's execute\ncallback has been invoked. ToolAnnotations carries readOnlyHint,\nuntrustedContentHint, consequentialHint and debugging.\n\nShipping-browser deltas this file absorbs (Chrome 151, measured\n2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema\nas a serialized JSON string, and executeTool() parses ONLY a JSON-string\nargument - an object rejects with UnknownError(\"Failed to parse input\narguments\"), not a TypeError. Chrome 155 deprecates the string form, so\nthe object goes first and the string form is remembered only where a\nbrowser taught it.",
       "examples": [],
       "file": "app/javascript/poetry/agent/adapter.js",
       "methods": [],
@@ -50,7 +71,7 @@
         {
           "name": "getTools",
           "value": "async (options = {}) => {",
-          "docstring": "The registered tools with inputSchema normalized to an object: parsed\nwhen the browser serialized it, null when the text is not JSON."
+          "docstring": "The registered tools with inputSchema and outputSchema normalized to\nobjects: parsed when the browser serialized them, null when the text is\nnot JSON, absent for an output schema the tool never declared."
         },
         {
           "name": "executeTool",
@@ -1522,7 +1543,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 39
+          "line": 40
         },
         {
           "name": "programValueChanged",
@@ -1534,7 +1555,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 47
+          "line": 48
         },
         {
           "name": "touch",
@@ -1554,7 +1575,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 56
+          "line": 57
         },
         {
           "name": "morphed",
@@ -1566,7 +1587,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 68
+          "line": 69
         },
         {
           "name": "evaluate",
@@ -1578,7 +1599,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 80
+          "line": 81
         },
         {
           "name": "failure",
@@ -1603,7 +1624,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 95
+          "line": 96
         },
         {
           "name": "apply",
@@ -1644,7 +1665,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 115
+          "line": 116
         },
         {
           "name": "resolve",
@@ -1669,7 +1690,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 140
+          "line": 141
         },
         {
           "name": "call",
@@ -1701,7 +1722,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 156
+          "line": 157
         },
         {
           "name": "read",
@@ -1726,7 +1747,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
-          "line": 171
+          "line": 172
         }
       ],
       "constants": []
@@ -2318,7 +2339,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/agent/webmcp_controller.js",
-          "line": 160
+          "line": 161
         },
         {
           "name": "unregister",
@@ -2330,7 +2351,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/webmcp_controller.js",
-          "line": 170
+          "line": 171
         }
       ],
       "constants": []

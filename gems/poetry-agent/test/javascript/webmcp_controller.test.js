@@ -34,6 +34,7 @@ const TOOLS = [
   { name: "set_value", description: "Select.", inputSchema: { type: "object", properties: { value: { type: "string", enum: ["a", "b"] } }, required: ["value"], additionalProperties: false },
     annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#setValue" },
   { name: "set_count", description: "Count.", inputSchema: { type: "object", properties: { count: { type: "integer" } }, additionalProperties: false },
+    outputSchema: { type: "integer" },
     annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#setCount" },
   { name: "clear", description: "Clear.", annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#clear" },
   { name: "open", description: "Open.", annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#open" },
@@ -81,6 +82,8 @@ describe("poetry--agent--webmcp", () => {
     const tool = context.tools.get("poetry.country.set_value")
     expect(tool.description).toBe("Select.")
     expect(tool.inputSchema.required).toEqual(["value"])
+    expect("outputSchema" in tool, "a tool that declares no output schema registers none").toBe(false)
+    expect(context.tools.get("poetry.country.set_count").outputSchema).toEqual({ type: "integer" })
     expect(tool.annotations).toEqual({ readOnlyHint: false, untrustedContentHint: false })
   })
 

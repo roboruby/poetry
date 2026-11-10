@@ -39,7 +39,8 @@ SOFTWARE.
 
 ## A2UI
 
-- Source: https://github.com/google/A2UI (Apache-2.0), at commit `ceae1ce39` (2026-10-30)
+- Source: https://github.com/google/A2UI (Apache-2.0), at commit `7538d5965` (2026-11-09)
+- Adapted: `lib/poetry/agent/a2ui/regex_subset.rb` and `app/javascript/poetry/agent/a2ui_regex.js` implement the specification's regex dialect and its static safety check. Both are written for Poetry; the definitions the analysis rests on (what a subexpression can start with, what it can consume, what counts as adjacent) follow the project's reference implementation (`python/a2ui_core/src/a2ui/core/common/regex_subset.py`), so the same patterns are refused everywhere
 - Shipped, unmodified: `lib/poetry/agent/a2ui/schemas/` holds what strict validation reads, each protocol version's message schema and common types (v0.9, v0.9.1 and v1.0) and the basic catalogs, in upstream's layout, with upstream's LICENSE inside it; `rake a2ui:verify` holds them byte-identical to the vendored copies
 - Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name, the basic catalogs' examples and each version's JSON schemas, in upstream's layout, with upstream's LICENSE inside it (provenance in `test/fixtures/a2ui/README.md`)
 

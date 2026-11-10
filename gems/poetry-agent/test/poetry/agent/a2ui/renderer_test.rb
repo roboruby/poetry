@@ -247,8 +247,11 @@ class RendererTest < Minitest::Test
     assert_empty renderer.warnings
     assert_match(Regexp.new('<input id="a2ui-s-name" required="required" minlength="2" maxlength="40"[^>]* ' \
                             'type="text"[^>]* name="a2ui\\[values\\]\\[/name\\]" value="Ada"'), html)
-    assert_match(Regexp.new('<input[^>]* pattern=".\\+@.\\+"[^>]* type="email"[^>]* ' \
-                            'name="a2ui\\[values\\]\\[/email\\]"[^>]* placeholder="you@example.com"'), html)
+    searched = Regexp.escape('pattern="[\s\S]*(?:.+@.+)[\s\S]*"')
+
+    assert_match(Regexp.new("<input[^>]* #{searched}[^>]* type=\"email\"[^>]* " \
+                            'name="a2ui\\[values\\]\\[/email\\]"[^>]* placeholder="you@example.com"'), html,
+                 "a regex check searches, so the native pattern lets anything stand around it")
     assert_match(%r{<textarea[^>]* name="a2ui\[values\]\[/bio\]"[^>]*>\s*hi</textarea>}, html)
     assert_match(%r{<input type="hidden" name="a2ui\[values\]\[/news\]" value="false"}, html)
     assert_match(%r{<input type="checkbox"[^>]* name="a2ui\[values\]\[/news\]" value="true" checked}, html)
@@ -262,6 +265,41 @@ class RendererTest < Minitest::Test
     assert_match(
       %r{<input[^>]* min="2026-01-01"[^>]* type="date"[^>]* name="a2ui\[values\]\[/when\]" value="2026-09-02"}, html
     )
+  end
+
+  def test_a_boolean_property_reads_by_the_protocol_s_coercion
+    box = lambda do |value|
+      html, = render(basic_surface([{ "id" => "root", "component" => "Row", "children" => ["box"],
+                                      "accessibility" => { "hidden" => { "@path" => "/agree" } } },
+                                    { "id" => "box", "component" => "CheckBox", "label" => "Agree",
+                                      "value" => { "@path" => "/agree" } }],
+                                   data: { "agree" => value }))
+      [html.match?(/<input[^>]*type="checkbox"[^>]*checked="checked"/),
+       html.match?(/<div class="flex flex-row[^"]*" aria-hidden="true">/)]
+    end
+
+    assert_equal [true, true], box.call(true)
+    assert_equal [true, true], box.call("TRUE"), "the string true in any letter case"
+    assert_equal [true, true], box.call(1)
+    assert_equal [false, false], box.call("yes"), "any other string is false"
+    assert_equal [false, false], box.call(0)
+    assert_equal [false, false], box.call(nil)
+  end
+
+  def test_a_list_style_makes_a_numbered_or_a_bulleted_list
+    list = lambda do |style|
+      html, = render(basic_surface([{ "id" => "root", "component" => "List", "children" => %w[a b],
+                                      "listStyle" => style },
+                                    { "id" => "a", "component" => "Text", "text" => "one" },
+                                    { "id" => "b", "component" => "Text", "text" => "two" }]))
+      html
+    end
+
+    ordered = '<ol class="flex gap-2 flex-col overflow-y-auto items-stretch list-decimal ps-6">'
+
+    assert_match(%r{#{Regexp.escape(ordered)}<li>.*one.*</li><li>.*two.*</li></ol>}m, list.call("ordered"))
+    assert_match(/<ul class="[^"]* list-disc ps-6"><li>/, list.call("unordered"))
+    refute_match(/<li>/, list.call("none"), "none stays a plain container")
   end
 
   def test_tabs_modal_divider_list_media_and_weights

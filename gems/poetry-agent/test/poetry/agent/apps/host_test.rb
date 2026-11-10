@@ -62,15 +62,16 @@ module Poetry
         Apps::Host::InProcess.customizer(recorder)
       end
 
-      def host(**)
-        Apps::Host.new(servers: { "shop" => { url: "https://shop.example/mcp", headers: { "X-Shop" => "yes" } } },
-                       origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret", http_client_customizer: customizer, **)
+      def host(lifecycle: :auto, **)
+        shop = { url: "https://shop.example/mcp", headers: { "X-Shop" => "yes" }, lifecycle: lifecycle }
+        Apps::Host.new(servers: { "shop" => shop }, origin: ORIGIN, sandbox_origin: APPS, secret: "s3cret",
+                       http_client_customizer: customizer, **)
       end
 
       # --- the registry and the client ---
 
-      def test_a_server_is_known_by_id_and_the_client_connects_with_the_extension_declared
-        subject = host
+      def test_a_server_is_known_by_id_and_the_handshake_declares_the_extension
+        subject = host(lifecycle: :legacy)
         client = subject.client("shop", headers: { "Authorization" => "Bearer alice" })
 
         assert_predicate client, :connected?
@@ -89,6 +90,58 @@ module Poetry
         assert_raises(Apps::Host::Refused) { subject.server("other") }
       end
 
+      def test_a_server_on_the_stateless_lifecycle_is_opened_without_a_handshake
+        envelope = %w[io.modelcontextprotocol/protocolVersion io.modelcontextprotocol/clientInfo
+                      io.modelcontextprotocol/clientCapabilities]
+        %i[modern auto].each do |lifecycle|
+          client = host(lifecycle: lifecycle).client("shop")
+
+          assert_equal "2026-07-28", client.protocol_version, lifecycle
+          plans = client.tools.find { |tool| tool.name == "show_plans" }
+
+          assert_equal "ui://shop/plans", plans.meta.dig("ui", "resourceUri")
+          assert_equal %w[server/discover tools/list], @posts.map { |post| post[:body]["method"] }, "no handshake"
+          meta = @posts.last[:body].dig("params", "_meta")
+
+          assert_equal envelope, meta.keys, "every request carries its version and the client"
+          assert_equal ["io.modelcontextprotocol/ui"], meta.dig(envelope.last, "extensions").keys,
+                       "the ui extension is declared on each request"
+        end
+      end
+
+      def test_auto_falls_back_to_the_handshake_for_a_server_without_the_stateless_lifecycle
+        methods = []
+        old = answering(lambda do |message, _env|
+          methods << message["method"]
+          error = { "code" => -32_601, "message" => "Method not found" }
+          answer = message["method"] == "server/discover" ? { "error" => error } : { "result" => { "tools" => [] } }
+          [200, { "content-type" => "application/json" },
+           [JSON.generate({ "jsonrpc" => "2.0", "id" => message["id"] }.merge(answer))]]
+        end)
+        subject = Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp" } }, origin: ORIGIN, secret: "s3cret",
+                                 http_client_customizer: Apps::Host::InProcess.customizer(old))
+        client = subject.client("x")
+
+        assert_equal "2025-06-18", client.protocol_version, "the handshake's answer stands"
+        assert_empty client.tools
+        assert_equal %w[server/discover tools/list], methods, "asked first, then opened by the handshake"
+      end
+
+      def test_a_server_opens_either_way_unless_it_names_one_lifecycle
+        plain = Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp" } }, origin: ORIGIN, secret: "s3cret")
+
+        assert_equal :auto, plain.server("x").lifecycle
+        named = Apps::Host.new(servers: { "x" => { "url" => "https://x.example/mcp", "lifecycle" => "legacy" } },
+                               origin: ORIGIN, secret: "s3cret")
+
+        assert_equal :legacy, named.server("x").lifecycle
+        error = assert_raises(ArgumentError) do
+          Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp", lifecycle: :sessions } }, origin: ORIGIN)
+        end
+
+        assert_equal "server x: lifecycle must be one of auto, modern, legacy, not :sessions", error.message
+      end
+
       # A server's answer to the handshake.
       HANDSHAKE = { "protocolVersion" => "2025-06-18", "capabilities" => {},
                     "serverInfo" => { "name" => "x", "version" => "1" } }.freeze
@@ -105,9 +158,10 @@ module Poetry
         end
       end
 
+      # A host over a server that has only the handshake.
       def host_over(rack_app)
-        Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp" } }, origin: ORIGIN, secret: "s3cret",
-                       http_client_customizer: Apps::Host::InProcess.customizer(rack_app))
+        Apps::Host.new(servers: { "x" => { url: "https://x.example/mcp", lifecycle: :legacy } }, origin: ORIGIN,
+                       secret: "s3cret", http_client_customizer: Apps::Host::InProcess.customizer(rack_app))
       end
 
       def test_the_client_reads_an_event_stream_answer_keeps_the_session_and_raises_the_server_s_error

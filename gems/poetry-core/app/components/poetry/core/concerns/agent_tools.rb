@@ -55,8 +55,9 @@ module Poetry
         # Stimulus descriptor per PROJECTING class (see
         # {ClassMethods#tool_definitions}); `input_schema` is the
         # normalized JSON-Schema object (string keys) or nil for a
-        # parameterless tool.
-        Tool = Struct.new(:name, :title, :description, :input_schema,
+        # parameterless tool; `output_schema` is the same for what the
+        # tool answers, or nil when it declares none.
+        Tool = Struct.new(:name, :title, :description, :input_schema, :output_schema,
                           :executes, :mutating, :untrusted_content, :consequential, :debugging,
                           keyword_init: true)
 
@@ -107,6 +108,10 @@ module Poetry
           #   so a runtime rejects parameters the tool never declared.
           # @param input_schema [Hash, nil] a complete JSON-Schema object
           #   for advanced shapes - mutually exclusive with `params:`
+          # @param output_schema [Hash, nil] a complete JSON-Schema object
+          #   for what the tool's action returns (the tool's
+          #   `outputSchema`); an agent reads it to know the answer's
+          #   shape before it calls
           # @param title [String, nil] human-readable label for agent UIs
           #   (the spec's UA-displayable field); defaults to the tool name
           #   humanized (`set_value` -> "Set value")
@@ -130,8 +135,8 @@ module Poetry
           #   tool :open, description: "Open the dialog.",
           #        executes: :open, mutating: true
           def tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field
-                   params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false,
-                   consequential: false, debugging: false)
+                   params: nil, input_schema: nil, output_schema: nil, title: nil, mutating: false,
+                   untrusted_content: false, consequential: false, debugging: false)
             name = validate_tool_name!(name)
             raise ToolError, "#{self}: tool #{name.inspect} declared twice" if own_tools.key?(name)
 
@@ -141,6 +146,9 @@ module Poetry
               title: title&.to_s,
               description: validate_tool_description!(name, description),
               input_schema: normalize_tool_schema!(name, params, input_schema),
+              output_schema: output_schema && deep_stringify_tool_keys(
+                validate_schema_object!(name, :output_schema, output_schema)
+              ),
               executes: Array(executes).map(&:to_sym),
               mutating: mutating ? true : false,
               untrusted_content: untrusted_content ? true : false,
@@ -194,6 +202,7 @@ module Poetry
               definition["title"] = tool.title || default_tool_title(tool.name)
               definition["description"] = tool.description
               definition["inputSchema"] = tool.input_schema if tool.input_schema
+              definition["outputSchema"] = tool.output_schema if tool.output_schema
               definition["annotations"] = {
                 "readOnlyHint" => !tool.mutating,
                 "untrustedContentHint" => tool.untrusted_content,
@@ -294,7 +303,8 @@ module Poetry
               raise ToolError,
                     "#{self}: tool #{name.inspect} takes ONE of params: or input_schema:"
             end
-            return deep_stringify_tool_keys(validate_input_schema!(name, input_schema)) if input_schema
+            given = input_schema && validate_schema_object!(name, :input_schema, input_schema)
+            return deep_stringify_tool_keys(given) if given
             return nil if params.nil? || params.empty?
 
             raise ToolError, "#{self}: tool #{name.inspect} params: must be a Hash" unless params.is_a?(Hash)
@@ -333,15 +343,15 @@ module Poetry
                   "and at most #{PARAM_DESCRIPTION_LIMIT} characters"
           end
 
-          # The input schema as given, raising unless it is a hash with a type.
+          # A whole schema as given (the input's or the output's), raising unless it is a hash with a type.
           # @api private
-          def validate_input_schema!(name, input_schema)
-            unless input_schema.is_a?(Hash) && (input_schema[:type] || input_schema["type"])
+          def validate_schema_object!(name, keyword, schema)
+            unless schema.is_a?(Hash) && (schema[:type] || schema["type"])
               raise ToolError,
-                    "#{self}: tool #{name.inspect} input_schema: must be a JSON-Schema " \
+                    "#{self}: tool #{name.inspect} #{keyword}: must be a JSON-Schema " \
                     "Hash with type:"
             end
-            input_schema
+            schema
           end
 
           # The value with every hash key and symbol turned into a string, recursively.

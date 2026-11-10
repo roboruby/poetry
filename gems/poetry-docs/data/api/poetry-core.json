@@ -1746,7 +1746,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 155
+          "line": 163
         },
         {
           "name": "resolve_tool_action",
@@ -1771,13 +1771,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 215
+          "line": 224
         },
         {
           "name": "tool",
           "scope": "class",
           "group": null,
-          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false, consequential: false, debugging: false)",
+          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, output_schema: nil, title: nil, mutating: false, untrusted_content: false, consequential: false, debugging: false)",
           "docstring": "Declares one agent-callable tool of this component.",
           "params": [
             {
@@ -1817,6 +1817,14 @@
                 "nil"
               ],
               "text": "a complete JSON-Schema object\nfor advanced shapes - mutually exclusive with `params:`"
+            },
+            {
+              "name": "output_schema",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "a complete JSON-Schema object\nfor what the tool's action returns (the tool's\n`outputSchema`); an agent reads it to know the answer's\nshape before it calls"
             },
             {
               "name": "title",
@@ -1868,7 +1876,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 132
+          "line": 137
         },
         {
           "name": "tool_definitions",
@@ -1885,7 +1893,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 191
+          "line": 199
         },
         {
           "name": "tools",
@@ -1902,7 +1910,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 163
+          "line": 171
         },
         {
           "name": "webmcp_enabled?",
@@ -1919,7 +1927,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 362
+          "line": 372
         },
         {
           "name": "webmcp_name",
@@ -1937,7 +1945,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 375
+          "line": 385
         },
         {
           "name": "webmcp_tool_definition",
@@ -1962,7 +1970,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 403
+          "line": 413
         },
         {
           "name": "webmcp_tools",
@@ -1979,7 +1987,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 393
+          "line": 403
         }
       ],
       "constants": [
@@ -2019,7 +2027,7 @@
       "path": "Poetry::Core::Concerns::AgentTools::Tool",
       "type": "class",
       "superclass": "Struct",
-      "docstring": "One declared tool. `executes` is the declared action spec\n(`[method]` or `[controller, method]`) - resolved to a bare\nStimulus descriptor per PROJECTING class (see\n{ClassMethods#tool_definitions}); `input_schema` is the\nnormalized JSON-Schema object (string keys) or nil for a\nparameterless tool.",
+      "docstring": "One declared tool. `executes` is the declared action spec\n(`[method]` or `[controller, method]`) - resolved to a bare\nStimulus descriptor per PROJECTING class (see\n{ClassMethods#tool_definitions}); `input_schema` is the\nnormalized JSON-Schema object (string keys) or nil for a\nparameterless tool; `output_schema` is the same for what the\ntool answers, or nil when it declares none.",
       "examples": [],
       "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [
@@ -2038,7 +2046,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "consequential=",
@@ -2063,7 +2071,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "debugging",
@@ -2080,7 +2088,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "debugging=",
@@ -2105,7 +2113,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "description",
@@ -2122,7 +2130,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "description=",
@@ -2147,7 +2155,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "executes",
@@ -2164,7 +2172,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "executes=",
@@ -2189,7 +2197,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "input_schema",
@@ -2206,7 +2214,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "input_schema=",
@@ -2231,7 +2239,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "mutating",
@@ -2248,7 +2256,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "mutating=",
@@ -2273,7 +2281,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "name",
@@ -2290,7 +2298,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "name=",
@@ -2315,7 +2323,49 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
+        },
+        {
+          "name": "output_schema",
+          "scope": "instance",
+          "group": null,
+          "signature": "output_schema",
+          "docstring": "Returns the value of attribute output_schema",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of output_schema"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 60
+        },
+        {
+          "name": "output_schema=",
+          "scope": "instance",
+          "group": null,
+          "signature": "output_schema=(value)",
+          "docstring": "Sets the attribute output_schema",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute output_schema to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 60
         },
         {
           "name": "title",
@@ -2332,7 +2382,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "title=",
@@ -2357,7 +2407,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "untrusted_content",
@@ -2374,7 +2424,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "untrusted_content=",
@@ -2399,7 +2449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 59
+          "line": 60
         }
       ],
       "constants": []

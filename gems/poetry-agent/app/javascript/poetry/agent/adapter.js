@@ -3,14 +3,16 @@
 // 2026 and again through the autumn, and the shipping browser trails it)
 // stays a one-file fix. Everything else in the runtime talks to this.
 //
-// Spec surface (rev 6838130ef, 2026-10-27; config/upstream_watch.json pins
+// Spec surface (rev f2f2ae229, 2026-11-09; config/upstream_watch.json pins
 // the specification repository there, and the upstream watch test holds
 // this line to the pin): document.modelContext with
 // registerTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving
-// RegisteredTool dictionaries whose inputSchema is an object,
+// RegisteredTool dictionaries whose inputSchema and outputSchema are
+// objects (the output's absent when the tool declared none),
 // executeTool(tool, inputObject, {signal}) resolving the stringified
 // result, and the toolchange, toolactivated and toolcancel events on the
-// context (an EventTarget). ToolAnnotations carries readOnlyHint,
+// context (an EventTarget); toolactivated fires once the tool's execute
+// callback has been invoked. ToolAnnotations carries readOnlyHint,
 // untrustedContentHint, consequentialHint and debugging.
 //
 // Shipping-browser deltas this file absorbs (Chrome 151, measured
@@ -53,9 +55,21 @@ export const registerTool = (definition, { signal } = {}) =>
 // executeTool go string-first without a wasted rejection.
 let stringArguments = false
 
+// A schema the browser serialized, as an object: null when the text is not
+// JSON, and absent (the spec's "none declared") when it is the empty string.
+const parsedSchema = (text) => {
+  if (text === "") return undefined
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
+}
+
 /**
- * The registered tools with inputSchema normalized to an object: parsed
- * when the browser serialized it, null when the text is not JSON.
+ * The registered tools with inputSchema and outputSchema normalized to
+ * objects: parsed when the browser serialized them, null when the text is
+ * not JSON, absent for an output schema the tool never declared.
  *
  * @param {Object} [options] the getTools options (fromOrigins)
  * @returns {Promise<Array<Object>>} the registered tools
@@ -63,13 +77,10 @@ let stringArguments = false
 export const getTools = async (options = {}) => {
   const tools = await modelContext().getTools(options)
   for (const tool of tools) {
+    if (typeof tool.outputSchema === "string") tool.outputSchema = parsedSchema(tool.outputSchema)
     if (typeof tool.inputSchema !== "string") continue
     stringArguments = true
-    try {
-      tool.inputSchema = JSON.parse(tool.inputSchema)
-    } catch {
-      tool.inputSchema = null
-    }
+    tool.inputSchema = parsedSchema(tool.inputSchema) ?? null
   }
   return tools
 }

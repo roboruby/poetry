@@ -93,6 +93,7 @@ module Poetry
 
           catalog, problem = surface.lookup(via)
           return fail!("function #{name.inspect}: #{problem}") unless catalog
+          return fail!(Functions.agent_only_refusal(name)) if catalog.functions.agent_only?(name.to_s, surface.dialect)
           if !@gesture && catalog.functions.activation?(name.to_s)
             return fail!("Function '#{name}' requires user activation context to execute.")
           end

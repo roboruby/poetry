@@ -221,7 +221,8 @@ module A2UIConformance
     document["functions"].each do |name, entry|
       args = entry.dig("properties", "args") || entry["parameters"] || {}
       registry.define(name, description: name, returns: entry["returnType"].is_a?(String) ? entry["returnType"] : "any",
-                            params: args["properties"] || {}, required: args["required"] || []) do |values, evaluator|
+                            params: args["properties"] || {}, required: args["required"] || [],
+                            callers: entry["allowedCallers"] || "rendererOnly") do |values, evaluator|
         A::Functions.basic.declared?(name) ? A::Functions.basic.call(name, values, evaluator) : nil
       end
     end
@@ -733,7 +734,7 @@ module A2UIConformance
                          "updateDataModel" => { "surfaceId" => surface_id, "path" => "/",
                                                 "value" => deep_copy(test_case["dataModel"] || {}) } }])
     source = test_case["scope"] ? "test_comp@#{test_case["scope"]}" : "test_comp"
-    action = session.action(surface_id: surface_id, source: source)
+    action = session.action(surface_id: surface_id, source: source, metadata: test_case["metadata"])
     if test_case["expectError"]
       fail!("expected #{test_case["expectError"]}; Poetry dispatched #{action&.message.inspect}") if action&.valid?
       return
@@ -756,9 +757,12 @@ module A2UIConformance
     if want.key?("context") && !deep_eq(got["context"], want["context"])
       fail!("context #{JSON.generate(got["context"])}, expected #{JSON.generate(want["context"])}")
     end
-    return unless want.key?("userMessage") && got["userMessage"] != want["userMessage"]
+    if want.key?("userMessage") && got["userMessage"] != want["userMessage"]
+      fail!("userMessage #{got["userMessage"].inspect}, expected #{want["userMessage"].inspect}")
+    end
+    return unless want.key?("metadata") && !deep_eq(got["metadata"], want["metadata"])
 
-    fail!("userMessage #{got["userMessage"].inspect}, expected #{want["userMessage"].inspect}")
+    fail!("metadata #{JSON.generate(got["metadata"])}, expected #{JSON.generate(want["metadata"])}")
   end
 
   # ---- APIs Poetry does not have yet

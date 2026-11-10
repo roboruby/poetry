@@ -473,6 +473,11 @@ module Poetry
             return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved")
           end
 
+          if dialect.v1? && component.key?("metadata") &&
+             (problem = Strict.metadata_problem(component["metadata"], "#{id}: metadata"))
+            return error("#{path}/metadata", problem)
+          end
+
           problem = catalog_problem(component)
           return unless problem
 

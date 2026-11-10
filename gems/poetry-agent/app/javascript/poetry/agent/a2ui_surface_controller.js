@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { test as regexTest } from "@poetry/agent/a2ui_regex"
 
 const EMAIL = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
@@ -216,12 +217,15 @@ const pointer = (document, path) => {
   }, document)
 }
 
-// A value's boolean reading: in v1.0 a ValidationResult reads as its verdict,
-// in v0.9 an object is simply present.
-const truthy = (value, v1 = true) => {
-  if (value && typeof value === "object" && !Array.isArray(value)) return v1 && typeof value.valid === "boolean" ? value.valid : true
-  if (typeof value === "string") return value !== "" && !["false", "0"].includes(value.toLowerCase())
-  return value !== null && value !== undefined && value !== false
+// A value's boolean reading, the protocol's DynamicBoolean coercion, the same
+// in every version: a boolean as it is, a ValidationResult as its verdict,
+// the string "true" in any letter case as true and every other string as
+// false, a number as whether it is not zero, anything else as false.
+const truthy = (value) => {
+  if (typeof value === "boolean") return value
+  if (typeof value === "string") return value.toLowerCase() === "true"
+  if (typeof value === "number") return value !== 0
+  return value !== null && typeof value === "object" && !Array.isArray(value) && value.valid === true
 }
 
 const present = (value) => {
@@ -255,8 +259,10 @@ const number = (value) => {
 
 const FUNCTIONS = {
   required: ({ value }, v1) => result(present(value), v1),
+  // In the A2UI regex dialect; a pattern it refuses is the server's to report.
   regex: ({ value, pattern }, v1) => {
-    try { return result(new RegExp(pattern).test(String(value ?? "")), v1) } catch { return null }
+    const matched = typeof pattern === "string" ? regexTest(pattern, String(value ?? "")) : null
+    return matched === null ? null : result(matched, v1)
   },
   length: ({ value, min, max }, v1) => result(within(lengthOf(value), min, max), v1),
   numeric: ({ value, min, max }, v1) => {
@@ -267,7 +273,7 @@ const FUNCTIONS = {
     const valid = typeof value === "string" && EMAIL.test(value)
     return v1 && !valid ? { ...EMAIL_FAILURE } : result(valid, v1)
   },
-  and: ({ values }, v1) => operands(values)?.every((value) => truthy(value, v1)) ?? null,
-  or: ({ values }, v1) => operands(values)?.some((value) => truthy(value, v1)) ?? null,
-  not: ({ value }, v1) => !truthy(value, v1)
+  and: ({ values }) => operands(values)?.every((value) => truthy(value)) ?? null,
+  or: ({ values }) => operands(values)?.some((value) => truthy(value)) ?? null,
+  not: ({ value }) => !truthy(value)
 }

@@ -47,6 +47,61 @@ class StrictTest < Minitest::Test
     assert_match(/Orphaned component 'stray'/, Strict.topology_problems(loose, s).first[:message])
   end
 
+  # A binding whose functions add one of the agent's own.
+  class TokenCatalog < A2UI::Catalogs::Basic
+    def functions
+      @functions ||= A2UI::Functions.basic.dup.tap do |registry|
+        registry.define("readToken", description: "the session's token", returns: "string",
+                                     callers: "agentOnly") { |_args, _evaluator| "secret" }
+      end
+    end
+  end
+
+  def test_the_tree_s_depth_counts_from_the_root_at_zero
+    chain = lambda do |below|
+      ids = ["root"] + Array.new(below) { |index| "c#{index}" }
+      ids.each_with_index.to_h do |id, index|
+        following = ids[index + 1]
+        leaf = { "id" => id, "component" => "Text" }
+        [id, following ? { "id" => id, "component" => "Card", "child" => following } : leaf]
+      end
+    end
+
+    assert_empty Strict.topology_problems(chain.call(Strict::MAX_DEPTH), surface), "the limit itself passes"
+    assert_match(/logical depth > 50/,
+                 Strict.topology_problems(chain.call(Strict::MAX_DEPTH + 1), surface).first[:message])
+    looped = { "root" => { "id" => "root", "component" => "Card", "child" => "a" },
+               "a" => { "id" => "a", "component" => "Card", "child" => "root" } }
+
+    assert_empty Strict.topology_problems(looped, surface), "a cycle stops the walk (the cycle check names it)"
+  end
+
+  def test_a_v1_0_binding_or_action_never_names_a_function_that_is_the_agent_s_alone
+    v1 = surface(TokenCatalog.new)
+    v09 = A2UI::Surface.new(id: "s", catalog: TokenCatalog.new(dialect: A2UI::Dialect::V0_9),
+                            dialect: A2UI::Dialect::V0_9)
+    bound = [{ "id" => "root", "component" => "Text",
+               "text" => { "@call" => "formatString", "args" => { "value" => { "@call" => "readToken" } } } }]
+    pressed = [{ "id" => "root", "component" => "Button", "child" => "t",
+                 "action" => { "functionCall" => { "@call" => "readToken" } } }]
+
+    assert_equal(["Function 'readToken' cannot be called by renderer: its allowedCallers is agentOnly"],
+                 Strict.call_problems(bound, v1).map { |problem| problem[:message] })
+    assert_match(/agentOnly/, Strict.call_problems(pressed, v1).first[:message])
+    assert_empty Strict.call_problems([{ "id" => "root", "component" => "Text", "text" => { "call" => "readToken" } }],
+                                      v09), "v0.9 has no such boundary"
+  end
+
+  def test_a_metadata_object_holds_only_extensions_keyed_by_identifiers
+    assert_nil Strict.metadata_problem({ "extensions" => { "com_example_trace" => "t1" } }, "m")
+    assert_nil Strict.metadata_problem({}, "m")
+    assert_equal "m must be an object", Strict.metadata_problem("x", "m")
+    assert_equal "m holds only 'extensions', not 'trace'", Strict.metadata_problem({ "trace" => 1 }, "m")
+    assert_equal "m.extensions must be an object", Strict.metadata_problem({ "extensions" => [] }, "m")
+    assert_equal "Extension key 'com-example-trace' must be a valid UAX #31 identifier",
+                 Strict.metadata_problem({ "extensions" => { "com-example-trace" => "t" } }, "m")
+  end
+
   def test_identifiers_and_calls
     s = surface
 

@@ -82,7 +82,9 @@ module Poetry
         # @return [Hash{String => Object}] catalog bindings by catalog id
         attr_reader :catalogs
         # The last lifecycle status an AG-UI activity carried while no surface
-        # was ready yet (`{ "status" => "building", "progressTokens" => 20 }`), or nil.
+        # was ready yet (`{ "status" => "building", "progressTokens" => 20 }`), or
+        # nil. A build that failed says why: `{ "status" => "failed", "error" =>
+        # "Invalid A2UI components: ...", "errors" => [...] }`.
         # @return [Hash, nil]
         attr_reader :status
 
@@ -159,7 +161,8 @@ module Poetry
         # carries (an `a2ui_operations`, `messages`, or `operations` list,
         # or one bare message). An activity that carries only a lifecycle
         # status (`{ "status", "progressTokens" }`, while the agent builds the
-        # surface) is recorded as {#status}, not an error. A replacing snapshot
+        # surface, or `{ "status", "error", "errors" }` once a build failed)
+        # is recorded as {#status}, not an error. A replacing snapshot
         # carries every operation so far, so the `createSurface` that made a
         # surface is skipped when it comes again unchanged.
         #
@@ -167,7 +170,7 @@ module Poetry
         # @return [Array<String>] the changed surface ids
         def apply_activity(content)
           if lifecycle?(content)
-            @status = content.slice("status", "progressTokens")
+            @status = content.slice("status", "progressTokens", "error", "errors")
             return []
           end
 
@@ -196,14 +199,17 @@ module Poetry
         # component's event context resolves against the updated model.
         # Returns nil when the source has no agent event (a local action,
         # or an unknown component), and an invalid action - no message,
-        # `errors` by component key - when a `checks` rule fails.
+        # `errors` by component key - when a `checks` rule fails or the
+        # metadata is malformed.
         #
         # @param surface_id [String]
         # @param source [String] the submit button's value (`id` or `id@scope`)
         # @param values [Hash{String => Object}] submitted values by absolute pointer
         # @param timestamp [Time]
+        # @param metadata [Hash, nil] what a v1.0 action carries as `action.metadata`: an `extensions`
+        #   object keyed by UAX #31 identifiers (an attestation, an audit tag); a v0.9 action carries none
         # @return [Action, nil]
-        def action(surface_id:, source:, values: {}, timestamp: Time.now.utc)
+        def action(surface_id:, source:, values: {}, timestamp: Time.now.utc, metadata: nil)
           surface = @surfaces[surface_id]
           return unless surface
 
@@ -224,11 +230,18 @@ module Poetry
             return Action.new(message: nil, surface: surface, errors: { "userMessage" => "must be a string" })
           end
 
+          attached = surface.dialect.v1? && !metadata.nil?
+          if attached && (problem = Strict.metadata_problem(metadata, "action.metadata"))
+            reject("VALIDATION_FAILED", problem, surface_id, path: "/action/metadata")
+            return Action.new(message: nil, surface: surface, errors: { "metadata" => problem })
+          end
+
           context = (event["context"] || {}).to_h { |name, value| [name.to_s, surface.resolve(value, scope)] }
           action = { "name" => event["name"], "surfaceId" => surface_id, "sourceComponentId" => component_id,
                      "timestamp" => timestamp.utc.iso8601(3), "context" => context }
           user_message = event.key?("userMessage") ? surface.text(event["userMessage"], scope) : ""
           action["userMessage"] = user_message unless user_message.empty?
+          action["metadata"] = JSON.parse(JSON.generate(metadata)) if attached
           Action.new(message: { "version" => surface.dialect.version, "action" => action }, surface: surface,
                      errors: {})
         end
@@ -356,7 +369,8 @@ module Poetry
                           dialect: dialect)
           end
 
-          if dialect.v1? && body.key?("metadata") && (problem = metadata_problem(body["metadata"]))
+          if dialect.v1? && body.key?("metadata") &&
+             (problem = Strict.metadata_problem(body["metadata"], "createSurface.metadata"))
             return reject("VALIDATION_FAILED", problem, surface_id, dialect: dialect, path: "/metadata")
           end
 
@@ -452,21 +466,6 @@ module Poetry
             end
             Schemas::Validator.new(dialect, default: default, catalogs: documents)
           end
-        end
-
-        # Why a v1.0 createSurface's metadata is malformed: it holds only
-        # `extensions`, whose keys are identifiers.
-        def metadata_problem(metadata)
-          return "createSurface.metadata must be an object" unless metadata.is_a?(Hash)
-
-          other = (metadata.keys - ["extensions"]).first
-          return "createSurface.metadata holds only 'extensions', not '#{other}'" if other
-
-          extensions = metadata.fetch("extensions", {})
-          return "createSurface.metadata.extensions must be an object" unless extensions.is_a?(Hash)
-
-          key = extensions.keys.find { |name| !name.match?(Strict::IDENTIFIER) }
-          "Extension key '#{key}' must be a valid UAX #31 identifier" if key
         end
 
         # Writes a value into a surface's data model from an updateDataModel
@@ -666,6 +665,9 @@ module Poetry
           evaluator = Evaluator.new(surface, scope, gesture: true, on_error: ->(message) { problems << message })
           args = evaluator.argument(call["args"] || {})
           raise Functions::Error, problems.first if problems.any?
+          if surface.catalog.functions.agent_only?(name, surface.dialect)
+            raise Functions::Error, Functions.agent_only_refusal(name)
+          end
 
           surface.catalog.functions.call(name, args, evaluator)
           Action.new(message: nil, surface: surface, errors: {}, local: true)

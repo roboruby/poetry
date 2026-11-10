@@ -34,6 +34,8 @@ module Poetry
           # Cross-axis alignment classes by the catalog's `align` values.
           ALIGN = { "start" => "items-start", "center" => "items-center", "end" => "items-end",
                     "stretch" => "items-stretch" }.freeze
+          # The list element and its marker classes by a v0.9 List's `listStyle` (`none` stays a plain container).
+          LIST_STYLES = { "ordered" => [:ol, "list-decimal ps-6"], "unordered" => [:ul, "list-disc ps-6"] }.freeze
           # Object-fit classes by the Image `fit` values.
           FIT = { "contain" => "object-contain", "cover" => "object-cover", "fill" => "object-fill",
                   "none" => "object-none", "scaleDown" => "object-scale-down" }.freeze
@@ -240,12 +242,23 @@ module Poetry
             renderer.view.safe_join(items)
           end
 
-          # Renders a List component as a scrolling flex container in its direction.
+          # Renders a List component as a scrolling flex container in its
+          # direction. A v0.9 `listStyle` of `ordered` or `unordered` makes
+          # it a numbered or a bulleted list, an item per child.
           def render_list(component, scope, renderer)
             horizontal = component["direction"] == "horizontal"
             classes = ["flex gap-2", horizontal ? "flex-row overflow-x-auto" : "flex-col overflow-y-auto",
                        ALIGN.fetch(component["align"], "items-stretch")]
-            renderer.view.tag.div(renderer.render_children(component["children"], scope), class: classes.join(" "))
+            element, marker = LIST_STYLES[component["listStyle"]]
+            unless element
+              return renderer.view.tag.div(renderer.render_children(component["children"], scope),
+                                           class: classes.join(" "))
+            end
+
+            items = renderer.surface.expand(component["children"], scope).map do |child_id, child_scope|
+              renderer.view.tag.li(renderer.render_component(child_id, child_scope))
+            end
+            renderer.view.content_tag(element, renderer.view.safe_join(items), class: [*classes, marker].join(" "))
           end
 
           # Renders a Card component around its child.
@@ -420,7 +433,7 @@ module Poetry
             path = renderer.surface.binding_path(component["value"])
             label = renderer.text(component["label"], scope)
             attributes = { id: renderer.control_id(component, scope), value: "true", unchecked_value: "false",
-                           checked: renderer.resolve(component["value"], scope) == true }
+                           checked: Functions.truthy?(renderer.resolve(component["value"], scope)) }
             attributes[:label] = accessible_label(component, scope, renderer) if label.empty?
             attributes[:name] = renderer.input_name(path, scope) if path
             attributes[:required] = true if check_attributes(component, renderer.surface.dialect)[:required]
@@ -560,7 +573,9 @@ module Poetry
               args = condition["args"].is_a?(Hash) ? condition["args"] : {}
               case name
               when "required" then attributes[:required] = true
-              when "regex" then attributes[:pattern] = args["pattern"] if args["pattern"].is_a?(String)
+              when "regex"
+                native = args["pattern"].is_a?(String) ? RegexSubset.native(args["pattern"]) : nil
+                attributes[:pattern] = native if native
               when "length"
                 attributes[:minlength] = args["min"] if args["min"].is_a?(Integer)
                 attributes[:maxlength] = args["max"] if args["max"].is_a?(Integer)

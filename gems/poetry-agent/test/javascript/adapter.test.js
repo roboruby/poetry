@@ -11,9 +11,10 @@ const chrome151 = () => {
       {
         name: "poetry.sections.set_value", description: "Activate.", title: "",
         inputSchema: JSON.stringify({ type: "object", properties: { value: { type: "string", enum: ["a"] } } }),
+        outputSchema: JSON.stringify({ type: "string" }),
         annotations: { readOnlyHint: false, untrustedContentHint: false }
       },
-      { name: "broken", description: "Broken.", title: "", inputSchema: "{not json", annotations: null }
+      { name: "broken", description: "Broken.", title: "", inputSchema: "{not json", outputSchema: "", annotations: null }
     ]),
     executeTool: vi.fn(async (tool, args) => {
       calls.push(args)
@@ -54,6 +55,8 @@ describe("the modelContext adapter", () => {
 
     expect(tool.inputSchema).toEqual({ type: "object", properties: { value: { type: "string", enum: ["a"] } } })
     expect(broken.inputSchema).toBeNull()
+    expect(tool.outputSchema).toEqual({ type: "string" })
+    expect(broken.outputSchema, "an empty serialization is no output schema").toBeUndefined()
   })
 
   it("falls back to JSON-string arguments when the browser rejects the object shape, then remembers", async () => {

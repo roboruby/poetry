@@ -47,8 +47,55 @@ class FunctionsTest < Minitest::Test
 
     assert(v09.call("required", { "value" => "x" }))
     refute(v09.call("email", { "value" => "ada@example.c" }))
-    refute(v09.call("not", { "value" => { "valid" => false } }), "an object is present in v0.9")
+    assert(v09.call("not", { "value" => { "valid" => false } }), "v0.9 reads a result as its verdict too")
     assert(evaluator.call("not", { "value" => { "valid" => false } }), "v1.0 reads a result as its verdict")
+  end
+
+  def test_regex_runs_in_the_dialect_in_every_version_and_names_what_it_refuses
+    v09 = A2UI::Evaluator.new(A2UI::Surface.new(id: "s", catalog: A2UI::Catalogs::Basic.new, dialect: A2UI::Dialect::V0_9))
+    errors = []
+
+    refute v09.call("regex", { "value" => "abc\n", "pattern" => "^abc$" })
+    refute v09.call("regex", { "value" => "a" * 4097, "pattern" => "^a+$" })
+    assert_equal({ "valid" => false }, evaluator.call("regex", { "value" => "a" * 4097, "pattern" => "^a+$" }))
+    assert_nil evaluator(errors: errors).call("regex", { "value" => "aaa", "pattern" => "(a+)+$" })
+    assert_match(/function "regex": regex: NESTED_QUANTIFIER: /, errors.first)
+  end
+
+  def test_a_match_the_engine_stops_answers_with_a_timeout_code
+    subset = A2UI::RegexSubset
+    held = subset.method(:compile)
+    stopped = Object.new
+    stopped.define_singleton_method(:match?) { |_value| raise Regexp::TimeoutError }
+    verbose = $VERBOSE
+    $VERBOSE = nil
+    subset.define_singleton_method(:compile) { |_pattern| stopped }
+
+    assert_equal({ "valid" => false, "code" => "REGEX_TIMEOUT" },
+                 evaluator.call("regex", { "value" => "x", "pattern" => "x" }))
+  ensure
+    subset.define_singleton_method(:compile, held)
+    $VERBOSE = verbose
+  end
+
+  # A binding whose functions add one of the agent's own.
+  class TokenCatalog < A2UI::Catalogs::Basic
+    def functions
+      @functions ||= A2UI::Functions.basic.dup.tap do |registry|
+        registry.define("readToken", description: "the session's token", returns: "string",
+                                     callers: "agentOnly") { |_args, _evaluator| "secret" }
+      end
+    end
+  end
+
+  def test_a_surface_never_calls_a_function_that_is_the_agent_s_alone
+    errors = []
+    v1 = A2UI::Surface.new(id: "s", catalog: TokenCatalog.new)
+    v09 = A2UI::Surface.new(id: "s", catalog: TokenCatalog.new(dialect: A2UI::Dialect::V0_9), dialect: A2UI::Dialect::V0_9)
+
+    assert_nil A2UI::Evaluator.new(v1, nil, on_error: ->(message) { errors << message }).call("readToken", {})
+    assert_equal ["Function 'readToken' cannot be called by renderer: its allowedCallers is agentOnly"], errors
+    assert_equal "secret", A2UI::Evaluator.new(v09, nil).call("readToken", {}), "v0.9 has no such boundary"
   end
 
   def test_the_spec_semantics_of_required_length_and_the_combinators
@@ -170,10 +217,11 @@ class FunctionsTest < Minitest::Test
   def test_combinators_read_validation_results_and_booleans
     ev = evaluator
 
-    assert ev.call("and", { "values" => [true, { "valid" => true }, "yes"] })
+    assert ev.call("and", { "values" => [true, { "valid" => true }, "TRUE", 2] })
     refute ev.call("and", { "values" => [true, { "valid" => false }] })
+    refute ev.call("and", { "values" => [true, "yes"] }), "a string other than true reads as false"
     assert ev.call("or", { "values" => [false, nil, { "valid" => true }] })
-    refute ev.call("or", { "values" => [false, "false", "0", ""] })
+    refute ev.call("or", { "values" => [false, "false", "0", "", 0, {}, [], [true], { "valid" => "yes" }] })
     assert ev.call("not", { "value" => false })
     refute ev.call("not", { "value" => "true" })
   end

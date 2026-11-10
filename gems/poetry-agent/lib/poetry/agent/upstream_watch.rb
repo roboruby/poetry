@@ -70,7 +70,7 @@ module Poetry
              "interface ModelContext : EventTarget", "registerTool(", "getTools(", "executeTool(",
              "ontoolchange", "ontoolactivated", "ontoolcancel", "readonly attribute DOMString toolName",
              "boolean readOnlyHint", "boolean untrustedContentHint", "boolean consequentialHint",
-             "boolean debugging"],
+             "boolean debugging", "object inputSchema", "object outputSchema"],
           "declarative-api-explainer.md" =>
             %w[toolname tooldescription toolautosubmit toolparamdescription :tool-form-active :tool-submit-active
                agentInvoked respondWith]
