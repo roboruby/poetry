@@ -167,7 +167,7 @@ module Poetry
         # @param scope [String, nil]
         # @return [String]
         def text(value, scope = nil)
-          surface.text(value, scope, on_error: method(:warn))
+          surface.text(value, scope, on_error: method(:warn), waits: :binding)
         end
 
         # A component property resolved in a scope; a problem warns.
@@ -175,7 +175,7 @@ module Poetry
         # @param scope [String, nil]
         # @return [Object, nil] the resolved dynamic value
         def resolve(value, scope = nil)
-          surface.resolve(value, scope, on_error: method(:warn))
+          surface.resolve(value, scope, on_error: method(:warn), waits: :binding)
         end
 
         # Calls a catalog function; a problem warns and returns nil.

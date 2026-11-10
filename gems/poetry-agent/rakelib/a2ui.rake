@@ -12,9 +12,9 @@ require "fileutils"
 namespace :a2ui do
   upstream = File.expand_path("../test/fixtures/a2ui/upstream", __dir__)
   shipped_root = File.expand_path("../lib/poetry/agent/a2ui/schemas", __dir__)
-  suites = %w[actions composition_constraints data_context data_deletion data_model data_model_pointers expressions
-              functions index_function message_processor_v0_9 message_processor_v1_0 multi_catalog reserved_keys
-              rpc_functions validation_result validator_v0_9 validator_v1_0]
+  suites = %w[actions agent_function_routing composition_constraints data_context data_deletion data_model
+              data_model_pointers expressions functions index_function message_processor_v0_9 message_processor_v1_0
+              multi_catalog reserved_keys rpc_functions validation_result validator_v0_9 validator_v1_0]
   catalogs = %w[catalogs/basic/v1/catalog.json specification/v0_9/catalogs/basic/catalog.json
                 specification/v0_9_1/catalogs/basic/catalog.json
                 conformance/test_data/catalogs/custom_catalog_v1_0.json

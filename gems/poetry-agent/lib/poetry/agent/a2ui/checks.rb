@@ -10,7 +10,8 @@ module Poetry
       # "code", "message", "severity" }` - or a boolean (v0.9's validators
       # answer booleans). A failing rule is a failure unless its result
       # names a severity other than error; it carries the result's message,
-      # the rule's as the fallback.
+      # the rule's as the fallback. A rule whose condition waits on the
+      # agent does not fail while it waits, and fails once that call does.
       module Checks
         # The message when neither the result nor the rule carries one.
         DEFAULT_MESSAGE = "Check failed"
@@ -28,7 +29,10 @@ module Poetry
             condition = rule.is_a?(Hash) && condition(rule, evaluator.surface.dialect)
             next unless condition
 
-            outcome = interpret(evaluator.resolve(condition), rule, evaluator)
+            value, state, message = evaluator.outcome(condition)
+            next if state == :pending
+
+            outcome = state == :failed ? failed(rule, message) : interpret(value, rule, evaluator)
             outcome unless outcome[:valid] || (outcome[:severity] || "error") != "error"
           end
         end
@@ -56,7 +60,12 @@ module Poetry
           end
         end
 
-        private_class_method :interpret
+        # The failure of a rule whose call to the agent failed: the rule's message, the call's as the fallback.
+        def failed(rule, message)
+          { valid: false, code: nil, message: rule["message"] || message || DEFAULT_MESSAGE, severity: nil }
+        end
+
+        private_class_method :interpret, :failed
       end
     end
   end

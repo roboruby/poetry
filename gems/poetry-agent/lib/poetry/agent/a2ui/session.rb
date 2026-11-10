@@ -34,11 +34,22 @@ module Poetry
         # AG-UI placement (`forwardedProps.a2uiAction.userAction`). A
         # function call as an action runs on the renderer instead and
         # produces no message: `local?`, with the surface's data changed.
-        Action = Struct.new(:message, :surface, :errors, :local, keyword_init: true) do
+        # An action that needs the agent's answer to a function first is
+        # `pending?`: it has no message yet, and gains it (or its errors)
+        # once the session has applied the answers it waits for. A
+        # function-call action's `value` is what its function answered.
+        Action = Struct.new(:message, :surface, :errors, :local, :pending, :value, keyword_init: true) do
           # Whether the action produced a message and no check failed.
           # @return [Boolean] whether every check passed and the message exists
           def valid?
             !message.nil? && (errors.nil? || errors.empty?)
+          end
+
+          # Whether the action still waits on a call to the agent
+          # ({Session#agent_calls} holds what to send).
+          # @return [Boolean]
+          def pending?
+            pending == true
           end
 
           # Whether the action ran on the renderer (a `functionCall` action), with nothing for the agent.
@@ -81,6 +92,17 @@ module Poetry
         # The catalog bindings by catalog id.
         # @return [Hash{String => Object}] catalog bindings by catalog id
         attr_reader :catalogs
+
+        # The renderer-to-agent `callAgentFunction` messages waiting to be
+        # sent, oldest first: a v1.0 surface called a function no catalog
+        # implements here, and its value is nothing until the agent's
+        # `agentFunctionResponse` is applied. The host takes each message
+        # as it sends it (`session.agent_calls.shift`). Always empty unless
+        # the session was built with `agent_functions: true`.
+        # @return [Array<Hash>]
+        def agent_calls
+          @agent ? @agent.outbox : []
+        end
         # The last lifecycle status an AG-UI activity carried while no surface
         # was ready yet (`{ "status" => "building", "progressTokens" => 20 }`), or
         # nil. A build that failed says why: `{ "status" => "failed", "error" =>
@@ -107,8 +129,17 @@ module Poetry
         #   strict), else as given
         # @param allow_dangling_references [Boolean, nil] whether an update may reference a component the
         #   surface does not hold yet (`allowDanglingReferences`): the mode's default when nil, else as given
-        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil,
-                       allow_dangling_references: nil)
+        # @param agent_functions [Boolean] whether the host sends {#agent_calls} to the agent and applies
+        #   its answers. When it does, a function a v1.0 surface calls that no catalog implements here is
+        #   the agent's (A2UI's `callAgentFunction`); when it does not, such a call fails where it is made
+        # @param agent_call_timeout [Numeric] seconds a call to the agent may wait before
+        #   {#expire_agent_calls} fails it
+        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil, # rubocop:disable Metrics/ParameterLists
+                       allow_dangling_references: nil, agent_functions: false, agent_call_timeout: 30)
+          if agent_functions
+            @agent = AgentCalls.new(timeout: agent_call_timeout, on_failure: method(:agent_failure),
+                                    on_change: ->(surface_id) { @surfaces[surface_id]&.touch })
+          end
           @catalogs = catalogs
           @fallback_catalog = fallback_catalog
           @strict = strict
@@ -200,7 +231,10 @@ module Poetry
         # Returns nil when the source has no agent event (a local action,
         # or an unknown component), and an invalid action - no message,
         # `errors` by component key - when a `checks` rule fails or the
-        # metadata is malformed.
+        # metadata is malformed. An action whose context, user message or
+        # function call needs the agent's answer first comes back
+        # `pending?`; send {#agent_calls}, apply the answers, and the same
+        # action then carries its message or its errors.
         #
         # @param surface_id [String]
         # @param source [String] the submit button's value (`id` or `id@scope`)
@@ -217,7 +251,7 @@ module Poetry
           component_id, scope = source.to_s.split("@", 2)
           component = surface.component(component_id)
           call = component && local_call_of(component)
-          return local_action(surface, call, scope) if call
+          return start(Step.new(surface: surface, scope: scope, call: call, local: true)) if call
 
           event = component && surface.event_of(component)
           return unless event.is_a?(Hash) && event["name"].is_a?(String)
@@ -225,25 +259,73 @@ module Poetry
           failures = surface.failures
           return Action.new(message: nil, surface: surface, errors: failures) if failures.any?
 
-          if event.key?("userMessage") && !(event["userMessage"].is_a?(String) || event["userMessage"].is_a?(Hash))
-            reject("INVALID_ACTION", "action.event.userMessage must be a string", surface_id)
-            return Action.new(message: nil, surface: surface, errors: { "userMessage" => "must be a string" })
-          end
-
           attached = surface.dialect.v1? && !metadata.nil?
           if attached && (problem = Strict.metadata_problem(metadata, "action.metadata"))
             reject("VALIDATION_FAILED", problem, surface_id, path: "/action/metadata")
             return Action.new(message: nil, surface: surface, errors: { "metadata" => problem })
           end
 
-          context = (event["context"] || {}).to_h { |name, value| [name.to_s, surface.resolve(value, scope)] }
-          action = { "name" => event["name"], "surfaceId" => surface_id, "sourceComponentId" => component_id,
-                     "timestamp" => timestamp.utc.iso8601(3), "context" => context }
-          user_message = event.key?("userMessage") ? surface.text(event["userMessage"], scope) : ""
-          action["userMessage"] = user_message unless user_message.empty?
-          action["metadata"] = JSON.parse(JSON.generate(metadata)) if attached
-          Action.new(message: { "version" => surface.dialect.version, "action" => action }, surface: surface,
-                     errors: {})
+          start(Step.new(surface: surface, scope: scope, event: event, source: component_id, timestamp: timestamp,
+                         metadata: attached ? metadata : nil, context: {}, at: 0))
+        end
+
+        # Fails every call to the agent whose time is up (`TIMEOUT`,
+        # reported as an `EXPRESSION_ERROR`): a binding that waited stays
+        # nothing and its check rules fail, an action that waited ends with
+        # its errors. Call it when the host looks at the session again; a
+        # session has no clock of its own.
+        #
+        # @param now [Numeric, nil] the time, in the seconds of `Process::CLOCK_MONOTONIC`; now when nil
+        # @return [Array<String>] the ids of the surfaces whose bindings changed
+        def expire_agent_calls(now = nil)
+          return [] unless @agent
+
+          @agent.expire(now).select(&:waiters).map(&:surface_id).uniq & @surfaces.keys
+        end
+
+        # Cancels a surface's calls to the agent that are still waiting: no
+        # error is reported, a binding asks again the next time it is
+        # rendered, and an action that waited is dropped.
+        #
+        # @param surface_id [String]
+        # @return [void]
+        def cancel_agent_calls(surface_id)
+          @agent&.cancel(surface_id)
+          nil
+        end
+
+        # Ends the session's calls to the agent: those still waiting are
+        # cancelled, and a call made afterwards fails (`DISPOSED`).
+        #
+        # @return [void]
+        def dispose_agent_calls
+          @agent&.dispose
+          nil
+        end
+
+        # Calls one of the agent's functions directly, outside any surface's
+        # evaluation: the message joins {#agent_calls}, and the call settles
+        # when its answer is applied. A call that cannot be made comes back
+        # failed, its `error` saying why: `NO_LISTENER` on a session that
+        # does not reach the agent, `DUPLICATE` for an id still waiting,
+        # `DISPOSED` after {#dispose_agent_calls}.
+        #
+        # @param surface_id [String] the surface the call is made for
+        # @param catalog_id [String] the catalog the function belongs to
+        # @param name [String] the function
+        # @param args [Hash] its arguments, already resolved
+        # @param id [String, nil] the `functionCallId`; one is made up when nil
+        # @param timeout [Numeric, nil] seconds this call may wait; the session's when nil
+        # @return [AgentCalls::Call]
+        def call_agent_function(surface_id:, catalog_id:, name:, args: {}, id: nil, timeout: nil)
+          if @agent
+            return @agent.call(surface_id: surface_id, catalog_id: catalog_id, name: name, args: args, id: id,
+                               timeout: timeout)
+          end
+
+          refusal = { "code" => "NO_LISTENER", "message" => "This session does not send calls to the agent" }
+          AgentCalls::Call.new(id: id, surface_id: surface_id, catalog_id: catalog_id, name: name, args: args,
+                               state: :failed, error: refusal)
         end
 
         # What the renderer tells an agent it supports, by protocol version:
@@ -382,6 +464,7 @@ module Poetry
                                 catalogs: catalogs_for(dialect),
                                 send_data_model: body["sendDataModel"] == true, dialect: dialect,
                                 data: dialect.v1? ? body["dataModel"] : nil, theme: dialect.v1? ? nil : body["theme"])
+          surface.agent_calls = @agent if dialect.v1?
           @surfaces[surface_id] = surface
           @creations[surface_id] = JSON.parse(JSON.generate(body))
           update(surface, body["components"]) if dialect.v1? && body["components"].is_a?(Array)
@@ -488,6 +571,7 @@ module Poetry
           return [] unless @surfaces.key?(body["surfaceId"])
 
           surface = find(body, "deleteSurface", dialect) or return []
+          @agent&.forget(surface.id)
           @surfaces.delete(surface.id)
           @deleted << surface.id
           [surface.id]
@@ -602,9 +686,18 @@ module Poetry
           []
         end
 
-        # This renderer never calls agent functions; a response has nothing to match.
-        def apply_agent_function_response(_body, _dialect)
-          []
+        # Settles the call an agent's answer names. A binding's answer
+        # changes what its surface shows; an action's takes the action up
+        # again; an answer to no call that waits changes nothing.
+        def apply_agent_function_response(body, _dialect)
+          call = @agent&.respond(body)
+          call&.waiters && @surfaces.key?(call.surface_id) ? [call.surface_id] : []
+        end
+
+        # Reports a call the agent failed, or left unanswered too long, as the protocol asks: an
+        # `EXPRESSION_ERROR` carrying the agent's message and the call's id.
+        def agent_failure(call)
+          reject("EXPRESSION_ERROR", call.error["message"], function_call_id: call.id)
         end
 
         # The surface a body names, or nil after rejecting an unknown id or a
@@ -635,9 +728,10 @@ module Poetry
 
         # Records an error message and returns no changed ids. It carries the
         # version of the surface it names, else of the message, else v1.0's.
-        def reject(code, message, surface_id = nil, dialect: nil, path: nil)
+        def reject(code, message, surface_id = nil, dialect: nil, path: nil, function_call_id: nil)
           error = { "code" => code, "message" => message }
           error["surfaceId"] = surface_id if surface_id.is_a?(String)
+          error["functionCallId"] = function_call_id if function_call_id
           error["path"] = path if path && code == "VALIDATION_FAILED"
           @errors << { "version" => version_for(surface_id, dialect), "error" => error }
           []
@@ -656,24 +750,125 @@ module Poetry
           call.is_a?(Hash) ? call : nil
         end
 
-        # Runs a function-call action on the renderer, under the user's
-        # gesture, against the surface: its data may change, nothing goes to
-        # the agent, and a failure is reported on the surface.
-        def local_action(surface, call, scope)
-          name = surface.dialect.call_name(call).to_s
-          problems = []
-          evaluator = Evaluator.new(surface, scope, gesture: true, on_error: ->(message) { problems << message })
-          args = evaluator.argument(call["args"] || {})
-          raise Functions::Error, problems.first if problems.any?
-          if surface.catalog.functions.agent_only?(name, surface.dialect)
-            raise Functions::Error, Functions.agent_only_refusal(name)
-          end
+        # One action on its way: a function call to run (`call`), or an
+        # event whose context entries (`at` counts those resolved into
+        # `context`) and user message resolve in order before it is
+        # dispatched. `run` holds what its calls answered when the surface
+        # reaches the agent, so the action can stop on a call and take up
+        # again where it stopped.
+        Step = Struct.new(:surface, :scope, :call, :event, :source, :timestamp, :metadata, :context, :at, :local,
+                          :action, :run, keyword_init: true)
 
-          surface.catalog.functions.call(name, args, evaluator)
-          Action.new(message: nil, surface: surface, errors: {}, local: true)
-        rescue StandardError => e
-          reject("EXECUTION_ERROR", "An error occurred during function execution (#{e.class}).", surface.id)
-          Action.new(message: nil, surface: surface, errors: { "action" => e.message }, local: true)
+        # Starts an action and returns it: finished, or waiting on the agent.
+        def start(step)
+          step.action = Action.new(message: nil, surface: step.surface, errors: {}, local: step.local, pending: true)
+          if step.surface.agent_calls
+            dropped = lambda do
+              step.action.pending = false
+              step.action.errors = { "action" => "The surface's calls to the agent were cancelled" }
+            end
+            step.run = AgentCalls::Run.new(step.surface.id, on_cancel: dropped) { advance(step) }
+          end
+          advance(step)
+          step.action
+        end
+
+        # Takes an action as far as it goes: to its end, or to a call the agent has not answered.
+        def advance(step)
+          return unless step.action.pending?
+
+          evaluator = Evaluator.new(step.surface, step.scope, gesture: true, waits: step.run)
+          reached = step.call ? run_call(step, evaluator) : run_event(step, evaluator)
+          step.action.pending = false unless reached == :waits
+        end
+
+        # Runs a function-call action, under the user's gesture, against
+        # the surface: on the renderer where a catalog implements the
+        # function (the surface's data may change, nothing goes to the
+        # agent), else on the agent. A failure is reported on the surface.
+        # Answers `:waits` while the agent has not answered, else `:ended`.
+        def run_call(step, evaluator)
+          value, state, message = evaluator.outcome(step.call)
+          problem = evaluator.problems.first
+          return fail_step(step, problem) if problem
+          return :waits if state == :pending
+
+          step.action.errors = { "action" => message.to_s } if state == :failed
+          step.action.value = value if state == :settled
+          :ended
+        end
+
+        # Resolves an event's context entries in the order they are
+        # written, then its user message, each one waited for before the
+        # next is read, and dispatches the action. The first entry that
+        # fails ends the action, undispatched. Answers `:waits` while the
+        # agent has not answered, else `:ended`.
+        def run_event(step, evaluator)
+          entries = (step.event["context"].is_a?(Hash) ? step.event["context"] : {}).to_a
+          while step.at < entries.size
+            name, value = entries[step.at]
+            settled = settle_entry(step, evaluator, value, "Action event context entry '#{name}'")
+            return settled unless settled.is_a?(Array)
+
+            step.context[name.to_s] = settled.first
+            step.at += 1
+          end
+          text = step.event.key?("userMessage") ? user_message(step, evaluator) : ""
+          return text unless text.is_a?(String)
+
+          dispatch(step, text)
+          :ended
+        end
+
+        # One part of an event: its value in a one-item list once it
+        # settled, `:waits` while the agent has not answered, `:ended`
+        # when it failed (the failure reported here unless the agent's
+        # already was).
+        def settle_entry(step, evaluator, value, label)
+          result, state, message = evaluator.outcome(value)
+          problem = evaluator.problems.first
+          return fail_step(step, problem, label) if problem
+          return :waits if state == :pending
+          return [result] unless state == :failed
+
+          step.action.errors = { "action" => message.to_s }
+          :ended
+        end
+
+        # An event's user message: a string, nothing (it resolved to
+        # nothing), or the end of the action when it resolved to anything else.
+        def user_message(step, evaluator)
+          settled = settle_entry(step, evaluator, step.event["userMessage"], "Action event userMessage")
+          return settled unless settled.is_a?(Array)
+          return settled.first.to_s if settled.first.nil? || settled.first.is_a?(String)
+
+          reject("INVALID_ACTION", "action.event.userMessage must be a string", step.surface.id)
+          step.action.errors = { "userMessage" => "must be a string" }
+          :ended
+        end
+
+        # Hands a resolved event to the agent: the action gains its message.
+        def dispatch(step, text)
+          action = { "name" => step.event["name"], "surfaceId" => step.surface.id, "sourceComponentId" => step.source,
+                     "timestamp" => step.timestamp.utc.iso8601(3), "context" => step.context }
+          action["userMessage"] = text unless text.empty?
+          action["metadata"] = JSON.parse(JSON.generate(step.metadata)) if step.metadata
+          step.action.message = { "version" => step.surface.dialect.version, "action" => action }
+        end
+
+        # Ends an action on a problem its evaluation met: a function that
+        # ran and raised is an `EXECUTION_ERROR`, a call that was refused
+        # (or a value that could not be read) an `EXPRESSION_ERROR`, a
+        # catalog that does not resolve a `CATALOG_ERROR`.
+        def fail_step(step, problem, label = nil)
+          message = if problem[:code] == "EXECUTION_ERROR"
+                      "An error occurred during function execution (#{problem[:raised]})."
+                    else
+                      label ? "#{label} is invalid: #{problem[:message]}" : problem[:message]
+                    end
+          reject(problem[:code], message, step.surface.id)
+          step.action.errors = { "action" => problem[:message] }
+          :ended
         end
 
         # Only bound paths are writable, each coerced to its input's kind;

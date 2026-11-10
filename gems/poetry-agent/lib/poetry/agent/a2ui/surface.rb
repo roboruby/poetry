@@ -62,6 +62,12 @@ module Poetry
         # The catalogs a component or a call may name, by id.
         # @return [Hash{String => Object}]
         attr_reader :catalogs
+        # The session's calls to the agent, when the session reaches the
+        # agent and the surface speaks v1.0: a function no catalog implements
+        # here is then the agent's ({AgentCalls}). Nil otherwise, and such a
+        # function fails where it is called.
+        # @return [AgentCalls, nil]
+        attr_accessor :agent_calls
 
         # A surface with its catalog, initial data model and components.
         # @param id [String]
@@ -156,6 +162,16 @@ module Poetry
           bump!
         end
 
+        # Advances the version without a change to the components or the
+        # data: something the surface shows changed elsewhere, as when the
+        # agent answers a call one of its bindings waits on. A versioned
+        # replace of the surface on the page takes only a newer version.
+        #
+        # @return [Integer] the new version
+        def touch
+          bump!
+        end
+
         # The root component, or nil.
         # @return [Hash, nil] the top-level component
         def root
@@ -176,9 +192,11 @@ module Poetry
         # @param value [Object]
         # @param scope [String, nil] the collection-item pointer in effect
         # @param on_error [#call, nil] receives each function problem's message
+        # @param waits [Symbol, nil] `:binding` when the value is a rendered property, which may wait
+        #   on a call to the agent and is nil until it is answered; nil for a read that cannot wait
         # @return [Object, nil]
-        def resolve(value, scope = nil, on_error: nil)
-          Evaluator.new(self, scope, on_error: on_error).resolve(value)
+        def resolve(value, scope = nil, on_error: nil, waits: nil)
+          Evaluator.new(self, scope, on_error: on_error, waits: waits).resolve(value)
         end
 
         # The string a resolved value displays as (the spec's conversion
@@ -187,9 +205,10 @@ module Poetry
         # @param value [Object]
         # @param scope [String, nil]
         # @param on_error [#call, nil] receives each function problem's message
+        # @param waits [Symbol, nil] `:binding` when the value is a rendered property (see {#resolve})
         # @return [String]
-        def text(value, scope = nil, on_error: nil)
-          evaluator = Evaluator.new(self, scope, on_error: on_error)
+        def text(value, scope = nil, on_error: nil, waits: nil)
+          evaluator = Evaluator.new(self, scope, on_error: on_error, waits: waits)
           evaluator.stringify(evaluator.resolve(value))
         end
 
@@ -204,7 +223,7 @@ module Poetry
           walk do |component, scope|
             next unless component["checks"].is_a?(Array)
 
-            found = Checks.failures(component, Evaluator.new(self, scope, on_error: on_error))
+            found = Checks.failures(component, Evaluator.new(self, scope, on_error: on_error, waits: :binding))
             result[source_key(component, scope)] = found if found.any?
           end
           result

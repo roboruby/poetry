@@ -537,7 +537,7 @@ class SessionTest < Minitest::Test
     assert_predicate local, :local?
     assert_equal({ "action" => "Function 'readToken' cannot be called by renderer: its allowedCallers is agentOnly" },
                  local.errors)
-    assert_equal "EXECUTION_ERROR", session.errors.last.dig("error", "code")
+    assert_equal "EXPRESSION_ERROR", session.errors.last.dig("error", "code"), "a refusal, not a function that ran"
   end
 
   def test_a_function_call_action_runs_locally_and_nothing_comes_back_without_an_event

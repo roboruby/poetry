@@ -6,7 +6,7 @@ never ships in the gem. The material under `upstream/` is Apache-2.0
 
 | Path | What it is |
 | --- | --- |
-| `conformance/core/*.yaml` | The 17 renderer conformance suites (572 cases): expressions, functions, data model and pointers, message processing and validation for v0.9 and v1.0, RPC, actions, catalogs |
+| `conformance/core/*.yaml` | The 18 renderer conformance suites (614 cases): expressions, functions, data model and pointers, message processing and validation for v0.9 and v1.0, RPC, actions, calls routed to the agent, catalogs |
 | `catalogs/basic/v1/catalog.json`, `specification/v0_9/catalogs/basic/catalog.json`, `specification/v0_9_1/catalogs/basic/catalog.json`, `conformance/test_data/catalogs/custom_catalog_v1_0.json`, `conformance/test_data/catalogs/allowed_callers_catalog_v1_0.json` | The catalogs the suites name by path |
 | `catalogs/basic/v1/examples/`, `specification/v0_9/catalogs/basic/examples/` | The basic catalogs' 43 v1.0 and 44 v0.9 example surfaces |
 | `specification/v0_9/json/`, `specification/v0_9_1/json/`, `specification/v1_0/json/` | Each version's message, common-type, capability and catalog schemas |

@@ -141,6 +141,30 @@
       required: %w[value], callers: "rendererOrAgent"
     ) { |args, _evaluator| args["value"].to_s.split.map { |word| word[0] }.join.upcase }
   CODE
+  agent_function_source = <<~CODE
+    # A session that reaches the agent: a function no catalog implements here is the agent's
+    session = Poetry::Agent::A2UI::Session.new(agent_functions: true)
+    session.apply_all(messages)
+    html = render_surface(session.surface("quote"))          # a binding that needs the agent is sent, and renders empty
+    until (calls = session.agent_calls.shift(session.agent_calls.size)).empty?
+      changed = session.apply_all(agent.answer(calls))        # the agent's agentFunctionResponse messages
+      html = render_surface(session.surface("quote")) if changed.include?("quote")
+    end
+
+    # An action whose context, user message or function call needs an answer first
+    action = session.action(surface_id: "quote", source: "buy")
+    while action.pending? && (calls = session.agent_calls.shift(session.agent_calls.size)).any?
+      session.apply_all(agent.answer(calls))                  # one call at a time, in the order the event writes them
+    end
+    agent.reply(action.to_h) if action.valid?
+
+    # Declared without a block: the agent's, with its arguments held to a schema (defaults filled in) before they go
+    Poetry::Agent::A2UI::Functions.basic.define(
+      "quote", description: "A price.", returns: "number",
+      schema: { "type" => "object", "required" => ["symbol"],
+                "properties" => { "symbol" => { "type" => "string" }, "currency" => { "type" => "string", "default" => "USD" } } }
+    )
+  CODE
   interpolation_source = <<~CODE
     { "id": "total", "component": "Text",
       "text": { "@call": "formatString",
@@ -317,10 +341,11 @@
         the source component's event into the spec's action message. A valid
         action goes to the agent; an invalid one comes back with its failures by
         component, and you re-render the surface with them. A
-        <code>functionCall</code> action never reaches the agent: it runs a catalog
+        <code>functionCall</code> action sends no action message: it runs a catalog
         function on the renderer, under the user's gesture, and the surface's data
         may have changed, so <code>action.local?</code> means re-render the surface
-        and send nothing. A v1.0 action carries what you pass as
+        and send nothing (a function no catalog implements is another matter, see
+        <a href="#agent-functions">Functions the agent runs</a>). A v1.0 action carries what you pass as
         <code>metadata:</code> (an attestation, an audit tag) as its
         <code>metadata.extensions</code>, each key an identifier; a component's own
         <code>metadata</code> is held to the same rule when it arrives.
@@ -419,6 +444,49 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: function_source, language: "ruby", label: "A function of your own") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h3 id="agent-functions">Functions the agent runs</h3>
+      <p>
+        On a v1.0 surface, a function that no catalog implements here is the
+        agent's (the protocol's <code>callAgentFunction</code>). Build the
+        session with <code>agent_functions: true</code> and it sends the call
+        instead of failing it. The messages gather in
+        <code>session.agent_calls</code>; a binding that waits renders as nothing
+        and a check rule that waits does not fail; and when you apply the agent's
+        <code>agentFunctionResponse</code>, the surface it changed comes back
+        from <code>session.apply</code> like any other change, in a newer
+        version. Identical calls on a surface ride one request, and its answer
+        serves every later render. A call the agent fails is reported in
+        <code>session.errors</code> with the call's id, the binding stays empty,
+        and it does not ask again until its arguments change.
+      </p>
+      <p>
+        An action waits the same way: <code>session.action</code> returns an
+        action that is <code>pending?</code> while its event's context, its user
+        message or its function call needs an answer, each call sent once the
+        one before it was answered, and the same action carries its message
+        when the last answer is applied. A function declared without a block is
+        declared for the agent: its arguments are held to the schema before they
+        are sent, its defaults filled in, and <code>callers: "agentOnly"</code>
+        or <code>activation: true</code> keep it from a surface or from anything
+        but a user's gesture. A <code>formatString</code> template part never
+        reaches the agent, and neither does a v0.9 surface.
+      </p>
+      <p>
+        A session has no clock: call <code>session.expire_agent_calls</code>
+        when you look at it again, and a call that waited past
+        <code>agent_call_timeout</code> (30 seconds) fails as a timeout. A
+        deleted surface takes its waiting calls with it, without an error. A
+        binding's call gets its id from its surface and its arguments, so a
+        session you rebuild from its messages asks nothing twice: an answer
+        already among the messages settles the call the moment the binding is
+        read. A rebuilt session cannot know which calls it already sent, so
+        keep the ids you sent if you rebuild while calls wait. AG-UI's A2UI
+        middleware does not carry these messages; send them to your agent over
+        your own endpoint.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: agent_function_source, language: "ruby", label: "Calling the agent") %>
   </section>
 
   <section class="flex flex-col gap-4">

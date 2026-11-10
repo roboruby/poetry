@@ -108,7 +108,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui.rb",
-          "line": 48
+          "line": 49
         }
       ],
       "constants": [
@@ -128,6 +128,1248 @@
           "docstring": "The protocol version the projection targets."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::AgentCalls",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "A session's calls to the agent's functions (A2UI v1.0's\n`callAgentFunction`): a function a surface calls that no catalog of\nthe renderer implements is sent to the agent, and its value is\nnothing until the agent's `agentFunctionResponse` arrives.\n\nTwo kinds of evaluation wait on the agent, and they differ:\n\n- A binding or a check rule is evaluated again on every render, so\n  its calls are shared and kept: identical calls on a surface (the\n  same catalog, name and resolved arguments) ride one request, a\n  settled answer serves every later evaluation, and a binding whose\n  call failed does not send it again until its arguments change. The\n  id of such a call is derived from the surface, the call and how\n  many times it has failed, so a session rebuilt from its messages\n  asks nothing twice: an answer that arrived before the call was made\n  again is kept in hand and settles it at once.\n- An action runs once: each of its calls is sent fresh, under an id\n  of its own, and neither reads nor fills what the surface holds.\n\nThe session owns one of these when it was built to reach the agent\n(`Session.new(agent_functions: true)`), hands it to its v1.0\nsurfaces, and sends what gathers in {#outbox}.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+      "methods": [
+        {
+          "name": "canonical",
+          "scope": "class",
+          "group": null,
+          "signature": "canonical(value)",
+          "docstring": "A value with every object's keys sorted, recursively.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 278
+        },
+        {
+          "name": "key",
+          "scope": "class",
+          "group": null,
+          "signature": "key(catalog_id, name, args)",
+          "docstring": "A call's identity on a surface: its catalog, its name and its\narguments with every object's keys in order, so two spellings of\nthe same arguments are one call.",
+          "params": [
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 271
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(surface_id:, catalog_id:, name:, args: {}, id: nil, timeout: nil)",
+          "docstring": "Sends one call under an id of the caller's choosing and returns\nit, for a host that calls the agent itself. A call that cannot be\nmade comes back failed: `DUPLICATE` for an id still in flight,\n`DISPOSED` after {#dispose}.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": "the arguments, already resolved"
+            },
+            {
+              "name": "id",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the `functionCallId`; one is made up when nil"
+            },
+            {
+              "name": "timeout",
+              "types": [
+                "Numeric",
+                "nil"
+              ],
+              "text": "seconds this call may wait; the ledger's when nil"
+            }
+          ],
+          "return": {
+            "types": [
+              "Call"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 194
+        },
+        {
+          "name": "cancel",
+          "scope": "instance",
+          "group": null,
+          "signature": "cancel(surface_id)",
+          "docstring": "Cancels a surface's calls in flight: each ends `CANCELLED`, with\nno error reported and nothing remembered, so a binding that is\nevaluated again asks again; an action waiting on one is dropped.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Call>"
+            ],
+            "text": "the calls it cancelled"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 235
+        },
+        {
+          "name": "dispose",
+          "scope": "instance",
+          "group": null,
+          "signature": "dispose",
+          "docstring": "Ends the ledger: every call in flight is cancelled, and a call made afterwards fails `DISPOSED`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Call>"
+            ],
+            "text": "the calls it cancelled"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 252
+        },
+        {
+          "name": "expire",
+          "scope": "instance",
+          "group": null,
+          "signature": "expire(now = nil)",
+          "docstring": "Fails every call whose time is up with `TIMEOUT`.",
+          "params": [
+            {
+              "name": "now",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the time to compare deadlines with; the clock's when nil"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Call>"
+            ],
+            "text": "the calls that timed out"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 220
+        },
+        {
+          "name": "forget",
+          "scope": "instance",
+          "group": null,
+          "signature": "forget(surface_id)",
+          "docstring": "Forgets a surface that went away: its calls in flight are cancelled and nothing it held is kept.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 244
+        },
+        {
+          "name": "held",
+          "scope": "instance",
+          "group": null,
+          "signature": "held(surface_id, catalog_id, name, args)",
+          "docstring": "The answer a surface already holds for a call, for a read that cannot wait.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": "the resolved arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array",
+              "nil"
+            ],
+            "text": "`[:value, value]`, or nil when none has settled"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 177
+        },
+        {
+          "name": "imperative",
+          "scope": "instance",
+          "group": null,
+          "signature": "imperative(run, node, catalog_id, name, args)",
+          "docstring": "An action's call: sent fresh the first time the run reaches it, and what it answered from then on.",
+          "params": [
+            {
+              "name": "run",
+              "types": [
+                "Run"
+              ],
+              "text": ""
+            },
+            {
+              "name": "node",
+              "types": [
+                "Hash"
+              ],
+              "text": "the call object as the surface holds it"
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": "the resolved arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array"
+            ],
+            "text": "`[:value, value]`, `[:pending]` or `[:failed, message]`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 162
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(timeout: 30, version: \"1.0\", clock: nil, on_failure: nil, on_change: nil)",
+          "docstring": "A ledger for one session.",
+          "params": [
+            {
+              "name": "timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds a call may wait for its answer"
+            },
+            {
+              "name": "version",
+              "types": [
+                "String"
+              ],
+              "text": "the protocol version its messages carry"
+            },
+            {
+              "name": "clock",
+              "types": [
+                "#call"
+              ],
+              "text": "the time, in seconds, {#expire} compares deadlines with"
+            },
+            {
+              "name": "on_failure",
+              "types": [
+                "#call"
+              ],
+              "text": "receives `(call)` when the agent answered with an error or the call timed out"
+            },
+            {
+              "name": "on_change",
+              "types": [
+                "#call"
+              ],
+              "text": "receives a surface's id when a binding's call on it got its answer or\nfailed, so what the surface shows changed"
+            }
+          ],
+          "return": {
+            "types": [
+              "AgentCalls"
+            ],
+            "text": "a new instance of AgentCalls"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 110
+        },
+        {
+          "name": "outbox",
+          "scope": "instance",
+          "group": null,
+          "signature": "outbox",
+          "docstring": "The `callAgentFunction` messages waiting to be sent, oldest first; the host takes them as it sends them.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 100
+        },
+        {
+          "name": "pending",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending",
+          "docstring": "The calls still waiting on the agent.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Call>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 261
+        },
+        {
+          "name": "reactive",
+          "scope": "instance",
+          "group": null,
+          "signature": "reactive(surface_id, node, scope, catalog_id, name, args)",
+          "docstring": "A binding's or a check rule's call: the surface's answer when it\nholds one, the binding's own failure when its last attempt failed,\nelse a request, shared with every identical call in flight.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "node",
+              "types": [
+                "Hash"
+              ],
+              "text": "the call object as the surface holds it, which tells one binding from another"
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the template scope the binding is evaluated in"
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": "the catalog the call resolved to"
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": "the resolved arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array"
+            ],
+            "text": "`[:value, value]`, `[:pending]` or `[:failed, message]`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 138
+        },
+        {
+          "name": "respond",
+          "scope": "instance",
+          "group": null,
+          "signature": "respond(body)",
+          "docstring": "Settles the call an `agentFunctionResponse` answers. An answer to\nno call in flight changes nothing that is settled; it is kept in\nhand, in case a rebuilt session makes that call again.",
+          "params": [
+            {
+              "name": "body",
+              "types": [
+                "Hash"
+              ],
+              "text": "the response's body: `functionCallId` with `value` or `error`"
+            }
+          ],
+          "return": {
+            "types": [
+              "Call",
+              "nil"
+            ],
+            "text": "the call it settled"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 205
+        }
+      ],
+      "constants": [
+        {
+          "name": "CODES",
+          "value": "%w[TIMEOUT CANCELLED DISPOSED DUPLICATE NO_LISTENER].freeze",
+          "docstring": "The codes a call that will never be answered ends with."
+        },
+        {
+          "name": "KEPT",
+          "value": "256",
+          "docstring": "How many answers that match no call are kept in hand, and how many closed ids are remembered."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::AgentCalls::Call",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One call to the agent. `state` is `:pending`, `:settled`,\n`:failed` or `:cancelled`; `error` is the agent's\n`{ \"code\", \"message\" }`, or one of {CODES} with its message.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+      "methods": [
+        {
+          "name": "args",
+          "scope": "instance",
+          "group": null,
+          "signature": "args",
+          "docstring": "Returns the value of attribute args",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of args"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "args=",
+          "scope": "instance",
+          "group": null,
+          "signature": "args=(value)",
+          "docstring": "Sets the attribute args",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute args to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "catalog_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog_id",
+          "docstring": "Returns the value of attribute catalog_id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of catalog_id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "catalog_id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog_id=(value)",
+          "docstring": "Sets the attribute catalog_id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute catalog_id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "deadline",
+          "scope": "instance",
+          "group": null,
+          "signature": "deadline",
+          "docstring": "Returns the value of attribute deadline",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of deadline"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "deadline=",
+          "scope": "instance",
+          "group": null,
+          "signature": "deadline=(value)",
+          "docstring": "Sets the attribute deadline",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute deadline to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "error",
+          "scope": "instance",
+          "group": null,
+          "signature": "error",
+          "docstring": "Returns the value of attribute error",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of error"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "error=",
+          "scope": "instance",
+          "group": null,
+          "signature": "error=(value)",
+          "docstring": "Sets the attribute error",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute error to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "Returns the value of attribute id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "id=(value)",
+          "docstring": "Sets the attribute id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "key",
+          "scope": "instance",
+          "group": null,
+          "signature": "key",
+          "docstring": "Returns the value of attribute key",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of key"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "key=",
+          "scope": "instance",
+          "group": null,
+          "signature": "key=(value)",
+          "docstring": "Sets the attribute key",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute key to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message(version)",
+          "docstring": "The `callAgentFunction` message, in the protocol version it is sent in.",
+          "params": [
+            {
+              "name": "version",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 50
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": null,
+          "signature": "name",
+          "docstring": "Returns the value of attribute name",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "name=",
+          "scope": "instance",
+          "group": null,
+          "signature": "name=(value)",
+          "docstring": "Sets the attribute name",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute name to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "node",
+          "scope": "instance",
+          "group": null,
+          "signature": "node",
+          "docstring": "Returns the value of attribute node",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of node"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "node=",
+          "scope": "instance",
+          "group": null,
+          "signature": "node=(value)",
+          "docstring": "Sets the attribute node",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute node to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "pending?",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending?",
+          "docstring": "Whether the call still waits on the agent.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 45
+        },
+        {
+          "name": "run",
+          "scope": "instance",
+          "group": null,
+          "signature": "run",
+          "docstring": "Returns the value of attribute run",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of run"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "run=",
+          "scope": "instance",
+          "group": null,
+          "signature": "run=(value)",
+          "docstring": "Sets the attribute run",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute run to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "state",
+          "scope": "instance",
+          "group": null,
+          "signature": "state",
+          "docstring": "Returns the value of attribute state",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of state"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "state=",
+          "scope": "instance",
+          "group": null,
+          "signature": "state=(value)",
+          "docstring": "Sets the attribute state",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute state to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "surface_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface_id",
+          "docstring": "Returns the value of attribute surface_id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of surface_id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "surface_id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface_id=(value)",
+          "docstring": "Sets the attribute surface_id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute surface_id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "value",
+          "scope": "instance",
+          "group": null,
+          "signature": "value",
+          "docstring": "Returns the value of attribute value",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "value=",
+          "scope": "instance",
+          "group": null,
+          "signature": "value=(value)",
+          "docstring": "Sets the attribute value",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute value to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "waiters",
+          "scope": "instance",
+          "group": null,
+          "signature": "waiters",
+          "docstring": "Returns the value of attribute waiters",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of waiters"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        },
+        {
+          "name": "waiters=",
+          "scope": "instance",
+          "group": null,
+          "signature": "waiters=(value)",
+          "docstring": "Sets the attribute waiters",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute waiters to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 41
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::AgentCalls::Run",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One action's evaluation: what each of its calls answered, by the\ncall object as the surface holds it, so a step that already ran is\nnot run again when the action resumes.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+      "methods": [
+        {
+          "name": "cancel!",
+          "scope": "instance",
+          "group": null,
+          "signature": "cancel!",
+          "docstring": "Stops the run: it resumes no more and dispatches nothing.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 86
+        },
+        {
+          "name": "cancelled?",
+          "scope": "instance",
+          "group": null,
+          "signature": "cancelled?",
+          "docstring": "Whether the surface went away, or its calls were cancelled, under the run.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 82
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(surface_id, on_cancel: nil, &resume)",
+          "docstring": "A run on a surface, resumed through the block each time one of its calls settles.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "on_cancel",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "told once when the run is cancelled"
+            }
+          ],
+          "return": {
+            "types": [
+              "Run"
+            ],
+            "text": "a new instance of Run"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 72
+        },
+        {
+          "name": "memo",
+          "scope": "instance",
+          "group": null,
+          "signature": "memo",
+          "docstring": "The answers so far, by call object: `[:value, value]`, `[:pending]` or `[:failed, message]`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 63
+        },
+        {
+          "name": "resume",
+          "scope": "instance",
+          "group": null,
+          "signature": "resume",
+          "docstring": "Takes the run up again after one of its calls settled.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 95
+        },
+        {
+          "name": "surface_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface_id",
+          "docstring": "The surface the action runs on.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/agent_calls.rb",
+          "line": 66
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::A2UI::Catalog",
@@ -1355,7 +2597,7 @@
       "path": "Poetry::Agent::A2UI::Checks",
       "type": "module",
       "superclass": null,
-      "docstring": "Evaluates a component's `checks`: each rule's condition (a binding\nor a function call) yields a ValidationResult - `{ \"valid\",\n\"code\", \"message\", \"severity\" }` - or a boolean (v0.9's validators\nanswer booleans). A failing rule is a failure unless its result\nnames a severity other than error; it carries the result's message,\nthe rule's as the fallback.",
+      "docstring": "Evaluates a component's `checks`: each rule's condition (a binding\nor a function call) yields a ValidationResult - `{ \"valid\",\n\"code\", \"message\", \"severity\" }` - or a boolean (v0.9's validators\nanswer booleans). A failing rule is a failure unless its result\nnames a severity other than error; it carries the result's message,\nthe rule's as the fallback. A rule whose condition waits on the\nagent does not fail while it waits, and fails once that call does.",
       "examples": [],
       "file": "lib/poetry/agent/a2ui/checks.rb",
       "methods": [
@@ -1390,7 +2632,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/checks.rb",
-          "line": 41
+          "line": 45
         },
         {
           "name": "failures",
@@ -1422,7 +2664,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/checks.rb",
-          "line": 26
+          "line": 27
         }
       ],
       "constants": [
@@ -1790,7 +3032,7 @@
       "path": "Poetry::Agent::A2UI::Evaluator",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Resolves dynamic values in a scope, spelled as the surface's\nprotocol version spells them ({Dialect}): a binding reads the data\nmodel, a call invokes a registered function with its arguments\nresolved first (a string argument with `${}` blocks interpolates, an\narray resolves item by item), and `@index` reads the collection index\nthe scope carries. Problems (an unknown function, a bad argument, a\nmalformed expression, a v1.0 reserved key) resolve to nil and reach\nthe `on_error` callback.",
+      "docstring": "Resolves dynamic values in a scope, spelled as the surface's\nprotocol version spells them ({Dialect}): a binding reads the data\nmodel, a call invokes a registered function with its arguments\nresolved first (a string argument with `${}` blocks interpolates, an\narray resolves item by item), and `@index` reads the collection index\nthe scope carries. Problems (an unknown function, a bad argument, a\nmalformed expression, a v1.0 reserved key) resolve to nil and reach\nthe `on_error` callback.\n\nOn a v1.0 surface whose session reaches the agent, a function no\ncatalog implements here is the agent's ({AgentCalls}): an evaluation\nthat can wait (`waits:`, a binding's or an action's) sends it and\nresolves to nil until the answer arrives, and a call whose argument\nstill waits, or failed, neither runs nor is sent. {#outcome} says\nwhich of the three happened.",
       "examples": [
         {
           "title": "",
@@ -1799,6 +3041,31 @@
       ],
       "file": "lib/poetry/agent/a2ui/evaluator.rb",
       "methods": [
+        {
+          "name": "json?",
+          "scope": "class",
+          "group": null,
+          "signature": "json?(value)",
+          "docstring": "Whether resolved arguments have a faithful JSON form: no number\nthat is not finite anywhere in them.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 161
+        },
         {
           "name": "argument",
           "scope": "instance",
@@ -1823,7 +3090,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 69
+          "line": 101
         },
         {
           "name": "call",
@@ -1872,7 +3139,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 88
+          "line": 112
         },
         {
           "name": "evaluate",
@@ -1898,7 +3165,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 125
+          "line": 131
         },
         {
           "name": "index",
@@ -1916,13 +3183,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 150
+          "line": 172
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(surface, scope = nil, on_error: nil, gesture: false)",
+          "signature": "initialize(surface, scope = nil, on_error: nil, gesture: false, waits: nil)",
           "docstring": "An evaluator over a surface in a scope, reporting problems to the callback.",
           "params": [
             {
@@ -1953,7 +3220,16 @@
               "types": [
                 "Boolean"
               ],
-              "text": "whether a user's gesture runs the evaluation\n(a button's action), so a function that needs one (`openUrl`) may run"
+              "text": "whether a user's gesture runs the evaluation\n(a button's action), so a function that needs one (`openUrl`) may run,\nand a call whose arguments met a problem does not"
+            },
+            {
+              "name": "waits",
+              "types": [
+                "Symbol",
+                "AgentCalls::Run",
+                "nil"
+              ],
+              "text": "whether the evaluation can wait on the agent:\n`:binding` for a property or a check rule, evaluated again on every render; an action's\nrun; nil for a read that cannot wait, which never sends a call"
             }
           ],
           "return": {
@@ -1964,7 +3240,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 40
+          "line": 65
         },
         {
           "name": "interpolate",
@@ -1989,7 +3265,49 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 114
+          "line": 120
+        },
+        {
+          "name": "outcome",
+          "scope": "instance",
+          "group": null,
+          "signature": "outcome(value)",
+          "docstring": "Resolves a value and says how it settled: with its value, still\nwaiting on a call to the agent, or failed because one failed.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Object, Symbol, String)"
+            ],
+            "text": "the value (nil unless settled), `:settled`,\n`:pending` or `:failed`, and a failed call's message"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 90
+        },
+        {
+          "name": "problems",
+          "scope": "instance",
+          "group": null,
+          "signature": "problems",
+          "docstring": "Every problem met so far, in order: `{ code:, message: }`, the code\nthe protocol's (`EXPRESSION_ERROR` for a call that was refused or\ncould not be read, `CATALOG_ERROR` for one whose catalog does not\nresolve, `EXECUTION_ERROR` for a function that ran and raised).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 53
         },
         {
           "name": "resolve",
@@ -2015,7 +3333,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 52
+          "line": 80
         },
         {
           "name": "scope",
@@ -2033,7 +3351,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 32
+          "line": 47
         },
         {
           "name": "stringify",
@@ -2058,7 +3376,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 139
+          "line": 147
         },
         {
           "name": "surface",
@@ -2075,7 +3393,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/evaluator.rb",
-          "line": 29
+          "line": 44
         }
       ],
       "constants": [
@@ -2085,11 +3403,61 @@
           "docstring": "Why `@index` fails outside a template."
         },
         {
+          "name": "PENDING",
+          "value": "Unsettled.new(state: :pending, message: nil)",
+          "docstring": "The value of a call the agent has not answered."
+        },
+        {
           "name": "SYSTEM_FUNCTIONS",
           "value": "\"the @ namespace holds system functions, and @index is the only one\"",
           "docstring": "Why a call to another `@` name fails: the namespace is the system's."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Evaluator::Unsettled",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "What a call that has no value yet resolves to inside an\nevaluation: `state` is `:pending` (the agent has not answered) or\n`:failed` (it answered with an error, or the call was refused),\nwith the failure's message.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/evaluator.rb",
+      "methods": [
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message",
+          "docstring": "Returns the value of attribute message",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of message"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 33
+        },
+        {
+          "name": "state",
+          "scope": "instance",
+          "group": null,
+          "signature": "state",
+          "docstring": "Returns the value of attribute state",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of state"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 33
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::A2UI::Expression",
@@ -2388,6 +3756,39 @@
           "line": 101
         },
         {
+          "name": "schema_problem",
+          "scope": "class",
+          "group": null,
+          "signature": "schema_problem(schema, value)",
+          "docstring": "Why a value does not match a schema, or nil when it does. A schema\nthe validator cannot compile (a reference it cannot follow) holds\nthe value to nothing.",
+          "params": [
+            {
+              "name": "schema",
+              "types": [
+                "Hash"
+              ],
+              "text": "a JSON Schema"
+            },
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 213
+        },
+        {
           "name": "truthy?",
           "scope": "class",
           "group": null,
@@ -2420,6 +3821,38 @@
           "line": 80
         },
         {
+          "name": "with_defaults",
+          "scope": "class",
+          "group": null,
+          "signature": "with_defaults(schema, value)",
+          "docstring": "A value with a schema's defaults filled in where an object lacks a property that has one.",
+          "params": [
+            {
+              "name": "schema",
+              "types": [
+                "Object"
+              ],
+              "text": "a JSON Schema"
+            },
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 193
+        },
+        {
           "name": "activation?",
           "scope": "instance",
           "group": null,
@@ -2442,7 +3875,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 197
+          "line": 260
         },
         {
           "name": "agent_callable?",
@@ -2467,7 +3900,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 160
+          "line": 223
         },
         {
           "name": "agent_only?",
@@ -2499,7 +3932,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 171
+          "line": 234
         },
         {
           "name": "any_function",
@@ -2516,7 +3949,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 256
+          "line": 320
         },
         {
           "name": "argument_problem",
@@ -2556,7 +3989,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 182
+          "line": 245
         },
         {
           "name": "call",
@@ -2595,7 +4028,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 221
+          "line": 284
         },
         {
           "name": "declared?",
@@ -2620,13 +4053,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 210
+          "line": 273
         },
         {
           "name": "define",
           "scope": "instance",
           "group": null,
-          "signature": "define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists callers: \"rendererOnly\", &impl)",
+          "signature": "define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists callers: \"rendererOnly\", schema: nil, &impl)",
           "docstring": "Declares a function.",
           "params": [
             {
@@ -2677,6 +4110,14 @@
                 "String"
               ],
               "text": "the execution boundary (`rendererOnly` - the default - keeps the\nfunction out of an agent's `callRendererFunction`; `agentOnly` / `rendererOrAgent` admit it)"
+            },
+            {
+              "name": "schema",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "the whole JSON Schema of the arguments object, where `params` and\n`required` do not say enough (nested objects, `additionalProperties`, defaults)"
             }
           ],
           "return": {
@@ -2687,7 +4128,32 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 148
+          "line": 152
+        },
+        {
+          "name": "implemented?",
+          "scope": "instance",
+          "group": null,
+          "signature": "implemented?(name)",
+          "docstring": "Whether the renderer can run a function: it is declared with an implementation.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 165
         },
         {
           "name": "initialize",
@@ -2741,7 +4207,39 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 203
+          "line": 266
+        },
+        {
+          "name": "parse",
+          "scope": "instance",
+          "group": null,
+          "signature": "parse(name, args)",
+          "docstring": "A declared function's arguments as the agent is sent them: held to\nthe declared schema, with its defaults filled in, nested objects'\namong them.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash{String => Object}"
+              ],
+              "text": "the resolved arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => Object}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 177
         },
         {
           "name": "schema",
@@ -2766,7 +4264,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 240
+          "line": 304
         }
       ],
       "constants": [
@@ -2843,7 +4341,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 311
+          "line": 377
         },
         {
           "name": "list",
@@ -2860,7 +4358,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 303
+          "line": 369
         }
       ],
       "constants": [
@@ -3213,6 +4711,48 @@
                 "Object"
               ],
               "text": "the value to set the attribute returns to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 30
+        },
+        {
+          "name": "schema",
+          "scope": "instance",
+          "group": null,
+          "signature": "schema",
+          "docstring": "Returns the value of attribute schema",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of schema"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 30
+        },
+        {
+          "name": "schema=",
+          "scope": "instance",
+          "group": null,
+          "signature": "schema=(value)",
+          "docstring": "Sets the attribute schema",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute schema to."
             }
           ],
           "return": {
@@ -5460,7 +7000,7 @@
           "scope": "instance",
           "group": null,
           "signature": "action(surface_id:, source:, values: {}, timestamp: Time.now.utc, metadata: nil)",
-          "docstring": "Turns a submitted surface form into the agent's `action`\nmessage: bound input values are written to the data model first\n(two-way binding syncs on an action), then the source\ncomponent's event context resolves against the updated model.\nReturns nil when the source has no agent event (a local action,\nor an unknown component), and an invalid action - no message,\n`errors` by component key - when a `checks` rule fails or the\nmetadata is malformed.",
+          "docstring": "Turns a submitted surface form into the agent's `action`\nmessage: bound input values are written to the data model first\n(two-way binding syncs on an action), then the source\ncomponent's event context resolves against the updated model.\nReturns nil when the source has no agent event (a local action,\nor an unknown component), and an invalid action - no message,\n`errors` by component key - when a `checks` rule fails or the\nmetadata is malformed. An action whose context, user message or\nfunction call needs the agent's answer first comes back\n`pending?`; send {#agent_calls}, apply the answers, and the same\naction then carries its message or its errors.",
           "params": [
             {
               "name": "surface_id",
@@ -5508,7 +7048,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 212
+          "line": 246
+        },
+        {
+          "name": "agent_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_calls",
+          "docstring": "The renderer-to-agent `callAgentFunction` messages waiting to be\nsent, oldest first: a v1.0 surface called a function no catalog\nimplements here, and its value is nothing until the agent's\n`agentFunctionResponse` is applied. The host takes each message\nas it sends it (`session.agent_calls.shift`). Always empty unless\nthe session was built with `agent_functions: true`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 103
         },
         {
           "name": "apply",
@@ -5540,7 +7097,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 134
+          "line": 165
         },
         {
           "name": "apply_activity",
@@ -5566,7 +7123,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 171
+          "line": 202
         },
         {
           "name": "apply_all",
@@ -5591,7 +7148,94 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 156
+          "line": 187
+        },
+        {
+          "name": "call_agent_function",
+          "scope": "instance",
+          "group": null,
+          "signature": "call_agent_function(surface_id:, catalog_id:, name:, args: {}, id: nil, timeout: nil)",
+          "docstring": "Calls one of the agent's functions directly, outside any surface's\nevaluation: the message joins {#agent_calls}, and the call settles\nwhen its answer is applied. A call that cannot be made comes back\nfailed, its `error` saying why: `NO_LISTENER` on a session that\ndoes not reach the agent, `DUPLICATE` for an id still waiting,\n`DISPOSED` after {#dispose_agent_calls}.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": "the surface the call is made for"
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": "the catalog the function belongs to"
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the function"
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash"
+              ],
+              "text": "its arguments, already resolved"
+            },
+            {
+              "name": "id",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the `functionCallId`; one is made up when nil"
+            },
+            {
+              "name": "timeout",
+              "types": [
+                "Numeric",
+                "nil"
+              ],
+              "text": "seconds this call may wait; the session's when nil"
+            }
+          ],
+          "return": {
+            "types": [
+              "AgentCalls::Call"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 320
+        },
+        {
+          "name": "cancel_agent_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "cancel_agent_calls(surface_id)",
+          "docstring": "Cancels a surface's calls to the agent that are still waiting: no\nerror is reported, a binding asks again the next time it is\nrendered, and an action that waited is dropped.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 292
         },
         {
           "name": "capabilities",
@@ -5623,7 +7267,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 262
+          "line": 344
         },
         {
           "name": "catalog_for",
@@ -5650,7 +7294,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 297
+          "line": 379
         },
         {
           "name": "catalogs",
@@ -5667,7 +7311,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 83
+          "line": 94
         },
         {
           "name": "catalogs_for",
@@ -5692,7 +7336,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 304
+          "line": 386
         },
         {
           "name": "deleted",
@@ -5709,7 +7353,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 77
+          "line": 88
+        },
+        {
+          "name": "dispose_agent_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "dispose_agent_calls",
+          "docstring": "Ends the session's calls to the agent: those still waiting are\ncancelled, and a call made afterwards fails (`DISPOSED`).",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 301
         },
         {
           "name": "errors",
@@ -5726,13 +7387,39 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 74
+          "line": 85
+        },
+        {
+          "name": "expire_agent_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "expire_agent_calls(now = nil)",
+          "docstring": "Fails every call to the agent whose time is up (`TIMEOUT`,\nreported as an `EXPRESSION_ERROR`): a binding that waited stays\nnothing and its check rules fail, an action that waited ends with\nits errors. Call it when the host looks at the session again; a\nsession has no clock of its own.",
+          "params": [
+            {
+              "name": "now",
+              "types": [
+                "Numeric",
+                "nil"
+              ],
+              "text": "the time, in the seconds of `Process::CLOCK_MONOTONIC`; now when nil"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the ids of the surfaces whose bindings changed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 280
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil, allow_dangling_references: nil)",
+          "signature": "initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false, allow_orphans: nil, # rubocop:disable Metrics/ParameterLists allow_dangling_references: nil, agent_functions: false, agent_call_timeout: 30)",
           "docstring": "A session over catalog bindings. A surface that names a catalog the\nsession does not hold is refused (`CATALOG_ERROR`), as the spec\nsays; a host that wants such surfaces rendered anyway names a\nfallback binding.",
           "params": [
             {
@@ -5772,6 +7459,20 @@
                 "nil"
               ],
               "text": "whether an update may reference a component the\nsurface does not hold yet (`allowDanglingReferences`): the mode's default when nil, else as given"
+            },
+            {
+              "name": "agent_functions",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the host sends {#agent_calls} to the agent and applies\nits answers. When it does, a function a v1.0 surface calls that no catalog implements here is\nthe agent's (A2UI's `callAgentFunction`); when it does not, such a call fails where it is made"
+            },
+            {
+              "name": "agent_call_timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds a call to the agent may wait before\n{#expire_agent_calls} fails it"
             }
           ],
           "return": {
@@ -5782,7 +7483,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 110
+          "line": 137
         },
         {
           "name": "renderer_data_model",
@@ -5808,7 +7509,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 284
+          "line": 366
         },
         {
           "name": "responses",
@@ -5825,7 +7526,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 80
+          "line": 91
         },
         {
           "name": "status",
@@ -5843,7 +7544,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 89
+          "line": 111
         },
         {
           "name": "surface",
@@ -5869,7 +7570,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 192
+          "line": 223
         },
         {
           "name": "surfaces",
@@ -5886,7 +7587,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 71
+          "line": 82
         }
       ],
       "constants": [
@@ -5906,7 +7607,7 @@
       "path": "Poetry::Agent::A2UI::Session::Action",
       "type": "class",
       "superclass": "Struct",
-      "docstring": "A user action, ready for the agent: the spec message plus the\nAG-UI placement (`forwardedProps.a2uiAction.userAction`). A\nfunction call as an action runs on the renderer instead and\nproduces no message: `local?`, with the surface's data changed.",
+      "docstring": "A user action, ready for the agent: the spec message plus the\nAG-UI placement (`forwardedProps.a2uiAction.userAction`). A\nfunction call as an action runs on the renderer instead and\nproduces no message: `local?`, with the surface's data changed.\nAn action that needs the agent's answer to a function first is\n`pending?`: it has no message yet, and gains it (or its errors)\nonce the session has applied the answers it waits for. A\nfunction-call action's `value` is what its function answered.",
       "examples": [],
       "file": "lib/poetry/agent/a2ui/session.rb",
       "methods": [
@@ -5925,7 +7626,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "errors=",
@@ -5950,7 +7651,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "forwarded_props",
@@ -5967,7 +7668,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 60
+          "line": 71
         },
         {
           "name": "local",
@@ -5984,7 +7685,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "local=",
@@ -6009,7 +7710,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "local?",
@@ -6026,7 +7727,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 46
+          "line": 57
         },
         {
           "name": "message",
@@ -6043,7 +7744,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "message=",
@@ -6068,7 +7769,66 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
+        },
+        {
+          "name": "pending",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending",
+          "docstring": "Returns the value of attribute pending",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of pending"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 41
+        },
+        {
+          "name": "pending=",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending=(value)",
+          "docstring": "Sets the attribute pending",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute pending to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 41
+        },
+        {
+          "name": "pending?",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending?",
+          "docstring": "Whether the action still waits on a call to the agent\n({Session#agent_calls} holds what to send).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 51
         },
         {
           "name": "surface",
@@ -6085,7 +7845,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "surface=",
@@ -6110,7 +7870,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "to_h",
@@ -6128,7 +7888,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 53
+          "line": 64
         },
         {
           "name": "valid?",
@@ -6145,9 +7905,61 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/session.rb",
-          "line": 40
+          "line": 44
+        },
+        {
+          "name": "value",
+          "scope": "instance",
+          "group": null,
+          "signature": "value",
+          "docstring": "Returns the value of attribute value",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 41
+        },
+        {
+          "name": "value=",
+          "scope": "instance",
+          "group": null,
+          "signature": "value=(value)",
+          "docstring": "Sets the attribute value",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute value to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 41
         }
       ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Session::Step",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One action on its way: a function call to run (`call`), or an\nevent whose context entries (`at` counts those resolved into\n`context`) and user message resolve in order before it is\ndispatched. `run` holds what its calls answered when the surface\nreaches the agent, so the action can stop on a call and take up\nagain where it stopped.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/session.rb",
+      "methods": [],
       "constants": []
     },
     {
@@ -6665,6 +8477,42 @@
       "file": "lib/poetry/agent/a2ui/surface.rb",
       "methods": [
         {
+          "name": "agent_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_calls",
+          "docstring": "The session's calls to the agent, when the session reaches the\nagent and the surface speaks v1.0: a function no catalog implements\nhere is then the agent's ({AgentCalls}). Nil otherwise, and such a\nfunction fails where it is called.",
+          "params": [],
+          "return": {
+            "types": [
+              "AgentCalls",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 70
+        },
+        {
+          "name": "agent_calls=",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_calls=(value)",
+          "docstring": "The session's calls to the agent, when the session reaches the\nagent and the surface speaks v1.0: a function no catalog implements\nhere is then the agent's ({AgentCalls}). Nil otherwise, and such a\nfunction fails where it is called.",
+          "params": [],
+          "return": {
+            "types": [
+              "AgentCalls",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 70
+        },
+        {
           "name": "binding?",
           "scope": "instance",
           "group": null,
@@ -6687,7 +8535,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 322
+          "line": 341
         },
         {
           "name": "binding_path",
@@ -6713,7 +8561,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 329
+          "line": 348
         },
         {
           "name": "call_catalog_problem",
@@ -6739,7 +8587,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 290
+          "line": 309
         },
         {
           "name": "candidate",
@@ -6764,7 +8612,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 140
+          "line": 146
         },
         {
           "name": "catalog",
@@ -6825,7 +8673,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 255
+          "line": 274
         },
         {
           "name": "catalog_problem",
@@ -6851,7 +8699,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 278
+          "line": 297
         },
         {
           "name": "catalogs",
@@ -6893,7 +8741,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 126
+          "line": 132
         },
         {
           "name": "component",
@@ -6919,7 +8767,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 168
+          "line": 184
         },
         {
           "name": "components",
@@ -6997,7 +8845,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 304
+          "line": 323
         },
         {
           "name": "expand",
@@ -7033,7 +8881,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 363
+          "line": 382
         },
         {
           "name": "failures",
@@ -7059,7 +8907,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 202
+          "line": 221
         },
         {
           "name": "function_call?",
@@ -7084,7 +8932,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 336
+          "line": 355
         },
         {
           "name": "id",
@@ -7187,7 +9035,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 78
+          "line": 84
         },
         {
           "name": "inputs",
@@ -7204,7 +9052,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 393
+          "line": 412
         },
         {
           "name": "lookup",
@@ -7230,7 +9078,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 264
+          "line": 283
         },
         {
           "name": "program",
@@ -7247,7 +9095,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 231
+          "line": 250
         },
         {
           "name": "read",
@@ -7281,13 +9129,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 352
+          "line": 371
         },
         {
           "name": "resolve",
           "scope": "instance",
           "group": null,
-          "signature": "resolve(value, scope = nil, on_error: nil)",
+          "signature": "resolve(value, scope = nil, on_error: nil, waits: nil)",
           "docstring": "Resolves a dynamic value in a scope: a binding reads the data model\n(relative paths against the scope), a function call runs through the\ncatalog's functions (see {Evaluator}), anything else is a literal.",
           "params": [
             {
@@ -7312,6 +9160,14 @@
                 "nil"
               ],
               "text": "receives each function problem's message"
+            },
+            {
+              "name": "waits",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": "`:binding` when the value is a rendered property, which may wait\non a call to the agent and is nil until it is answered; nil for a read that cannot wait"
             }
           ],
           "return": {
@@ -7323,7 +9179,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 180
+          "line": 198
         },
         {
           "name": "root",
@@ -7341,7 +9197,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 161
+          "line": 177
         },
         {
           "name": "send_data_model",
@@ -7383,7 +9239,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 315
+          "line": 334
         },
         {
           "name": "source_key",
@@ -7416,7 +9272,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 217
+          "line": 236
         },
         {
           "name": "template?",
@@ -7441,13 +9297,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 343
+          "line": 362
         },
         {
           "name": "text",
           "scope": "instance",
           "group": null,
-          "signature": "text(value, scope = nil, on_error: nil)",
+          "signature": "text(value, scope = nil, on_error: nil, waits: nil)",
           "docstring": "The string a resolved value displays as (the spec's conversion\nrules: nil is empty, containers are JSON).",
           "params": [
             {
@@ -7472,6 +9328,14 @@
                 "nil"
               ],
               "text": "receives each function problem's message"
+            },
+            {
+              "name": "waits",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": "`:binding` when the value is a rendered property (see {#resolve})"
             }
           ],
           "return": {
@@ -7482,7 +9346,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 191
+          "line": 210
         },
         {
           "name": "theme",
@@ -7517,7 +9381,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 403
+          "line": 422
+        },
+        {
+          "name": "touch",
+          "scope": "instance",
+          "group": null,
+          "signature": "touch",
+          "docstring": "Advances the version without a change to the components or the\ndata: something the surface shows changed elsewhere, as when the\nagent answers a call one of its bindings waits on. A versioned\nreplace of the surface on the page takes only a newer version.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": "the new version"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 171
         },
         {
           "name": "update_components",
@@ -7542,7 +9423,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 107
+          "line": 113
         },
         {
           "name": "update_data",
@@ -7576,7 +9457,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 153
+          "line": 159
         },
         {
           "name": "version",
@@ -7610,7 +9491,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/surface.rb",
-          "line": 386
+          "line": 405
         }
       ],
       "constants": [

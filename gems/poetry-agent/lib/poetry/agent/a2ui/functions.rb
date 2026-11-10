@@ -28,7 +28,7 @@ module Poetry
 
         # One declared function.
         Definition = Struct.new(:name, :description, :returns, :params, :required, :activation, :callers, :impl,
-                                keyword_init: true)
+                                :schema, keyword_init: true)
 
         # The spec's execution boundaries: who may invoke a function.
         CALLERS = %w[rendererOnly agentOnly rendererOrAgent].freeze
@@ -141,17 +141,80 @@ module Poetry
         # @param activation [Boolean] whether the call needs a user activation
         # @param callers [String] the execution boundary (`rendererOnly` - the default - keeps the
         #   function out of an agent's `callRendererFunction`; `agentOnly` / `rendererOrAgent` admit it)
+        # @param schema [Hash, nil] the whole JSON Schema of the arguments object, where `params` and
+        #   `required` do not say enough (nested objects, `additionalProperties`, defaults)
+        # @yield the function itself; without a block the function is declared and not implemented here,
+        #   so on a v1.0 surface whose session reaches the agent a call to it is the agent's
         # @yieldparam args [Hash{String => Object}] the resolved arguments
         # @yieldparam evaluator [Evaluator] the calling evaluator
         # @return [Functions] self
         # @raise [ArgumentError] for an unknown boundary
         def define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists
-                   callers: "rendererOnly", &impl)
+                   callers: "rendererOnly", schema: nil, &impl)
           raise ArgumentError, "callers must be one of #{CALLERS.join(", ")}" unless CALLERS.include?(callers)
 
           @definitions[name] = Definition.new(name: name, description: description, returns: returns, params: params,
-                                              required: required, activation: activation, callers: callers, impl: impl)
+                                              required: required, activation: activation, callers: callers, impl: impl,
+                                              schema: schema)
           self
+        end
+
+        # Whether the renderer can run a function: it is declared with an implementation.
+        # @param name [String]
+        # @return [Boolean]
+        def implemented?(name)
+          !@definitions[name]&.impl.nil?
+        end
+
+        # A declared function's arguments as the agent is sent them: held to
+        # the declared schema, with its defaults filled in, nested objects'
+        # among them.
+        #
+        # @param name [String]
+        # @param args [Hash{String => Object}] the resolved arguments
+        # @return [Hash{String => Object}]
+        # @raise [Error] when the arguments do not match the schema
+        def parse(name, args)
+          definition = @definitions.fetch(name)
+          schema = definition.schema ||
+                   { "type" => "object", "properties" => definition.params, "required" => definition.required }
+          filled = Functions.with_defaults(schema, args)
+          problem = Functions.schema_problem(schema, filled)
+          raise Error, "Validation failed for function '#{name}': #{problem}" if problem
+
+          filled
+        end
+
+        # A value with a schema's defaults filled in where an object lacks a property that has one.
+        #
+        # @param schema [Object] a JSON Schema
+        # @param value [Object]
+        # @return [Object]
+        def self.with_defaults(schema, value)
+          properties = schema.is_a?(Hash) && schema["properties"]
+          return value unless value.is_a?(Hash) && properties.is_a?(Hash)
+
+          properties.each_with_object(value.dup) do |(name, property), filled|
+            if filled.key?(name)
+              filled[name] = with_defaults(property, filled[name])
+            elsif property.is_a?(Hash) && property.key?("default")
+              filled[name] = JSON.parse(JSON.generate(property["default"]))
+            end
+          end
+        end
+
+        # Why a value does not match a schema, or nil when it does. A schema
+        # the validator cannot compile (a reference it cannot follow) holds
+        # the value to nothing.
+        #
+        # @param schema [Hash] a JSON Schema
+        # @param value [Object]
+        # @return [String, nil]
+        def self.schema_problem(schema, value)
+          uri = "urn:poetry:a2ui:function-arguments"
+          Schema.new(documents: { uri => schema }, root: uri).errors(value).first&.to_s
+        rescue Schema::Error
+          nil
         end
 
         # Whether a declared function may be called by the agent.
@@ -225,6 +288,7 @@ module Poetry
 
           mistyped = definition.params.find { |param, schema| !args[param].nil? && !typed?(args[param], schema) }
           raise Error, "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
+          raise Error, "function #{name.inspect} is declared without an implementation here" unless definition.impl
 
           definition.impl.call(args, evaluator)
         end
@@ -279,6 +343,8 @@ module Poetry
 
         # A function's argument schema: its params as properties, the required ones listed.
         def arguments_schema(definition)
+          return definition.schema if definition.schema
+
           schema = { "type" => "object", "properties" => definition.params, "unevaluatedProperties" => false }
           schema["required"] = definition.required if definition.required.any?
           schema

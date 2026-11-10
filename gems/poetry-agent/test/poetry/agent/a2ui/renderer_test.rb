@@ -267,6 +267,28 @@ class RendererTest < Minitest::Test
     )
   end
 
+  def test_a_text_bound_to_the_agent_s_function_renders_empty_then_its_answer_in_a_newer_version
+    session = A2UI::Session.new(agent_functions: true)
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => [{ "id" => "root", "component" => "Text",
+                                                            "text" => { "@call" => "fetchGreeting",
+                                                                        "args" => { "user" => "Ada" } } }] } })
+    waiting, renderer = render(session.surface("s"))
+
+    assert_empty renderer.warnings, "a binding that waits is not a problem"
+    refute_includes waiting, "Hello"
+    message = session.agent_calls.shift
+    body = { "functionCallId" => message.dig("callAgentFunction", "functionCallId"), "value" => "Hello, Ada" }
+
+    assert_equal ["s"], session.apply({ "version" => "1.0", "agentFunctionResponse" => body })
+    answered, = render(session.surface("s"))
+
+    assert_includes answered, "Hello, Ada"
+    assert_operator answered[/data-version="(\d+)"/, 1].to_i, :>, waiting[/data-version="(\d+)"/, 1].to_i
+    assert_empty session.agent_calls
+  end
+
   def test_a_boolean_property_reads_by_the_protocol_s_coercion
     box = lambda do |value|
       html, = render(basic_surface([{ "id" => "root", "component" => "Row", "children" => ["box"],

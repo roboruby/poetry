@@ -18,9 +18,9 @@ module A2UIConformance
 
   # The suites a renderer runs (the others test an SDK's generated models,
   # catalog loader, reactive node layer or v0.8, or need a browser).
-  SUITES = %w[actions composition_constraints data_context data_deletion data_model data_model_pointers expressions
-              functions index_function message_processor_v0_9 message_processor_v1_0 multi_catalog reserved_keys
-              rpc_functions validation_result validator_v0_9 validator_v1_0].freeze
+  SUITES = %w[actions agent_function_routing composition_constraints data_context data_deletion data_model
+              data_model_pointers expressions functions index_function message_processor_v0_9 message_processor_v1_0
+              multi_catalog reserved_keys rpc_functions validation_result validator_v0_9 validator_v1_0].freeze
 
   # A suite's error categories and the ones that satisfy each.
   # (IntegrityError and RecursionError are kinds of ValidationError, as the official harnesses read them.)
@@ -591,7 +591,9 @@ module A2UIConformance
 
   def run_handle_rpc(test_case)
     args = test_case["args"] || {}
-    fail!("callAgentFunction: Poetry never calls agent functions") if args["outboundCall"]
+    return run_agent_rpc(test_case) if args["outboundCall"]
+    return run_ui_binding(test_case) if args["uiBindingScenario"]
+    return run_ui_action(test_case) if args["uiActionFallbackScenario"]
 
     message = args["message"]
     call = message.is_a?(Hash) ? message.dig("callRendererFunction", "callFunction") : nil
@@ -830,3 +832,5 @@ module A2UIConformance
     fail!("selected #{selected.inspect}, expected #{test_case["expectSelected"].inspect}")
   end
 end
+
+require_relative "a2ui_agent_conformance"

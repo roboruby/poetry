@@ -1530,6 +1530,12 @@
     "path": "/a2ui#functions"
   },
   {
+    "title": "Functions the agent runs",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#agent-functions"
+  },
+  {
     "title": "State across updates",
     "page": "A2UI Surfaces",
     "section": "docs",
