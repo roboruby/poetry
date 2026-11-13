@@ -1,0 +1,170 @@
+<%# The composer's contract with the server: who holds the running state,
+    how it reaches the page, and what Stop asks for. The examples below
+    run it against a scripted reply. %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  view_source = <<~CODE
+    #{o}# app/views/chats/show.html.erb #{e}
+    #{o}= turbo_stream_from @chat #{e}
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content",
+                        status: @chat.composer_status, stop_url: stop_chat_path(@chat)) #{e}
+
+    #{o}# app/views/chats/_composer_action.html.erb - the slot alone, for a stream #{e}
+    #{o}= poetry_composer_action(id: "composer", status: chat.composer_status) #{e}
+  CODE
+  model_source = <<~CODE
+    # app/models/chat.rb
+    class Chat < ApplicationRecord
+      acts_as_chat
+
+      # A turn whose process died stops counting as running after this long,
+      # so the composer cannot stay on Stop for ever.
+      TURN_CEILING = 10.minutes
+
+      def responding?
+        responding_since.present? && responding_since > TURN_CEILING.ago
+      end
+
+      # A cancellation left over from the last turn would stop this one at its first checkpoint.
+      def begin_turn! = update_columns(responding_since: Time.current, cancelled: false)
+
+      def end_turn! = update_columns(responding_since: nil)
+
+      # Another process sets the cancellation, so it is read fresh.
+      def composer_status
+        return :idle unless responding?
+
+        self.class.uncached { self.class.where(id: id).pick(:cancelled) } ? :stopping : :running
+      end
+
+      # One ordered channel carries every change of status.
+      def broadcast_composer_action
+        broadcast_replace_to self, target: "composer-action",
+                                   partial: "chats/composer_action", locals: { chat: self }
+      end
+    end
+  CODE
+  controller_source = <<~CODE
+    # config/routes.rb
+    resources :chats do
+      resources :messages, only: :create
+      post :stop, on: :member
+    end
+
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+      return head(:unprocessable_entity) if content.empty?
+      return head(:conflict) if chat.responding? # a reply is running: the field keeps its text
+
+      chat.begin_turn!
+      chat.broadcast_composer_action              # Stop
+      ChatResponseJob.perform_later(chat, content)
+      head :no_content                            # accepted: the sent text leaves the field
+    end
+
+    # app/controllers/chats_controller.rb
+    def stop
+      chat = Chat.find(params[:id])
+      chat.cancel if chat.responding?             # RubyLLM stores it; the job reads it in any process
+      chat.broadcast_composer_action              # Stop, busy
+      head :no_content
+    end
+  CODE
+  job_source = <<~CODE
+    # app/jobs/chat_response_job.rb
+    class ChatResponseJob < ApplicationJob
+      def perform(chat, content)
+        text = +""
+        chat.ask(content) do |chunk|
+          text << chunk.content.to_s
+          # update the reply's row here
+        end
+      rescue RubyLLM::CancelledError
+        # Stop was pressed. RubyLLM discards the unfinished reply's record,
+        # so save `text` yourself if the transcript should keep it.
+      ensure
+        chat.end_turn!
+        chat.broadcast_composer_action            # Send
+      end
+    end
+  CODE
+%>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="state">The server holds the state</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A composer is in one of three states: <code class="text-foreground">:idle</code> shows Send,
+    <code class="text-foreground">:running</code> shows Stop, and
+    <code class="text-foreground">:stopping</code> shows Stop busy and disabled. Your app knows which,
+    so render <code class="text-foreground">status:</code> from your own record of the reply. When the
+    status changes, redraw the action slot alone:
+    <code class="text-foreground">poetry_composer_action</code> renders the element with the DOM id
+    <code class="text-foreground">"&lt;id&gt;-action"</code>, and a Turbo Stream replaces it.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The form and the field are never replaced, so what a person types while a reply streams is still
+    there when it ends. The controller keeps no copy of the state. A Stop button on the page is the
+    whole fact that a reply is running: while one is there, Enter sends nothing.
+  </p>
+  <%= poetry_code_block(code: view_source, language: "erb", label: "The page and the slot") %>
+  <p class="max-w-2xl text-muted-foreground">
+    What the server answers decides what happens to the text. Any success clears the sent text from
+    the field and keeps whatever was typed after it. Any other answer, such as
+    <code class="text-foreground">409</code> or <code class="text-foreground">422</code>, leaves the
+    field as it was.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="ordering">One channel, or a version</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A change of status can reach the page two ways: in the answer to the form, and in a broadcast.
+    The two travel separately and can arrive in either order. When the form's answer says running
+    and lands after the broadcast that says idle, the composer shows Stop for a reply that has
+    already ended.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Follow one of two rules. Send every change by broadcast and answer the form with
+    <code class="text-foreground">head :no_content</code>, as the recipe below does. Or pass
+    <code class="text-foreground">version:</code>, a number that only rises, with every render of the
+    slot, and replace it with a stream action that ignores an older number. The
+    <code class="text-foreground">vreplace</code> action in
+    <%= poetry_link(href: "/ag-ui") { "poetry-agent" } %> is one, and the examples on this page use it
+    with the clock as the number.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="stop">Stopping a RubyLLM reply</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Stop is a button that posts to <code class="text-foreground">stop_url:</code> through a small form
+    of its own, so the draft is never sent with it. What the endpoint does is yours. With RubyLLM 2 it
+    is one line: <code class="text-foreground">chat.cancel</code> stores the request on the chat, the
+    job that runs the model reads it from any process, and the reply ends with
+    <code class="text-foreground">RubyLLM::CancelledError</code> at the next chunk or before the next
+    tool call. The chat needs one column of its own for this recipe,
+    <code class="text-foreground">responding_since</code>, a datetime.
+  </p>
+  <%= poetry_code_block(code: model_source, language: "ruby", label: "The chat") %>
+  <%= poetry_code_block(code: controller_source, language: "ruby", label: "Send and Stop") %>
+  <%= poetry_code_block(code: job_source, language: "ruby", label: "The job") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Two things to keep. Clear the cancellation when a turn is accepted and cancel only while one is
+    running, or a late press of Stop ends the next reply instead. And refuse a message on the server
+    while a reply runs: the composer already holds it back, but a second tab or a script will not.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="keys">Keys</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Enter sends and Shift+Enter starts a new line. Cmd+Enter and Ctrl+Enter always send. With
+    <code class="text-foreground">submit_on_enter: false</code> a bare Enter is a new line, which suits
+    longer writing. An Enter that confirms a choice in an input method, as when typing Japanese or
+    Chinese, never sends. The field grows with its content up to a ceiling and scrolls after that.
+  </p>
+</section>

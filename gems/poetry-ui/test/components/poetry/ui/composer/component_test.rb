@@ -1,0 +1,272 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Poetry
+  module Ui
+    module Composer
+      class ComponentTest < ViewComponent::TestCase
+        IDENTIFIER = "poetry--core--composer"
+
+        def render_composer(**, &)
+          Nokogiri::HTML5.fragment(
+            render_inline(Component.new(id: "composer", url: "/chats/1/messages", **), &).to_html
+          )
+        end
+
+        def render_erb(erb)
+          ApplicationController.renderer.render(inline: erb, layout: false)
+        end
+
+        def slot(fragment, name) = fragment.at_css(%([data-slot="#{name}"]))
+
+        def test_renders_the_contract_surface
+          composer = render_composer(stop_url: "/chats/1/stop")
+          root = slot(composer, "composer")
+
+          assert_equal "composer", root["data-component"]
+          assert_equal IDENTIFIER, root["data-controller"]
+          assert_equal "turbo:morph-element->#{IDENTIFIER}#changed", root["data-action"]
+          assert_equal "composer", root["id"]
+          assert_equal "composer-form", slot(composer, "composer-form")["id"]
+          assert_equal "composer-input", slot(composer, "input-group-control")["id"]
+          assert_equal "composer-action", slot(composer, "composer-action")["id"]
+          assert_equal "composer-stop", slot(composer, "composer-stop-form")["id"]
+          assert slot(composer, "composer-group"), "the bordered shell"
+          assert_equal "block-end", slot(composer, "input-group-addon")["data-align"]
+        end
+
+        def test_the_message_form_posts_to_the_url_and_carries_the_gate
+          form = slot(render_composer, "composer-form")
+
+          assert_equal "form", form.name
+          assert_equal "/chats/1/messages", form["action"]
+          assert_equal "post", form["method"]
+          assert_equal "form", form["data-#{IDENTIFIER}-target"]
+          assert_equal "submit->#{IDENTIFIER}#guard turbo:submit-end->#{IDENTIFIER}#settle", form["data-action"]
+        end
+
+        def test_the_field_is_a_named_textarea_wired_for_the_keys
+          field = slot(render_composer(name: "content", placeholder: "Ask anything"), "input-group-control")
+
+          assert_equal "textarea", field.name
+          assert_equal "content", field["name"]
+          assert_equal "Ask anything", field["placeholder"]
+          assert_equal "1", field["rows"]
+          assert_equal "Message", field["aria-label"]
+          assert_equal "send", field["enterkeyhint"]
+          assert_equal "input", field["data-#{IDENTIFIER}-target"]
+          assert_equal "keydown->#{IDENTIFIER}#keydown input->#{IDENTIFIER}#changed", field["data-action"]
+        end
+
+        def test_the_param_defaults_to_message
+          assert_equal "message", slot(render_composer, "input-group-control")["name"]
+        end
+
+        def test_the_field_opens_at_one_row_and_stops_growing_at_the_ceiling
+          classes = slot(render_composer, "input-group-control")["class"].split
+
+          # Textarea's own floor is four rows tall; the composer's wins, once.
+          assert_includes classes, "min-h-10"
+          refute_includes classes, "min-h-16"
+          assert_includes classes, "max-h-48"
+          assert_includes classes, "field-sizing-content"
+          assert_includes classes, "cn-input-group-textarea"
+        end
+
+        def test_input_class_moves_the_floor_and_the_ceiling
+          classes = slot(render_composer(input_class: "min-h-24 max-h-80"), "input-group-control")["class"].split
+
+          assert_includes classes, "min-h-24"
+          assert_includes classes, "max-h-80"
+          refute_includes classes, "min-h-10"
+          refute_includes classes, "max-h-48"
+        end
+
+        def test_idle_renders_send_as_the_message_forms_own_button
+          composer = render_composer(stop_url: "/chats/1/stop")
+          action = slot(composer, "composer-action")
+          send_button = slot(composer, "composer-send")
+
+          assert_nil action["data-running"]
+          assert_nil action["data-stopping"]
+          assert_nil action["data-version"]
+          assert_equal "submit", send_button["type"]
+          assert_nil send_button["form"], "Send belongs to the form it sits in"
+          assert_equal "Send message", send_button["aria-label"]
+          assert_equal "send", send_button["data-#{IDENTIFIER}-target"]
+          assert_equal "pointerdown->#{IDENTIFIER}#holdFocus", send_button["data-action"]
+          assert_equal "composer-form", send_button.ancestors("form").first["id"]
+          assert_nil slot(composer, "composer-stop")
+        end
+
+        def test_running_renders_stop_bound_to_the_stop_form
+          composer = render_composer(status: :running, stop_url: "/chats/1/stop")
+          action = slot(composer, "composer-action")
+          stop = slot(composer, "composer-stop")
+          stop_form = slot(composer, "composer-stop-form")
+
+          assert_equal "", action["data-running"]
+          assert_nil action["data-stopping"]
+          assert_equal "submit", stop["type"]
+          assert_equal "composer-stop", stop["form"]
+          assert_equal "Stop", stop["aria-label"]
+          assert_equal "stop", stop["data-#{IDENTIFIER}-target"]
+          assert_equal "pointerdown->#{IDENTIFIER}#holdFocus click->#{IDENTIFIER}#returnFocus", stop["data-action"]
+          assert_nil stop["disabled"]
+          assert_nil slot(composer, "composer-send"), "a Stop button on the page is the running state"
+
+          assert_equal "form", stop_form.name
+          assert_equal "/chats/1/stop", stop_form["action"]
+          assert_equal "post", stop_form["method"]
+          assert stop_form.key?("hidden")
+        end
+
+        def test_the_stop_form_is_a_sibling_so_stopping_never_sends_the_draft
+          composer = render_composer(status: :running, stop_url: "/chats/1/stop", value: "a draft")
+          stop_form = slot(composer, "composer-stop-form")
+
+          assert_empty stop_form.ancestors("form"), "a form inside a form is not a form"
+          assert_empty stop_form.css("textarea")
+          assert_equal slot(composer, "composer"), stop_form.parent
+        end
+
+        def test_each_form_carries_its_own_forgery_token
+          composer = render_composer(status: :running, stop_url: "/chats/1/stop")
+          tokens = %w[composer-form composer-stop-form].map do |name|
+            slot(composer, name).at_css('input[name="authenticity_token"]')&.[]("value")
+          end
+
+          assert tokens.all?(&:present?), "both forms post on their own"
+          refute_equal tokens.first, tokens.last
+        end
+
+        def test_stopping_holds_the_stop_button_busy_and_disabled
+          composer = render_composer(status: :stopping, stop_url: "/chats/1/stop")
+          action = slot(composer, "composer-action")
+          stop = slot(composer, "composer-stop")
+
+          assert_equal "", action["data-running"]
+          assert_equal "", action["data-stopping"]
+          assert stop.key?("disabled")
+          assert_equal "true", stop["aria-busy"]
+          assert_equal "stop", stop["data-#{IDENTIFIER}-target"], "still the running state for the controller"
+          assert stop.at_css('[data-slot="spinner"]')
+        end
+
+        def test_a_status_other_than_idle_needs_somewhere_to_stop
+          error = assert_raises(ArgumentError) { render_composer(status: :running) }
+
+          assert_match(/needs stop_url:/, error.message)
+        end
+
+        def test_an_unknown_status_is_refused
+          assert_raises(ArgumentError) { render_composer(status: :thinking, stop_url: "/stop") }
+        end
+
+        def test_no_stop_form_without_a_stop_url
+          assert_nil slot(render_composer, "composer-stop-form")
+        end
+
+        def test_version_stamps_the_slot_for_a_versioned_replace
+          action = slot(render_composer(version: 7), "composer-action")
+
+          assert_equal "7", action["data-version"]
+        end
+
+        def test_emptiness_is_server_rendered_from_the_draft
+          assert_equal "", slot(render_composer, "composer")["data-empty"]
+          assert_equal "", slot(render_composer(value: "  \n "), "composer")["data-empty"]
+          assert_nil slot(render_composer(value: "a draft"), "composer")["data-empty"]
+        end
+
+        def test_a_draft_renders_as_escaped_content
+          composer = render_composer(value: "</textarea><script>alert(1)</script>")
+
+          assert_equal "</textarea><script>alert(1)</script>", slot(composer, "input-group-control").text
+          assert_empty composer.css("script")
+        end
+
+        def test_enter_can_be_a_line_break
+          composer = render_composer(submit_on_enter: false)
+
+          assert_equal "false", slot(composer, "composer")["data-#{IDENTIFIER}-submit-on-enter-value"]
+          assert_equal "enter", slot(composer, "input-group-control")["enterkeyhint"]
+        end
+
+        def test_disabled_closes_the_field_and_the_send_button
+          composer = render_composer(disabled: true)
+
+          assert slot(composer, "input-group-control").key?("disabled")
+          assert slot(composer, "composer-send").key?("disabled")
+        end
+
+        def test_accessible_names_can_be_given
+          composer = render_composer(label: "Ask the analyst", send_label: "Ask")
+          running = render_composer(status: :running, stop_url: "/stop", stop_label: "Stop the answer")
+
+          assert_equal "Ask the analyst", slot(composer, "input-group-control")["aria-label"]
+          assert_equal "Ask", slot(composer, "composer-send")["aria-label"]
+          assert_equal "Stop the answer", slot(running, "composer-stop")["aria-label"]
+        end
+
+        def test_block_content_is_the_tools_row_ahead_of_the_action
+          composer = render_composer { '<button type="button" id="attach">Attach</button>'.html_safe }
+          footer = slot(composer, "input-group-addon")
+
+          assert_equal(%w[attach composer-action], footer.element_children.map { |child| child["id"] })
+        end
+
+        def test_the_send_button_dims_while_the_field_is_empty
+          assert_includes slot(render_composer, "composer-send")["class"], "group-data-[empty]/composer:opacity-50"
+          assert_includes slot(render_composer, "composer")["class"], "group/composer"
+        end
+
+        def test_the_caller_class_lands_on_the_root
+          root = slot(render_composer(class: "max-w-xl"), "composer")
+
+          assert_includes root["class"].split, "max-w-xl"
+          assert_includes root["class"].split, "w-full"
+        end
+
+        def test_the_id_is_reduced_to_a_safe_token
+          composer = Nokogiri::HTML5.fragment(
+            render_inline(Component.new(id: 'chat"><script>', url: "/messages")).to_html
+          )
+
+          assert_equal "chatscript", slot(composer, "composer")["id"]
+          assert_equal "chatscript-action", slot(composer, "composer-action")["id"]
+          assert_raises(ArgumentError) { render_inline(Component.new(id: '"><', url: "/messages")) }
+        end
+
+        def test_the_helper_renders_the_slot_the_composer_renders
+          %i[idle running stopping].each do |status|
+            inside = slot(render_composer(status: status, stop_url: "/stop", version: 3), "composer-action").to_html
+            alone = Nokogiri::HTML5.fragment(
+              render_erb(%(<%= poetry_composer_action(id: "composer", status: :#{status}, version: 3) %>))
+            ).at_css('[data-slot="composer-action"]').to_html
+
+            assert_equal inside, alone, "status #{status}: a redraw must be the element the page rendered"
+          end
+        end
+
+        def test_the_helper_refuses_an_unknown_status
+          assert_raises(ActionView::Template::Error, ArgumentError) do
+            render_erb(%(<%= poetry_composer_action(id: "composer", status: :thinking) %>))
+          end
+        end
+
+        def test_the_composer_helper_takes_the_tools_block
+          html = render_erb(<<~ERB)
+            <%= poetry_composer(id: "composer", url: "/messages") do %>
+              <%= poetry_input_group_text { "Shift+Enter for a new line" } %>
+            <% end %>
+          ERB
+
+          assert_includes html, 'data-component="composer"'
+          assert_includes html, "Shift+Enter for a new line"
+        end
+      end
+    end
+  end
+end

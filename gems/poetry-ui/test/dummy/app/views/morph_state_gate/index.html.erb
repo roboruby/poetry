@@ -8,6 +8,10 @@
 
   <%= poetry_input(id: "gate-input", name: "note", "aria-label" => "Note") %>
 
+  <%# A draft in the composer: the field keeps it, and the root's
+      emptiness is read again from the field after the morph. %>
+  <%= poetry_composer(id: "gate-composer", url: "/mgate") %>
+
   <%= poetry_collapsible(id: "gate-local", open: false) do |collapsible| %>
     <% collapsible.with_trigger(variant: :ghost, size: :sm) { "Local" } %>
     <div id="gate-local-body">Local body</div>

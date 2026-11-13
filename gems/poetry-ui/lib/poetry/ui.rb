@@ -86,7 +86,7 @@ module Poetry
       "feedback" => %w[alert deferred progress skeleton spinner toast toast_trigger toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],
-      "chat" => %w[attachment bubble message message_scroller trace],
+      "chat" => %w[attachment bubble composer message message_scroller trace],
       "layout" => %w[aspect_ratio resizable scroll_area]
     }.freeze
 

@@ -18,7 +18,8 @@ module Poetry
                       poetry/ui/button poetry/ui/button_group poetry/ui/calendar poetry/ui/card poetry/ui/carousel
                       poetry/ui/checkbox poetry/ui/clipboard_text poetry/ui/code_block
                       poetry/ui/collapsible
-                      poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/context_menu
+                      poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/composer
+                      poetry/ui/context_menu
                       poetry/ui/data_table poetry/ui/date_field poetry/ui/date_picker
                       poetry/ui/date_time_field
                       poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer

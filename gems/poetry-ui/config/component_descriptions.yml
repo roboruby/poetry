@@ -29,6 +29,8 @@ poetry/ui/collapsible: An interactive element that expands and collapses a secti
 poetry/ui/combobox: A text input with an autocomplete popover for picking from a list.
 poetry/ui/command: A command palette for fast, keyboard-driven search and actions.
 poetry/ui/command/dialog: The command palette in a modal dialog, summonable from anywhere.
+poetry/ui/composer: A chat message form with a growing field and a Send button the server
+  turns into Stop while a reply runs.
 poetry/ui/context_menu: A menu of actions revealed by right-clicking an element.
 poetry/ui/data_table: A table with sorting, row selection, and sticky headers.
 poetry/ui/date_field: A segmented input for typing a date one part at a time.

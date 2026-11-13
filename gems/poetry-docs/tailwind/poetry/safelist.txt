@@ -914,6 +914,7 @@ group-data-[drag-reject]/file-input:bg-destructive/10
 group-data-[drag-reject]/file-input:border-destructive
 group-data-[dragging]/file-input:bg-accent/40
 group-data-[dragging]/file-input:border-primary
+group-data-[empty]/composer:opacity-50
 group-data-[enhanced]/date-field:flex
 group-data-[enhanced]/date-field:sr-only
 group-data-[expanded]/tree-item:rotate-90
@@ -1002,6 +1003,7 @@ group/card-header
 group/code-block
 group/combobox-content
 group/command-item
+group/composer
 group/context-menu-item
 group/date-field
 group/dropdown-menu-item
@@ -1139,6 +1141,7 @@ list-none
 m-0
 m-auto
 max-h-(--available-height)
+max-h-48
 max-h-[calc(100dvh-6rem)]
 max-h-none
 max-w-(--available-width)
@@ -1164,6 +1167,7 @@ md:hidden
 md:opacity-0
 md:text-sm
 min-h-0
+min-h-10
 min-h-11
 min-h-16
 min-h-32

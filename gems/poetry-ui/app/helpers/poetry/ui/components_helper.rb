@@ -1011,6 +1011,20 @@ module Poetry
           "yields" => "the form builder (Poetry::Ui::FormBuilder unless builder: says otherwise) - " \
                       "form.field and form.input author the tool's parameters; every standard field helper works"
         },
+        "poetry_composer_action" => {
+          "options" => [
+            { "name" => "id", "type" => "string", "required" => true,
+              "description" => "the composer's id - the slot renders dom id \"<id>-action\"" },
+            { "name" => "status", "type" => "symbol", "default" => "idle",
+              "variants" => %w[idle running stopping] },
+            { "name" => "version", "type" => "integer",
+              "description" => "rises with every status change - data-version for a versioned replace" },
+            { "name" => "disabled", "type" => "boolean", "default" => false,
+              "description" => "disables the Send button - pass what the composer was rendered with" },
+            { "name" => "send_label", "type" => "string", "description" => "the Send button's accessible name" },
+            { "name" => "stop_label", "type" => "string", "description" => "the Stop button's accessible name" }
+          ]
+        },
         "poetry_input_group_addon" => {
           "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                           "variants" => INPUT_GROUP_ALIGNS.map(&:to_s) }]
@@ -1599,6 +1613,34 @@ module Poetry
         data[:"scroll-anchor"] = "true" if anchor
         tag.div(**Poetry::Core::HTML::Attributes.merged({ class: classes, data: data }, attrs)
                   .symbolize_keys, &)
+      end
+
+      # A chat message composer: the form, its growing field, and the
+      # Send/Stop slot the server redraws.
+      #
+      # @example A chat's composer
+      #     poetry_composer(id: "composer", url: chat_messages_path(chat), name: "content",
+      #                     status: chat.composer_status, stop_url: stop_chat_path(chat))
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer(**, &)
+        render(Poetry::Ui::Composer::Component.new(**), &)
+      end
+
+      # The composer's action slot alone - Send while idle, Stop while a
+      # reply runs. Render it into a Turbo Stream that replaces
+      # "<id>-action" whenever the reply's status changes; the form and
+      # the draft in it stay where they are. version: stamps the slot for
+      # a versioned replace.
+      #
+      # @example The partial a stream renders (chats/_composer_action.html.erb)
+      #   <%= poetry_composer_action(id: "composer", status: chat.composer_status) %>
+      # @example Replacing the slot when the reply's status changes
+      #   Turbo::StreamsChannel.broadcast_replace_to(
+      #     chat, target: "composer-action", partial: "chats/composer_action", locals: { chat: chat }
+      #   )
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_action(**)
+        render(Poetry::Ui::Composer::Action.new(**))
       end
 
       # A brief, auto-dismissing notification message.

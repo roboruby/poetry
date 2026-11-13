@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/index.js",
-          "line": 210
+          "line": 213
         }
       ],
       "constants": [
@@ -5628,6 +5628,165 @@
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
           "line": 313
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--composer",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\n**Targets**: `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/composer_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Reflects the field's emptiness (a browser may restore a draft the server never rendered).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 44
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Undoes the per-connect scope (the pending flag's timer).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 49
+        },
+        {
+          "name": "keydown",
+          "scope": "instance",
+          "group": null,
+          "signature": "keydown(event)",
+          "docstring": "The field's keydown action: Enter sends, Shift+Enter is left to the\nbrowser, and an Enter that belongs to an input-method composition is\nnever read as a send.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "KeyboardEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 60
+        },
+        {
+          "name": "changed",
+          "scope": "instance",
+          "group": null,
+          "signature": "changed()",
+          "docstring": "The field's input action, and the root's turbo:morph-element action:\nkeeps data-empty on the root honest. A morph puts the server's\nattributes back on the root while the field keeps its draft, so the\nemptiness is read again from the field once the morph has passed.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 74
+        },
+        {
+          "name": "submit",
+          "scope": "instance",
+          "group": null,
+          "signature": "submit()",
+          "docstring": "Sends the message through the form, as a press of the Send button\nwould. The form's submit action decides whether anything goes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 82
+        },
+        {
+          "name": "guard",
+          "scope": "instance",
+          "group": null,
+          "signature": "guard(event)",
+          "docstring": "The form's submit action, the one gate for the key and the button:\nrefuses a blank message, a send while a reply runs (a Stop button is\non the page), and a second send while the first is on its way.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "SubmitEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 93
+        },
+        {
+          "name": "settle",
+          "scope": "instance",
+          "group": null,
+          "signature": "settle(event)",
+          "docstring": "The form's turbo:submit-end action: an accepted message leaves the\nfield (text typed since the send stays), a refused one stays whole,\nand a send made from inside the composer ends with focus in the field\nunless the reader took it elsewhere meanwhile.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.success decides"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 117
+        },
+        {
+          "name": "holdFocus",
+          "scope": "instance",
+          "group": null,
+          "signature": "holdFocus(event)",
+          "docstring": "The Send and Stop buttons' pointerdown action: a press does not take\nfocus. A field being typed in keeps it, and with it the on-screen\nkeyboard.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 140
+        },
+        {
+          "name": "returnFocus",
+          "scope": "instance",
+          "group": null,
+          "signature": "returnFocus(event)",
+          "docstring": "The Stop button's click action: when the button itself holds focus (a\npress from the keyboard), focus moves to the field, because the server\nis about to replace the button and a replaced element drops focus to\nthe page.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 152
         }
       ],
       "constants": []

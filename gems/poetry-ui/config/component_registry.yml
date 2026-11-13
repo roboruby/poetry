@@ -3154,6 +3154,213 @@ components:
       - identifier: poetry--core--dialog
         actions:
         - method: close
+  poetry/ui/composer:
+    class_name: Poetry::Ui::Composer::Component
+    identifier: poetry--ui--composer
+    bem_block: poetry-ui-composer
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+      description: Disables the field and the Send button.
+    - name: http_method
+      type: symbol
+      default: post
+      description: The form's HTTP verb. Named http_method (not method:) - an option
+        named `method` would shadow Object#method.
+    - name: id
+      type: string
+      required: true
+      description: 'The composer''s DOM id. The parts derive theirs from it: "<id>-form",
+        "<id>-input", "<id>-stop", and "<id>-action" - the slot a Turbo Stream replaces.'
+    - name: input_class
+      type: string
+      description: Classes merged onto the field - min-h-24 opens it taller, max-h-80
+        raises the ceiling it grows to before it scrolls.
+    - name: label
+      type: string
+      description: The field's accessible name (aria-label). Defaults to the locale's
+        "Message".
+    - name: name
+      type: string
+      default: message
+      description: The param key the message text arrives under.
+    - name: placeholder
+      type: string
+      description: Hint text shown while the field is empty - never a substitute for
+        label:.
+    - name: send_label
+      type: string
+      description: The Send button's accessible name. Defaults to the locale's "Send
+        message".
+    - name: status
+      type: symbol
+      variants:
+      - idle
+      - running
+      - stopping
+      default: idle
+      description: 'What the action slot shows: Send (:idle), Stop (:running), or
+        Stop busy and disabled (:stopping). Render it from your own record of the
+        reply.'
+    - name: stop_label
+      type: string
+      description: The Stop button's accessible name. Defaults to the locale's "Stop".
+    - name: stop_url
+      type: string
+      description: Where the Stop button posts. Required for any status but :idle;
+        the composer renders a hidden form for it beside the message form.
+    - name: submit_on_enter
+      type: boolean
+      default: true
+      description: Enter sends and Shift+Enter breaks the line. false makes Enter
+        a line break; Cmd/Ctrl+Enter sends either way.
+    - name: url
+      type: string
+      required: true
+      description: Where the message posts - the form's action.
+    - name: value
+      type: string
+      description: A draft to open with, rendered as the field's content.
+    - name: version
+      type: integer
+      description: A number that rises with every status change, rendered on the action
+        slot as data-version for a versioned replace to compare. Leave it out when
+        one ordered channel carries the status.
+    slots: []
+    helper: poetry_composer
+    description: A chat message form with a growing field and a Send button the server
+      turns into Stop while a reply runs.
+    elements:
+    - input
+    - action
+    - send
+    capsule: ee6d82b3e45f
+    controllers:
+    - identifier: poetry--core--composer
+      targets:
+      - form
+      - input
+      - send
+      - stop
+      values:
+      - submitOnEnter
+      actions:
+      - changed
+      - guard
+      - holdFocus
+      - keydown
+      - returnFocus
+      - settle
+      - submit
+      events: []
+    agent_rules:
+    - 'The SERVER holds the running state: render status: from your record (:idle,
+      :running, :stopping) and redraw the slot alone with poetry_composer_action(id:,
+      status:) in a Turbo Stream replace of "<id>-action" - never replace the form
+      or the field, the draft lives there.'
+    - 'Send every status change down ONE ordered channel (the broadcast), or pass
+      version: and use a versioned replace - a form''s answer and a broadcast can
+      arrive out of order and leave Stop on screen.'
+    - 'stop_url: is a POST endpoint that asks the reply to stop; a status other than
+      :idle needs it. The Stop button submits a form of its own, so the draft is never
+      sent with it.'
+    - 'Refuse a send on the server while a reply runs (answer 409 or 422): the field
+      keeps its text whenever the answer is not a success, and clears the sent text
+      when it is.'
+    - 'Block content is the tools row beside Send (attach, a model picker) - buttons
+      there are type: :button so they never submit the message.'
+    - 'name: is the message''s param key; label: is the field''s accessible name -
+      the placeholder is not a label.'
+    content: true
+    identity: false
+    parts:
+    - name: composer
+      description: The root - holds the message form and the Stop form; the controller
+        and the emptiness state ride here
+      states:
+      - attr: data-empty
+        condition: the field holds nothing but whitespace (server-set, controller-kept)
+          - the Send button dims
+    - name: composer-form
+      description: The message <form> - never replaced. Turbo marks it aria-busy while
+        a send is in flight
+    - name: composer-group
+      description: The bordered field surface - InputGroup's chrome, focus ring keyed
+        on the control inside
+    - name: input-group-control
+      description: The native <textarea> - InputGroup's control slot (the themes'
+        focus-ring hook); grows with its content by CSS up to a ceiling
+    - name: input-group-addon
+      description: The footer row under the field - the tools (block content) and
+        the action slot
+      states:
+      - attr: data-align
+        condition: always - the row sits under the field
+        values:
+        - block-end
+    - name: composer-action
+      description: The slot the server redraws (dom id <id>-action) - holds Send or
+        Stop. poetry_composer_action renders exactly this element
+      states:
+      - attr: data-running
+        condition: status :running or :stopping - a Stop button is in the slot
+      - attr: data-stopping
+        condition: status :stopping - the Stop button is busy and disabled
+      - attr: data-version
+        condition: 'version: was given - the number a versioned replace compares'
+    - name: composer-stop-form
+      description: 'The hidden <form> the Stop button submits (dom id <id>-stop) -
+        rendered when stop_url: is given'
+    stimulus:
+    - element: send
+      controllers:
+      - identifier: poetry--core--composer
+        targets:
+        - name: send
+        actions:
+        - method: holdFocus
+          'on': pointerdown
+    - element: stop
+      controllers:
+      - identifier: poetry--core--composer
+        targets:
+        - name: stop
+        actions:
+        - method: holdFocus
+          'on': pointerdown
+        - method: returnFocus
+          'on': click
+    - element: root
+      controllers:
+      - identifier: poetry--core--composer
+        registers: true
+        values:
+        - name: submit_on_enter
+        actions:
+        - method: changed
+          'on': turbo:morph-element
+    - element: form
+      controllers:
+      - identifier: poetry--core--composer
+        targets:
+        - name: form
+        actions:
+        - method: guard
+          'on': submit
+        - method: settle
+          'on': turbo:submit-end
+    - element: input
+      controllers:
+      - identifier: poetry--core--composer
+        targets:
+        - name: input
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: changed
+          'on': input
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu
@@ -12771,6 +12978,33 @@ helpers:
   poetry_checkbox_group_all: {}
   poetry_checkbox_group_item: {}
   poetry_color_scheme_script: {}
+  poetry_composer_action:
+    options:
+    - name: id
+      type: string
+      required: true
+      description: the composer's id - the slot renders dom id "<id>-action"
+    - name: status
+      type: symbol
+      default: idle
+      variants:
+      - idle
+      - running
+      - stopping
+    - name: version
+      type: integer
+      description: rises with every status change - data-version for a versioned replace
+    - name: disabled
+      type: boolean
+      default: false
+      description: disables the Send button - pass what the composer was rendered
+        with
+    - name: send_label
+      type: string
+      description: the Send button's accessible name
+    - name: stop_label
+      type: string
+      description: the Stop button's accessible name
   poetry_id_integrity_script: {}
   poetry_input_group_addon:
     options:
@@ -13047,6 +13281,8 @@ helper_args:
   poetry_combobox: 0
   poetry_command: 0
   poetry_command_dialog: 0
+  poetry_composer: 0
+  poetry_composer_action: 0
   poetry_context_menu: 0
   poetry_data_table: 0
   poetry_date_field: 0
@@ -13254,6 +13490,8 @@ internals:
 - Poetry::Ui::Command::Helpers
 - Poetry::Ui::Command::Item
 - Poetry::Ui::Command::ItemSet
+- Poetry::Ui::Composer::Action
+- Poetry::Ui::Composer::ActionWiring
 - Poetry::Ui::ContextMenu::Group
 - Poetry::Ui::ContextMenu::ItemSlots
 - Poetry::Ui::ContextMenu::RadioGroup

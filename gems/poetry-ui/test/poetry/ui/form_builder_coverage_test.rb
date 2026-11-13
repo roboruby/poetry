@@ -45,13 +45,13 @@ module Poetry
       # of this list must gain a BUILDER_MAPPED entry. Two conscious
       # non-mappings verified 2026-08-16: data_table DOES post
       # (selection_name[] row checkboxes) but as a collection operation,
-      # never a model attribute; questionnaire OWNS whole forms (a flow,
-      # not a control). toggle/toggle_group/tree carry no name: at all
+      # never a model attribute; questionnaire and composer OWN whole forms
+      # (a flow and a chat turn, not a control). toggle/toggle_group/tree carry no name: at all
       # (pressed/selection state is view state).
       FORM_EXEMPT = %w[
         accordion alert alert_dialog aspect_ratio attachment avatar badge
         breadcrumb bubble button_group card carousel clipboard_text
-        code_block collapsible command command_dialog context_menu
+        code_block collapsible command command_dialog composer context_menu
         data_table deferred dialog drawer dropdown_menu empty
         field_separator hover_card icon input_group item kbd label link
         marker menubar message message_scroller metadata_list meter

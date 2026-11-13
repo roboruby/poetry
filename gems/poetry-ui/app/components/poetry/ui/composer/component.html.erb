@@ -1,0 +1,17 @@
+<%# The message form is never replaced: the field holds the draft, and the
+    action slot inside the footer is the one element the server redraws.
+    The Stop form is a sibling, so stopping never submits the message. %>
+<%= element_tag(:div, **root_attributes) do %>
+  <%= form_with(url: url, method: http_method, html: form_attributes) do %>
+    <%= element_tag(:div, **group_attributes) do %>
+      <%= element_tag(:textarea, value, **input_attributes) %>
+      <%= element_tag(:div, **footer_attributes) do %>
+        <%= content %>
+        <%= render action %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if stop_url.present? %>
+    <%= form_with(url: stop_url, method: :post, html: stop_form_attributes) do %><% end %>
+  <% end %>
+<% end %>

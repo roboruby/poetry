@@ -271,6 +271,33 @@ module Poetry
             })
           ]
         },
+        "chat_composer" => {
+          "description" => "A chat composer while a reply is running: a named message field holding a " \
+                           "draft, and a stop button that leaves the draft unsent",
+          "gates" => [
+            Gate.new(:field_is_named, :cross_arm, lambda { |doc, _html|
+              doc.css("textarea").any? do |field|
+                field["aria-label"].to_s.strip != "" || field["aria-labelledby"] ||
+                  (field["id"] && doc.at_css(%(label[for="#{field["id"]}"])))
+              end
+            }),
+            # The tell: a Stop button that belongs to the message form submits
+            # the draft with it. A real one posts through a form of its own.
+            Gate.new(:stop_leaves_the_draft_unsent, :cross_arm, lambda { |doc, _html|
+              field_form = doc.at_css("textarea")&.ancestors("form")&.first
+              doc.css("button").any? do |button|
+                owner = button["form"] ? doc.at_css(%(form[id="#{button["form"]}"])) : button.ancestors("form").first
+                (button["aria-label"].to_s + button.text).match?(/stop/i) && owner && owner != field_form
+              end
+            }),
+            Gate.new(:buttons_are_named, :cross_arm, lambda { |doc, _html|
+              doc.css("button").all? { |button| button["aria-label"].to_s.strip != "" || button.text.strip != "" }
+            }),
+            Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
         "disclosure" => {
           "description" => "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
           "gates" => [

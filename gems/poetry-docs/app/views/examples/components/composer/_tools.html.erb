@@ -1,0 +1,13 @@
+<%# The tools row: block content sits at the start of the footer and the
+    action slot at its end. A button here is type: :button (the Button
+    default), so it never submits the message. %>
+<div class="mx-auto w-full max-w-md">
+  <%= poetry_composer(id: "composer-tools", placeholder: "Ask about this page",
+                      url: composer_demo_messages_path(composer: "composer-tools"),
+                      stop_url: composer_demo_stop_path(composer: "composer-tools")) do %>
+    <%= poetry_input_group_button(size: :"icon-sm", label: "Attach a file") do %>
+      <%= poetry_icon(name: :paperclip) %>
+    <% end %>
+    <%= poetry_input_group_text { "Shift+Enter for a new line" } %>
+  <% end %>
+</div>

@@ -2,7 +2,8 @@
 
 # The morph guard gate: proves in a real browser that the state the client
 # changes on a keyed page survives a Turbo morphing refresh - the selected
-# tab, a typed value, an expanded disclosure, a modal dialog - while a
+# tab, a typed value, a composer's draft (with the emptiness its root
+# reads from it), an expanded disclosure, a modal dialog - while a
 # change the server made on purpose (the details cookie) still lands, and
 # that a dialog closes on its own form's successful submission. Two refresh
 # paths: the dialog's form posting and redirecting back, and a stream-style
@@ -29,6 +30,8 @@ namespace :test do
           tabTwo: document.getElementById("gate-tabs-trigger-two").getAttribute("aria-selected"),
           panelTwoHidden: document.getElementById("gate-tabs-panel-two").hidden,
           input: document.getElementById("gate-input").value,
+          draft: document.getElementById("gate-composer-input").value,
+          composerEmpty: document.getElementById("gate-composer").hasAttribute("data-empty"),
           localOpen: document.getElementById("gate-local").hasAttribute("data-open"),
           localBodyHidden: document.getElementById("gate-local-content").hidden,
           detailsOpen: document.getElementById("gate-details").hasAttribute("data-open"),
@@ -56,6 +59,8 @@ namespace :test do
       document.getElementById("gate-tabs-trigger-two").click();
       const input = document.getElementById("gate-input");
       input.value = "typed"; input.dispatchEvent(new Event("input", { bubbles: true }));
+      const draft = document.getElementById("gate-composer-input");
+      draft.value = "a draft"; draft.dispatchEvent(new Event("input", { bubbles: true }));
       document.querySelector("#gate-local [data-slot=collapsible-trigger]").click();
     JS
     open_dialog = "[...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Open dialog').click()"
@@ -69,7 +74,8 @@ namespace :test do
 
     before = session.evaluate_script(state)
     raise "setup: the page did not take the client's state (#{before})" unless
-      before["tabTwo"] == "true" && before["input"] == "typed" && before["localOpen"]
+      before["tabTwo"] == "true" && before["input"] == "typed" && before["localOpen"] &&
+      before["draft"] == "a draft" && before["composerEmpty"] == false
 
     # Path 1: the dialog's own form posts and redirects back - a morph
     # refresh. The client's tab, value and disclosure survive, the server's
@@ -84,6 +90,8 @@ namespace :test do
     after = session.evaluate_script(state)
     failures << "form path: tab two was reset" unless after["tabTwo"] == "true" && after["panelTwoHidden"] == false
     failures << "form path: the typed value was reset" unless after["input"] == "typed"
+    failures << "form path: the composer's draft was reset" unless after["draft"] == "a draft"
+    failures << "form path: the composer reads empty over a draft" if after["composerEmpty"]
     failures << "form path: the disclosure closed" unless after["localOpen"] && after["localBodyHidden"] == false
     failures << "form path: the server's disclosure did not open (a server change was blocked)" unless
       after["detailsOpen"]
@@ -101,6 +109,8 @@ namespace :test do
     failures << "refresh path: the modal dialog closed" unless final["dialogOpen"] && final["dialogModal"]
     failures << "refresh path: tab two was reset" unless final["tabTwo"] == "true" && final["panelTwoHidden"] == false
     failures << "refresh path: the typed value was reset" unless final["input"] == "typed"
+    failures << "refresh path: the composer's draft was reset" unless final["draft"] == "a draft"
+    failures << "refresh path: the composer reads empty over a draft" if final["composerEmpty"]
     failures << "refresh path: the expanded disclosure closed" unless final["localOpen"]
     failures << "refresh path: the server's disclosure closed" unless final["detailsOpen"]
 

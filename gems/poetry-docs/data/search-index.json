@@ -2892,6 +2892,84 @@
     "path": "/components/command-dialog#wiring"
   },
   {
+    "title": "Composer",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer"
+  },
+  {
+    "title": "Installation",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#installation"
+  },
+  {
+    "title": "The server holds the state",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#state"
+  },
+  {
+    "title": "One channel, or a version",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#ordering"
+  },
+  {
+    "title": "Stopping a RubyLLM reply",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#stop"
+  },
+  {
+    "title": "Keys",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#keys"
+  },
+  {
+    "title": "Default",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#disabled"
+  },
+  {
+    "title": "Line breaks",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#line-breaks"
+  },
+  {
+    "title": "Running",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#running"
+  },
+  {
+    "title": "Stopping",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#stopping"
+  },
+  {
+    "title": "Tools",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#wiring"
+  },
+  {
     "title": "Context Menu",
     "page": "Context Menu",
     "section": "components",

@@ -1,0 +1,11 @@
+<%# The tools row: block content sits at the start of the footer, the
+    action slot at its end. Buttons here are type=button (the Button
+    default), so they never submit the message. %>
+<div class="max-w-xl p-4">
+  <%= poetry_composer(id: "composer-tools", url: "#", placeholder: "Ask anything") do %>
+    <%= poetry_input_group_button(size: :"icon-sm", label: "Attach a file") do %>
+      <%= poetry_icon(name: :paperclip) %>
+    <% end %>
+    <%= poetry_input_group_text { "Shift+Enter for a new line" } %>
+  <% end %>
+</div>

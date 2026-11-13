@@ -35,6 +35,7 @@ poetry_components:
   list:
   - autocomplete
   - clipboard-text
+  - composer
   - data-table
   - date-field
   - date-picker

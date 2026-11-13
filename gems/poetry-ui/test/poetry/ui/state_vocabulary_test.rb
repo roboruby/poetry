@@ -29,6 +29,8 @@ module Poetry
         "copied" => "clipboard-text post-copy beat (poetry--core--clipboard-text via " \
                     "toggleAttribute; drives the copy/check glyph swap)",
         "disabled" => "server-rendered + JS-reflected disabled marker",
+        "empty" => "composer field emptiness on the root (server-rendered + poetry--core--composer " \
+                   "via toggleAttribute; dims the Send button)",
         "placeholder" => "select trigger empty-value marker (server + JS)",
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",

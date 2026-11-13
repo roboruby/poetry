@@ -1,0 +1,6 @@
+<%# The poetry arm: "a chat composer while a reply is running: a named
+    message field holding a draft, and a stop button that leaves the
+    draft unsent". %>
+<%= poetry_composer(id: "eval-composer", url: "/chats/1/messages", name: "content",
+                    status: :running, stop_url: "/chats/1/stop",
+                    value: "And what about last quarter?", placeholder: "Ask anything") %>

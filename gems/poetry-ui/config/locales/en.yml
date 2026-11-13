@@ -58,6 +58,10 @@ en:
       copied: "Copied to clipboard"
     code_block:
       label: "Code"
+    composer:
+      label: "Message"
+      send: "Send message"
+      stop: "Stop"
     sensitive_input:
       masked_label: "%{label}, masked."
       masked_fallback: "Sensitive value, masked."

@@ -7470,7 +7470,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1654
+          "line": 1696
         },
         {
           "name": "poetry_alert",
@@ -7504,7 +7504,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1061
+          "line": 1075
         },
         {
           "name": "poetry_aspect_ratio",
@@ -7538,7 +7538,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1505
+          "line": 1519
         },
         {
           "name": "poetry_attachment_for",
@@ -7559,7 +7559,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1534
+          "line": 1548
         },
         {
           "name": "poetry_attachment_group",
@@ -7576,7 +7576,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1516
+          "line": 1530
         },
         {
           "name": "poetry_attachments_for",
@@ -7593,7 +7593,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1565
+          "line": 1579
         },
         {
           "name": "poetry_autocomplete",
@@ -7678,7 +7678,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1421
+          "line": 1435
         },
         {
           "name": "poetry_bubble_group",
@@ -7695,7 +7695,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1434
+          "line": 1448
         },
         {
           "name": "poetry_button",
@@ -7831,7 +7831,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1259
+          "line": 1273
         },
         {
           "name": "poetry_checkbox_group",
@@ -7848,7 +7848,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1275
+          "line": 1289
         },
         {
           "name": "poetry_checkbox_group_all",
@@ -7865,7 +7865,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1290
+          "line": 1304
         },
         {
           "name": "poetry_checkbox_group_item",
@@ -7882,7 +7882,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1300
+          "line": 1314
         },
         {
           "name": "poetry_clipboard_text",
@@ -7899,7 +7899,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1314
+          "line": 1328
         },
         {
           "name": "poetry_code_block",
@@ -7920,7 +7920,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1332
+          "line": 1346
         },
         {
           "name": "poetry_collapsible",
@@ -7937,7 +7937,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1641
+          "line": 1683
         },
         {
           "name": "poetry_color_scheme_script",
@@ -7954,7 +7954,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1850
+          "line": 1892
         },
         {
           "name": "poetry_combobox",
@@ -7971,7 +7971,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1758
+          "line": 1800
         },
         {
           "name": "poetry_command",
@@ -7988,7 +7988,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1784
+          "line": 1826
         },
         {
           "name": "poetry_command_dialog",
@@ -8005,7 +8005,45 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1797
+          "line": 1839
+        },
+        {
+          "name": "poetry_composer",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_composer(**, &)",
+          "docstring": "A chat message composer: the form, its growing field, and the\nSend/Stop slot the server redraws.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "A chat's composer",
+              "text": "poetry_composer(id: \"composer\", url: chat_messages_path(chat), name: \"content\",\n                status: chat.composer_status, stop_url: stop_chat_path(chat))"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1625
+        },
+        {
+          "name": "poetry_composer_action",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_composer_action(**)",
+          "docstring": "The composer's action slot alone - Send while idle, Stop while a\nreply runs. Render it into a Turbo Stream that replaces\n\"<id>-action\" whenever the reply's status changes; the form and\nthe draft in it stay where they are. version: stamps the slot for\na versioned replace.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "The partial a stream renders (chats/_composer_action.html.erb)",
+              "text": "<%= poetry_composer_action(id: \"composer\", status: chat.composer_status) %>"
+            },
+            {
+              "title": "Replacing the slot when the reply's status changes",
+              "text": "Turbo::StreamsChannel.broadcast_replace_to(\n  chat, target: \"composer-action\", partial: \"chats/composer_action\", locals: { chat: chat }\n)"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1642
         },
         {
           "name": "poetry_context_menu",
@@ -8022,7 +8060,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1771
+          "line": 1813
         },
         {
           "name": "poetry_data_table",
@@ -8056,7 +8094,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1126
+          "line": 1140
         },
         {
           "name": "poetry_date_picker",
@@ -8090,7 +8128,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1150
+          "line": 1164
         },
         {
           "name": "poetry_deferred",
@@ -8124,7 +8162,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1033
+          "line": 1047
         },
         {
           "name": "poetry_drawer",
@@ -8158,7 +8196,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1728
+          "line": 1770
         },
         {
           "name": "poetry_empty",
@@ -8192,7 +8230,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1211
+          "line": 1225
         },
         {
           "name": "poetry_field_group",
@@ -8209,7 +8247,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1239
+          "line": 1253
         },
         {
           "name": "poetry_field_separator",
@@ -8226,7 +8264,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1249
+          "line": 1263
         },
         {
           "name": "poetry_fieldset",
@@ -8243,7 +8281,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1223
+          "line": 1237
         },
         {
           "name": "poetry_file_input",
@@ -8277,7 +8315,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1715
+          "line": 1757
         },
         {
           "name": "poetry_icon",
@@ -8311,7 +8349,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1829
+          "line": 1871
         },
         {
           "name": "poetry_input",
@@ -8328,7 +8366,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1071
+          "line": 1085
         },
         {
           "name": "poetry_input_group",
@@ -8447,7 +8485,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1093
+          "line": 1107
         },
         {
           "name": "poetry_item",
@@ -8532,7 +8570,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1102
+          "line": 1116
         },
         {
           "name": "poetry_link",
@@ -8566,7 +8604,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1493
+          "line": 1507
         },
         {
           "name": "poetry_menubar",
@@ -8583,7 +8621,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1813
+          "line": 1855
         },
         {
           "name": "poetry_message",
@@ -8600,7 +8638,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1472
+          "line": 1486
         },
         {
           "name": "poetry_message_group",
@@ -8617,7 +8655,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1484
+          "line": 1498
         },
         {
           "name": "poetry_message_scroller",
@@ -8634,7 +8672,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1576
+          "line": 1590
         },
         {
           "name": "poetry_message_scroller_item",
@@ -8651,7 +8689,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1590
+          "line": 1604
         },
         {
           "name": "poetry_metadata_list",
@@ -8685,7 +8723,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1160
+          "line": 1174
         },
         {
           "name": "poetry_native_select",
@@ -8787,7 +8825,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1115
+          "line": 1129
         },
         {
           "name": "poetry_optimistic_form",
@@ -8838,7 +8876,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1667
+          "line": 1709
         },
         {
           "name": "poetry_progress",
@@ -8872,7 +8910,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1384
+          "line": 1398
         },
         {
           "name": "poetry_radio_group",
@@ -8889,7 +8927,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1401
+          "line": 1415
         },
         {
           "name": "poetry_resizable",
@@ -8940,7 +8978,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1170
+          "line": 1184
         },
         {
           "name": "poetry_select",
@@ -8957,7 +8995,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1743
+          "line": 1785
         },
         {
           "name": "poetry_sensitive_input",
@@ -8974,7 +9012,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1358
+          "line": 1372
         },
         {
           "name": "poetry_separator",
@@ -9008,7 +9046,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1046
+          "line": 1060
         },
         {
           "name": "poetry_sidebar",
@@ -9246,7 +9284,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1412
+          "line": 1426
         },
         {
           "name": "poetry_spinner",
@@ -9297,7 +9335,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1369
+          "line": 1383
         },
         {
           "name": "poetry_table",
@@ -9348,7 +9386,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1183
+          "line": 1197
         },
         {
           "name": "poetry_textarea",
@@ -9365,7 +9403,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1083
+          "line": 1097
         },
         {
           "name": "poetry_time_field",
@@ -9382,7 +9420,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1138
+          "line": 1152
         },
         {
           "name": "poetry_timeline",
@@ -9416,7 +9454,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1612
+          "line": 1654
         },
         {
           "name": "poetry_toast_trigger",
@@ -9450,7 +9488,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1628
+          "line": 1670
         },
         {
           "name": "poetry_toggle",
@@ -9467,7 +9505,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1446
+          "line": 1460
         },
         {
           "name": "poetry_toggle_group",
@@ -9484,7 +9522,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1459
+          "line": 1473
         },
         {
           "name": "poetry_toolbar",
@@ -9518,7 +9556,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1681
+          "line": 1723
         },
         {
           "name": "poetry_tooltip_provider",
@@ -9535,7 +9573,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1696
+          "line": 1738
         },
         {
           "name": "poetry_trace",
@@ -9552,7 +9590,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1345
+          "line": 1359
         },
         {
           "name": "poetry_tree",
@@ -9569,7 +9607,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1198
+          "line": 1212
         },
         {
           "name": "poetry_typeset",
@@ -9649,6 +9687,337 @@
           "docstring": "The compose-mode bullet shared by every includer's AGENT_RULES -\nprojected into the registry, llms.txt, and the agent surface."
         }
       ]
+    },
+    {
+      "path": "Poetry::Ui::Composer",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The chat composer: the message form and the Send/Stop slot the server redraws.",
+      "examples": [],
+      "file": "app/components/poetry/ui/composer/component.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Composer::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A chat message composer: one form holding a growing textarea, a\ntools row and an action slot that shows Send or Stop. Reach for it\nwherever a person writes to a model or to another person.\n\nThe server holds the running state. Render status: from your own\nrecord, and when it changes redraw the slot alone -\npoetry_composer_action(id:, status:) in a Turbo Stream that replaces\n\"<id>-action\". The form and the field are never replaced, so a draft\ntyped while a reply streams is kept. A Stop button on the page is\nthe whole fact that a reply is running: the controller holds no copy\nof it.\n\nStop is a second small form of its own (stop_url:, a POST), so\nstopping never sends the draft. Enter sends and Shift+Enter breaks\nthe line; an Enter that confirms an input-method composition does\nnot send. Nothing is sent while the field is blank, while a reply\nruns, or while a send is already on its way. When the server accepts\na message the sent text leaves the field; a refused message (any\nanswer that is not a success) stays whole. The field grows with its\ncontent by CSS up to a ceiling, then scrolls. Without JavaScript it\nis a plain form with a submit button.\n\n**Anatomy** (`data-slot` parts):\n\n- `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here\n- `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight\n- `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside\n- `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling\n- `input-group-addon` - The footer row under the field - the tools (block content) and the action slot\n- `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element\n- `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given",
+      "examples": [
+        {
+          "title": "A chat's composer",
+          "text": "render Poetry::Ui::Composer::Component.new(\n  id: \"composer\", url: chat_messages_path(chat), name: \"content\",\n  status: chat.composer_status, stop_url: stop_chat_path(chat)\n)"
+        }
+      ],
+      "file": "app/components/poetry/ui/composer/component.rb",
+      "methods": [
+        {
+          "name": "composer_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "composer_id",
+          "docstring": "The composer's DOM id as a safe token - every part's id derives from it.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 163
+        },
+        {
+          "name": "disabled",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Disables the field and the Send button.\n\nConstructor option `disabled:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 84
+        },
+        {
+          "name": "http_method",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The form's HTTP verb. Named http_method (not method:) - an option named `method` would shadow Object#method.\n\nConstructor option `http_method:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "defaults to `:post`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 62
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The composer's DOM id. The parts derive theirs from it: \"<id>-form\", \"<id>-input\", \"<id>-stop\", and \"<id>-action\" - the slot a Turbo Stream replaces.\n\nConstructor option `id:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "required"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 57
+        },
+        {
+          "name": "input_class",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Classes merged onto the field - min-h-24 opens it taller, max-h-80 raises the ceiling it grows to before it scrolls.\n\nConstructor option `input_class:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 69
+        },
+        {
+          "name": "label",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The field's accessible name (aria-label). Defaults to the locale's \"Message\".\n\nConstructor option `label:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 68
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The param key the message text arrives under.\n\nConstructor option `name:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "defaults to `\"message\"`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 65
+        },
+        {
+          "name": "placeholder",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Hint text shown while the field is empty - never a substitute for label:.\n\nConstructor option `placeholder:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 67
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 169
+        },
+        {
+          "name": "send_label",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The Send button's accessible name. Defaults to the locale's \"Send message\".\n\nConstructor option `send_label:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 85
+        },
+        {
+          "name": "status",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "What the action slot shows: Send (:idle), Stop (:running), or Stop busy and disabled (:stopping). Render it from your own record of the reply.\n\nConstructor option `status:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "one of: `idle, running, stopping`; defaults to `:idle`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 72
+        },
+        {
+          "name": "stop_label",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The Stop button's accessible name. Defaults to the locale's \"Stop\".\n\nConstructor option `stop_label:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 87
+        },
+        {
+          "name": "stop_url",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Where the Stop button posts. Required for any status but :idle; the composer renders a hidden form for it beside the message form.\n\nConstructor option `stop_url:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 75
+        },
+        {
+          "name": "submit_on_enter",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Enter sends and Shift+Enter breaks the line. false makes Enter a line break; Cmd/Ctrl+Enter sends either way.\n\nConstructor option `submit_on_enter:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `true`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 81
+        },
+        {
+          "name": "url",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Where the message posts - the form's action.\n\nConstructor option `url:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "required"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 61
+        },
+        {
+          "name": "value",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "A draft to open with, rendered as the field's content.\n\nConstructor option `value:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 66
+        },
+        {
+          "name": "version",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "A number that rises with every status change, rendered on the action slot as data-version for a versioned replace to compare. Leave it out when one ordered channel carries the status.\n\nConstructor option `version:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 78
+        }
+      ],
+      "constants": [
+        {
+          "name": "AGENT_RULES",
+          "value": "[\n  \"The SERVER holds the running state: render status: from your record (:idle, :running, \" \\\n  \":stopping) and redraw the slot alone with poetry_composer_action(id:, status:) in a Turbo \" \\\n  \"Strea",
+          "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        },
+        {
+          "name": "STATUSES",
+          "value": "%i[idle running stopping].freeze",
+          "docstring": "The closed vocabulary for the status axis."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Ui::Composer::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "Utility-only: InputGroup, Textarea and Button wear the chrome, so\nthe composer adds no theme CSS. What is here is mechanics: the\nfield's one-row floor and its growth ceiling (past it the field\nscrolls), the action slot's place at the end of the footer row, and\nthe Send button's dimming while the field is empty.",
+      "examples": [],
+      "file": "app/components/poetry/ui/composer/style.rb",
+      "methods": [],
+      "constants": []
     },
     {
       "path": "Poetry::Ui::ContextMenu",

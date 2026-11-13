@@ -1,0 +1,13 @@
+<%# The raw-Tailwind arm for the same composer - realistic, not a
+    strawman: plausible layout and copy, with the typical tells (the field
+    has a placeholder and no name, Stop is a submit button of the message
+    form so pressing it sends the draft, the icon-only button has no
+    accessible name and its glyph is exposed to AT, one arbitrary hex). %>
+<form action="/chats/1/messages" method="post" class="flex flex-col gap-2 rounded-xl border p-2">
+  <textarea name="content" rows="1" placeholder="Ask anything" class="w-full resize-none px-2 py-1 text-sm outline-none">And what about last quarter?</textarea>
+  <div class="flex justify-end">
+    <button type="submit" name="stop" value="1" class="flex size-8 items-center justify-center rounded-full bg-[#111827] text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4"><rect width="14" height="14" x="5" y="5" rx="2"/></svg>
+    </button>
+  </div>
+</form>

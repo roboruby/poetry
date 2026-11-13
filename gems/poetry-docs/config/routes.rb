@@ -126,6 +126,11 @@ Poetry::Docs::Engine.routes.draw do
   get "charts/:slug" => "charts#show", as: :chart
   get "motion/:slug" => "motion#show", as: :motion_effect
   get "blocks/:slug" => "blocks#show", as: :block
+  # The Composer page's live examples: a message, the scripted reply's
+  # stream, and Stop (ComposerDemoController).
+  post "components/composer/messages" => "composer_demo#create", as: :composer_demo_messages, format: false
+  post "components/composer/stop" => "composer_demo#stop", as: :composer_demo_stop, format: false
+  get "components/composer/reply" => "composer_demo#stream", as: :composer_demo_reply, format: false
   get "demos/chat-replay/stream" => "chat_replay#stream", as: :chat_replay_stream, format: false
   get "demos/agui-relay/stream" => "agui_relay#stream", as: :agui_relay_stream, format: false
   post "demos/agui-relay/continue" => "agui_relay#continue", as: :agui_relay_continue, format: false

@@ -1,0 +1,6 @@
+<%# disabled: true closes the field and the Send button, for a
+    conversation that takes no more messages. %>
+<div class="mx-auto w-full max-w-md">
+  <%= poetry_composer(id: "composer-disabled", disabled: true, placeholder: "This conversation is closed",
+                      url: composer_demo_messages_path(composer: "composer-disabled")) %>
+</div>
