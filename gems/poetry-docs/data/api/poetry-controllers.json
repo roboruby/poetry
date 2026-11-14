@@ -5636,7 +5636,7 @@
       "path": "poetry--core--composer",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\n**Targets**: `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.",
+      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the\nattachments target): a message of files alone is not blank, and once\nthe server accepts it the sent event names the files that went, so the\nfile-input controller beside this one drops their chips and keeps any\nfile added since.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\n**Targets**: `attachments`, `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.\n\n**Events**: `poetry:composer:sent`",
       "examples": [],
       "file": "app/javascript/poetry/core/composer_controller.js",
       "methods": [
@@ -5650,7 +5650,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 44
+          "line": 57
         },
         {
           "name": "disconnect",
@@ -5662,7 +5662,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 49
+          "line": 62
         },
         {
           "name": "keydown",
@@ -5682,19 +5682,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 60
+          "line": 73
         },
         {
           "name": "changed",
           "scope": "instance",
           "group": null,
           "signature": "changed()",
-          "docstring": "The field's input action, and the root's turbo:morph-element action:\nkeeps data-empty on the root honest. A morph puts the server's\nattributes back on the root while the field keeps its draft, so the\nemptiness is read again from the field once the morph has passed.",
+          "docstring": "The field's input action, the file input's change action and the\nroot's turbo:morph-element action: keeps data-empty on the root\nhonest. A morph puts the server's attributes back on the root while\nthe field keeps its draft, so the emptiness is read again from the\nfield once the morph has passed.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 74
+          "line": 91
         },
         {
           "name": "submit",
@@ -5706,7 +5706,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 82
+          "line": 99
         },
         {
           "name": "guard",
@@ -5726,14 +5726,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 93
+          "line": 110
         },
         {
           "name": "settle",
           "scope": "instance",
           "group": null,
           "signature": "settle(event)",
-          "docstring": "The form's turbo:submit-end action: an accepted message leaves the\nfield (text typed since the send stays), a refused one stays whole,\nand a send made from inside the composer ends with focus in the field\nunless the reader took it elsewhere meanwhile.",
+          "docstring": "The form's turbo:submit-end action: an accepted message leaves the\nfield (text typed since the send stays) and is reported with the\nfiles that went with it, a refused one stays whole, and a send made\nfrom inside the composer ends with focus in the field unless the\nreader took it elsewhere meanwhile.",
           "params": [
             {
               "name": "event",
@@ -5746,7 +5746,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 117
+          "line": 139
         },
         {
           "name": "holdFocus",
@@ -5766,7 +5766,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 140
+          "line": 165
         },
         {
           "name": "returnFocus",
@@ -5786,7 +5786,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 152
+          "line": 177
         }
       ],
       "constants": []
@@ -6575,6 +6575,26 @@
           "line": 123
         },
         {
+          "name": "discard",
+          "scope": "instance",
+          "group": null,
+          "signature": "discard(event)",
+          "docstring": "A host's discard action, for files that have been delivered (a\ncomposer's sent event, once the server accepts the message): the\nfiles in the event's detail leave the selection, their signed ids\nwith them, and a file added since stays. Without a list the whole\nselection goes. The event is left alone, so other listeners hear it.",
+          "params": [
+            {
+              "name": "[event]",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.files names the delivered files"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 140
+        },
+        {
           "name": "retry",
           "scope": "instance",
           "group": null,
@@ -6592,7 +6612,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 141
+          "line": 155
         },
         {
           "name": "clear",
@@ -6612,7 +6632,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 156
+          "line": 170
         }
       ],
       "constants": []

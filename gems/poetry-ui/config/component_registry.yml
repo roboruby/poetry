@@ -3160,6 +3160,33 @@ components:
     bem_block: poetry-ui-composer
     styles: []
     options:
+    - name: accept
+      type: string
+      description: The accepted file types, in the native accept grammar ("image/*,.pdf");
+        other files are refused at intake with a message.
+    - name: attach_label
+      type: string
+      description: The paperclip button's accessible name. Defaults to the locale's
+        "Attach files".
+    - name: attachments
+      type: boolean
+      default: false
+      description: 'Files join the message: a paperclip button, a drop on the composer
+        and a paste into the field, each file a chip above the field.'
+    - name: attachments_name
+      type: string
+      default: attachments[]
+      description: The param key the files arrive under - ending in [] for Rails params,
+        since a message may carry several.
+    - name: direct_upload
+      type: boolean
+      default: false
+      description: Uploads the files straight to storage through Active Storage's
+        direct uploads, so the message posts signed ids instead of bytes.
+    - name: direct_upload_url
+      type: string
+      description: A direct uploads endpoint other than Rails' own (an authenticated
+        or scoped route); it turns direct uploads on.
     - name: disabled
       type: boolean
       default: false
@@ -3182,6 +3209,13 @@ components:
       type: string
       description: The field's accessible name (aria-label). Defaults to the locale's
         "Message".
+    - name: max_files
+      type: integer
+      description: The most files one message holds; the surplus is refused with a
+        message.
+    - name: max_size
+      type: integer
+      description: The largest file a message takes, in bytes (10.megabytes).
     - name: name
       type: string
       default: message
@@ -3216,6 +3250,15 @@ components:
       default: true
       description: Enter sends and Shift+Enter breaks the line. false makes Enter
         a line break; Cmd/Ctrl+Enter sends either way.
+    - name: upload
+      type: symbol
+      variants:
+      - on_submit
+      - immediate
+      default: on_submit
+      description: 'When direct uploads run: :on_submit as the message is sent (Rails''
+        own flow), :immediate as each file lands, with progress, retry and remove
+        on its chip.'
     - name: url
       type: string
       required: true
@@ -3233,13 +3276,17 @@ components:
     description: A chat message form with a growing field and a Send button the server
       turns into Stop while a reply runs.
     elements:
+    - group
+    - attachments
+    - errors
     - input
     - action
     - send
-    capsule: ee6d82b3e45f
+    capsule: 94bfae76f19a
     controllers:
     - identifier: poetry--core--composer
       targets:
+      - attachments
       - form
       - input
       - send
@@ -3254,8 +3301,55 @@ components:
       - returnFocus
       - settle
       - submit
-      events: []
+      events:
+      - poetry:composer:sent
+    - identifier: poetry--core--file-drop
+      targets:
+      - input
+      values:
+      - accept
+      - directory
+      - maxFiles
+      - maxSize
+      - messages
+      - minSize
+      - multiple
+      - overlay
+      - paste
+      - preventDocumentDrop
+      actions:
+      - clear
+      - open
+      - removeFile
+      events:
+      - poetry:file-drop:drag
+      - poetry:file-drop:files
+    - identifier: poetry--core--file-input
+      targets:
+      - clear
+      - errors
+      - input
+      - items
+      - template
+      values:
+      - messages
+      - multiple
+      - name
+      - preview
+      - upload
+      - url
+      actions:
+      - clear
+      - discard
+      - files
+      - remove
+      - retry
+      events:
+      - poetry:file-input:change
+      - poetry:file-input:upload
     agent_rules:
+    - 'Client-side accept, size and count limits are advisory: validate the attachment
+      on the model as well.'
     - 'The SERVER holds the running state: render status: from your record (:idle,
       :running, :stopping) and redraw the slot alone with poetry_composer_action(id:,
       status:) in a Turbo Stream replace of "<id>-action" - never replace the form
@@ -3269,8 +3363,14 @@ components:
     - 'Refuse a send on the server while a reply runs (answer 409 or 422): the field
       keeps its text whenever the answer is not a success, and clears the sent text
       when it is.'
-    - 'Block content is the tools row beside Send (attach, a model picker) - buttons
-      there are type: :button so they never submit the message.'
+    - 'Block content is the tools row beside Send (a model picker, a mode toggle)
+      - buttons there are type: :button so they never submit the message.'
+    - 'Files in a message are attachments: true - the paperclip, drop, paste and the
+      chips are the composer''s own; never put a FileInput or a hand-rolled file button
+      in the tools row. The files arrive under attachments_name: ("attachments[]"),
+      or as signed ids with direct_upload: true.'
+    - 'accept:, max_size: and max_files: refuse a file at intake and are advisory:
+      validate the attachment on the model as well.'
     - 'name: is the message''s param key; label: is the field''s accessible name -
       the placeholder is not a label.'
     content: true
@@ -3281,8 +3381,16 @@ components:
         and the emptiness state ride here
       states:
       - attr: data-empty
-        condition: the field holds nothing but whitespace (server-set, controller-kept)
-          - the Send button dims
+        condition: the field holds nothing but whitespace and no file is attached
+          (server-set, controller-kept) - the Send button dims
+      - attr: data-populated
+        condition: a file is attached (controller-set, with attachments:)
+      - attr: data-dragging
+        condition: files are dragged over the composer (controller-set) - the field
+          surface takes the drop tint
+      - attr: data-drag-reject
+        condition: the dragged files would be refused (controller-set) - the tint
+          turns destructive
     - name: composer-form
       description: The message <form> - never replaced. Turbo marks it aria-busy while
         a send is in flight
@@ -3313,6 +3421,23 @@ components:
     - name: composer-stop-form
       description: 'The hidden <form> the Stop button submits (dom id <id>-stop) -
         rendered when stop_url: is given'
+    - name: composer-attachments
+      description: The chips' row above the field (attachments:) - one Attachment
+        per file, filled by the controller; hidden while empty
+      states:
+      - attr: data-align
+        condition: always - the row sits over the field
+        values:
+        - block-start
+    - name: composer-attachments-control
+      description: The hidden native <input type=file> (dom id <id>-attachments) -
+        the files' form value; the paperclip opens its picker
+    - name: composer-attachment-template
+      description: The <template> holding one Attachment chip the controller clones
+        per file
+    - name: composer-errors
+      description: The rejections <ul> (role=alert) under the field surface - one
+        line per refused file; hidden until a file is refused
     stimulus:
     - element: send
       controllers:
@@ -3334,6 +3459,31 @@ components:
           'on': click
     - element: root
       controllers:
+      - identifier: poetry--core--file-drop
+        conditional: if attachments
+        registers: true
+        values:
+        - name: accept
+        - name: multiple
+        - name: max_files
+        - name: max_size
+        - name: paste
+        - name: messages
+      - identifier: poetry--core--file-input
+        conditional: if attachments
+        registers: true
+        values:
+        - name: multiple
+        - name: upload
+        - name: name
+        - name: url
+        - name: preview
+        - name: messages
+        actions:
+        - method: files
+          'on': poetry:file-drop:files
+        - method: discard
+          'on': poetry:composer:sent
       - identifier: poetry--core--composer
         registers: true
         values:
@@ -3361,6 +3511,63 @@ components:
           'on': keydown
         - method: changed
           'on': input
+    - element: attachments_control
+      controllers:
+      - identifier: poetry--core--file-drop
+        targets:
+        - name: input
+      - identifier: poetry--core--file-input
+        targets:
+        - name: input
+      - identifier: poetry--core--composer
+        targets:
+        - name: attachments
+        actions:
+        - method: changed
+          'on': change
+    - element: attach
+      controllers:
+      - identifier: poetry--core--file-drop
+        actions:
+        - method: open
+          'on': click
+      - identifier: poetry--core--composer
+        actions:
+        - method: holdFocus
+          'on': pointerdown
+    - element: attachments
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: items
+    - element: attachment_template
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: template
+    - element: attachment_errors
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: errors
+    - element: attachment_remove
+      controllers:
+      - identifier: poetry--core--file-input
+        actions:
+        - method: remove
+          'on': click
+    - element: attachment_retry
+      controllers:
+      - identifier: poetry--core--file-input
+        actions:
+        - method: retry
+          'on': click
+    behaviors:
+    - name: file_drop
+      description: Files arrive by drop, picker or paste and are checked against accept,
+        size and count before they land in the native input.
+      elements:
+      - root
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu
@@ -6044,7 +6251,7 @@ components:
     - clear
     - overlay
     - overlay_prompt
-    capsule: 13cbbbd00bdd
+    capsule: 11bb4a6df10d
     controllers:
     - identifier: poetry--core--file-drop
       targets:
@@ -6083,6 +6290,7 @@ components:
       - url
       actions:
       - clear
+      - discard
       - files
       - remove
       - retry
@@ -13500,6 +13708,7 @@ internals:
 - Poetry::Ui::DropdownMenu::Group
 - Poetry::Ui::DropdownMenu::RadioGroup
 - Poetry::Ui::DropdownMenu::Sub
+- Poetry::Ui::FileInput::Uploads
 - Poetry::Ui::HoverCard::Trigger
 - Poetry::Ui::Menubar::Group
 - Poetry::Ui::Menubar::Helpers

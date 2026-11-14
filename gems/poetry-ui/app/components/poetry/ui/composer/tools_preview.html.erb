@@ -3,8 +3,8 @@
     default), so they never submit the message. %>
 <div class="max-w-xl p-4">
   <%= poetry_composer(id: "composer-tools", url: "#", placeholder: "Ask anything") do %>
-    <%= poetry_input_group_button(size: :"icon-sm", label: "Attach a file") do %>
-      <%= poetry_icon(name: :paperclip) %>
+    <%= poetry_input_group_button(size: :"icon-sm", label: "Search the web") do %>
+      <%= poetry_icon(name: :search) %>
     <% end %>
     <%= poetry_input_group_text { "Shift+Enter for a new line" } %>
   <% end %>

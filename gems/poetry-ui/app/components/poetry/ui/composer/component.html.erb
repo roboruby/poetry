@@ -1,17 +1,38 @@
 <%# The message form is never replaced: the field holds the draft, and the
     action slot inside the footer is the one element the server redraws.
-    The Stop form is a sibling, so stopping never submits the message. %>
+    The Stop form is a sibling, so stopping never submits the message.
+    With attachments the chips' row sits over the field, the native file
+    input and its paperclip lead the footer, and the rejections follow the
+    field surface. %>
 <%= element_tag(:div, **root_attributes) do %>
   <%= form_with(url: url, method: http_method, html: form_attributes) do %>
     <%= element_tag(:div, **group_attributes) do %>
+      <% if attachments %><%= element_tag(:div, "", **attachments_attributes) %><% end %>
       <%= element_tag(:textarea, value, **input_attributes) %>
       <%= element_tag(:div, **footer_attributes) do %>
+        <% if attachments %>
+          <%= tag(:input, control_attributes) %>
+          <%= attach_button %>
+        <% end %>
         <%= content %>
         <%= render action %>
       <% end %>
     <% end %>
+    <% if attachments %><%= element_tag(:ul, "", **errors_attributes) %><% end %>
   <% end %>
   <% if stop_url.present? %>
     <%= form_with(url: stop_url, method: :post, html: stop_form_attributes) do %><% end %>
+  <% end %>
+  <% if attachments %>
+    <%= element_tag(:template, **template_attributes) do %>
+      <%= render Poetry::Ui::Attachment::Component.new(state: :done, size: :sm) do |chip| %>
+        <% chip.with_media { render Poetry::Ui::Icon::Component.new(name: :file) } %>
+        <% chip.with_title { "" } %>
+        <% chip.with_description { "" } %>
+        <% chip.with_progress(value: 0, label: t("poetry.file_input.uploading"), hidden: true) %>
+        <% chip.with_action(label: t("poetry.file_input.retry"), hidden: true, data: chip_action_data(:attachment_retry, "retry")) { render Poetry::Ui::Icon::Component.new(name: :"rotate-cw") } %>
+        <% chip.with_action(label: t("poetry.file_input.remove"), data: chip_action_data(:attachment_remove, "remove")) { render Poetry::Ui::Icon::Component.new(name: :x) } %>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>

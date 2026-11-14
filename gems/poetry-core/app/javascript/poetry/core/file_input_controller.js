@@ -125,12 +125,26 @@ export default class FileInputController extends Controller {
     event.stopPropagation()
     const row = this.#rowOf(event.currentTarget)
 
-    if (!row) return
-    if (row.entry) this.#uploads?.remove(row.entry.id)
-    const drop = this.#drop
+    if (row) this.#leave(row)
+  }
 
-    if (drop) drop.removeFile(row.file)
-    else this.#forget(row)
+  /**
+   * A host's discard action, for files that have been delivered (a
+   * composer's sent event, once the server accepts the message): the
+   * files in the event's detail leave the selection, their signed ids
+   * with them, and a file added since stays. Without a list the whole
+   * selection goes. The event is left alone, so other listeners hear it.
+   *
+   * @param {CustomEvent} [event] - detail.files names the delivered files
+   */
+  discard(event) {
+    const files = event?.detail?.files ?? this.#files()
+
+    for (const file of files) {
+      const row = this.#rows.get(file)
+
+      if (row) this.#leave(row)
+    }
   }
 
   /**
@@ -163,6 +177,21 @@ export default class FileInputController extends Controller {
     this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
     this.#reflect()
     this.#reject([])
+  }
+
+  /**
+   * Takes one file out: its upload is cancelled or its signed id dropped,
+   * and it leaves the selection through the file-drop controller, which
+   * reports back into files.
+   *
+   * @param {{ file: File, entry: Object | null }} row
+   */
+  #leave(row) {
+    if (row.entry) this.#uploads?.remove(row.entry.id)
+    const drop = this.#drop
+
+    if (drop) drop.removeFile(row.file)
+    else this.#forget(row)
   }
 
   /**

@@ -28,6 +28,8 @@ module Poetry
       #     hint: "PDF or PNG, up to 10 MB"
       #   )
       class Component < Poetry::Core::Component
+        include Uploads
+
         # The rejection codes the file_drop behavior reports, by the
         # translation key of their message.
         REJECTION_CODES = {
@@ -200,53 +202,6 @@ module Poetry
           prompt.presence || t("poetry.file_input.prompt")
         end
 
-        # The rejection messages by code, translated, as the JSON the
-        # file-drop controller reads; the {name}, {size}, {count} and
-        # {reason} tokens are the controller's to fill.
-        # @api private
-        def rejection_messages
-          REJECTION_CODES.to_h { |key, code| [code, t("poetry.file_input.rejected.#{key}")] }.to_json
-        end
-
-        # The upload messages, translated, as the JSON the file-input
-        # controller reads.
-        # @api private
-        def upload_messages
-          UPLOAD_MESSAGES.to_h { |key| [key, t("poetry.file_input.upload.#{key}")] }.to_json
-        end
-
-        # The direct uploads endpoint: the explicit one, else Rails' own
-        # when direct_upload: is on, else nil (no direct uploads).
-        # @api private
-        def upload_url
-          return @upload_url if defined?(@upload_url)
-
-          @upload_url = if direct_upload_url.present?
-                          direct_upload_url
-                        elsif direct_upload
-                          rails_direct_uploads_url
-                        end
-        end
-
-        # Rails' direct uploads route, or a clear error when the host has
-        # not drawn it.
-        # @api private
-        def rails_direct_uploads_url
-          unless helpers.respond_to?(:rails_direct_uploads_url)
-            raise ArgumentError, "FileInput direct_upload: true needs Active Storage's direct uploads route " \
-                                 "(config.active_storage.draw_direct_upload_route) - or pass direct_upload_url:"
-          end
-
-          helpers.rails_direct_uploads_url
-        end
-
-        # The controller's upload mode: none without an endpoint, else the
-        # upload: option.
-        # @api private
-        def upload_mode
-          upload_url ? upload.to_s : "none"
-        end
-
         # The input variant renders the Input component AS the whole
         # surface, so the FileInput's own extra attributes (aria-label,
         # class, data-*) must forward onto it - dropping them would strand
@@ -335,8 +290,7 @@ module Poetry
             .merge(stimulus_attributes_for(:clear))
         end
 
-        private :prompt_text, :rejection_messages, :upload_messages, :upload_url, :rails_direct_uploads_url
-        private :upload_mode, :input_variant_component, :control_attributes, :dropzone_attributes
+        private :prompt_text, :input_variant_component, :control_attributes, :dropzone_attributes
         private :items_attributes, :template_attributes, :item_template_component, :item_action_data
         private :errors_attributes, :clear_attributes
       end

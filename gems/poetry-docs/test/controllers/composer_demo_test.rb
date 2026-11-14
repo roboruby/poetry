@@ -15,7 +15,7 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'id="composer-demo-action"'
     assert_includes response.body, "/components/composer/messages?composer=composer-demo"
     assert_includes response.body, "/components/composer/stop?composer=composer-demo"
-    %w[state ordering stop keys].each { |anchor| assert_includes response.body, %(id="#{anchor}") }
+    %w[state ordering stop files keys].each { |anchor| assert_includes response.body, %(id="#{anchor}") }
   end
 
   test "a message draws Stop, appends both rows and hands the page the reply's source" do
@@ -41,6 +41,41 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     post "/components/composer/messages", params: { composer: "composer-demo", message: "   " }
 
     assert_response :unprocessable_entity
+  end
+
+  test "a message of files alone is accepted, and the reader's row names each file" do
+    post "/components/composer/messages",
+         params: { composer: "composer-files", message: "",
+                   attachments: [ upload("sunset.png", "image/png", "12345"), upload("<b>plan.pdf", "application/pdf", "%PDF") ] }
+
+    assert_response :success
+    assert_includes response.body, 'action="append" target="composer-files-thread-messages"'
+    assert_equal 2, response.body.scan('data-slot="attachment"').size
+    assert_includes response.body, "sunset.png"
+    assert_includes response.body, "5 Bytes"
+    assert_includes response.body, "&lt;b&gt;plan.pdf"
+    refute_includes response.body, "<b>plan"
+    assert_match(/target="composer-files-action"><template><span id="composer-files-action"[^>]*data-running=""/,
+                 response.body)
+  end
+
+  test "a message keeps to three files, and a param that is not an upload is no file" do
+    files = %w[a b c d].map { |name| upload("#{name}.png", "image/png", "x") }
+    post "/components/composer/messages", params: { composer: "composer-files", message: "four", attachments: files }
+
+    assert_equal 3, response.body.scan('data-slot="attachment"').size
+
+    post "/components/composer/messages", params: { composer: "composer-files", message: "", attachments: [ "a.png" ] }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "a request larger than the examples allow is refused before it is read" do
+    post "/components/composer/messages",
+         params: { composer: "composer-files", message: "big",
+                   attachments: [ upload("big.bin", "application/octet-stream", "0" * 4.megabytes) ] }
+
+    assert_response :content_too_large
   end
 
   test "the reply streams as versioned frames of its row and ends by drawing Send" do
@@ -86,11 +121,30 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
   end
 
   test "every example renders standalone" do
-    %w[default disabled line_breaks running stopping tools].each do |name|
+    %w[attachments default disabled line_breaks running stopping tools].each do |name|
       get "/examples/components/composer/#{name}"
 
       assert_response :success, name
       assert_includes response.body, 'data-component="composer"', name
     end
+  end
+
+  test "the attachments example takes files in a multipart form with the paperclip leading the footer" do
+    get "/examples/components/composer/attachments"
+
+    assert_includes response.body, 'enctype="multipart/form-data"'
+    assert_includes response.body, 'data-slot="composer-attach"'
+    assert_includes response.body, 'accept="image/*,.pdf"'
+    assert_includes response.body, 'data-poetry--core--file-drop-max-files-value="3"'
+  end
+
+  private
+
+  def upload(name, type, body)
+    file = Tempfile.new([ "composer-demo", File.extname(name) ])
+    file.binmode
+    file.write(body)
+    file.rewind
+    Rack::Test::UploadedFile.new(file.path, type, true, original_filename: name)
   end
 end

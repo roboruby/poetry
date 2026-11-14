@@ -2922,6 +2922,12 @@
     "path": "/components/composer#stop"
   },
   {
+    "title": "Files in a message",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#files"
+  },
+  {
     "title": "Keys",
     "page": "Composer",
     "section": "components",
@@ -2932,6 +2938,12 @@
     "page": "Composer",
     "section": "components",
     "path": "/components/composer#default"
+  },
+  {
+    "title": "Attachments",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#attachments"
   },
   {
     "title": "Disabled",
@@ -2962,6 +2974,12 @@
     "page": "Composer",
     "section": "components",
     "path": "/components/composer#tools"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#behaviors"
   },
   {
     "title": "Wiring",

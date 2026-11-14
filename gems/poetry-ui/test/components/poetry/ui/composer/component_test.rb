@@ -239,6 +239,146 @@ module Poetry
           assert_raises(ArgumentError) { render_inline(Component.new(id: '"><', url: "/messages")) }
         end
 
+        FILE_DROP = "poetry--core--file-drop"
+        FILE_INPUT = "poetry--core--file-input"
+
+        def test_without_attachments_nothing_of_them_renders
+          composer = render_composer
+          html = composer.to_html
+
+          assert_nil slot(composer, "composer-form")["enctype"]
+          assert_nil slot(composer, "composer-attach")
+          assert_nil composer.at_css("input[type=file]")
+          assert_nil composer.at_css("template")
+          refute_includes html, FILE_DROP
+          refute_includes html, FILE_INPUT
+          refute_includes slot(composer, "composer-group")["class"], "dragging"
+        end
+
+        def test_attachments_put_the_intake_and_the_chips_on_the_root
+          composer = render_composer(attachments: true, accept: "image/*,.pdf", max_files: 4, max_size: 2048)
+          root = slot(composer, "composer")
+
+          assert_equal "#{FILE_DROP} #{FILE_INPUT} #{IDENTIFIER}", root["data-controller"]
+          assert_equal "image/*,.pdf", root["data-#{FILE_DROP}-accept-value"]
+          assert_equal "true", root["data-#{FILE_DROP}-multiple-value"]
+          assert_equal "4", root["data-#{FILE_DROP}-max-files-value"]
+          assert_equal "2048", root["data-#{FILE_DROP}-max-size-value"]
+          assert_equal "true", root["data-#{FILE_DROP}-paste-value"]
+          assert_equal FileInput::Component::REJECTION_CODES.values.sort,
+                       JSON.parse(root["data-#{FILE_DROP}-messages-value"]).keys.sort
+          assert_equal "none", root["data-#{FILE_INPUT}-upload-value"]
+          assert_equal "attachments[]", root["data-#{FILE_INPUT}-name-value"]
+          assert_equal "true", root["data-#{FILE_INPUT}-preview-value"]
+          assert_equal "poetry:file-drop:files->#{FILE_INPUT}#files poetry:composer:sent->#{FILE_INPUT}#discard " \
+                       "turbo:morph-element->#{IDENTIFIER}#changed", root["data-action"]
+        end
+
+        def test_the_native_file_input_is_hidden_in_the_message_form_and_three_controllers_target_it
+          composer = render_composer(attachments: true, accept: "image/*", attachments_name: "message[files][]")
+          form = slot(composer, "composer-form")
+          control = form.at_css("input[type=file]")
+
+          assert_equal "multipart/form-data", form["enctype"]
+          assert_equal "composer-attachments", control["id"]
+          assert_equal "message[files][]", control["name"]
+          assert_equal "image/*", control["accept"]
+          assert control.key?("hidden"), "the paperclip is the visible control"
+          assert control.key?("multiple")
+          assert_equal "input", control["data-#{FILE_DROP}-target"]
+          assert_equal "input", control["data-#{FILE_INPUT}-target"]
+          assert_equal "attachments", control["data-#{IDENTIFIER}-target"]
+          assert_equal "change->#{IDENTIFIER}#changed", control["data-action"]
+          assert_nil control["data-direct-upload-url"]
+        end
+
+        def test_the_paperclip_opens_the_picker_and_never_submits_or_takes_focus
+          composer = render_composer(attachments: true) { "<span id=\"tool\"></span>".html_safe }
+          attach = slot(composer, "composer-attach")
+          footer = slot(composer, "input-group-addon")
+
+          assert_equal "button", attach["type"]
+          assert_equal "Attach files", attach["aria-label"]
+          assert_equal "click->#{FILE_DROP}#open pointerdown->#{IDENTIFIER}#holdFocus", attach["data-action"]
+          leading = footer.element_children.first(2).map { |child| child["data-slot"] }
+
+          assert_equal %w[composer-attachments-control composer-attach], leading
+          assert_equal "tool", footer.element_children[2]["id"]
+          assert_equal "Add a file", slot(render_composer(attachments: true, attach_label: "Add a file"),
+                                          "composer-attach")["aria-label"]
+        end
+
+        def test_the_chips_row_leads_the_field_surface_and_starts_empty
+          composer = render_composer(attachments: true)
+          group = slot(composer, "composer-group")
+          row = slot(composer, "composer-attachments")
+
+          assert_equal row, group.element_children.first
+          assert_equal "block-start", row["data-align"]
+          assert_equal "items", row["data-#{FILE_INPUT}-target"]
+          assert_empty row.children, "an empty row hides itself (empty:hidden)"
+          assert_includes row["class"], "empty:hidden"
+          assert_includes group["class"], "group-data-[dragging]/composer:border-primary"
+        end
+
+        def test_the_chip_template_carries_the_seats_the_controller_fills
+          composer = render_composer(attachments: true)
+          template = slot(composer, "composer-attachment-template")
+          chip = Nokogiri::HTML5.fragment(template.inner_html).at_css("[data-slot=attachment]")
+
+          assert_equal "template", template["data-#{FILE_INPUT}-target"]
+          assert_equal "sm", chip["data-size"]
+          seats = %w[attachment-media attachment-title attachment-description attachment-progress]
+
+          present = seats.select { |seat| chip.at_css("[data-slot=#{seat}]") }
+
+          assert_equal seats, present
+          remove = chip.at_css("[data-upload-action=remove]")
+          retry_button = chip.at_css("[data-upload-action=retry]")
+
+          assert_equal "click->#{FILE_INPUT}#remove", remove["data-action"]
+          assert_equal "Remove", remove["aria-label"]
+          assert_equal "click->#{FILE_INPUT}#retry", retry_button["data-action"]
+          assert retry_button.key?("hidden")
+        end
+
+        def test_the_rejections_follow_the_field_surface_as_an_alert
+          composer = render_composer(attachments: true)
+          errors = slot(composer, "composer-errors")
+
+          assert_equal "ul", errors.name
+          assert_equal "alert", errors["role"]
+          assert errors.key?("hidden")
+          assert_equal "errors", errors["data-#{FILE_INPUT}-target"]
+          assert_equal slot(composer, "composer-form"), errors.parent
+          assert_equal slot(composer, "composer-group"), errors.previous_element
+        end
+
+        def test_direct_uploads_follow_the_upload_mode
+          on_submit = render_composer(attachments: true, direct_upload_url: "/uploads")
+          immediate = render_composer(attachments: true, direct_upload_url: "/uploads", upload: :immediate)
+
+          assert_equal "on_submit", slot(on_submit, "composer")["data-#{FILE_INPUT}-upload-value"]
+          assert_equal "/uploads", on_submit.at_css("input[type=file]")["data-direct-upload-url"]
+          assert_equal "immediate", slot(immediate, "composer")["data-#{FILE_INPUT}-upload-value"]
+          assert_equal "/uploads", slot(immediate, "composer")["data-#{FILE_INPUT}-url-value"]
+          assert_nil immediate.at_css("input[type=file]")["data-direct-upload-url"]
+        end
+
+        def test_immediate_uploads_need_an_endpoint_and_the_mode_is_closed
+          error = assert_raises(ArgumentError) { render_composer(attachments: true, upload: :immediate) }
+
+          assert_match "Composer upload: :immediate needs direct_upload: true or direct_upload_url:", error.message
+          assert_raises(ArgumentError) { render_composer(attachments: true, upload: :later) }
+        end
+
+        def test_a_disabled_composer_takes_no_files
+          composer = render_composer(attachments: true, disabled: true)
+
+          assert composer.at_css("input[type=file]").key?("disabled")
+          assert slot(composer, "composer-attach").key?("disabled")
+        end
+
         def test_the_helper_renders_the_slot_the_composer_renders
           %i[idle running stopping].each do |status|
             inside = slot(render_composer(status: status, stop_url: "/stop", version: 3), "composer-action").to_html

@@ -62,6 +62,7 @@ en:
       label: "Message"
       send: "Send message"
       stop: "Stop"
+      attach: "Attach files"
     sensitive_input:
       masked_label: "%{label}, masked."
       masked_fallback: "Sensitive value, masked."

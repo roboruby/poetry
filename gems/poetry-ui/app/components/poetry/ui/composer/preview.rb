@@ -4,9 +4,9 @@ module Poetry
   module Ui
     module Composer
       # The Composer preview: the three states of the action slot, a draft,
-      # the tools row, and the line-break posture. The send, the stop and
-      # the redraw need a server; previews cover the markup each state
-      # renders.
+      # the tools row, attachments, and the line-break posture. The send,
+      # the stop and the redraw need a server; previews cover the markup
+      # each state renders.
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component(id: "composer", url: "#", placeholder: "Ask anything", class: "max-w-xl")
@@ -40,6 +40,22 @@ module Poetry
         # Block content is the tools row beside Send.
         def with_tools
           render_with_template(template: "poetry/ui/composer/tools_preview")
+        end
+
+        # Files join the message: the paperclip, a drop on the composer or
+        # a paste into the field. The chips' row fills as files land.
+        def with_attachments
+          render_component(id: "composer-attachments", url: "#", attachments: true, accept: "image/*,.pdf",
+                           max_files: 4, max_size: 10.megabytes, placeholder: "Ask about a file",
+                           class: "max-w-xl")
+        end
+
+        # Direct uploads as each file lands: the file-input controller is
+        # given the endpoint, and each chip shows its upload's progress.
+        def direct_uploads
+          render_component(id: "composer-uploads", url: "#", attachments: true, upload: :immediate,
+                           direct_upload_url: "/rails/active_storage/direct_uploads",
+                           placeholder: "Ask about a file", class: "max-w-xl")
         end
 
         # Enter breaks the line; Cmd/Ctrl+Enter sends.

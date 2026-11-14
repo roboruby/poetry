@@ -5,8 +5,8 @@
   <%= poetry_composer(id: "composer-tools", placeholder: "Ask about this page",
                       url: composer_demo_messages_path(composer: "composer-tools"),
                       stop_url: composer_demo_stop_path(composer: "composer-tools")) do %>
-    <%= poetry_input_group_button(size: :"icon-sm", label: "Attach a file") do %>
-      <%= poetry_icon(name: :paperclip) %>
+    <%= poetry_input_group_button(size: :"icon-sm", label: "Search the web") do %>
+      <%= poetry_icon(name: :search) %>
     <% end %>
     <%= poetry_input_group_text { "Shift+Enter for a new line" } %>
   <% end %>

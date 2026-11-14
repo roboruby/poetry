@@ -52,11 +52,19 @@ Slots: reactions (The reactions pill overlaid on an edge; label: names the clust
 A chat message form with a growing field and a Send button the server turns into Stop while a reply runs.
 
 Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
+- `accept:` (string) - The accepted file types, in the native accept grammar ("image/*,.pdf"); other files are refused at intake with a message.
+- `attach_label:` (string) - The paperclip button's accessible name. Defaults to the locale's "Attach files".
+- `attachments:` (boolean) - default false - Files join the message: a paperclip button, a drop on the composer and a paste into the field, each file a chip above the field.
+- `attachments_name:` (string) - default "attachments[]" - The param key the files arrive under - ending in [] for Rails params, since a message may carry several.
+- `direct_upload:` (boolean) - default false - Uploads the files straight to storage through Active Storage's direct uploads, so the message posts signed ids instead of bytes.
+- `direct_upload_url:` (string) - A direct uploads endpoint other than Rails' own (an authenticated or scoped route); it turns direct uploads on.
 - `disabled:` (boolean) - default false - Disables the field and the Send button.
 - `http_method:` (symbol) - default "post" - The form's HTTP verb. Named http_method (not method:) - an option named `method` would shadow Object#method.
 - `id:` (string) - required - The composer's DOM id. The parts derive theirs from it: "<id>-form", "<id>-input", "<id>-stop", and "<id>-action" - the slot a Turbo Stream replaces.
 - `input_class:` (string) - Classes merged onto the field - min-h-24 opens it taller, max-h-80 raises the ceiling it grows to before it scrolls.
 - `label:` (string) - The field's accessible name (aria-label). Defaults to the locale's "Message".
+- `max_files:` (integer) - The most files one message holds; the surplus is refused with a message.
+- `max_size:` (integer) - The largest file a message takes, in bytes (10.megabytes).
 - `name:` (string) - default "message" - The param key the message text arrives under.
 - `placeholder:` (string) - Hint text shown while the field is empty - never a substitute for label:.
 - `send_label:` (string) - The Send button's accessible name. Defaults to the locale's "Send message".
@@ -64,26 +72,42 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - `stop_label:` (string) - The Stop button's accessible name. Defaults to the locale's "Stop".
 - `stop_url:` (string) - Where the Stop button posts. Required for any status but :idle; the composer renders a hidden form for it beside the message form.
 - `submit_on_enter:` (boolean) - default true - Enter sends and Shift+Enter breaks the line. false makes Enter a line break; Cmd/Ctrl+Enter sends either way.
+- `upload:` (symbol) - one of on_submit|immediate, default "on_submit" - When direct uploads run: :on_submit as the message is sent (Rails' own flow), :immediate as each file lands, with progress, retry and remove on its chip.
 - `url:` (string) - required - Where the message posts - the form's action.
 - `value:` (string) - A draft to open with, rendered as the field's content.
 - `version:` (integer) - A number that rises with every status change, rendered on the action slot as data-version for a versioned replace to compare. Leave it out when one ordered channel carries the status.
-- PART `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here | states: data-empty (the field holds nothing but whitespace (server-set, controller-kept) - the Send button dims)
+- PART `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here | states: data-empty (the field holds nothing but whitespace and no file is attached (server-set, controller-kept) - the Send button dims); data-populated (a file is attached (controller-set, with attachments:)); data-dragging (files are dragged over the composer (controller-set) - the field surface takes the drop tint); data-drag-reject (the dragged files would be refused (controller-set) - the tint turns destructive)
 - PART `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight
 - PART `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside
 - PART `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling
 - PART `input-group-addon` - The footer row under the field - the tools (block content) and the action slot | states: data-align=block-end (always - the row sits under the field)
 - PART `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element | states: data-running (status :running or :stopping - a Stop button is in the slot); data-stopping (status :stopping - the Stop button is busy and disabled); data-version (version: was given - the number a versioned replace compares)
 - PART `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given
+- PART `composer-attachments` - The chips' row above the field (attachments:) - one Attachment per file, filled by the controller; hidden while empty | states: data-align=block-start (always - the row sits over the field)
+- PART `composer-attachments-control` - The hidden native <input type=file> (dom id <id>-attachments) - the files' form value; the paperclip opens its picker
+- PART `composer-attachment-template` - The <template> holding one Attachment chip the controller clones per file
+- PART `composer-errors` - The rejections <ul> (role=alert) under the field surface - one line per refused file; hidden until a file is refused
 - WIRING send: `poetry--core--composer` actions holdFocus on pointerdown; targets send
 - WIRING stop: `poetry--core--composer` actions holdFocus on pointerdown, returnFocus on click; targets stop
-- WIRING root: `poetry--core--composer` registers; values submit_on_enter; actions changed on turbo:morph-element
+- WIRING root: `poetry--core--file-drop` (if attachments) registers; values accept, multiple, max_files, max_size, paste, messages | `poetry--core--file-input` (if attachments) registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files, discard on poetry:composer:sent | `poetry--core--composer` registers; values submit_on_enter; actions changed on turbo:morph-element
 - WIRING form: `poetry--core--composer` actions guard on submit, settle on turbo:submit-end; targets form
 - WIRING input: `poetry--core--composer` actions keydown on keydown, changed on input; targets input
+- WIRING attachments_control: `poetry--core--file-drop` targets input | `poetry--core--file-input` targets input | `poetry--core--composer` actions changed on change; targets attachments
+- WIRING attach: `poetry--core--file-drop` actions open on click | `poetry--core--composer` actions holdFocus on pointerdown
+- WIRING attachments: `poetry--core--file-input` targets items
+- WIRING attachment_template: `poetry--core--file-input` targets template
+- WIRING attachment_errors: `poetry--core--file-input` targets errors
+- WIRING attachment_remove: `poetry--core--file-input` actions remove on click
+- WIRING attachment_retry: `poetry--core--file-input` actions retry on click
+- BEHAVIOR file_drop (on root) - Files arrive by drop, picker or paste and are checked against accept, size and count before they land in the native input.
+- RULE: Client-side accept, size and count limits are advisory: validate the attachment on the model as well.
 - RULE: The SERVER holds the running state: render status: from your record (:idle, :running, :stopping) and redraw the slot alone with poetry_composer_action(id:, status:) in a Turbo Stream replace of "<id>-action" - never replace the form or the field, the draft lives there.
 - RULE: Send every status change down ONE ordered channel (the broadcast), or pass version: and use a versioned replace - a form's answer and a broadcast can arrive out of order and leave Stop on screen.
 - RULE: stop_url: is a POST endpoint that asks the reply to stop; a status other than :idle needs it. The Stop button submits a form of its own, so the draft is never sent with it.
 - RULE: Refuse a send on the server while a reply runs (answer 409 or 422): the field keeps its text whenever the answer is not a success, and clears the sent text when it is.
-- RULE: Block content is the tools row beside Send (attach, a model picker) - buttons there are type: :button so they never submit the message.
+- RULE: Block content is the tools row beside Send (a model picker, a mode toggle) - buttons there are type: :button so they never submit the message.
+- RULE: Files in a message are attachments: true - the paperclip, drop, paste and the chips are the composer's own; never put a FileInput or a hand-rolled file button in the tools row. The files arrive under attachments_name: ("attachments[]"), or as signed ids with direct_upload: true.
+- RULE: accept:, max_size: and max_files: refuse a file at intake and are advisory: validate the attachment on the model as well.
 - RULE: name: is the message's param key; label: is the field's accessible name - the placeholder is not a label.
 
 ## message (`poetry_message`)

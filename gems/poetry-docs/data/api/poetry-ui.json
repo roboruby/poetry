@@ -9702,7 +9702,7 @@
       "path": "Poetry::Ui::Composer::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A chat message composer: one form holding a growing textarea, a\ntools row and an action slot that shows Send or Stop. Reach for it\nwherever a person writes to a model or to another person.\n\nThe server holds the running state. Render status: from your own\nrecord, and when it changes redraw the slot alone -\npoetry_composer_action(id:, status:) in a Turbo Stream that replaces\n\"<id>-action\". The form and the field are never replaced, so a draft\ntyped while a reply streams is kept. A Stop button on the page is\nthe whole fact that a reply is running: the controller holds no copy\nof it.\n\nStop is a second small form of its own (stop_url:, a POST), so\nstopping never sends the draft. Enter sends and Shift+Enter breaks\nthe line; an Enter that confirms an input-method composition does\nnot send. Nothing is sent while the field is blank, while a reply\nruns, or while a send is already on its way. When the server accepts\na message the sent text leaves the field; a refused message (any\nanswer that is not a success) stays whole. The field grows with its\ncontent by CSS up to a ceiling, then scrolls. Without JavaScript it\nis a plain form with a submit button.\n\n**Anatomy** (`data-slot` parts):\n\n- `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here\n- `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight\n- `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside\n- `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling\n- `input-group-addon` - The footer row under the field - the tools (block content) and the action slot\n- `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element\n- `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given",
+      "docstring": "A chat message composer: one form holding a growing textarea, a\ntools row and an action slot that shows Send or Stop. Reach for it\nwherever a person writes to a model or to another person.\n\nThe server holds the running state. Render status: from your own\nrecord, and when it changes redraw the slot alone -\npoetry_composer_action(id:, status:) in a Turbo Stream that replaces\n\"<id>-action\". The form and the field are never replaced, so a draft\ntyped while a reply streams is kept. A Stop button on the page is\nthe whole fact that a reply is running: the controller holds no copy\nof it.\n\nStop is a second small form of its own (stop_url:, a POST), so\nstopping never sends the draft. Enter sends and Shift+Enter breaks\nthe line; an Enter that confirms an input-method composition does\nnot send. Nothing is sent while the field is blank, while a reply\nruns, or while a send is already on its way. When the server accepts\na message the sent text leaves the field; a refused message (any\nanswer that is not a success) stays whole. The field grows with its\ncontent by CSS up to a ceiling, then scrolls. Without JavaScript it\nis a plain form with a submit button.\n\nattachments: true makes files part of the message. A paperclip\nopens the picker, a file dropped on the composer or pasted into the\nfield lands in it, and every file shows as a chip above the field\nthat the reader can remove. The files post with the message under\nattachments_name:, or as Active Storage signed ids with\ndirect_upload:. A message of files alone can be sent, and the chips\nleave when the server accepts the message. Attaching needs\nJavaScript.\n\n**Anatomy** (`data-slot` parts):\n\n- `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here\n- `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight\n- `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside\n- `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling\n- `input-group-addon` - The footer row under the field - the tools (block content) and the action slot\n- `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element\n- `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given\n- `composer-attachments` - The chips' row above the field (attachments:) - one Attachment per file, filled by the controller; hidden while empty\n- `composer-attachments-control` - The hidden native <input type=file> (dom id <id>-attachments) - the files' form value; the paperclip opens its picker\n- `composer-attachment-template` - The <template> holding one Attachment chip the controller clones per file\n- `composer-errors` - The rejections <ul> (role=alert) under the field surface - one line per refused file; hidden until a file is refused",
       "examples": [
         {
           "title": "A chat's composer",
@@ -9711,6 +9711,74 @@
       ],
       "file": "app/components/poetry/ui/composer/component.rb",
       "methods": [
+        {
+          "name": "accept",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The accepted file types, in the native accept grammar (\"image/*,.pdf\"); other files are refused at intake with a message.\n\nConstructor option `accept:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 116
+        },
+        {
+          "name": "attach_label",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The paperclip button's accessible name. Defaults to the locale's \"Attach files\".\n\nConstructor option `attach_label:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 128
+        },
+        {
+          "name": "attachments",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Files join the message: a paperclip button, a drop on the composer and a paste into the field, each file a chip above the field.\n\nConstructor option `attachments:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 110
+        },
+        {
+          "name": "attachments_name",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The param key the files arrive under - ending in [] for Rails params, since a message may carry several.\n\nConstructor option `attachments_name:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "defaults to `\"attachments[]\"`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 113
+        },
         {
           "name": "composer_id",
           "scope": "instance",
@@ -9726,7 +9794,41 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 163
+          "line": 266
+        },
+        {
+          "name": "direct_upload",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Uploads the files straight to storage through Active Storage's direct uploads, so the message posts signed ids instead of bytes.\n\nConstructor option `direct_upload:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 120
+        },
+        {
+          "name": "direct_upload_url",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "A direct uploads endpoint other than Rails' own (an authenticated or scoped route); it turns direct uploads on.\n\nConstructor option `direct_upload_url:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 123
         },
         {
           "name": "disabled",
@@ -9743,7 +9845,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 84
+          "line": 106
         },
         {
           "name": "http_method",
@@ -9760,7 +9862,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 62
+          "line": 84
         },
         {
           "name": "id",
@@ -9777,7 +9879,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 57
+          "line": 79
         },
         {
           "name": "input_class",
@@ -9794,7 +9896,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 69
+          "line": 91
         },
         {
           "name": "label",
@@ -9811,7 +9913,41 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 68
+          "line": 90
+        },
+        {
+          "name": "max_files",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The most files one message holds; the surplus is refused with a message.\n\nConstructor option `max_files:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 119
+        },
+        {
+          "name": "max_size",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The largest file a message takes, in bytes (10.megabytes).\n\nConstructor option `max_size:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 118
         },
         {
           "name": "name",
@@ -9828,7 +9964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 65
+          "line": 87
         },
         {
           "name": "placeholder",
@@ -9845,7 +9981,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 67
+          "line": 89
         },
         {
           "name": "root_attributes",
@@ -9857,7 +9993,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 169
+          "line": 272
         },
         {
           "name": "send_label",
@@ -9874,7 +10010,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 85
+          "line": 107
         },
         {
           "name": "status",
@@ -9891,7 +10027,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 72
+          "line": 94
         },
         {
           "name": "stop_label",
@@ -9908,7 +10044,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 87
+          "line": 109
         },
         {
           "name": "stop_url",
@@ -9925,7 +10061,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 75
+          "line": 97
         },
         {
           "name": "submit_on_enter",
@@ -9942,7 +10078,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 81
+          "line": 103
+        },
+        {
+          "name": "upload",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "When direct uploads run: :on_submit as the message is sent (Rails' own flow), :immediate as each file lands, with progress, retry and remove on its chip.\n\nConstructor option `upload:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "one of: `on_submit, immediate`; defaults to `:on_submit`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 125
         },
         {
           "name": "url",
@@ -9959,7 +10112,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 61
+          "line": 83
         },
         {
           "name": "value",
@@ -9976,7 +10129,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 66
+          "line": 88
         },
         {
           "name": "version",
@@ -9993,7 +10146,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 78
+          "line": 100
         }
       ],
       "constants": [
@@ -10003,9 +10156,24 @@
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
         },
         {
+          "name": "REJECTION_CODES",
+          "value": "FileInput::Component::REJECTION_CODES",
+          "docstring": "The intake's rejection codes and upload messages are FileInput's:\none intake, one vocabulary."
+        },
+        {
           "name": "STATUSES",
           "value": "%i[idle running stopping].freeze",
           "docstring": "The closed vocabulary for the status axis."
+        },
+        {
+          "name": "UPLOAD_MESSAGES",
+          "value": "FileInput::Component::UPLOAD_MESSAGES",
+          "docstring": "The upload messages the file-input controller shows, by translation key."
+        },
+        {
+          "name": "UPLOAD_MODES",
+          "value": "%i[on_submit immediate].freeze",
+          "docstring": "The closed vocabulary for upload: (when direct uploads run)."
         }
       ]
     },
@@ -10013,7 +10181,7 @@
       "path": "Poetry::Ui::Composer::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Utility-only: InputGroup, Textarea and Button wear the chrome, so\nthe composer adds no theme CSS. What is here is mechanics: the\nfield's one-row floor and its growth ceiling (past it the field\nscrolls), the action slot's place at the end of the footer row, and\nthe Send button's dimming while the field is empty.",
+      "docstring": "Utility-only: InputGroup, Textarea and Button wear the chrome, so\nthe composer adds no theme CSS. What is here is mechanics: the\nfield's one-row floor and its growth ceiling (past it the field\nscrolls), the action slot's place at the end of the footer row, and\nthe Send button's dimming while the field is empty. With\nattachments: the field surface's tint while files are dragged over\nthe composer (the controllers' data-dragging / data-drag-reject on\nthe ROOT), the chips' wrapping row, and the rejections under the\nsurface.",
       "examples": [],
       "file": "app/components/poetry/ui/composer/style.rb",
       "methods": [],
@@ -13196,7 +13364,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 111
+          "line": 113
         },
         {
           "name": "camera",
@@ -13213,7 +13381,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 134
+          "line": 136
         },
         {
           "name": "described_by",
@@ -13230,7 +13398,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 139
+          "line": 141
         },
         {
           "name": "direct_upload",
@@ -13247,7 +13415,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 117
+          "line": 119
         },
         {
           "name": "direct_upload_url",
@@ -13264,7 +13432,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 120
+          "line": 122
         },
         {
           "name": "directory",
@@ -13281,7 +13449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 132
+          "line": 134
         },
         {
           "name": "disabled",
@@ -13298,7 +13466,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 136
+          "line": 138
         },
         {
           "name": "hint",
@@ -13315,7 +13483,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 141
+          "line": 143
         },
         {
           "name": "id",
@@ -13332,7 +13500,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 108
+          "line": 110
         },
         {
           "name": "invalid",
@@ -13349,7 +13517,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 137
+          "line": 139
         },
         {
           "name": "max_files",
@@ -13366,7 +13534,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 115
+          "line": 117
         },
         {
           "name": "max_size",
@@ -13383,7 +13551,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 113
+          "line": 115
         },
         {
           "name": "min_size",
@@ -13400,7 +13568,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 114
+          "line": 116
         },
         {
           "name": "multiple",
@@ -13417,7 +13585,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 109
+          "line": 111
         },
         {
           "name": "name",
@@ -13434,7 +13602,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 105
+          "line": 107
         },
         {
           "name": "overlay",
@@ -13451,7 +13619,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 130
+          "line": 132
         },
         {
           "name": "paste",
@@ -13468,7 +13636,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 128
+          "line": 130
         },
         {
           "name": "preview",
@@ -13485,7 +13653,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 126
+          "line": 128
         },
         {
           "name": "prompt",
@@ -13502,7 +13670,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 140
+          "line": 142
         },
         {
           "name": "root_attributes",
@@ -13514,7 +13682,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 283
+          "line": 238
         },
         {
           "name": "upload",
@@ -13531,7 +13699,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 122
+          "line": 124
         },
         {
           "name": "variant",
@@ -13548,7 +13716,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 102
+          "line": 104
         }
       ],
       "constants": [
@@ -13583,7 +13751,7 @@
       "path": "Poetry::Ui::FileInput::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Utility-only (the Separator/Spinner rule): the input variant wears\nthe Input component's own chrome; the dropzone is structural\nutilities on semantic tokens, with the controllers' data-dragging /\ndata-drag-reject / data-drag-global / data-populated (on the ROOT)\ndriving the zone's states through group-data variants. data-slot\nselectors are the restyle seam.",
+      "docstring": "Utility-only (the Separator/Spinner rule): the input variant wears\nthe Input component's own chrome; the dropzone is structural\nutilities on semantic tokens, with the controllers' data-dragging /\ndata-drag-reject / data-drag-global / data-populated (on the ROOT)\ndriving the zone's states through group-data variants. A refused\ndrag is also a drag, so its tint names both states: the longer\nselector wins whichever rule the build emits last. data-slot\nselectors are the restyle seam.",
       "examples": [],
       "file": "app/components/poetry/ui/file_input/style.rb",
       "methods": [],

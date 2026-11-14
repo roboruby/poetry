@@ -7,7 +7,9 @@ module Poetry
       # the Input component's own chrome; the dropzone is structural
       # utilities on semantic tokens, with the controllers' data-dragging /
       # data-drag-reject / data-drag-global / data-populated (on the ROOT)
-      # driving the zone's states through group-data variants. data-slot
+      # driving the zone's states through group-data variants. A refused
+      # drag is also a drag, so its tint names both states: the longer
+      # selector wins whichever rule the build emits last. data-slot
       # selectors are the restyle seam.
       class Style < Poetry::Core::Style
         base "group/file-input flex w-full min-w-0 flex-col gap-2"
@@ -19,8 +21,8 @@ module Poetry
                 "has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50 " \
                 "group-data-[dragging]/file-input:border-primary " \
                 "group-data-[dragging]/file-input:bg-accent/40 " \
-                "group-data-[drag-reject]/file-input:border-destructive " \
-                "group-data-[drag-reject]/file-input:bg-destructive/10"
+                "group-data-[dragging]/file-input:group-data-[drag-reject]/file-input:border-destructive " \
+                "group-data-[dragging]/file-input:group-data-[drag-reject]/file-input:bg-destructive/10"
         element :dropzone_disabled, "pointer-events-none cursor-not-allowed opacity-50"
         element :icon, "size-5 text-muted-foreground"
         element :prompt, "text-sm font-medium"

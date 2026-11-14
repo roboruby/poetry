@@ -75,6 +75,43 @@
       head :no_content
     end
   CODE
+  attachments_view_source = <<~CODE
+    #{o}# app/views/chats/show.html.erb #{e}
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content",
+                        status: @chat.composer_status, stop_url: stop_chat_path(@chat),
+                        attachments: true, direct_upload: true,
+                        accept: "image/*,.pdf", max_files: 5, max_size: 10.megabytes) #{e}
+  CODE
+  attachments_server_source = <<~CODE
+    # app/models/message.rb
+    class Message < ApplicationRecord
+      acts_as_message
+      has_many_attached :attachments
+    end
+
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+      files = Array(params[:attachments]).compact_blank   # signed ids, with direct_upload: true
+      return head(:unprocessable_entity) if content.empty? && files.empty?
+      return head(:conflict) if chat.responding?
+
+      chat.begin_turn!
+      chat.broadcast_composer_action
+      ChatResponseJob.perform_later(chat, content, files)
+      head :no_content                                    # accepted: the text and the chips leave
+    end
+
+    # app/jobs/chat_response_job.rb
+    def perform(chat, content, files = [])
+      blobs = files.map { |id| ActiveStorage::Blob.find_signed!(id) }
+      # Check each blob's content_type and byte_size here: the composer's limits are a courtesy.
+      chat.ask(content, with: blobs) do |chunk|
+        # update the reply's row here
+      end
+    end
+  CODE
   job_source = <<~CODE
     # app/jobs/chat_response_job.rb
     class ChatResponseJob < ApplicationJob
@@ -157,6 +194,36 @@
     running, or a late press of Stop ends the next reply instead. And refuse a message on the server
     while a reply runs: the composer already holds it back, but a second tab or a script will not.
   </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="files">Files in a message</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">attachments: true</code> makes files part of the message. A paperclip
+    opens the file picker, a file dropped on the composer or pasted into the field lands in it, and each
+    file shows as a chip above the field with a button that removes it.
+    <code class="text-foreground">accept:</code>, <code class="text-foreground">max_size:</code> and
+    <code class="text-foreground">max_files:</code> refuse a file as it arrives and say why under the
+    field. They are a courtesy to the person choosing: check the files again on the server.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The files arrive under <code class="text-foreground">params[:attachments]</code>, or the key you
+    give as <code class="text-foreground">attachments_name:</code>. A message of files alone can be
+    sent, so accept one whose text is blank. When the server accepts the message, the chips that went
+    with it leave the composer and a file added since stays. When it refuses, they all stay.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    With <code class="text-foreground">direct_upload: true</code> the files go straight to storage
+    through Active Storage and the message posts their signed ids, which a job can take. They upload as
+    the message is sent, or with <code class="text-foreground">upload: :immediate</code> as each one
+    lands, with progress, retry and remove on its chip; sending waits until they finish. Without direct
+    uploads the form posts the files themselves, so attach them to a record before a job needs them.
+    RubyLLM takes blobs and uploaded files alike through
+    <code class="text-foreground">with:</code>, and keeps them on a message that
+    <code class="text-foreground">has_many_attached :attachments</code>.
+  </p>
+  <%= poetry_code_block(code: attachments_view_source, language: "erb", label: "The composer") %>
+  <%= poetry_code_block(code: attachments_server_source, language: "ruby", label: "The server") %>
 </section>
 
 <section class="flex flex-col gap-3">

@@ -369,3 +369,212 @@ describe("poetry--core--composer", () => {
     expect(document.activeElement).toBe(document.body)
   })
 })
+
+// Files as part of the message: the composer's root carries the file-drop
+// and file-input controllers beside its own, and the native file input is
+// the composer's attachments target.
+const FILES = "poetry--core--file-input"
+
+const attachMarkup = ({ value = "" } = {}) => `
+  <div id="composer" data-controller="poetry--core--file-drop ${FILES} ${IDENTIFIER}"
+       ${value.trim() === "" ? "data-empty" : ""}
+       data-poetry--core--file-drop-multiple-value="true"
+       data-${FILES}-multiple-value="true"
+       data-action="poetry:file-drop:files->${FILES}#files poetry:composer:sent->${FILES}#discard
+                    turbo:morph-element->${IDENTIFIER}#changed">
+    <form id="form" action="/messages" method="post" data-${IDENTIFIER}-target="form"
+          data-action="submit->${IDENTIFIER}#guard turbo:submit-end->${IDENTIFIER}#settle">
+      <div id="items" data-${FILES}-target="items"></div>
+      <textarea id="input" name="content" data-${IDENTIFIER}-target="input"
+                data-action="keydown->${IDENTIFIER}#keydown input->${IDENTIFIER}#changed">${value}</textarea>
+      <input id="files" type="file" name="files[]" multiple hidden
+             data-poetry--core--file-drop-target="input" data-${FILES}-target="input"
+             data-${IDENTIFIER}-target="attachments" data-action="change->${IDENTIFIER}#changed">
+      <span id="composer-action">${SEND}</span>
+    </form>
+    <template data-${FILES}-target="template">
+      <div data-slot="attachment"><span data-slot="attachment-title"></span>
+        <button type="button" data-upload-action="remove" data-action="click->${FILES}#remove">remove</button></div>
+    </template>
+  </div>`
+
+const file = (name) => new File([new Uint8Array(4)], name, { type: "text/plain", lastModified: 0 })
+
+describe("poetry--core--composer with attachments", () => {
+  let application
+  let sent
+
+  const turbo = (event) => {
+    if (event.defaultPrevented) return
+    event.preventDefault()
+    sent.push({ text: el("input").value, files: Array.from(el("files").files).map((held) => held.name) })
+  }
+
+  const names = () => Array.from(el("items").querySelectorAll("[data-slot=attachment-title]")).map((title) => title.textContent)
+
+  beforeEach(async () => {
+    sent = []
+    document.body.innerHTML = `<div id="host"></div>`
+    document.addEventListener("submit", turbo)
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+  })
+
+  // The composer leaves the document before the application stops, so
+  // the file-drop controller's document listeners go with it.
+  afterEach(async () => {
+    document.removeEventListener("submit", turbo)
+    el("host")?.replaceChildren()
+    await nextFrame()
+    application.stop()
+  })
+
+  async function mount(options = {}) {
+    el("host").innerHTML = attachMarkup(options)
+    await nextFrame()
+    // jsdom's input.files is not assignable with a plain array.
+    Object.defineProperty(el("files"), "files", { writable: true, configurable: true, value: [] })
+  }
+
+  const pick = async (...files) => {
+    el("files").files = [...Array.from(el("files").files), ...files]
+    el("files").dispatchEvent(new Event("change", { bubbles: true }))
+    await nextFrame()
+  }
+
+  it("a message of files alone is not blank: the emptiness lifts and Enter sends it", async () => {
+    await mount()
+
+    expect(el("composer").hasAttribute("data-empty")).toBe(true)
+
+    await pick(file("a.txt"))
+
+    expect(el("composer").hasAttribute("data-empty")).toBe(false)
+    expect(names()).toEqual(["a.txt"])
+
+    press()
+
+    expect(sent).toEqual([{ text: "", files: ["a.txt"] }])
+  })
+
+  it("removing the last file of a wordless message makes it blank again", async () => {
+    await mount()
+    await pick(file("a.txt"))
+
+    el("items").querySelector("[data-upload-action=remove]").click()
+    await nextFrame()
+
+    expect(el("composer").hasAttribute("data-empty")).toBe(true)
+
+    press()
+
+    expect(sent).toEqual([])
+  })
+
+  it("an accepted message takes its files with it and keeps a file added since", async () => {
+    await mount({ value: "see attached" })
+    await pick(file("a.txt"), file("b.txt"))
+    const heard = []
+
+    document.addEventListener("poetry:composer:sent", (event) => heard.push(event.detail.files.map((held) => held.name)), { once: true })
+    press()
+    await pick(file("late.txt"))
+    settle(true)
+    await nextFrame()
+
+    expect(heard).toEqual([["a.txt", "b.txt"]])
+    expect(Array.from(el("files").files).map((held) => held.name)).toEqual(["late.txt"])
+    expect(names()).toEqual(["late.txt"])
+    expect(el("input").value).toBe("")
+    expect(el("composer").hasAttribute("data-empty")).toBe(false)
+  })
+
+  it("a refused message keeps its files and reports nothing", async () => {
+    await mount({ value: "see attached" })
+    await pick(file("a.txt"))
+    const heard = []
+    const listen = (event) => heard.push(event.type)
+
+    document.addEventListener("poetry:composer:sent", listen)
+    press()
+    settle(false)
+    await nextFrame()
+    document.removeEventListener("poetry:composer:sent", listen)
+
+    expect(heard).toEqual([])
+    expect(names()).toEqual(["a.txt"])
+    expect(el("input").value).toBe("see attached")
+  })
+
+  it("a submit already held back is not a send: nothing is cleared when it settles", async () => {
+    await mount({ value: "uploads still running" })
+    await pick(file("a.txt"))
+    // The upload queue's place: a capture listener that holds the submit.
+    const hold = (event) => event.preventDefault()
+
+    el("form").addEventListener("submit", hold, { capture: true })
+    press()
+    el("form").removeEventListener("submit", hold, { capture: true })
+    settle(true)
+    await nextFrame()
+
+    expect(sent).toEqual([])
+    expect(el("input").value).toBe("uploads still running")
+    expect(names()).toEqual(["a.txt"])
+  })
+})
+
+describe("poetry--core--composer beside other listeners", () => {
+  let application
+  let sent
+
+  const turbo = (event) => {
+    if (event.defaultPrevented) return
+    event.preventDefault()
+    sent.push(el("input").value)
+  }
+
+  beforeEach(async () => {
+    sent = []
+    document.body.innerHTML = `<div id="host"></div>`
+    document.addEventListener("submit", turbo)
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+    el("host").innerHTML = markup({ value: "hello" })
+    await nextFrame()
+  })
+
+  afterEach(async () => {
+    document.removeEventListener("submit", turbo)
+    el("host")?.replaceChildren()
+    await nextFrame()
+    application.stop()
+  })
+
+  it("an Enter an earlier listener claimed is not a send", async () => {
+    // An open menu's place: it takes the key before the composer sees it.
+    const claim = (event) => event.preventDefault()
+
+    el("form").addEventListener("keydown", claim, { capture: true })
+    press()
+    el("form").removeEventListener("keydown", claim, { capture: true })
+
+    expect(sent).toEqual([])
+
+    press()
+
+    expect(sent).toEqual(["hello"])
+  })
+
+  it("an accepted message is reported even without a file input, with no files", async () => {
+    const heard = []
+
+    document.addEventListener("poetry:composer:sent", (event) => heard.push(event.detail.files), { once: true })
+    press()
+    settle(true)
+
+    expect(heard).toEqual([[]])
+  })
+})

@@ -319,15 +319,20 @@ module Poetry
 
           # Adds a Poetry behavior's wiring to this element, here in
           # declaration order, and records the use for the registry and
-          # the agent rules ({Poetry::Core::Behavior}).
+          # the agent rules ({Poetry::Core::Behavior}). if:/unless: make
+          # the behavior optional: the condition lands on every controller
+          # its wiring declares.
           #
           # @param name [Symbol, Module] the behavior's name or module
-          # @param options [Hash] the behavior's own options
+          # @param options [Hash] the behavior's own options, and if:/unless:
+          #   conditions (Symbol predicate or Proc)
           # @return [void]
           # @raise [DeclarationError] for a runtime behavior, which wires
           #   nothing, or options the behavior does not take
           # @example
           #   on(:list) { behavior :roving_focus, orientation: :option, loop: true }
+          # @example A behavior the component turns on with an option
+          #   on(:root) { behavior :file_drop, paste: true, if: :attachments }
           def behavior(name, **options)
             behavior = Poetry::Core::Behavior.resolve(name)
             unless behavior.wiring
@@ -335,13 +340,19 @@ module Poetry
                     "#{@declaring}: behavior #{behavior.behavior_name} wires nothing - use_behavior it at class level"
             end
 
+            given = options.except(*CONDITION_KEYS)
+            @behavior_conditions = Declarations.extract_conditions!(
+              "#{@declaring} behavior #{behavior.behavior_name}", options.slice(*CONDITION_KEYS)
+            )
             begin
-              instance_exec(**options, &behavior.wiring)
+              instance_exec(**given, &behavior.wiring)
             rescue ArgumentError => e
               raise DeclarationError, "#{@declaring}: behavior #{behavior.behavior_name} - #{e.message}"
+            ensure
+              @behavior_conditions = nil
             end
             @behavior_uses << Poetry::Core::Behavior::Use.new(behavior: behavior, element: @element.name,
-                                                              options: options)
+                                                              options: given)
           end
 
           # Wires one Stimulus controller to this element.
@@ -357,6 +368,7 @@ module Poetry
             conditions = Declarations.extract_conditions!(
               "#{@declaring} controller #{resolved}", options
             )
+            conditions = behavior_conditions_over(resolved, conditions)
             wiring = Wiring.new(identifier: resolved, conditions: conditions, entries: [])
             WiringDSL.new(@declaring, wiring).instance_exec(&block) if block
             @element.wirings << wiring
@@ -369,6 +381,21 @@ module Poetry
           # @param name [Symbol, String] the event's short name
           # @return [String] the full emitted event name
           def event(controller, name) = Declarations.event_name(controller, name)
+
+          private
+
+          # The conditions a controller declared inside a conditional
+          # behavior's wiring carries: the behavior's own. A wiring that
+          # sets conditions of its own under one is refused, since the two
+          # would have to be combined and nothing says how.
+          def behavior_conditions_over(identifier, conditions)
+            return conditions if @behavior_conditions.nil?
+            return @behavior_conditions if conditions.nil?
+
+            raise DeclarationError,
+                  "#{@declaring} controller #{identifier}: a conditional behavior's wiring cannot set " \
+                  "conditions of its own"
+          end
         end
 
         # Inside `controller :name do ... end`: the wiring vocabulary.

@@ -10,7 +10,9 @@
 # Nothing is stored: the composer's id travels in the address, and every
 # render of the slot is stamped with the clock, so the versioned replace
 # drops whichever frame arrives late (the stream's last frame and Stop's
-# answer can cross).
+# answer can cross). A message's files are read for their names and sizes,
+# which the reader's row shows, and are not kept; a request larger than
+# the examples' own limits allow is refused before it is read.
 module Poetry
   module Docs
     class ComposerDemoController < ApplicationController
@@ -24,15 +26,22 @@ module Poetry
       # How many words each frame adds, and the pause before it.
       WORDS_PER_FRAME = 2
       FRAME_MS = 220
+      # The files one message may carry here, and the request size that
+      # leaves room for them (the examples allow three files of 1 MB).
+      MAX_FILES = 3
+      MAX_REQUEST_BYTES = 4.megabytes
 
-      # POST: a message.
+      # POST: a message, with or without files.
       def create
+        return head(:content_too_large) if request.content_length.to_i > MAX_REQUEST_BYTES
+
         text = params[:message].to_s.strip
-        return head(:unprocessable_entity) if text.empty?
+        files = attached
+        return head(:unprocessable_entity) if text.empty? && files.empty?
 
         reply = "#{composer}-reply-#{SecureRandom.hex(4)}"
         render_streams(
-          turbo.append(thread, row(id: "#{reply}-question", text: text, align: :end)),
+          turbo.append(thread, row(id: "#{reply}-question", text: text, align: :end, files: files)),
           turbo.append(thread, row(id: reply, text: nil, version: 0)),
           turbo.append(composer, source_tag(reply)),
           action(:running)
@@ -95,9 +104,15 @@ module Poetry
         turbo.vreplace("#{composer}-action", slot)
       end
 
-      def row(id:, text:, align: :start, version: nil)
+      def row(id:, text:, align: :start, version: nil, files: [])
         render_to_string(partial: "poetry/docs/composer_demo/row",
-                         locals: { id: id, text: text, align: align, version: version })
+                         locals: { id: id, text: text, align: align, version: version, files: files })
+      end
+
+      # The message's files as name and size pairs; anything that is not an upload is left out.
+      def attached
+        Array(params[:attachments]).select { |file| file.respond_to?(:original_filename) }.first(MAX_FILES)
+                                   .map { |file| [ file.original_filename.to_s, file.size.to_i ] }
       end
 
       def source_tag(reply)

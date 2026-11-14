@@ -8340,7 +8340,7 @@
           "scope": "instance",
           "group": null,
           "signature": "behavior(name, **options)",
-          "docstring": "Adds a Poetry behavior's wiring to this element, here in\ndeclaration order, and records the use for the registry and\nthe agent rules ({Poetry::Core::Behavior}).",
+          "docstring": "Adds a Poetry behavior's wiring to this element, here in\ndeclaration order, and records the use for the registry and\nthe agent rules ({Poetry::Core::Behavior}). if:/unless: make\nthe behavior optional: the condition lands on every controller\nits wiring declares.",
           "params": [
             {
               "name": "name",
@@ -8355,7 +8355,7 @@
               "types": [
                 "Hash"
               ],
-              "text": "the behavior's own options"
+              "text": "the behavior's own options, and if:/unless:\nconditions (Symbol predicate or Proc)"
             }
           ],
           "return": {
@@ -8368,10 +8368,14 @@
             {
               "title": "",
               "text": "on(:list) { behavior :roving_focus, orientation: :option, loop: true }"
+            },
+            {
+              "title": "A behavior the component turns on with an option",
+              "text": "on(:root) { behavior :file_drop, paste: true, if: :attachments }"
             }
           ],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 331
+          "line": 336
         },
         {
           "name": "controller",
@@ -8405,7 +8409,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 355
+          "line": 366
         },
         {
           "name": "event",
@@ -8439,7 +8443,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 371
+          "line": 383
         },
         {
           "name": "initialize",
@@ -9089,7 +9093,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 468
+          "line": 495
         },
         {
           "name": "behavior_value",
@@ -9121,7 +9125,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 446
+          "line": 473
         },
         {
           "name": "event",
@@ -9155,7 +9159,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 490
+          "line": 517
         },
         {
           "name": "initialize",
@@ -9187,7 +9191,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 386
+          "line": 413
         },
         {
           "name": "register",
@@ -9212,7 +9216,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 398
+          "line": 425
         },
         {
           "name": "target",
@@ -9244,7 +9248,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 479
+          "line": 506
         },
         {
           "name": "value",
@@ -9291,7 +9295,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 420
+          "line": 447
         }
       ],
       "constants": []

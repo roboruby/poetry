@@ -424,8 +424,9 @@
     }
   },
   "poetry--core--composer": {
-    "doc": "The Composer seams: a chat message form whose state the SERVER holds. The form is never replaced; the server redraws one slot inside it with a Send button or a Stop button, and a Stop button on the page is the whole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always sends; with submit-on-enter off a bare Enter is a line break). An Enter that confirms an input-method composition never sends. The form's own submit event is the one gate, so the key and the button obey the same rules: nothing is sent while the field is blank, while a reply runs, or while a send is already on its way. Turbo marks the form aria-busy for the length of a request; the one moment before that mark lands is bridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and whatever was typed after it stays. A refused message stays whole.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it where it was, so a field being typed in keeps its on-screen keyboard and a reader who put the keyboard away is not handed it back. A button pressed from the keyboard does hold focus, and the server is about to disable or replace it, so focus goes to the field instead of the page.",
+    "doc": "The Composer seams: a chat message form whose state the SERVER holds. The form is never replaced; the server redraws one slot inside it with a Send button or a Stop button, and a Stop button on the page is the whole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always sends; with submit-on-enter off a bare Enter is a line break). An Enter that confirms an input-method composition never sends. The form's own submit event is the one gate, so the key and the button obey the same rules: nothing is sent while the field is blank, while a reply runs, or while a send is already on its way. Turbo marks the form aria-busy for the length of a request; the one moment before that mark lands is bridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and whatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the attachments target): a message of files alone is not blank, and once the server accepts it the sent event names the files that went, so the file-input controller beside this one drops their chips and keeps any file added since.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it where it was, so a field being typed in keeps its on-screen keyboard and a reader who put the keyboard away is not handed it back. A button pressed from the keyboard does hold focus, and the server is about to disable or replace it, so focus goes to the field instead of the page.",
     "targets": [
+      "attachments",
       "form",
       "input",
       "send",
@@ -450,16 +451,18 @@
       "settle",
       "submit"
     ],
-    "events": [],
+    "events": [
+      "poetry:composer:sent"
+    ],
     "method_docs": {
-      "changed": "The field's input action, and the root's turbo:morph-element action: keeps data-empty on the root honest. A morph puts the server's attributes back on the root while the field keeps its draft, so the emptiness is read again from the field once the morph has passed.",
+      "changed": "The field's input action, the file input's change action and the root's turbo:morph-element action: keeps data-empty on the root honest. A morph puts the server's attributes back on the root while the field keeps its draft, so the emptiness is read again from the field once the morph has passed.",
       "connect": "Reflects the field's emptiness (a browser may restore a draft the server never rendered).",
       "disconnect": "Undoes the per-connect scope (the pending flag's timer).",
       "guard": "The form's submit action, the one gate for the key and the button: refuses a blank message, a send while a reply runs (a Stop button is on the page), and a second send while the first is on its way.",
       "holdFocus": "The Send and Stop buttons' pointerdown action: a press does not take focus. A field being typed in keeps it, and with it the on-screen keyboard.",
       "keydown": "The field's keydown action: Enter sends, Shift+Enter is left to the browser, and an Enter that belongs to an input-method composition is never read as a send.",
       "returnFocus": "The Stop button's click action: when the button itself holds focus (a press from the keyboard), focus moves to the field, because the server is about to replace the button and a replaced element drops focus to the page.",
-      "settle": "The form's turbo:submit-end action: an accepted message leaves the field (text typed since the send stays), a refused one stays whole, and a send made from inside the composer ends with focus in the field unless the reader took it elsewhere meanwhile.",
+      "settle": "The form's turbo:submit-end action: an accepted message leaves the field (text typed since the send stays) and is reported with the files that went with it, a refused one stays whole, and a send made from inside the composer ends with focus in the field unless the reader took it elsewhere meanwhile.",
       "submit": "Sends the message through the form, as a press of the Send button would. The form's submit action decides whether anything goes."
     }
   },
@@ -864,6 +867,7 @@
     "methods": [
       "clear",
       "connect",
+      "discard",
       "disconnect",
       "files",
       "remove",
@@ -876,6 +880,7 @@
     "method_docs": {
       "clear": "The clear button's click action: cancels every upload, empties the input and dispatches a real change, which the file-drop controller hears as a cleared selection.",
       "connect": "Wires the upload mode and reflects the input's current selection.",
+      "discard": "A host's discard action, for files that have been delivered (a composer's sent event, once the server accepts the message): the files in the event's detail leave the selection, their signed ids with them, and a file added since stays. Without a list the whole selection goes. The event is left alone, so other listeners hear it.",
       "disconnect": "Unbinds the queue and the listeners; the chips' object URLs are released.",
       "files": "The file-drop controller's files action (drop, paste, picker and a removal land here): reflects the selection as chips, shows the rejections, starts the uploads in immediate mode and reports the file names.",
       "remove": "A chip's remove action: the upload is cancelled or its signed id dropped, and the file leaves the selection through the file-drop controller, which reports back into files.",

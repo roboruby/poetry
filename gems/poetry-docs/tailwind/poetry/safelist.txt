@@ -2,6 +2,7 @@
 **:data-[slot=navigation-menu-link]:focus:outline-none
 **:data-[slot=navigation-menu-link]:focus:ring-0
 *:data-[slot=attachment]:flex-none
+*:data-[slot=attachment]:max-w-60
 *:data-[slot=attachment]:snap-start
 *:data-[slot=attachment]:w-full
 *:data-[slot=avatar]:ring-2
@@ -910,10 +911,14 @@ group-data-[completed]/timeline-item:border-primary
 group-data-[completed]/timeline-item:text-primary
 group-data-[disabled=true]:pointer-events-none
 group-data-[drag-global]/file-input:flex
-group-data-[drag-reject]/file-input:bg-destructive/10
-group-data-[drag-reject]/file-input:border-destructive
+group-data-[dragging]/composer:bg-accent/40
+group-data-[dragging]/composer:border-primary
+group-data-[dragging]/composer:group-data-[drag-reject]/composer:bg-destructive/10
+group-data-[dragging]/composer:group-data-[drag-reject]/composer:border-destructive
 group-data-[dragging]/file-input:bg-accent/40
 group-data-[dragging]/file-input:border-primary
+group-data-[dragging]/file-input:group-data-[drag-reject]/file-input:bg-destructive/10
+group-data-[dragging]/file-input:group-data-[drag-reject]/file-input:border-destructive
 group-data-[empty]/composer:opacity-50
 group-data-[enhanced]/date-field:flex
 group-data-[enhanced]/date-field:sr-only
@@ -1258,6 +1263,7 @@ pointer-events-none
 pr-2
 pt-1
 pt-4
+px-1
 px-10
 px-2
 px-3

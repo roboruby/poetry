@@ -7,9 +7,26 @@ module Poetry
       # the composer adds no theme CSS. What is here is mechanics: the
       # field's one-row floor and its growth ceiling (past it the field
       # scrolls), the action slot's place at the end of the footer row, and
-      # the Send button's dimming while the field is empty.
+      # the Send button's dimming while the field is empty. With
+      # attachments: the field surface's tint while files are dragged over
+      # the composer (the controllers' data-dragging / data-drag-reject on
+      # the ROOT), the chips' wrapping row, and the rejections under the
+      # surface.
       class Style < Poetry::Core::Style
         base "group/composer w-full min-w-0"
+
+        # A refused drag is also a drag, so its tint names both states:
+        # the longer selector wins whichever rule the build emits last.
+        element :group, "group-data-[dragging]/composer:border-primary " \
+                        "group-data-[dragging]/composer:bg-accent/40 " \
+                        "group-data-[dragging]/composer:group-data-[drag-reject]/composer:border-destructive " \
+                        "group-data-[dragging]/composer:group-data-[drag-reject]/composer:bg-destructive/10"
+
+        # The chips: one Attachment per file, wrapping, each held to a
+        # width so a long name truncates instead of filling the row.
+        element :attachments, "flex-wrap gap-1.5 empty:hidden *:data-[slot=attachment]:max-w-60"
+
+        element :errors, "mt-1.5 flex flex-col gap-1 px-1 text-sm text-destructive empty:hidden"
 
         element :input, "max-h-48 min-h-10"
 

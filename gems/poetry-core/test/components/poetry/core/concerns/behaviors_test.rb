@@ -17,6 +17,14 @@ module Poetry
           end
         end
 
+        module Picky
+          extend Poetry::Core::Behavior
+
+          behavior :picky, "A behavior whose wiring sets a condition of its own, for the test."
+
+          wiring { controller(:tabs, if: :chosen) { register } }
+        end
+
         class ListComponent < Poetry::Core::Component
           AGENT_RULES = ["The component's own rule."].freeze
 
@@ -51,6 +59,16 @@ module Poetry
           use_behavior :roving_focus, on: :grid, orientation: :horizontal
 
           def call = tag.div("grid", **stimulus_attributes_for(:grid))
+        end
+
+        class OptionalComponent < Poetry::Core::Component
+          use_stimulus do
+            on(:list) { behavior :roving_focus, loop: true, if: :arrows }
+          end
+
+          option :arrows, :boolean, default: false
+
+          def call = tag.div("list", **stimulus_attributes_for(:list))
         end
 
         def test_a_behavior_wires_its_element_in_declaration_order
@@ -93,6 +111,30 @@ module Poetry
           assert_equal "poetry--core--tag-group poetry--core--roving-focus", grid["data-controller"]
         end
 
+        def test_a_conditional_behavior_wires_only_while_its_condition_holds
+          off = render_inline(OptionalComponent.new).at_css("div")
+
+          assert_empty off.attributes.keys.grep(/\Adata-/)
+
+          on = render_inline(OptionalComponent.new(arrows: true)).at_css("div")
+
+          assert_equal "poetry--core--roving-focus", on["data-controller"]
+          assert_equal "true", on["data-poetry--core--roving-focus-loop-value"]
+          assert_equal "keydown->poetry--core--roving-focus#keydown", on["data-action"]
+        end
+
+        def test_a_conditional_behavior_is_still_one_use_and_keeps_its_condition_out_of_the_options
+          use = OptionalComponent.behavior_uses.first
+
+          assert_equal({ loop: true }, use.options)
+          assert_equal [{ "name" => "roving_focus",
+                          "description" => Poetry::Core::Behaviors::RovingFocus.behavior_description,
+                          "elements" => ["list"] }], OptionalComponent.behavior_definitions
+          controller = OptionalComponent.stimulus_definitions.first["controllers"].first
+
+          assert_equal "if arrows", controller["conditional"]
+        end
+
         def test_misuse_raises_at_class_load
           errors = {
             "unknown" => -> { Class.new(Poetry::Core::Component) { use_behavior :no_such_behavior } },
@@ -102,6 +144,12 @@ module Poetry
             },
             "unknown keyword" => lambda {
               Class.new(Poetry::Core::Component) { use_stimulus { on(:root) { behavior :roving_focus, speed: 2 } } }
+            },
+            "cannot set conditions of its own" => lambda {
+              Class.new(Poetry::Core::Component) { use_stimulus { on(:root) { behavior Picky, unless: :plain } } }
+            },
+            "must be a Symbol or Proc" => lambda {
+              Class.new(Poetry::Core::Component) { use_stimulus { on(:root) { behavior :roving_focus, if: 3 } } }
             },
             "used twice" => -> { Class.new(Poetry::Core::Component) { 2.times { use_behavior :dismissable } } }
           }

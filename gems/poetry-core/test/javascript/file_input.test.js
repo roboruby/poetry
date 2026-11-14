@@ -45,7 +45,7 @@ const markup = ({ multiple = false, disabled = false, accept = "", upload = "non
        data-poetry--core--file-input-url-value="/rails/active_storage/direct_uploads"
        data-poetry--core--file-input-preview-value="${preview}"
        data-poetry--core--file-input-messages-value='{"failed":"{name} failed","busy":"Hold on"}'
-       data-action="poetry:file-drop:files->poetry--core--file-input#files">
+       data-action="poetry:file-drop:files->poetry--core--file-input#files poetry:composer:sent->poetry--core--file-input#discard">
     <label>
       <input id="input" type="file" name="post[files][]" ${multiple ? "multiple" : ""} ${disabled ? "disabled" : ""}
              data-poetry--core--file-drop-target="input"
@@ -214,6 +214,35 @@ describe("poetry--core--file-input", () => {
     expect(chips()[0].querySelector("[data-slot=attachment-title]").textContent).toBe("b.txt")
   })
 
+  it("discard drops the delivered files a host names and keeps the rest; the event travels on", async () => {
+    await mount({ multiple: true })
+    const a = file("a.txt")
+    const b = file("b.txt")
+    await pick(a, b)
+    const heard = []
+
+    document.addEventListener("poetry:composer:sent", (event) => heard.push(event.detail.files.length), { once: true })
+    el("zone").dispatchEvent(new CustomEvent("poetry:composer:sent", { bubbles: true, detail: { files: [a] } }))
+    await nextFrame()
+
+    expect(heard).toEqual([1])
+    expect(Array.from(el("input").files).map((f) => f.name)).toEqual(["b.txt"])
+    expect(chips().map((chip) => chip.querySelector("[data-slot=attachment-title]").textContent)).toEqual(["b.txt"])
+    expect(el("zone").hasAttribute("data-populated")).toBe(true)
+  })
+
+  it("discard without a list empties the selection", async () => {
+    await mount({ multiple: true })
+    await pick(file("a.txt"), file("b.txt"))
+
+    el("zone").dispatchEvent(new CustomEvent("poetry:composer:sent", { bubbles: true }))
+    await nextFrame()
+
+    expect(Array.from(el("input").files)).toEqual([])
+    expect(chips().length).toBe(0)
+    expect(el("zone").hasAttribute("data-populated")).toBe(false)
+  })
+
   it("image previews ride object URLs, released when the chip goes", async () => {
     const created = vi.fn(() => "blob:preview")
     const revoked = vi.fn()
@@ -345,6 +374,26 @@ describe("poetry--core--file-input", () => {
       el("form").dispatchEvent(free)
 
       expect(free.defaultPrevented).toBe(false)
+    })
+
+    it("discard drops the signed ids of the delivered files and keeps the others", async () => {
+      await mount({ multiple: true, upload: "immediate" })
+      const a = file("a.txt")
+      const b = file("b.txt")
+
+      el("zone").dispatchEvent(drag("drop", [a, b]))
+      await nextFrame()
+      await nextFrame()
+      FakeDirectUpload.instances.forEach((upload) => upload.succeed())
+      const signed = () => Array.from(el("form").querySelectorAll("input[type=hidden]")).map((hidden) => hidden.value)
+
+      expect(signed()).toEqual(["sid-a.txt", "sid-b.txt"])
+
+      el("zone").dispatchEvent(new CustomEvent("poetry:composer:sent", { bubbles: true, detail: { files: [a] } }))
+      await nextFrame()
+
+      expect(signed()).toEqual(["sid-b.txt"])
+      expect(chips().length).toBe(1)
     })
 
     it("clear cancels the queue and drops every signed id", async () => {
