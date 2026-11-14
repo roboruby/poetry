@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "tmpdir"
+
 # The shipped interaction testers (lib/poetry/ui/testing) proven against
 # poetry's own preview pages: one method per proof, each driving a
 # component through the tester consumers will use and raising on any
@@ -15,6 +17,10 @@ class PoetryTesterProofs
     dialog_keyboard_and_escape: "dialog opens by keyboard, Escape returns focus to the trigger",
     combobox_filter_and_commit: "combobox filters and commits",
     checkbox_toggles_by_keyboard_and_pointer: "checkbox checks by keyboard, unchecks by pointer, reports its value",
+    composer_writes_and_sends: "composer writes its text, reflects emptiness and submits by key and by button",
+    composer_reads_the_status: "composer reads idle, running and stopping from the slot, and presses Stop",
+    composer_attaches_files: "composer attaches a file, lists it and removes it",
+    composer_chooses_from_menus: "composer chooses a mention by keyboard and a reference by pointer",
     registration_guard_passes: "registration guard finds every poetry controller registered",
     registration_guard_names_the_stray: "registration guard names an unregistered poetry controller"
   }.freeze
@@ -115,6 +121,80 @@ class PoetryTesterProofs
     raise "native value #{combobox.value.inspect}" unless combobox.value.to_s == "remix"
   end
 
+  # The composer takes text, follows it with its emptiness, and both
+  # ways of sending reach the message form once each.
+  def composer_writes_and_sends
+    visit("/previews/poetry/ui/composer/default")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "empty at birth expected" unless composer.empty? && composer.status == :idle
+
+    composer.write("Hello there")
+    raise "text #{composer.text.inspect}" unless composer.text == "Hello there"
+    raise "still empty with text" if composer.empty?
+
+    count_composer_submits
+    composer.send_message
+    composer.send_message(via: :mouse)
+    submits = @session.evaluate_script("window.__composerSubmits")
+    raise "submits #{submits.inspect}" unless submits == %w[composer-form composer-form]
+
+    composer.write("")
+    raise "not empty after clearing" unless composer.empty?
+  end
+
+  # The slot's three states read back, and Stop submits its own form.
+  def composer_reads_the_status
+    visit("/previews/poetry/ui/composer/stopping")
+    stopping = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "stopping read as #{stopping.status.inspect}" unless stopping.status == :stopping
+
+    visit("/previews/poetry/ui/composer/running")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "running read as #{composer.status.inspect}" unless composer.status == :running && composer.running?
+    raise "idle? while running" if composer.idle?
+
+    count_composer_submits
+    composer.stop
+    submits = @session.evaluate_script("window.__composerSubmits")
+    raise "stop submitted #{submits.inspect}" unless submits == ["composer-running-stop"]
+  end
+
+  # A file attached through the composer's input shows as a chip, makes
+  # the message sendable, and leaves by its remove button.
+  def composer_attaches_files
+    visit("/previews/poetry/ui/composer/with_attachments")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+
+    Dir.mktmpdir("poetry-composer") do |dir|
+      file = File.join(dir, "plan.pdf")
+      File.binwrite(file, "%PDF-1.4\n%%EOF\n")
+      composer.attach(file)
+    end
+    raise "attachments #{composer.attachments.inspect}" unless composer.attachments == ["plan.pdf"]
+    raise "files alone should not be empty" if composer.empty?
+
+    composer.remove_attachment("plan.pdf")
+    raise "still attached: #{composer.attachments.inspect}" unless composer.attachments.empty? && composer.empty?
+  end
+
+  # A typed trigger opens its menu; the keyboard writes a mention as
+  # text, and the pointer adds a reference as a chip.
+  def composer_chooses_from_menus
+    visit("/previews/poetry/ui/composer/with_menus")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+
+    composer.choose("@", "Jordan Lee")
+    raise "mention text #{composer.text.inspect}" unless composer.text == "@jordan "
+    raise "menu left open" if composer.menu_open?
+
+    composer.choose("#", "Roadmap.md", via: :mouse)
+    raise "references #{composer.references.inspect}" unless composer.references == ["Roadmap.md"]
+    raise "text after a chip #{composer.text.inspect}" unless composer.text == "@jordan "
+
+    composer.remove_reference("Roadmap.md")
+    raise "still referenced: #{composer.references.inspect}" unless composer.references.empty?
+  end
+
   # The registration guard finds nothing missing on a healthy page.
   def registration_guard_passes
     visit("/previews/poetry/ui/dialog/default")
@@ -143,6 +223,18 @@ class PoetryTesterProofs
   end
 
   private
+
+  # Records each form submission's form id and holds it there, so a
+  # preview page (which has no server behind its forms) stays put.
+  def count_composer_submits
+    @session.execute_script(<<~JS)
+      window.__composerSubmits = []
+      document.addEventListener("submit", (event) => {
+        window.__composerSubmits.push(event.target.id)
+        event.preventDefault()
+      }, true)
+    JS
+  end
 
   # The first rendered root of a component on the page.
   def root_for(component)

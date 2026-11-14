@@ -87,19 +87,33 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - PART `composer-attachments-control` - The hidden native <input type=file> (dom id <id>-attachments) - the files' form value; the paperclip opens its picker
 - PART `composer-attachment-template` - The <template> holding one Attachment chip the controller clones per file
 - PART `composer-errors` - The rejections <ul> (role=alert) under the field surface - one line per refused file; hidden until a file is refused
+- PART `composer-menu` - One menu's popup over the composer (with_menu) - hidden until the word at the caret starts with its trigger | states: data-open (the word at the caret starts with the trigger and an option matches it); data-closed (the menu is not showing (server default)); data-trigger (always - the character that opens the menu); data-inserts=text|chip (always - what a choice puts in the message); data-at=word|start (always - where the trigger opens the menu); data-name (name: given - the param key a chip menu's hidden fields post under)
+- PART `composer-menu-list` - The menu's listbox (dom id <id>-menu-<n>, named by label:) - holds options only; the field's aria-controls names it
+- PART `composer-menu-option` - One option (role=option) - the field's aria-activedescendant names the highlighted one | states: data-highlighted (the option Enter, Tab or a click would choose (controller-set)); data-value (always - what the server receives for the choice); data-label (always - the option's name, and a chip's text); data-filter-value (always - what the typed word is matched against); data-keywords (always - the value and any keywords:, matched as well); data-insert (insert: given - the exact text a text menu writes); data-run (run: true - the choice is only reported)
+- PART `composer-menu-option-label` - The option's name
+- PART `composer-menu-option-description` - Muted text beside the name (description:)
+- PART `composer-references` - The chips' row for chosen references (a chip menu) - filled by the controller, each chip holding its hidden field; hidden while empty | states: data-align=block-start (always - the row sits over the field)
+- PART `composer-reference-template` - The <template> holding one reference chip the controller clones per choice
 - WIRING send: `poetry--core--composer` actions holdFocus on pointerdown; targets send
 - WIRING stop: `poetry--core--composer` actions holdFocus on pointerdown, returnFocus on click; targets stop
-- WIRING root: `poetry--core--file-drop` (if attachments) registers; values accept, multiple, max_files, max_size, paste, messages | `poetry--core--file-input` (if attachments) registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files, discard on poetry:composer:sent | `poetry--core--composer` registers; values submit_on_enter; actions changed on turbo:morph-element
+- WIRING root: `poetry--core--file-drop` (if attachments) registers; values accept, multiple, max_files, max_size, paste, messages | `poetry--core--file-input` (if attachments) registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files, discard on poetry:composer:sent | `poetry--core--composer-menu` (if menus?) registers; values messages; actions sent on poetry:composer:sent, restore on turbo:morph-element | `poetry--core--composer` registers; values submit_on_enter; actions changed on turbo:morph-element
 - WIRING form: `poetry--core--composer` actions guard on submit, settle on turbo:submit-end; targets form
-- WIRING input: `poetry--core--composer` actions keydown on keydown, changed on input; targets input
+- WIRING input: `poetry--core--composer-menu` (if menus?) actions keydown on keydown, track on input/keyup/click/focus, blurred on blur; targets input | `poetry--core--composer` actions keydown on keydown, changed on input; targets input
+- WIRING menu: `poetry--core--composer-menu` actions hold on pointerdown, pick on click, point on pointermove; targets menu
+- WIRING references: `poetry--core--composer-menu` actions keep on turbo:before-morph-element; targets chips
+- WIRING reference_template: `poetry--core--composer-menu` targets template
+- WIRING reference_remove: `poetry--core--composer-menu` actions remove on click
 - WIRING attachments_control: `poetry--core--file-drop` targets input | `poetry--core--file-input` targets input | `poetry--core--composer` actions changed on change; targets attachments
 - WIRING attach: `poetry--core--file-drop` actions open on click | `poetry--core--composer` actions holdFocus on pointerdown
-- WIRING attachments: `poetry--core--file-input` targets items
+- WIRING attachments: `poetry--core--file-input` actions keep on turbo:before-morph-element; targets items
 - WIRING attachment_template: `poetry--core--file-input` targets template
 - WIRING attachment_errors: `poetry--core--file-input` targets errors
 - WIRING attachment_remove: `poetry--core--file-input` actions remove on click
 - WIRING attachment_retry: `poetry--core--file-input` actions retry on click
 - BEHAVIOR file_drop (on root) - Files arrive by drop, picker or paste and are checked against accept, size and count before they land in the native input.
+- tool set_text (mutating; params: text (string, required)) - Write the message's text into the field, replacing the draft. It does not send. [opt in with webmcp: "name" on the call; dispatches poetry--core--composer#setText]
+- tool send (mutating, consequential) - Send the message in the field, as a press of Send would. Nothing goes while the field is blank, a reply is running or a send is on its way; the answer says which. [opt in with webmcp: "name" on the call; dispatches poetry--core--composer#send]
+- tool stop (mutating) - Stop the reply that is being written, as a press of Stop would. [opt in with webmcp: "name" on the call; dispatches poetry--core--composer#stop]
 - RULE: Client-side accept, size and count limits are advisory: validate the attachment on the model as well.
 - RULE: The SERVER holds the running state: render status: from your record (:idle, :running, :stopping) and redraw the slot alone with poetry_composer_action(id:, status:) in a Turbo Stream replace of "<id>-action" - never replace the form or the field, the draft lives there.
 - RULE: Send every status change down ONE ordered channel (the broadcast), or pass version: and use a versioned replace - a form's answer and a broadcast can arrive out of order and leave Stop on screen.
@@ -108,6 +122,10 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - RULE: Block content is the tools row beside Send (a model picker, a mode toggle) - buttons there are type: :button so they never submit the message.
 - RULE: Files in a message are attachments: true - the paperclip, drop, paste and the chips are the composer's own; never put a FileInput or a hand-rolled file button in the tools row. The files arrive under attachments_name: ("attachments[]"), or as signed ids with direct_upload: true.
 - RULE: accept:, max_size: and max_files: refuse a file at intake and are advisory: validate the attachment on the model as well.
+- RULE: A mention or command menu is composer.with_menu(trigger:, label:) with menu.with_item per option: the server renders every option and the composer filters them as the word is typed. Never hand-roll a popup over the field or swap the textarea for an editable div.
+- RULE: What a menu sends is plain: a text menu leaves "@value " in the message (or the item's insert:), a chip menu (inserts: :chip, name:) posts the chosen values as hidden fields under name: and leaves the text clean. Never invent bracket or directive syntax for a reference, and look the handle or the value up again on the server.
+- RULE: Commands: at: :start opens the menu only on the message's first word; insert: "/summarize " leaves text the server reads from the start of the message, and run: true takes the typed word out and only reports the choice (the poetry:composer-menu:choose event).
+- RULE: webmcp: "name" lets an in-page agent write the text, send and stop through the composer's own gate; leave it off unless the page means an agent to speak for the person.
 - RULE: name: is the message's param key; label: is the field's accessible name - the placeholder is not a label.
 
 ## message (`poetry_message`)

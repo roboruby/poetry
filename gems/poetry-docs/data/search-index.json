@@ -2928,6 +2928,12 @@
     "path": "/components/composer#files"
   },
   {
+    "title": "Mentions and commands",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#mentions"
+  },
+  {
     "title": "Keys",
     "page": "Composer",
     "section": "components",
@@ -2958,6 +2964,12 @@
     "path": "/components/composer#line-breaks"
   },
   {
+    "title": "Menus",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#menus"
+  },
+  {
     "title": "Running",
     "page": "Composer",
     "section": "components",
@@ -2974,6 +2986,12 @@
     "page": "Composer",
     "section": "components",
     "path": "/components/composer#tools"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#agent-tools"
   },
   {
     "title": "Behaviors",

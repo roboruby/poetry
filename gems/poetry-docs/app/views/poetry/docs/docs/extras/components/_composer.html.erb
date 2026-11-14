@@ -112,6 +112,42 @@
       end
     end
   CODE
+  menus_view_source = <<~CODE
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content") do |composer| #{e}
+      #{o} composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu| #{e}
+        #{o} @chat.members.each do |member| #{e}
+          #{o} menu.with_item(value: member.handle, label: member.name, description: member.team) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+      #{o} composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]", icon: :file) do |menu| #{e}
+        #{o} @chat.documents.each do |document| #{e}
+          #{o} menu.with_item(value: document.to_sgid.to_s, label: document.title) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+      #{o} composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu| #{e}
+        #{o} menu.with_item(label: "summarize", description: "Summarize the thread", insert: "/summarize ") #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+  menus_server_source = <<~CODE
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+
+      # "@ana" is text: look the handle up among the people this chat may mention.
+      handles = content.scan(/(?<!\\S)@([\\w.-]+)/).flatten
+      mentioned = chat.members.where(handle: handles)
+
+      # A chip posted a signed id: resolve it, and keep only what this chat may see.
+      documents = GlobalID::Locator.locate_many_signed(Array(params[:context]).compact_blank, only: Document)
+      documents &= chat.documents
+
+      # A command is the message's first word.
+      command, rest = content.match(%r{\\A/(\\w+)\\s*(.*)\\z}m)&.captures
+      # ...
+    end
+  CODE
   job_source = <<~CODE
     # app/jobs/chat_response_job.rb
     class ChatResponseJob < ApplicationJob
@@ -224,6 +260,50 @@
   </p>
   <%= poetry_code_block(code: attachments_view_source, language: "erb", label: "The composer") %>
   <%= poetry_code_block(code: attachments_server_source, language: "ruby", label: "The server") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="mentions">Mentions and commands</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">with_menu</code> adds a list that opens over the composer while the
+    word being typed starts with its trigger: people behind <code class="text-foreground">@</code>,
+    commands behind <code class="text-foreground">/</code>. You render the options, and the composer
+    filters them as the word grows, with the closest match first. The arrows move the highlight, Enter
+    and Tab choose, and Escape closes the list for that word. While a list is open, Enter chooses and
+    does not send.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    What reaches the server stays plain, and the menu says which of two forms it takes. A text menu
+    leaves <code class="text-foreground">@ana</code> in the message: the trigger and the option's
+    <code class="text-foreground">value:</code>, or the option's own
+    <code class="text-foreground">insert:</code>. Use it when the value is a handle a person could have
+    typed. A chip menu, <code class="text-foreground">inserts: :chip</code>, takes the typed word out,
+    shows a chip above the field and posts the value in a hidden field under
+    <code class="text-foreground">name:</code>. Use it for a file, a record or a tool, where the
+    reference is context for the whole message and its id means nothing to a reader. There is no
+    bracket or directive syntax to parse, and nothing in the text a person can half-edit.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Either way, treat what arrives as a claim. The page offered a list, but a request can name
+    anything: look a handle up among the people the chat may mention, and resolve a posted id among the
+    records it may see. A signed global id keeps the value from being guessed.
+  </p>
+  <%= poetry_code_block(code: menus_view_source, language: "erb", label: "Three menus") %>
+  <%= poetry_code_block(code: menus_server_source, language: "ruby", label: "Reading them") %>
+  <p class="max-w-2xl text-muted-foreground">
+    A command menu usually opens only on the first word,
+    <code class="text-foreground">at: :start</code>, so a path in the middle of a sentence does not
+    open it. An option with <code class="text-foreground">run: true</code> writes nothing: the typed
+    word is taken out and the choice is reported to the page as a
+    <code class="text-foreground">poetry:composer-menu:choose</code> event, for something that should
+    happen at once, such as clearing the conversation. The same event follows every choice.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The field is a native textarea throughout, so dictation, spell checking and input methods behave as
+    they do anywhere else. It names the open list and the highlighted option to assistive technology,
+    and a live region says how many suggestions there are. This arrangement passes the automated
+    accessibility checks; it has not yet been tested by a person using VoiceOver or NVDA.
+  </p>
 </section>
 
 <section class="flex flex-col gap-3">

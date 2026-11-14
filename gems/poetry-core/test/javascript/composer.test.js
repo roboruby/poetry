@@ -568,6 +568,69 @@ describe("poetry--core--composer beside other listeners", () => {
     expect(sent).toEqual(["hello"])
   })
 
+  const controller = () => application.getControllerForElementAndIdentifier(el("composer"), IDENTIFIER)
+
+  it("setText replaces the draft with a real input event and answers with the field's state", () => {
+    const heard = []
+
+    el("input").addEventListener("input", () => heard.push(el("input").value))
+
+    expect(controller().setText("a new draft")).toEqual({ text: "a new draft", empty: false, changed: true })
+    expect(heard).toEqual(["a new draft"])
+    expect(controller().setText("a new draft")).toEqual({ text: "a new draft", empty: false, changed: false })
+    expect(controller().setText("")).toEqual({ text: "", empty: true, changed: true })
+    expect(el("composer").hasAttribute("data-empty")).toBe(true)
+    expect(sent).toEqual([])
+  })
+
+  it("setText leaves a disabled field alone", () => {
+    el("input").disabled = true
+
+    expect(controller().setText("nope")).toEqual({ text: "hello", empty: false, changed: false })
+  })
+
+  it("send goes through the same gate as the button and says why a message did not go", async () => {
+    expect(controller().send()).toEqual({ sent: true })
+    expect(sent).toEqual(["hello"])
+    expect(controller().send()).toEqual({ sent: false, reason: "sending" })
+
+    await nextFrame()
+    controller().setText("   ")
+
+    expect(controller().send()).toEqual({ sent: false, reason: "blank" })
+
+    controller().setText("again")
+    el("composer-action").innerHTML = STOP
+    await nextFrame()
+
+    expect(controller().send()).toEqual({ sent: false, reason: "running" })
+
+    el("input").disabled = true
+
+    expect(controller().send()).toEqual({ sent: false, reason: "disabled" })
+    expect(sent).toEqual(["hello"])
+  })
+
+  it("stop presses the Stop button when a reply runs, and says when there was nothing to stop", async () => {
+    expect(controller().stop()).toEqual({ stopped: false })
+
+    el("composer-action").innerHTML = STOP
+    await nextFrame()
+    const stops = []
+
+    el("composer-stop").addEventListener("submit", (event) => {
+      event.preventDefault()
+      stops.push(event.target.id)
+    })
+
+    expect(controller().stop()).toEqual({ stopped: true })
+    expect(stops).toEqual(["composer-stop"])
+
+    el("stop").disabled = true
+
+    expect(controller().stop()).toEqual({ stopped: false })
+  })
+
   it("an accepted message is reported even without a file input, with no files", async () => {
     const heard = []
 

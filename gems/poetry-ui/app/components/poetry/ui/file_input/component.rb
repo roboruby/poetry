@@ -78,8 +78,13 @@ module Poetry
             controller(:file_drop) { target :input }
             controller(:file_input) { target :input }
           end
+          # The chips are the client's and the server renders the
+          # container empty: a morph leaves it as it is.
           on :items do
-            controller(:file_input) { target :items }
+            controller :file_input do
+              target :items
+              action :keep, on: :"turbo:before-morph-element"
+            end
           end
           on :template do
             controller(:file_input) { target :template }

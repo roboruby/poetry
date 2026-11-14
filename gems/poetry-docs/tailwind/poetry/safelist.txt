@@ -234,6 +234,7 @@ border-primary
 border-transparent
 bottom-0
 bottom-2
+bottom-full
 break-words
 caret-transparent
 cn-accordion
@@ -1117,6 +1118,7 @@ inline-flex
 inline-grid
 inset-0
 inset-s-1/2
+inset-x-0
 inset-x-8
 inset-y-0
 invisible
@@ -1147,6 +1149,7 @@ m-0
 m-auto
 max-h-(--available-height)
 max-h-48
+max-h-60
 max-h-[calc(100dvh-6rem)]
 max-h-none
 max-w-(--available-width)
@@ -1162,6 +1165,7 @@ max-w-sm
 max-w-xl
 max-w-xs
 mb-(--drawer-inset,0px)
+mb-1.5
 mb-4
 mb-auto
 md:after:hidden
@@ -1261,8 +1265,10 @@ placeholder:text-muted-foreground
 pointer-events-auto
 pointer-events-none
 pr-2
+ps-2
 pt-1
 pt-4
+pt-64
 px-1
 px-10
 px-2
@@ -1311,6 +1317,7 @@ self-start
 self-stretch
 shadow-lg
 shadow-none
+shrink
 shrink-0
 size-(--cell-size)
 size-1.5

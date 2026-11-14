@@ -129,6 +129,19 @@ export default class FileInputController extends Controller {
   }
 
   /**
+   * The chips' container's turbo:before-morph-element action: the chips
+   * are the client's, built from the files the input holds, and the
+   * server renders the container empty. A morph that reached it would
+   * take them away while the input kept its files, so the container is
+   * left as it is.
+   *
+   * @param {CustomEvent} event - cancelled when the container itself is about to be morphed
+   */
+  keep(event) {
+    if (event.target === event.currentTarget) event.preventDefault()
+  }
+
+  /**
    * A host's discard action, for files that have been delivered (a
    * composer's sent event, once the server accepts the message): the
    * files in the event's detail leave the selection, their signed ids

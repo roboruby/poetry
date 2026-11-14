@@ -58,6 +58,13 @@ module Poetry
                            placeholder: "Ask about a file", class: "max-w-xl")
         end
 
+        # Three menus: people behind "@" (text), commands behind "/" on
+        # the first word (text, and one that only reports), and files
+        # behind "#" (chips with hidden fields). Type a trigger to open one.
+        def with_menus
+          render_with_template(template: "poetry/ui/composer/menus_preview")
+        end
+
         # Enter breaks the line; Cmd/Ctrl+Enter sends.
         def line_breaks
           render_component(id: "composer-lines", url: "#", submit_on_enter: false, input_class: "min-h-24",

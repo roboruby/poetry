@@ -3279,10 +3279,15 @@ components:
     - group
     - attachments
     - errors
+    - menu
+    - menu_list
+    - menu_option
+    - menu_option_label
+    - menu_option_description
     - input
     - action
     - send
-    capsule: 94bfae76f19a
+    capsule: ebe011f25597
     controllers:
     - identifier: poetry--core--composer
       targets:
@@ -3299,10 +3304,34 @@ components:
       - holdFocus
       - keydown
       - returnFocus
+      - send
+      - setText
       - settle
+      - stop
       - submit
       events:
       - poetry:composer:sent
+    - identifier: poetry--core--composer-menu
+      targets:
+      - chips
+      - input
+      - menu
+      - template
+      values:
+      - messages
+      actions:
+      - blurred
+      - hold
+      - keep
+      - keydown
+      - pick
+      - point
+      - remove
+      - restore
+      - sent
+      - track
+      events:
+      - poetry:composer-menu:choose
     - identifier: poetry--core--file-drop
       targets:
       - input
@@ -3342,6 +3371,7 @@ components:
       - clear
       - discard
       - files
+      - keep
       - remove
       - retry
       events:
@@ -3371,6 +3401,22 @@ components:
       or as signed ids with direct_upload: true.'
     - 'accept:, max_size: and max_files: refuse a file at intake and are advisory:
       validate the attachment on the model as well.'
+    - 'A mention or command menu is composer.with_menu(trigger:, label:) with menu.with_item
+      per option: the server renders every option and the composer filters them as
+      the word is typed. Never hand-roll a popup over the field or swap the textarea
+      for an editable div.'
+    - 'What a menu sends is plain: a text menu leaves "@value " in the message (or
+      the item''s insert:), a chip menu (inserts: :chip, name:) posts the chosen values
+      as hidden fields under name: and leaves the text clean. Never invent bracket
+      or directive syntax for a reference, and look the handle or the value up again
+      on the server.'
+    - 'Commands: at: :start opens the menu only on the message''s first word; insert:
+      "/summarize " leaves text the server reads from the start of the message, and
+      run: true takes the typed word out and only reports the choice (the poetry:composer-menu:choose
+      event).'
+    - 'webmcp: "name" lets an in-page agent write the text, send and stop through
+      the composer''s own gate; leave it off unless the page means an agent to speak
+      for the person.'
     - 'name: is the message''s param key; label: is the field''s accessible name -
       the placeholder is not a label.'
     content: true
@@ -3438,6 +3484,66 @@ components:
     - name: composer-errors
       description: The rejections <ul> (role=alert) under the field surface - one
         line per refused file; hidden until a file is refused
+    - name: composer-menu
+      description: One menu's popup over the composer (with_menu) - hidden until the
+        word at the caret starts with its trigger
+      states:
+      - attr: data-open
+        condition: the word at the caret starts with the trigger and an option matches
+          it
+      - attr: data-closed
+        condition: the menu is not showing (server default)
+      - attr: data-trigger
+        condition: always - the character that opens the menu
+      - attr: data-inserts
+        condition: always - what a choice puts in the message
+        values:
+        - text
+        - chip
+      - attr: data-at
+        condition: always - where the trigger opens the menu
+        values:
+        - word
+        - start
+      - attr: data-name
+        condition: 'name: given - the param key a chip menu''s hidden fields post
+          under'
+    - name: composer-menu-list
+      description: The menu's listbox (dom id <id>-menu-<n>, named by label:) - holds
+        options only; the field's aria-controls names it
+    - name: composer-menu-option
+      description: One option (role=option) - the field's aria-activedescendant names
+        the highlighted one
+      states:
+      - attr: data-highlighted
+        condition: the option Enter, Tab or a click would choose (controller-set)
+      - attr: data-value
+        condition: always - what the server receives for the choice
+      - attr: data-label
+        condition: always - the option's name, and a chip's text
+      - attr: data-filter-value
+        condition: always - what the typed word is matched against
+      - attr: data-keywords
+        condition: always - the value and any keywords:, matched as well
+      - attr: data-insert
+        condition: 'insert: given - the exact text a text menu writes'
+      - attr: data-run
+        condition: 'run: true - the choice is only reported'
+    - name: composer-menu-option-label
+      description: The option's name
+    - name: composer-menu-option-description
+      description: Muted text beside the name (description:)
+    - name: composer-references
+      description: The chips' row for chosen references (a chip menu) - filled by
+        the controller, each chip holding its hidden field; hidden while empty
+      states:
+      - attr: data-align
+        condition: always - the row sits over the field
+        values:
+        - block-start
+    - name: composer-reference-template
+      description: The <template> holding one reference chip the controller clones
+        per choice
     stimulus:
     - element: send
       controllers:
@@ -3484,6 +3590,16 @@ components:
           'on': poetry:file-drop:files
         - method: discard
           'on': poetry:composer:sent
+      - identifier: poetry--core--composer-menu
+        conditional: if menus?
+        registers: true
+        values:
+        - name: messages
+        actions:
+        - method: sent
+          'on': poetry:composer:sent
+        - method: restore
+          'on': turbo:morph-element
       - identifier: poetry--core--composer
         registers: true
         values:
@@ -3503,6 +3619,21 @@ components:
           'on': turbo:submit-end
     - element: input
       controllers:
+      - identifier: poetry--core--composer-menu
+        conditional: if menus?
+        targets:
+        - name: input
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: track
+          'on':
+          - input
+          - keyup
+          - click
+          - focus
+        - method: blurred
+          'on': blur
       - identifier: poetry--core--composer
         targets:
         - name: input
@@ -3511,6 +3642,37 @@ components:
           'on': keydown
         - method: changed
           'on': input
+    - element: menu
+      controllers:
+      - identifier: poetry--core--composer-menu
+        targets:
+        - name: menu
+        actions:
+        - method: hold
+          'on': pointerdown
+        - method: pick
+          'on': click
+        - method: point
+          'on': pointermove
+    - element: references
+      controllers:
+      - identifier: poetry--core--composer-menu
+        targets:
+        - name: chips
+        actions:
+        - method: keep
+          'on': turbo:before-morph-element
+    - element: reference_template
+      controllers:
+      - identifier: poetry--core--composer-menu
+        targets:
+        - name: template
+    - element: reference_remove
+      controllers:
+      - identifier: poetry--core--composer-menu
+        actions:
+        - method: remove
+          'on': click
     - element: attachments_control
       controllers:
       - identifier: poetry--core--file-drop
@@ -3540,6 +3702,9 @@ components:
       - identifier: poetry--core--file-input
         targets:
         - name: items
+        actions:
+        - method: keep
+          'on': turbo:before-morph-element
     - element: attachment_template
       controllers:
       - identifier: poetry--core--file-input
@@ -3568,6 +3733,46 @@ components:
         size and count before they land in the native input.
       elements:
       - root
+    tools:
+    - name: set_text
+      title: Set text
+      description: Write the message's text into the field, replacing the draft. It
+        does not send.
+      inputSchema:
+        type: object
+        properties:
+          text:
+            type: string
+            description: The message text.
+        required:
+        - text
+        additionalProperties: false
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
+      executes: poetry--core--composer#setText
+    - name: send
+      title: Send
+      description: Send the message in the field, as a press of Send would. Nothing
+        goes while the field is blank, a reply is running or a send is on its way;
+        the answer says which.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+        consequentialHint: true
+        debugging: false
+      executes: poetry--core--composer#send
+    - name: stop
+      title: Stop
+      description: Stop the reply that is being written, as a press of Stop would.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+        consequentialHint: false
+        debugging: false
+      executes: poetry--core--composer#stop
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu
@@ -6292,6 +6497,7 @@ components:
       - clear
       - discard
       - files
+      - keep
       - remove
       - retry
       events:
@@ -6403,6 +6609,9 @@ components:
       - identifier: poetry--core--file-input
         targets:
         - name: items
+        actions:
+        - method: keep
+          'on': turbo:before-morph-element
     - element: template
       controllers:
       - identifier: poetry--core--file-input
@@ -13700,6 +13909,7 @@ internals:
 - Poetry::Ui::Command::ItemSet
 - Poetry::Ui::Composer::Action
 - Poetry::Ui::Composer::ActionWiring
+- Poetry::Ui::Composer::Menus
 - Poetry::Ui::ContextMenu::Group
 - Poetry::Ui::ContextMenu::ItemSlots
 - Poetry::Ui::ContextMenu::RadioGroup

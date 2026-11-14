@@ -52,7 +52,8 @@ const markup = ({ multiple = false, disabled = false, accept = "", upload = "non
              data-poetry--core--file-input-target="input">
       <span data-slot="file-input-prompt">Drag and drop</span>
     </label>
-    <div id="items" data-poetry--core--file-input-target="items"></div>
+    <div id="items" data-poetry--core--file-input-target="items"
+         data-action="turbo:before-morph-element->poetry--core--file-input#keep"></div>
     <ul id="errors" role="alert" hidden data-poetry--core--file-input-target="errors"></ul>
     <button id="clear" type="button" data-poetry--core--file-input-target="clear"
             data-action="click->poetry--core--file-input#clear">Clear</button>
@@ -241,6 +242,21 @@ describe("poetry--core--file-input", () => {
     expect(Array.from(el("input").files)).toEqual([])
     expect(chips().length).toBe(0)
     expect(el("zone").hasAttribute("data-populated")).toBe(false)
+  })
+
+  it("a morph leaves the chips' container alone: the files are still in the input", async () => {
+    await mount({ multiple: true })
+    await pick(file("a.txt"))
+    const morphing = (target) => {
+      const event = new CustomEvent("turbo:before-morph-element", { bubbles: true, cancelable: true })
+
+      target.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+
+    expect(morphing(el("items"))).toBe(true)
+    expect(morphing(chips()[0])).toBe(false)
+    expect(morphing(el("errors"))).toBe(false)
   })
 
   it("image previews ride object URLs, released when the chip goes", async () => {

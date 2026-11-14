@@ -316,6 +316,7 @@ module Poetry
           assert_equal row, group.element_children.first
           assert_equal "block-start", row["data-align"]
           assert_equal "items", row["data-#{FILE_INPUT}-target"]
+          assert_equal "turbo:before-morph-element->#{FILE_INPUT}#keep", row["data-action"], "a morph leaves the chips"
           assert_empty row.children, "an empty row hides itself (empty:hidden)"
           assert_includes row["class"], "empty:hidden"
           assert_includes group["class"], "group-data-[dragging]/composer:border-primary"
@@ -377,6 +378,227 @@ module Poetry
 
           assert composer.at_css("input[type=file]").key?("disabled")
           assert slot(composer, "composer-attach").key?("disabled")
+        end
+
+        MENU = "poetry--core--composer-menu"
+
+        def render_with_menus(**)
+          render_composer(**) do |composer|
+            composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu|
+              menu.with_item(value: "ana", label: "Ana <Diaz>", description: "Design", keywords: %w[ux research])
+              menu.with_item(value: "jordan")
+            end
+            composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu|
+              menu.with_item(label: "summarize", insert: "/summarize ")
+              menu.with_item(label: "clear", run: true)
+            end
+            composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]") do |menu|
+              menu.with_item(value: "doc_1", label: "Q3 plan.pdf", icon: :file)
+            end
+            "<span id=\"tool\"></span>".html_safe
+          end
+        end
+
+        def test_without_menus_nothing_of_them_renders
+          composer = render_composer
+          field = slot(composer, "input-group-control")
+
+          assert_nil slot(composer, "composer-menu")
+          assert_nil slot(composer, "composer-references")
+          assert_nil field["aria-autocomplete"]
+          assert_nil field["aria-controls"]
+          refute_includes composer.to_html, MENU
+        end
+
+        def test_menus_put_their_controller_on_the_root_ahead_of_the_composers
+          root = slot(render_with_menus, "composer")
+
+          assert_equal "#{MENU} #{IDENTIFIER}", root["data-controller"]
+          assert_equal "poetry:composer:sent->#{MENU}#sent turbo:morph-element->#{MENU}#restore " \
+                       "turbo:morph-element->#{IDENTIFIER}#changed", root["data-action"]
+          messages = JSON.parse(root["data-#{MENU}-messages-value"])
+
+          assert_equal %w[added one other removed], messages.keys.sort
+          assert_equal "{count} suggestions", messages["other"]
+        end
+
+        def test_the_field_says_what_a_textarea_may_and_the_menus_keydown_runs_first
+          composer = render_with_menus
+          field = slot(composer, "input-group-control")
+
+          assert_equal "textarea", field.name
+          assert_equal "list", field["aria-autocomplete"]
+          assert_equal "composer-menu-0 composer-menu-1 composer-menu-2", field["aria-controls"]
+          assert_nil field["role"]
+          assert_nil field["aria-expanded"]
+          assert_nil field["aria-activedescendant"]
+          assert_equal "input", field["data-#{MENU}-target"]
+          assert_equal "keydown->#{MENU}#keydown input->#{MENU}#track keyup->#{MENU}#track click->#{MENU}#track " \
+                       "focus->#{MENU}#track blur->#{MENU}#blurred keydown->#{IDENTIFIER}#keydown " \
+                       "input->#{IDENTIFIER}#changed", field["data-action"]
+        end
+
+        def test_each_menu_is_a_closed_popup_outside_the_form_with_what_a_choice_needs
+          composer = render_with_menus
+          menus = composer.css("[data-slot=composer-menu]")
+          people, commands, files = menus.to_a
+
+          assert_equal 3, menus.size
+          assert(menus.all? { |menu| menu.key?("hidden") && menu.key?("data-closed") && menu.ancestors("form").empty? })
+          assert_equal %w[@ / #], menus.pluck("data-trigger")
+          assert_equal %w[text text chip], menus.pluck("data-inserts")
+          assert_equal %w[word start word], menus.pluck("data-at")
+          assert_nil people["data-name"]
+          assert_equal "context[]", files["data-name"]
+          assert_equal "menu", commands["data-#{MENU}-target"]
+          assert_equal "pointerdown->#{MENU}#hold click->#{MENU}#pick pointermove->#{MENU}#point", people["data-action"]
+        end
+
+        def test_a_menus_listbox_is_named_and_holds_options_only
+          composer = render_with_menus
+          list = composer.at_css("#composer-menu-0")
+
+          assert_equal "listbox", list["role"]
+          assert_equal "People", list["aria-label"]
+          assert_equal %w[option option], list.element_children.pluck("role")
+          assert_equal %w[composer-menu-0-option-0 composer-menu-0-option-1], list.element_children.pluck("id")
+          assert_equal %w[false false], list.element_children.pluck("aria-selected")
+        end
+
+        def test_an_option_carries_its_value_its_label_and_what_filtering_matches
+          composer = render_with_menus
+          ana, jordan = composer.css("#composer-menu-0 [role=option]").to_a
+
+          assert_equal "ana", ana["data-value"]
+          assert_equal "Ana <Diaz>", ana["data-label"]
+          assert_equal "Ana <Diaz>", ana["data-filter-value"]
+          assert_equal "ana ux research", ana["data-keywords"]
+          assert_equal "Ana <Diaz>", ana.at_css("[data-slot=composer-menu-option-label]").text
+          assert_equal "Design", ana.at_css("[data-slot=composer-menu-option-description]").text
+          assert ana.at_css("svg"), "the menu's icon leads each option"
+          assert_equal "jordan", jordan["data-label"], "the label defaults to the value"
+          assert_nil jordan.at_css("[data-slot=composer-menu-option-description]")
+          assert_nil ana["data-insert"]
+          refute ana.key?("data-run")
+        end
+
+        def test_a_commands_text_and_its_run_mark_ride_the_option
+          composer = render_with_menus
+          summarize, clear = composer.css("#composer-menu-1 [role=option]").to_a
+
+          assert_equal "/summarize ", summarize["data-insert"]
+          assert_equal "summarize", summarize["data-value"], "the value defaults to the label"
+          assert clear.key?("data-run")
+          assert_nil summarize.at_css("svg"), "no icon unless the menu or the item names one"
+        end
+
+        def test_a_chip_menu_adds_the_references_row_and_its_template
+          composer = render_with_menus
+          row = slot(composer, "composer-references")
+          template = slot(composer, "composer-reference-template")
+          chip = Nokogiri::HTML5.fragment(template.inner_html).at_css("[data-slot=attachment]")
+
+          assert_equal slot(composer, "composer-group"), row.parent
+          assert_equal "block-start", row["data-align"]
+          assert_equal "chips", row["data-#{MENU}-target"]
+          assert_equal "turbo:before-morph-element->#{MENU}#keep", row["data-action"], "a morph leaves the chips"
+          assert_empty row.children
+          assert_equal "template", template["data-#{MENU}-target"]
+          assert chip.at_css("[data-slot=attachment-title]")
+          assert_equal "click->#{MENU}#remove", chip.at_css("button")["data-action"]
+          assert_equal "Remove", chip.at_css("button")["aria-label"]
+        end
+
+        def test_text_menus_alone_render_no_references_row
+          composer = render_composer do |builder|
+            builder.with_menu(trigger: "@", label: "People") { |menu| menu.with_item(value: "ana") }
+            nil
+          end
+
+          assert slot(composer, "composer-menu")
+          assert_nil slot(composer, "composer-references")
+          assert_nil slot(composer, "composer-reference-template")
+        end
+
+        def test_the_tools_row_keeps_the_blocks_content_beside_the_menus
+          composer = render_with_menus
+
+          assert slot(composer, "input-group-addon").at_css("#tool")
+          assert_nil composer.at_css("[data-slot=composer-menu] #tool")
+        end
+
+        def test_a_menu_the_controller_could_not_act_on_is_refused
+          refusals = {
+            "must be one or more characters" => { trigger: " ", label: "People" },
+            "accessible name" => { trigger: "@", label: "" },
+            "inserts: must be one of" => { trigger: "@", label: "People", inserts: :token },
+            "at: must be one of" => { trigger: "@", label: "People", at: :line },
+            "needs name:" => { trigger: "#", label: "Files", inserts: :chip }
+          }
+          refusals.each do |message, options|
+            error = assert_raises(ArgumentError) { render_composer { |composer| composer.with_menu(**options) } }
+            assert_match message, error.message
+          end
+        end
+
+        def test_two_menus_cannot_share_a_trigger_and_an_item_needs_a_value_or_a_label
+          taken = assert_raises(ArgumentError) do
+            render_composer do |composer|
+              composer.with_menu(trigger: "@", label: "People")
+              composer.with_menu(trigger: "@", label: "Teams")
+            end
+          end
+          nameless = assert_raises(ArgumentError) do
+            render_composer { |composer| composer.with_menu(trigger: "@", label: "People", &:with_item) }
+          end
+
+          assert_match "already taken", taken.message
+          assert_match "needs value: or label:", nameless.message
+        end
+
+        def test_the_tools_an_agent_may_call_are_declared_with_their_safety
+          tools = Component.tool_definitions.index_by { |tool| tool["name"] }
+
+          assert_equal %w[send set_text stop], tools.keys.sort
+          assert_equal "#{IDENTIFIER}#setText", tools["set_text"]["executes"]
+          assert_equal "#{IDENTIFIER}#send", tools["send"]["executes"]
+          assert_equal "#{IDENTIFIER}#stop", tools["stop"]["executes"]
+          assert_equal %w[text], tools["set_text"].dig("inputSchema", "required")
+          assert(tools.values.none? { |tool| tool.dig("annotations", "readOnlyHint") })
+          assert tools["send"].dig("annotations", "consequentialHint"), "an agent confirms a send"
+          refute tools["stop"].dig("annotations", "consequentialHint")
+        end
+
+        def test_a_composer_exposes_its_tools_only_when_asked
+          with_registrar_manifest do
+            registrar = Poetry::Core::Concerns::AgentTools::WEBMCP_CONTROLLER
+
+            refute_includes render_composer.to_html, registrar
+
+            root = slot(render_composer(webmcp: "chat", stop_url: "/chats/1/stop"), "composer")
+            tools = JSON.parse(root["data-#{registrar}-tools-value"])
+
+            assert_includes root["data-controller"].split, registrar
+            assert_equal "chat", root["data-#{registrar}-name-value"]
+            assert_equal %w[send set_text stop], tools.pluck("name").sort
+          end
+        end
+
+        # The registrar is poetry-agent's controller; its manifest entry
+        # stands in here so the attribute builder accepts its names.
+        def with_registrar_manifest
+          catalog = Poetry::Core::Stimulus::Manifest.catalog
+          registrar = Poetry::Core::Concerns::AgentTools::WEBMCP_CONTROLLER
+          had = catalog.key?(registrar)
+          catalog[registrar] ||= {
+            "targets" => [],
+            "values" => { "name" => { "type" => "String" }, "tools" => { "type" => "Array" },
+                          "budget" => { "type" => "Number", "default" => 20 } },
+            "classes" => [], "methods" => %w[connect disconnect register unregister], "events" => []
+          }
+          yield
+        ensure
+          catalog.delete(registrar) unless had
         end
 
         def test_the_helper_renders_the_slot_the_composer_renders

@@ -401,7 +401,7 @@ Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
 - PART `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker
 - WIRING root: `poetry--core--file-drop` registers; values accept, multiple, max_files, max_size, min_size, paste, overlay, directory, messages | `poetry--core--file-input` registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files
 - WIRING control: `poetry--core--file-drop` targets input | `poetry--core--file-input` targets input
-- WIRING items: `poetry--core--file-input` targets items
+- WIRING items: `poetry--core--file-input` actions keep on turbo:before-morph-element; targets items
 - WIRING template: `poetry--core--file-input` targets template
 - WIRING errors: `poetry--core--file-input` targets errors
 - WIRING clear: `poetry--core--file-input` actions clear on click; targets clear

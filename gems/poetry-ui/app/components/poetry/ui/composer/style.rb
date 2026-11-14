@@ -13,7 +13,8 @@ module Poetry
       # the ROOT), the chips' wrapping row, and the rejections under the
       # surface.
       class Style < Poetry::Core::Style
-        base "group/composer w-full min-w-0"
+        # relative: a menu is placed against the composer, over it.
+        base "group/composer relative w-full min-w-0"
 
         # A refused drag is also a drag, so its tint names both states:
         # the longer selector wins whichever rule the build emits last.
@@ -27,6 +28,16 @@ module Poetry
         element :attachments, "flex-wrap gap-1.5 empty:hidden *:data-[slot=attachment]:max-w-60"
 
         element :errors, "mt-1.5 flex flex-col gap-1 px-1 text-sm text-destructive empty:hidden"
+
+        # A menu: the Combobox popup's chrome, set over the composer at
+        # its full width. Its list scrolls past a ceiling; an option's
+        # description is pushed to the end of its row and gives way first.
+        element :menu, "cn-combobox-content cn-menu-translucent absolute inset-x-0 bottom-full z-50 mb-1.5 " \
+                       "outline-hidden"
+        element :menu_list, "max-h-60"
+        element :menu_option, "gap-2"
+        element :menu_option_label, "min-w-0 truncate"
+        element :menu_option_description, "ms-auto min-w-0 shrink truncate ps-2 text-xs text-muted-foreground"
 
         element :input, "max-h-48 min-h-10"
 

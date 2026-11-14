@@ -27,7 +27,9 @@ const EVENT_PREFIX = "poetry:composer"
  * attachments target): a message of files alone is not blank, and once
  * the server accepts it the sent event names the files that went, so the
  * file-input controller beside this one drops their chips and keeps any
- * file added since.
+ * file added since. The event names the per-message fields that went as
+ * well (elements marked data-composer-field, a chosen reference's hidden
+ * input), for whoever added them to take back out.
  *
  * Focus is never taken by a pointer: a press on Send or Stop leaves it
  * where it was, so a field being typed in keeps its on-screen keyboard
@@ -51,6 +53,7 @@ export default class ComposerController extends Controller {
   #sending = false
   #sent = ""
   #files = []
+  #fields = []
   #within = false
 
   /** Reflects the field's emptiness (a browser may restore a draft the server never rendered). */
@@ -111,13 +114,14 @@ export default class ComposerController extends Controller {
     // A submit something else already held back (uploads still in
     // flight) is not a send.
     if (event.defaultPrevented) return
-    if (this.#sending || this.#busy() || this.hasStopTarget || this.#blank() || this.inputTarget.disabled) {
+    if (this.#refusal()) {
       event.preventDefault()
       return
     }
 
     this.#sent = this.inputTarget.value
     this.#files = this.#attached()
+    this.#fields = Array.from(this.formTarget.querySelectorAll("[data-composer-field]"))
     this.#within = this.element.contains(document.activeElement)
     // Turbo marks the form busy a moment after the submit, once the
     // request has been offered for interception; the flag covers that
@@ -130,7 +134,8 @@ export default class ComposerController extends Controller {
   /**
    * The form's turbo:submit-end action: an accepted message leaves the
    * field (text typed since the send stays) and is reported with the
-   * files that went with it, a refused one stays whole, and a send made
+   * files and the per-message fields that went with it, a refused one
+   * stays whole, and a send made
    * from inside the composer ends with focus in the field unless the
    * reader took it elsewhere meanwhile.
    *
@@ -148,11 +153,67 @@ export default class ComposerController extends Controller {
       // listeners react to the clearing exactly like typing.
       field.dispatchEvent(new Event("input", { bubbles: true }))
     }
-    if (accepted) this.dispatch("sent", { prefix: EVENT_PREFIX, detail: { files: this.#files } })
+    if (accepted) {
+      this.dispatch("sent", { prefix: EVENT_PREFIX, detail: { files: this.#files, fields: this.#fields } })
+    }
     this.#sent = ""
     this.#files = []
+    this.#fields = []
     if (this.#within) this.#refocus()
     this.#within = false
+  }
+
+  /**
+   * The programmatic surface for the message's text: setText("Hello")
+   * replaces the draft, with a real input event, and does not send. A
+   * disabled field is left alone. Returns the resulting state - what an
+   * agent tool reports back - so a refusal is visible as changed: false.
+   *
+   * @param {string} text - the message text (stringified)
+   * @returns {{ text: string, empty: boolean, changed: boolean }} the field after the call
+   */
+  setText(text) {
+    const field = this.inputTarget
+    const next = String(text ?? "")
+    const changed = !field.disabled && field.value !== next
+
+    if (changed) {
+      field.value = next
+      field.dispatchEvent(new Event("input", { bubbles: true }))
+    }
+
+    return { text: field.value, empty: this.#blank(), changed }
+  }
+
+  /**
+   * The programmatic surface for sending: send() does what a press of
+   * Send would, through the same gate. Returns whether the message was
+   * let go and, when it was not, why: blank, running (a reply is being
+   * written), sending (a send is on its way) or disabled.
+   *
+   * @returns {{ sent: boolean, reason?: "blank" | "running" | "sending" | "disabled" }}
+   */
+  send() {
+    const reason = this.#refusal()
+
+    if (reason) return { sent: false, reason }
+
+    this.submit()
+    return { sent: true }
+  }
+
+  /**
+   * The programmatic surface for stopping: stop() presses the Stop
+   * button when a reply is running and the button can be pressed.
+   * Returns whether it was.
+   *
+   * @returns {{ stopped: boolean }}
+   */
+  stop() {
+    if (!this.hasStopTarget || this.stopTarget.disabled) return { stopped: false }
+
+    this.stopTarget.click()
+    return { stopped: true }
   }
 
   /**
@@ -176,6 +237,22 @@ export default class ComposerController extends Controller {
    */
   returnFocus(event) {
     if (document.activeElement === event.currentTarget) this.inputTarget.focus()
+  }
+
+  /**
+   * Why a message cannot go right now, or null when it can: the field
+   * is disabled, a send is on its way, a reply is running (a Stop
+   * button is on the page), or there is nothing to send.
+   *
+   * @returns {"disabled" | "sending" | "running" | "blank" | null}
+   */
+  #refusal() {
+    if (this.inputTarget.disabled) return "disabled"
+    if (this.#sending || this.#busy()) return "sending"
+    if (this.hasStopTarget) return "running"
+    if (this.#blank()) return "blank"
+
+    return null
   }
 
   /**

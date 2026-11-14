@@ -15,7 +15,7 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'id="composer-demo-action"'
     assert_includes response.body, "/components/composer/messages?composer=composer-demo"
     assert_includes response.body, "/components/composer/stop?composer=composer-demo"
-    %w[state ordering stop files keys].each { |anchor| assert_includes response.body, %(id="#{anchor}") }
+    %w[state ordering stop files mentions keys].each { |anchor| assert_includes response.body, %(id="#{anchor}") }
   end
 
   test "a message draws Stop, appends both rows and hands the page the reply's source" do
@@ -66,6 +66,21 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_equal 3, response.body.scan('data-slot="attachment"').size
 
     post "/components/composer/messages", params: { composer: "composer-files", message: "", attachments: [ "a.png" ] }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "the values a chip menu posted come back as chips, and are not a message on their own" do
+    post "/components/composer/messages",
+         params: { composer: "composer-menus", message: "compare @ana", context: [ "q3-plan", "<b>roadmap" ] }
+
+    assert_response :success
+    assert_includes response.body, "compare @ana"
+    assert_equal 2, response.body.scan('data-slot="attachment"').size
+    assert_includes response.body, "q3-plan"
+    assert_includes response.body, "&lt;b&gt;roadmap"
+
+    post "/components/composer/messages", params: { composer: "composer-menus", message: "", context: [ "q3-plan" ] }
 
     assert_response :unprocessable_entity
   end
@@ -121,7 +136,7 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
   end
 
   test "every example renders standalone" do
-    %w[attachments default disabled line_breaks running stopping tools].each do |name|
+    %w[attachments default disabled line_breaks menus running stopping tools].each do |name|
       get "/examples/components/composer/#{name}"
 
       assert_response :success, name
@@ -136,6 +151,17 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'data-slot="composer-attach"'
     assert_includes response.body, 'accept="image/*,.pdf"'
     assert_includes response.body, 'data-poetry--core--file-drop-max-files-value="3"'
+  end
+
+  test "the menus example renders three closed menus over a native textarea" do
+    get "/examples/components/composer/menus"
+
+    assert_equal 3, response.body.scan('data-slot="composer-menu"').size
+    assert_includes response.body, 'aria-controls="composer-menus-menu-0 composer-menus-menu-1 composer-menus-menu-2"'
+    assert_includes response.body, 'aria-autocomplete="list"'
+    assert_includes response.body, 'data-insert="/summarize "'
+    assert_includes response.body, 'data-name="context[]"'
+    refute_includes response.body, "aria-expanded"
   end
 
   private

@@ -38,6 +38,7 @@ import PressedController from "@poetry/controllers/pressed_controller"
 import ToggleGroupController from "@poetry/controllers/toggle_group_controller"
 import QuestionnaireController from "@poetry/controllers/questionnaire_controller"
 import ComposerController from "@poetry/controllers/composer_controller"
+import ComposerMenuController from "@poetry/controllers/composer_menu_controller"
 import RadioGroupController from "@poetry/controllers/radio_group_controller"
 import SliderController from "@poetry/controllers/slider_controller"
 import OtpController from "@poetry/controllers/otp_controller"
@@ -169,6 +170,7 @@ export const controllers = {
   "poetry--core--toggle-group": ToggleGroupController,
   "poetry--core--questionnaire": QuestionnaireController,
   "poetry--core--composer": ComposerController,
+  "poetry--core--composer-menu": ComposerMenuController,
   "poetry--core--radio-group": RadioGroupController,
   "poetry--core--slider": SliderController,
   "poetry--core--otp": OtpController,

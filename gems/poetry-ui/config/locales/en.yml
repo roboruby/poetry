@@ -63,6 +63,14 @@ en:
       send: "Send message"
       stop: "Stop"
       attach: "Attach files"
+      # The {count} and {label} tokens are the composer-menu controller's
+      # to fill; they are not I18n interpolations.
+      menu:
+        one: "1 suggestion"
+        other: "{count} suggestions"
+        added: "{label} added"
+        removed: "{label} removed"
+        remove: "Remove"
     sensitive_input:
       masked_label: "%{label}, masked."
       masked_fallback: "Sensitive value, masked."

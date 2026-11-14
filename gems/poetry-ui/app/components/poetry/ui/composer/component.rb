@@ -35,6 +35,26 @@ module Poetry
       # leave when the server accepts the message. Attaching needs
       # JavaScript.
       #
+      # with_menu adds a list that opens over the composer while the word
+      # being typed starts with its trigger: people behind "@", commands
+      # behind "/". The server renders the options and the composer filters
+      # them as the word grows; arrows move, Enter and Tab choose, Escape
+      # closes. What reaches the server stays plain. A text menu leaves
+      # "@ana " in the message; a chip menu (inserts: :chip) takes the typed
+      # word out and posts the chosen value in a hidden field, with a chip
+      # above the field; an item with run: true is only reported to the
+      # page. The field stays a native textarea throughout.
+      #
+      # @example A composer with a people menu and a files menu
+      #   render Poetry::Ui::Composer::Component.new(id: "composer", url: chat_messages_path(chat)) do |composer|
+      #     composer.with_menu(trigger: "@", label: "People") do |menu|
+      #       chat.members.each { |member| menu.with_item(value: member.handle, label: member.name) }
+      #     end
+      #     composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]", icon: :file) do |menu|
+      #       chat.files.each { |file| menu.with_item(value: file.to_sgid.to_s, label: file.filename.to_s) }
+      #     end
+      #   end
+      #
       # @example A chat's composer
       #   render Poetry::Ui::Composer::Component.new(
       #     id: "composer", url: chat_messages_path(chat), name: "content",
@@ -43,6 +63,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include ActionWiring
         include FileInput::Uploads
+        include Menus
 
         # The closed vocabulary for the status axis.
         STATUSES = %i[idle running stopping].freeze
@@ -72,6 +93,18 @@ module Poetry
           "arrive under attachments_name: (\"attachments[]\"), or as signed ids with direct_upload: true.",
           "accept:, max_size: and max_files: refuse a file at intake and are advisory: validate the " \
           "attachment on the model as well.",
+          "A mention or command menu is composer.with_menu(trigger:, label:) with menu.with_item per " \
+          "option: the server renders every option and the composer filters them as the word is typed. " \
+          "Never hand-roll a popup over the field or swap the textarea for an editable div.",
+          "What a menu sends is plain: a text menu leaves \"@value \" in the message (or the item's " \
+          "insert:), a chip menu (inserts: :chip, name:) posts the chosen values as hidden fields under " \
+          "name: and leaves the text clean. Never invent bracket or directive syntax for a reference, and " \
+          "look the handle or the value up again on the server.",
+          "Commands: at: :start opens the menu only on the message's first word; insert: \"/summarize \" " \
+          "leaves text the server reads from the start of the message, and run: true takes the typed " \
+          "word out and only reports the choice (the poetry:composer-menu:choose event).",
+          "webmcp: \"name\" lets an in-page agent write the text, send and stop through the composer's own " \
+          "gate; leave it off unless the page means an agent to speak for the person.",
           "name: is the message's param key; label: is the field's accessible name - the placeholder " \
           "is not a label."
         ].freeze
@@ -151,6 +184,14 @@ module Poetry
               action :files, on: event(:file_drop, :files)
               action :discard, on: event(:composer, :sent)
             end
+            # With menus: the controller that opens them, and takes back
+            # out the chips that went with an accepted message.
+            controller :composer_menu, if: :menus? do
+              register
+              value :messages, from: :menu_messages
+              action :sent, on: event(:composer, :sent)
+              action :restore, on: :"turbo:morph-element"
+            end
             controller :composer do
               register
               value :submit_on_enter
@@ -166,13 +207,41 @@ module Poetry
               action :settle, on: :"turbo:submit-end"
             end
           end
+          # The menus' keydown is declared first, so it runs first: a key
+          # it takes is claimed, and the composer leaves a claimed key
+          # alone. That is how Enter chooses an option without sending.
           on :input do
+            controller :composer_menu, if: :menus? do
+              target :input
+              action :keydown, on: :keydown
+              action :track, on: %i[input keyup click focus]
+              action :blurred, on: :blur
+            end
             controller :composer do
               target :input
               action :keydown, on: :keydown
               action :changed, on: :input
             end
           end
+          # A press on a menu holds focus in the field; a click chooses.
+          on :menu do
+            controller :composer_menu do
+              target :menu
+              action :hold, on: :pointerdown
+              action :pick, on: :click
+              action :point, on: :pointermove
+            end
+          end
+          # The chips are the client's and the server renders their rows
+          # empty: a morph leaves both rows as they are.
+          on :references do
+            controller :composer_menu do
+              target :chips
+              action :keep, on: :"turbo:before-morph-element"
+            end
+          end
+          on(:reference_template) { controller(:composer_menu) { target :template } }
+          on(:reference_remove) { controller(:composer_menu) { action :remove, on: :click } }
           # The native file input is three controllers' target: the intake
           # lands files in it, the chips mirror it, and the composer reads
           # it to know a message of files alone is not blank.
@@ -189,12 +258,37 @@ module Poetry
             controller(:file_drop) { action :open, on: :click }
             controller(:composer) { action :hold_focus, on: :pointerdown }
           end
-          on(:attachments) { controller(:file_input) { target :items } }
+          on :attachments do
+            controller :file_input do
+              target :items
+              action :keep, on: :"turbo:before-morph-element"
+            end
+          end
           on(:attachment_template) { controller(:file_input) { target :template } }
           on(:attachment_errors) { controller(:file_input) { target :errors } }
           on(:attachment_remove) { controller(:file_input) { action :remove, on: :click } }
           on(:attachment_retry) { controller(:file_input) { action :retry, on: :click } }
         end
+
+        # The operate surface: what an in-page agent may do to a rendered
+        # composer (registered per instance, opt-in - see poetry-agent).
+        # Sending posts a message a person cannot take back, so an agent
+        # confirms it first.
+        tool :set_text,
+             description: "Write the message's text into the field, replacing the draft. It does not send.",
+             params: { text: { type: "string", required: true, description: "The message text." } },
+             executes: %i[composer set_text],
+             mutating: true
+        tool :send,
+             description: "Send the message in the field, as a press of Send would. Nothing goes while the " \
+                          "field is blank, a reply is running or a send is on its way; the answer says which.",
+             executes: %i[composer send],
+             mutating: true,
+             consequential: true
+        tool :stop,
+             description: "Stop the reply that is being written, as a press of Stop would.",
+             executes: %i[composer stop],
+             mutating: true
 
         part "composer", "The root - holds the message form and the Stop form; the controller and " \
                          "the emptiness state ride here",
@@ -241,6 +335,41 @@ module Poetry
                                              "clones per file"
         part "composer-errors", "The rejections <ul> (role=alert) under the field surface - one line " \
                                 "per refused file; hidden until a file is refused"
+        part "composer-menu", "One menu's popup over the composer (with_menu) - hidden until the word " \
+                              "at the caret starts with its trigger",
+             states: {
+               "data-open" => "the word at the caret starts with the trigger and an option matches it",
+               "data-closed" => "the menu is not showing (server default)",
+               "data-trigger" => "always - the character that opens the menu",
+               "data-inserts" => { condition: "always - what a choice puts in the message",
+                                   values: %w[text chip] },
+               "data-at" => { condition: "always - where the trigger opens the menu",
+                              values: %w[word start] },
+               "data-name" => "name: given - the param key a chip menu's hidden fields post under"
+             }
+        part "composer-menu-list", "The menu's listbox (dom id <id>-menu-<n>, named by label:) - " \
+                                   "holds options only; the field's aria-controls names it"
+        part "composer-menu-option", "One option (role=option) - the field's aria-activedescendant " \
+                                     "names the highlighted one",
+             states: {
+               "data-highlighted" => "the option Enter, Tab or a click would choose (controller-set)",
+               "data-value" => "always - what the server receives for the choice",
+               "data-label" => "always - the option's name, and a chip's text",
+               "data-filter-value" => "always - what the typed word is matched against",
+               "data-keywords" => "always - the value and any keywords:, matched as well",
+               "data-insert" => "insert: given - the exact text a text menu writes",
+               "data-run" => "run: true - the choice is only reported"
+             }
+        part "composer-menu-option-label", "The option's name"
+        part "composer-menu-option-description", "Muted text beside the name (description:)"
+        part "composer-references", "The chips' row for chosen references (a chip menu) - filled by the " \
+                                    "controller, each chip holding its hidden field; hidden while empty",
+             states: {
+               "data-align" => { condition: "always - the row sits over the field",
+                                 values: %w[block-start] }
+             }
+        part "composer-reference-template", "The <template> holding one reference chip the controller " \
+                                            "clones per choice"
         # Send, Stop and the paperclip render as composed Buttons carrying
         # data-slot=composer-send / composer-stop / composer-attach on
         # Button's root - part ownership attributes them to Button, so they
@@ -248,10 +377,12 @@ module Poetry
         # submit button; Stop names the Stop form through its form
         # attribute; the paperclip opens the file picker.
 
-        # Refuses a status the composer cannot act on, and immediate
-        # uploads without an endpoint.
+        # Runs the block first, so with_menu's menus are collected before
+        # the template reads them; then refuses a status the composer
+        # cannot act on, and immediate uploads without an endpoint.
         # @api private
         def before_render
+          content
           unless status == :idle || stop_url.present?
             raise ArgumentError, "Composer status: #{status.inspect} needs stop_url: (the Stop button posts there)"
           end
@@ -306,6 +437,12 @@ module Poetry
             "aria-label" => label.presence || t("poetry.composer.label"),
             "enterkeyhint" => submit_on_enter ? "send" : "enter"
           }
+          if menus?
+            # The whole of what a textarea may say about its lists: no
+            # role and no expanded state are allowed on it.
+            attrs["aria-autocomplete"] = "list"
+            attrs["aria-controls"] = menu_models.each_index.map { |index| menu_list_id(index) }.join(" ")
+          end
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["disabled"] = "" if disabled
           element_attributes(:input, attrs)

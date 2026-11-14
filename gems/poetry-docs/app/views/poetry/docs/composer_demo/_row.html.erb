@@ -1,6 +1,7 @@
 <%# One transcript row of the Composer page's live example. The reader's
     row sits at the end and anchors the turn, with a chip for each file
-    the message carried; the reply's row is replaced whole as its text
+    the message carried and for each value a chip menu posted (a size
+    for a file, the param key for a value); the reply's row is replaced whole as its text
     grows (data-version is the versioned replace's clock), and shows a
     spinner until the first words arrive. %>
 <%= poetry_message_scroller_item(id: id, dom_id: id, anchor: align == :end, class: "px-4 py-2",
@@ -12,7 +13,7 @@
         <%= poetry_attachment(size: :sm, class: "max-w-60") do |chip| %>
           <% chip.with_media { poetry_icon(name: :file) } %>
           <% chip.with_title { name } %>
-          <% chip.with_description { number_to_human_size(size) } %>
+          <% chip.with_description { size ? number_to_human_size(size) : "context[]" } %>
         <% end %>
       <% end %>
     <% elsif text.blank? %>

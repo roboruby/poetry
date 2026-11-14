@@ -12,7 +12,8 @@
 # drops whichever frame arrives late (the stream's last frame and Stop's
 # answer can cross). A message's files are read for their names and sizes,
 # which the reader's row shows, and are not kept; a request larger than
-# the examples' own limits allow is refused before it is read.
+# the examples' own limits allow is refused before it is read. The values
+# a chip menu posted are shown the same way, as the server received them.
 module Poetry
   module Docs
     class ComposerDemoController < ApplicationController
@@ -38,6 +39,8 @@ module Poetry
         text = params[:message].to_s.strip
         files = attached
         return head(:unprocessable_entity) if text.empty? && files.empty?
+
+        files += references
 
         reply = "#{composer}-reply-#{SecureRandom.hex(4)}"
         render_streams(
@@ -107,6 +110,11 @@ module Poetry
       def row(id:, text:, align: :start, version: nil, files: [])
         render_to_string(partial: "poetry/docs/composer_demo/row",
                          locals: { id: id, text: text, align: align, version: version, files: files })
+      end
+
+      # The values a chip menu posted, as the reader's row shows them: name and no size.
+      def references
+        Array(params[:context]).grep(String).first(MAX_FILES).map { |value| [ value.first(80), nil ] }
       end
 
       # The message's files as name and size pairs; anything that is not an upload is left out.
