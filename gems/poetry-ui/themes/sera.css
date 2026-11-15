@@ -47,8 +47,13 @@
   @apply bg-card text-card-foreground after:bg-foreground;
 }
 
+/* Description AA hold: the source's text-destructive/90 on the card
+ * measures 4.49:1 in light mode, a rounding step under the 4.5 floor, so
+ * light mode takes the token whole (4.76:1) and dark mode keeps the
+ * source's /90 (the .dark palette is already bright). Documented
+ * deviation - the AA-contrast posture. */
 .cn-alert-variant-destructive {
-  @apply text-destructive bg-card *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current after:bg-destructive;
+  @apply text-destructive bg-card *:data-[slot=alert-description]:text-destructive dark:*:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current after:bg-destructive;
 }
 
 /* MARK: Accordion */

@@ -13166,7 +13166,7 @@ components:
     - chevron
     - collapsible_content
     - collapsible_content_inner
-    capsule: c81ffa507456
+    capsule: 1e540c6c4ec5
     controllers:
     - identifier: poetry--core--state
       targets:

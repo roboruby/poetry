@@ -234,6 +234,15 @@ vega:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -1142,6 +1151,15 @@ nova:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -2049,6 +2067,15 @@ mira:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -2973,6 +3000,15 @@ rhea:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -3935,6 +3971,15 @@ maia:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -4840,6 +4885,15 @@ luma:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -5778,6 +5832,15 @@ lyra:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -6614,6 +6677,15 @@ sera:
       - group-has-[>svg]/alert:col-start-2
       added:
       - col-start-2
+    ".cn-alert-variant-destructive":
+      reason: 'Description AA hold: the source''s text-destructive/90 on the card measures
+        4.49:1 in light mode, under the 4.5 floor, so light mode takes the token whole
+        (4.76:1) and dark mode keeps the source''s /90.'
+      dropped:
+      - "*:data-[slot=alert-description]:text-destructive/90"
+      added:
+      - "*:data-[slot=alert-description]:text-destructive"
+      - dark:*:data-[slot=alert-description]:text-destructive/90
     ".cn-attachment-media":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component

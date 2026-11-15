@@ -759,7 +759,7 @@ data-[side]:visible
 data-[spacing=0]:shadow-none
 data-[status=error]:in-[a:hover,button:hover]:text-destructive
 data-[status=error]:text-destructive
-data-[status=pending]:opacity-60
+data-[status=pending]:*:data-[slot=trace-icon]:opacity-60
 data-[status=running]:*:data-[slot=trace-title]:shimmer
 data-[upload-state=error]:border-destructive/30
 data-[upload-state=idle]:border-dashed
@@ -1372,7 +1372,6 @@ text-foreground/60
 text-left
 text-lg
 text-muted-foreground
-text-muted-foreground/70
 text-popover-foreground
 text-pretty
 text-primary

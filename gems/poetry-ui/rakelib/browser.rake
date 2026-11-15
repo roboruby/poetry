@@ -20,8 +20,9 @@ POETRY_AXE_SKIPS = {
   # Inherited shadcn destructive-palette contrast (design-token decisions,
   # not preview bugs) - fixing means retuning --destructive/--muted tokens
   # against shadcn new-york-v4 parity, which needs a design review.
-  # (alert/destructive graduated off this list: the walk reports
-  # it clean now - the staleness rule caught the entry, as designed.)
+  # (alert/destructive is off this list: its description takes the token
+  # whole in light mode, each theme's AA hold, after the source's /90
+  # measured 4.49:1 against the 4.5 floor.)
   "attachment/error" => "color-contrast 4.11:1 - error-state description tint #ec333c on white at text-xs; " \
                         "shadcn destructive token, review with the token retune",
   "attachment/error@dark" => "color-contrast 4.36:1 - the dark twin (#d15457 on #171717 at text-xs); " \

@@ -22357,7 +22357,7 @@
           "scope": "instance",
           "group": null,
           "signature": "value",
-          "docstring": "What the form submits for this control right now: the native\ninput's value when checked, the paired hidden input's value\nwhen unchecked, nil for a visual-only control.",
+          "docstring": "What the form submits for this control right now: the native\ninput's value when checked, the paired hidden input's value\nwhen unchecked, nil when it submits nothing (a visual-only\ncontrol, a disabled one, or an unchecked one with no hidden\ninput beside it).",
           "params": [],
           "return": {
             "types": [
@@ -22368,7 +22368,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/checkbox.rb",
-          "line": 80
+          "line": 82
         }
       ],
       "constants": []
@@ -25364,7 +25364,7 @@
       "path": "Poetry::Ui::Trace::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The shape every agent step takes (shadcn@4.23.0's Trace): a column\nof lines - an icon, a title, a muted description - where a step with\ndetail becomes a disclosure that reveals it (tool output, a\nreasoning summary, a plan's sub-steps). A step's status: tints it:\n:running shimmers the title (off under reduced motion), :error turns\nit destructive, :pending dims it. The title carries the words\n(\"Running\", \"Ran\", \"Failed to run\") - status: is the look, not the\nannouncement.\n\n**Anatomy** (`data-slot` parts):\n\n- `trace` - The column of steps\n- `trace-line` - One step's row - its icon, title and description\n- `trace-icon` - The step's glyph, and the disclosure's chevron (aria-hidden)\n- `trace-title` - The step's words - shimmers while running\n- `trace-description` - The muted trailing note - a duration, a count\n- `trace-collapsible` - A step with detail - the state controller's root\n- `trace-collapsible-trigger` - The disclosure button around the step's line - mirrors aria-expanded\n- `trace-collapsible-content` - The detail panel - its height animates over the measured --collapsible-panel-height\n- `trace-collapsible-content-inner` - The detail itself - indented on the theme's rail",
+      "docstring": "The shape every agent step takes (shadcn@4.23.0's Trace): a column\nof lines - an icon, a title, a muted description - where a step with\ndetail becomes a disclosure that reveals it (tool output, a\nreasoning summary, a plan's sub-steps). A step's status: tints it:\n:running shimmers the title (off under reduced motion), :error turns\nit destructive, :pending dims its icon. The title carries the words\n(\"Running\", \"Ran\", \"Failed to run\") - status: is the look, not the\nannouncement.\n\n**Anatomy** (`data-slot` parts):\n\n- `trace` - The column of steps\n- `trace-line` - One step's row - its icon, title and description\n- `trace-icon` - The step's glyph, and the disclosure's chevron (aria-hidden)\n- `trace-title` - The step's words - shimmers while running\n- `trace-description` - The muted trailing note - a duration, a count\n- `trace-collapsible` - A step with detail - the state controller's root\n- `trace-collapsible-trigger` - The disclosure button around the step's line - mirrors aria-expanded\n- `trace-collapsible-content` - The detail panel - its height animates over the measured --collapsible-panel-height\n- `trace-collapsible-content-inner` - The detail itself - indented on the theme's rail",
       "examples": [
         {
           "title": "",
@@ -25434,7 +25434,7 @@
       "path": "Poetry::Ui::Trace::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "The Trace dictionary: upstream's trace anatomy (shadcn@4.23.0) - the\nstructural classes per part, transcribed from the styled source. The\nlook (gaps, type size, focus rings, the detail's rail) lives in each\ntheme's cn-trace-* rules. Title, description and the collapsible\nwrapper carry no hook: no theme styles them.",
+      "docstring": "The Trace dictionary: upstream's trace anatomy (shadcn@4.23.0) - the\nstructural classes per part, transcribed from the styled source. The\nlook (gaps, type size, focus rings, the detail's rail) lives in each\ntheme's cn-trace-* rules. Title, description and the collapsible\nwrapper carry no hook: no theme styles them. Two AA holds depart\nfrom the source, which fades text under 4.5:1 both times: the\ndescription takes the muted token whole (the source's /70 measures\n2.77:1 on white), and a pending step dims its icon and leaves its\nwords alone (the source's opacity-60 on the line measures 2.35:1).",
       "examples": [],
       "file": "app/components/poetry/ui/trace/style.rb",
       "methods": [],

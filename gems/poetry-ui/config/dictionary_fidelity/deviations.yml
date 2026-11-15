@@ -1494,6 +1494,14 @@ radio-group:
     - radio-group-card-title
 trace:
   slots:
+    trace-description:
+      reason: 'AA hold: the source fades the trailing note to 70% of the muted token, 2.77:1
+        on white and 4.17:1 in dark mode. The note takes the token whole (4.95:1 and
+        7.66:1), the lightest text that holds 4.5:1 on a white page.'
+      dropped:
+      - text-muted-foreground/70
+      added:
+      - text-muted-foreground
     trace-icon:
       reason: The disclosure's chevron is a trace icon too. The source passes its turn as
         a className where TraceCollapsibleTrigger renders it; poetry carries the turn on
@@ -1501,3 +1509,11 @@ trace:
       added:
       - group-aria-expanded/trace-collapsible-trigger:rotate-90
       - transition-transform
+    trace-line:
+      reason: 'AA hold: the source dims a pending step''s whole line to 60%, which leaves
+        its words at 2.35:1 on white and 3.34:1 in dark mode. Poetry dims the step''s
+        icon (decorative, aria-hidden) and leaves the words at the muted token.'
+      dropped:
+      - data-[status=pending]:opacity-60
+      added:
+      - data-[status=pending]:*:data-[slot=trace-icon]:opacity-60

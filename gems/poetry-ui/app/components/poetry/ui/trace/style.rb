@@ -7,7 +7,11 @@ module Poetry
       # structural classes per part, transcribed from the styled source. The
       # look (gaps, type size, focus rings, the detail's rail) lives in each
       # theme's cn-trace-* rules. Title, description and the collapsible
-      # wrapper carry no hook: no theme styles them.
+      # wrapper carry no hook: no theme styles them. Two AA holds depart
+      # from the source, which fades text under 4.5:1 both times: the
+      # description takes the muted token whole (the source's /70 measures
+      # 2.77:1 on white), and a pending step dims its icon and leaves its
+      # words alone (the source's opacity-60 on the line measures 2.35:1).
       class Style < Poetry::Core::Style
         base "cn-trace flex w-full min-w-0 flex-col *:has-[>[data-slot=trace-line]]:flex " \
              "*:has-[>[data-slot=trace-line]]:w-fit *:has-[>[data-slot=trace-line]]:max-w-full " \
@@ -18,10 +22,11 @@ module Poetry
                        "transition-colors in-[a,button]:cursor-pointer in-[a:hover,button:hover]:text-foreground " \
                        "data-[status=error]:text-destructive " \
                        "data-[status=error]:in-[a:hover,button:hover]:text-destructive " \
-                       "data-[status=pending]:opacity-60 data-[status=running]:*:data-[slot=trace-title]:shimmer"
+                       "data-[status=pending]:*:data-[slot=trace-icon]:opacity-60 " \
+                       "data-[status=running]:*:data-[slot=trace-title]:shimmer"
         element :icon, "cn-trace-icon flex shrink-0 items-center justify-center [&_svg]:pointer-events-none"
         element :title, "min-w-0 truncate motion-reduce:shimmer-none"
-        element :description, "shrink-0 text-muted-foreground/70 tabular-nums"
+        element :description, "shrink-0 text-muted-foreground tabular-nums"
         element :collapsible, "flex w-full min-w-0 flex-col"
         element :collapsible_trigger, "cn-trace-collapsible-trigger group/trace-collapsible-trigger flex w-fit " \
                                       "max-w-full min-w-0 cursor-pointer items-center text-left " \

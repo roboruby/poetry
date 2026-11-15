@@ -17,6 +17,8 @@ class PoetryTesterProofs
     dialog_keyboard_and_escape: "dialog opens by keyboard, Escape returns focus to the trigger",
     combobox_filter_and_commit: "combobox filters and commits",
     checkbox_toggles_by_keyboard_and_pointer: "checkbox checks by keyboard, unchecks by pointer, reports its value",
+    checkbox_reports_what_the_form_submits: "checkbox reports what the form submits: in a field, disabled, " \
+                                            "visual-only",
     composer_writes_and_sends: "composer writes its text, reflects emptiness and submits by key and by button",
     composer_reads_the_status: "composer reads idle, running and stopping from the slot, and presses Stop",
     composer_attaches_files: "composer attaches a file, lists it and removes it",
@@ -109,6 +111,27 @@ class PoetryTesterProofs
     checkbox.uncheck
     raise "still checked after the press" if checkbox.checked?
     raise "unchecked value #{checkbox.value.inspect}" unless checkbox.value == "0"
+  end
+
+  # The value is what the form submits: the same answers when the root is
+  # an element around the control, nothing from a disabled control (checked
+  # or not), nothing from a control with no input behind it.
+  def checkbox_reports_what_the_form_submits
+    visit("/previews/poetry/ui/checkbox/in_a_field")
+    field = Poetry::Ui::Testing::Checkbox.new("[data-slot='field']", session: @session)
+    raise "field: checked value #{field.value.inspect}" unless field.value == "1"
+
+    field.uncheck
+    raise "field: unchecked value #{field.value.inspect}" unless field.value == "0"
+
+    visit("/previews/poetry/ui/checkbox/disabled_checked")
+    locked = Poetry::Ui::Testing::Checkbox.new(root_for("checkbox"), session: @session)
+    raise "disabled and checked reads as unchecked" unless locked.checked?
+    raise "disabled value #{locked.value.inspect}" unless locked.value.nil?
+
+    visit("/previews/poetry/ui/checkbox/visual_only")
+    bare = Poetry::Ui::Testing::Checkbox.new(root_for("checkbox"), session: @session)
+    raise "visual-only value #{bare.value.inspect}" unless bare.value.nil?
   end
 
   # The combobox filters on typed text and commits the pick to the native value.

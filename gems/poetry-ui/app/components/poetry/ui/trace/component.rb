@@ -9,7 +9,7 @@ module Poetry
       # detail becomes a disclosure that reveals it (tool output, a
       # reasoning summary, a plan's sub-steps). A step's status: tints it:
       # :running shimmers the title (off under reduced motion), :error turns
-      # it destructive, :pending dims it. The title carries the words
+      # it destructive, :pending dims its icon. The title carries the words
       # ("Running", "Ran", "Failed to run") - status: is the look, not the
       # announcement.
       #

@@ -1,6 +1,6 @@
 <%# A tool call's state maps to status: and to the title's words - the
     title is what assistive tech reads. Running shimmers (off under
-    reduced motion), a failure turns destructive, a waiting step dims. %>
+    reduced motion), a failure turns destructive, a waiting step dims its icon. %>
 <div class="w-full max-w-md">
   <%= poetry_trace do |trace| %>
     <% trace.with_step("Running bin/rails test", icon: :terminal, status: :running) %>
