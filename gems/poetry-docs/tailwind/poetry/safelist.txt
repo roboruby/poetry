@@ -958,7 +958,6 @@ group-data-[type=radio]/questionnaire-choice:hidden
 group-data-[type=radio]/questionnaire-choice:rounded-full
 group-data-[upload-state=error]/attachment:bg-destructive/10
 group-data-[upload-state=error]/attachment:text-destructive
-group-data-[upload-state=error]/attachment:text-destructive/80
 group-data-[upload-state=processing]/attachment:shimmer
 group-data-[upload-state=uploading]/attachment:shimmer
 group-data-[variant=line]/tabs-list:bg-transparent

@@ -285,8 +285,12 @@
   @apply border-none *:data-[slot=bubble-content]:rounded-none *:data-[slot=bubble-content]:bg-transparent *:data-[slot=bubble-content]:p-0 [&>[data-slot=bubble-content]:is(button,a):hover]:bg-muted [&>[data-slot=bubble-content]:is(button,a):hover]:text-foreground dark:[&>[data-slot=bubble-content]:is(button,a):hover]:bg-muted/50;
 }
 
+/* Words AA hold: the source sets the destructive token on its own 10%
+ * tint, 4.0:1 in light mode, so the words ride the oklch darkening there
+ * (5.14:1, the soft destructive treatment) and dark mode keeps the token
+ * (5.3:1). Documented deviation - the AA-contrast posture. */
 .cn-bubble-variant-destructive {
-  @apply *:data-[slot=bubble-content]:bg-destructive/10 *:data-[slot=bubble-content]:text-destructive dark:*:data-[slot=bubble-content]:bg-destructive/20 [&>[data-slot=bubble-content]:is(button,a):hover]:bg-destructive/20 dark:[&>[data-slot=bubble-content]:is(button,a):hover]:bg-destructive/30;
+  @apply *:data-[slot=bubble-content]:bg-destructive/10 *:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:*:data-[slot=bubble-content]:text-destructive dark:*:data-[slot=bubble-content]:bg-destructive/20 [&>[data-slot=bubble-content]:is(button,a):hover]:bg-destructive/20 dark:[&>[data-slot=bubble-content]:is(button,a):hover]:bg-destructive/30;
 }
 
 .cn-bubble-content {

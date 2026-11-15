@@ -28,7 +28,12 @@ visual fragments under `themes/`.
   an app on the next framework defaults does. It needs the network. CI
   runs it as a job that reports and never blocks. A test here never reads
   the Rails it happens to be loaded on: it runs on both.
-- `bundle exec rake test:accessibility` — axe over every preview page.
+- `bundle exec rake test:accessibility` — axe over every preview page,
+  light then dark (Chrome). It and `test:testers` stay out of the default
+  chain; CI runs both in its `browser` job, which counts toward All green.
+  The known-violation list in `rakelib/browser.rake` is empty: a contrast
+  finding is closed in the component, as a recorded deviation, and a hold
+  within a few hundredths of 4.5:1 is not a hold.
 - `bundle exec rake test:visual` — screenshot goldens for the default
   theme; `POETRY_THEME=<t>` walks a ported theme; `test:visual:all` walks
   all nine (Chrome, ~5 minutes per theme, one at a time). The differ passes
@@ -118,7 +123,8 @@ all nine themes).
   also `poetry_combobox`, `poetry_dropdown_menu`, `poetry_dialog`). Write consumer
   tests THROUGH the testers, never with hand-rolled click sequences — they
   assert on the data-open/aria contract, and `bundle exec rake test:testers`
-  proves them against the live preview pages (browser-gated, like visual/axe).
+  proves them against the live preview pages (it needs Chrome, like the
+  axe walk and the goldens; CI's `browser` job runs it).
 
 ## Component conventions
 

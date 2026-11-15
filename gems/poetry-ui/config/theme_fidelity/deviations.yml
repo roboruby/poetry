@@ -295,6 +295,15 @@ vega:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -1212,6 +1221,15 @@ nova:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -2128,6 +2146,15 @@ mira:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -3061,6 +3088,15 @@ rhea:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -4032,6 +4068,15 @@ maia:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -4946,6 +4991,15 @@ luma:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -5893,6 +5947,15 @@ lyra:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-separator":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.
@@ -6738,6 +6801,15 @@ sera:
         dictionary/template.'
       dropped:
       - shrink-0
+    ".cn-bubble-variant-destructive":
+      reason: 'Words AA hold: the source sets the destructive token on its own 10% tint,
+        4.0:1 in light mode, so the words ride the AA-held oklch darkening there (5.14:1)
+        with the token restored in dark (5.3:1).'
+      dropped:
+      - "*:data-[slot=bubble-content]:text-destructive"
+      added:
+      - "*:data-[slot=bubble-content]:text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)]"
+      - dark:*:data-[slot=bubble-content]:text-destructive
     ".cn-button-group-orientation-horizontal":
       reason: Trailing caps sit at the theme's control radius (fidelity fix); remaining
         members are the kept-default cluster.

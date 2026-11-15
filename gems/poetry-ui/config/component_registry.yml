@@ -507,7 +507,7 @@ components:
     - progress
     - trigger
     - group
-    capsule: 7fd41d909f91
+    capsule: 6f660ef87060
     agent_rules:
     - 'State is server-owned: render data-upload-state and flip it by Turbo Stream
       replace - never toggle it in JS.'

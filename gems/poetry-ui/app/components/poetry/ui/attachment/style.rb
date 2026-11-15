@@ -8,6 +8,12 @@ module Poetry
       # dashes, error tints, the in-flight image dim) - it is coupled to
       # the data-[upload-state] machine; sizes/orientation/surface ride the
       # theme. w-fit moved theme-side WITH the vertical w-24 (split-side).
+      #
+      # Error-line AA hold: the source tints the error description at 80%
+      # of the destructive token, which at text-xs measures 4.11:1 on the
+      # card in light mode and 4.36:1 in dark; the line takes the token
+      # whole (4.76:1 and 6.2:1). Documented deviation - the AA-contrast
+      # posture.
       class Style < Poetry::Core::Style
         base "cn-attachment group/attachment relative flex max-w-full min-w-0 shrink-0 flex-wrap border " \
              "bg-card text-card-foreground transition-colors " \
@@ -44,7 +50,7 @@ module Poetry
                         "group-data-[upload-state=uploading]/attachment:shimmer"
 
         element :description, "cn-attachment-description block max-w-full min-w-0 truncate " \
-                              "group-data-[upload-state=error]/attachment:text-destructive/80 text-muted-foreground"
+                              "group-data-[upload-state=error]/attachment:text-destructive text-muted-foreground"
 
         element :actions, "cn-attachment-actions flex shrink-0 items-center"
 

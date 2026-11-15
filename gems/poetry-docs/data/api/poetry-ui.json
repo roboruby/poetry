@@ -1798,7 +1798,7 @@
       "path": "Poetry::Ui::Attachment::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Re-expressed through the cn-* theme layer. The upload\nlifecycle stays PURE CSS and INLINE per upstream's own split (idle\ndashes, error tints, the in-flight image dim) - it is coupled to\nthe data-[upload-state] machine; sizes/orientation/surface ride the\ntheme. w-fit moved theme-side WITH the vertical w-24 (split-side).",
+      "docstring": "Re-expressed through the cn-* theme layer. The upload\nlifecycle stays PURE CSS and INLINE per upstream's own split (idle\ndashes, error tints, the in-flight image dim) - it is coupled to\nthe data-[upload-state] machine; sizes/orientation/surface ride the\ntheme. w-fit moved theme-side WITH the vertical w-24 (split-side).\n\nError-line AA hold: the source tints the error description at 80%\nof the destructive token, which at text-xs measures 4.11:1 on the\ncard in light mode and 4.36:1 in dark; the line takes the token\nwhole (4.76:1 and 6.2:1). Documented deviation - the AA-contrast\nposture.",
       "examples": [],
       "file": "app/components/poetry/ui/attachment/style.rb",
       "methods": [],

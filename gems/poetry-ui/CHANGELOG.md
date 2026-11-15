@@ -50,6 +50,8 @@
 ### Fixed
 
 - The destructive Alert's description holds 4.5:1 in light mode. It takes the destructive token whole (4.76:1 on the card), where the source's 90% tint measured 4.49:1; dark mode keeps the tint. Changed in all nine themes.
+- An Attachment's error line holds 4.5:1 in both colour schemes. It takes the destructive token whole (4.76:1 on the card in light mode, 6.2:1 in dark), where the source's 80% tint measured 4.11:1 and 4.36:1.
+- A destructive Bubble's words hold 4.5:1 in light mode. They take the darkened red the soft destructive Badge and Button carry (5.14:1 on the bubble's tint), where the destructive token on its own tint measured 4.0:1; dark mode keeps the token. Changed in all nine themes. With the Attachment's line, the accessibility walk's list of known violations is empty.
 - `poetry_checkbox(root).value` reports what the form submits when the root is the control itself. An unchecked control returned nil, because its hidden input sits beside the button and the tester looked inside it; it returns the hidden input's value. A disabled control returns nil, since a disabled field submits nothing.
 - FileInput's chips stay through a Turbo morph. The server renders their container empty, so a morph removed them while the input still held the files.
 - FileInput's dropzone shows the refusal tint while files it cannot take are dragged over it. The accepting tint was winning, because both states are on the root at once.

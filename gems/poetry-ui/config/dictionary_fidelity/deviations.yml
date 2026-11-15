@@ -180,11 +180,13 @@ attachment:
     attachment-description:
       reason: 'State vocabulary: poetry names the attribute differently (documented
         in the part contract). data-upload-state replaces the source''s data-state
-        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+        (poetry never uses data-state). AA hold: the source tints the error line at
+        80% of the destructive token, 4.11:1 on the card in light mode and 4.36:1 in
+        dark at text-xs, so the line takes the token whole (4.76:1 and 6.2:1).'
       dropped:
       - group-data-[state=error]/attachment:text-destructive/80
       added:
-      - group-data-[upload-state=error]/attachment:text-destructive/80
+      - group-data-[upload-state=error]/attachment:text-destructive
     attachment-media:
       reason: 'State vocabulary: poetry names the attribute differently (documented
         in the part contract). data-upload-state replaces the source''s data-state
