@@ -140,6 +140,48 @@ jobs:
           version="$(sed -n 's/^version: //p' .herb.yml)"
           npx --yes "@herb-tools/linter@${version}" ${{ matrix.gem.paths }}
 
+  # The two checks that need a real browser, on the runner's Chrome: axe
+  # (WCAG 2 A and AA) over every preview page in light and dark, and the
+  # shipped system-test testers proven against the live controllers. Both
+  # stay out of the gem's default chain, which has to pass on a machine
+  # with no Chrome; before this job nothing ran them, and both had gone red
+  # unseen. The screenshot goldens stay local: a Linux runner draws text
+  # differently from the machine that records them.
+  browser:
+    name: Browser checks (poetry-ui)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
+    defaults:
+      run:
+        working-directory: gems/poetry-ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: gems/poetry-ui
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+          cache: npm
+          cache-dependency-path: gems/poetry-core/package-lock.json
+      - name: Install the package the preview pages load
+        working-directory: gems/poetry-core
+        run: npm ci
+      # A contrast ratio at the floor can change sides with the browser's
+      # colour rounding, so the version is in the log beside any finding.
+      - name: The Chrome the checks drive
+        run: google-chrome --version
+      - name: Accessibility walk
+        run: bundle exec rake test:accessibility
+      - name: Tester proofs
+        run: bundle exec rake test:testers
+
   # The suite and the behaviour tier again, in a host that compiles every
   # template through ReActionView: as the engine alone, then with slots in
   # server mode, then in client mode. A component has to render the same in
@@ -322,7 +364,7 @@ jobs:
           for gem in poetry-core poetry-ui poetry-charts poetry-motion poetry-island poetry-agent poetry-simple_form poetry-extract; do
             (cd "../$gem" && bundle install --quiet)
           done
-      - name: Regenerate the reference data, the skills, the search index and the stylesheet
+      - name: Regenerate the reference data, the skills, the search index, the vendored CSS and the stylesheet
         run: bundle exec rake poetry_docs:refresh
       - name: Nothing changed
         run: |
@@ -368,7 +410,7 @@ jobs:
   all-green:
     name: All green
     if: always() && (github.event_name != 'schedule' || github.repository == 'roboruby/poetry')
-    needs: [ruby, javascript, herb, reactionview, audit, reference-fresh, releaser]
+    needs: [ruby, javascript, herb, browser, reactionview, audit, reference-fresh, releaser]
     runs-on: ubuntu-latest
     steps:
       - name: A job failed or was cancelled
