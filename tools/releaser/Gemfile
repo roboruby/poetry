@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "minitest", "~> 6.0"
+gem "minitest", "~> 6.1"
 gem "rake", "~> 13.0"
 
 # Signs and verifies the sigstore bundles that go up as attestations. sigstore
