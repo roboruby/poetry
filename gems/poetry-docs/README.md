@@ -84,7 +84,9 @@ poetryui.com moves its tag.
 
 Never run `poetry:install` against the engine or its dummy host: it would
 re-inject the unscoped default theme into the Tailwind entry, and the nine
-scoped themes under `tailwind/styles` would leak its tokens. After gem
-fragment changes, run `ruby script/build_style_registry.rb` (it refreshes
-the installed slots under `tailwind/poetry` byte-for-byte and rewraps the
-nine themes) and then `bundle exec rake poetry_docs:css`.
+scoped themes under `tailwind/styles` would leak its tokens. After a gem's
+theme, tokens, stylesheet or dictionary classes change, run `bundle exec
+rake poetry_docs:vendored` (it runs `script/build_style_registry.rb`, which
+refreshes the installed slots under `tailwind/poetry` byte-for-byte and
+rewraps the nine themes, then regenerates the safelist) and then `bundle
+exec rake poetry_docs:css`. The default chain fails while a copy is stale.

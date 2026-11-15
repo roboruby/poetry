@@ -64,6 +64,7 @@
 
 ### Fixed
 
+- The engine's copies of the gems' CSS cannot fall behind the gems unseen. A theme rule changed in poetry-ui reached the docs only when someone ran the sync script, and a dictionary class only when someone edited the safelist; every check passed while the site rendered the old rule, and the safelist had missed the audit report's classes. `rake poetry_docs:vendored` writes every copy (the install slots under `tailwind/poetry`, the safelist among them, and the nine wrapped themes), `poetry_docs:refresh` runs it, and the default chain fails on a stale copy (`poetry_docs:vendored:verify`). Monorepo checkout only, like the tasks beside them.
 - The A2UI Surface demo's standalone example (`/examples/demos/a2ui-surface/default`) renders: it raised `NoMethodError` for want of the session the demo page prepares.
 - The AG-UI Relay demo's controls (the approval prompt, the replay link) follow the run's reply instead of sitting above it: each streamed message used to append after them.
 - The AG-UI Relay demo's scripted agent emits conformant AG-UI 1.0: each `RUN_STARTED` declares `protocolVersion`, `REASONING_MESSAGE_START` carries its required `role: "reasoning"`, and the reasoning message has an id of its own instead of sharing the text message's. A 1.0 client rejected run one outright.

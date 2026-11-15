@@ -15,17 +15,24 @@ tag: "vX", glob: "gems/poetry-docs/*.gemspec"`).
 
 - `bundle exec rake` — the default chain: `test` (includes the
   whole-gallery gates: every catalog page must 200 AND carry ≥1 example),
-  `rubocop`, `poetry_docs:css:verify` (the committed stylesheet matches a
-  fresh build)
+  `rubocop`, `poetry_docs:vendored:verify` (every vendored copy of the
+  gems' CSS matches the gems), `poetry_docs:css:verify` (the committed
+  stylesheet matches a fresh build)
 - `bundle exec rake poetry_docs:css` — REQUIRED after any change that
   affects scanned classes (new pages, new examples, gem fragment changes);
   the build is `app/assets/builds/poetry_docs.css`, committed
-- `ruby script/build_style_registry.rb` — regenerate the nine wrapped
-  `.style-<name>` theme files under `tailwind/styles` after ANY gem
-  fragment change, then rebuild the stylesheet
+- `bundle exec rake poetry_docs:vendored` — REQUIRED after ANY change to a
+  gem's theme, tokens, stylesheet or dictionary classes, then rebuild the
+  stylesheet. The docs render from their own copies of the gems' CSS: the
+  install slots under `tailwind/poetry` (the safelist among them) and the
+  nine wrapped `.style-<name>` theme files under `tailwind/styles`. The
+  task runs `ruby script/build_style_registry.rb` (everything but the
+  safelist, no Rails needed; `--check` lists stale files and writes
+  nothing) and regenerates the safelist from the loaded gems. Never edit a
+  copy by hand, the safelist included
 - `bundle exec rake poetry_docs:refresh` — the skills (`.claude/skills`),
-  the API reference (`data/api`), the search index (`data/search-index.json`)
-  and the stylesheet; CI's "Reference data is fresh" job runs it and fails
+  the API reference (`data/api`), the search index (`data/search-index.json`),
+  the vendored CSS and the stylesheet; CI's "Reference data is fresh" job runs it and fails
   on a diff, and the release train runs it at bump time
 - `bin/dev` — the dummy host on port 4110 (`PORT=` to change); it runs
   `rails server` from `test/dummy`, no watcher, so rebuild the stylesheet by

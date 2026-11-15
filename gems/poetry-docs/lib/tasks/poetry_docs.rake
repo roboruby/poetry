@@ -3,9 +3,10 @@
 # The engine's generated surfaces, regenerated in the monorepo after the
 # gems change (the release train runs poetry_docs:refresh at bump time):
 # the agent skills under .claude/skills, the API reference under data/api,
-# the search index under data/, and the built stylesheet under
-# app/assets/builds. A host that bundles the engine gets these tasks too;
-# they refuse to run outside the monorepo checkout.
+# the search index under data/, the gems' CSS vendored under tailwind/, and
+# the built stylesheet under app/assets/builds. A host that bundles the
+# engine gets these tasks too; they refuse to run outside the monorepo
+# checkout.
 namespace :poetry_docs do
   monorepo = -> { Poetry::Docs.root.join("Rakefile").exist? && Poetry::Docs.root.join("..", "poetry-core").directory? }
   monorepo_only = lambda do |task|
@@ -85,6 +86,50 @@ namespace :poetry_docs do
     Rails::Generators.invoke("poetry:skill", [ "--force" ], destination_root: Poetry::Docs.root.to_s)
   end
 
+  # The safelist an install would write in this host: every loaded gem's
+  # style dictionaries plus poetry-ui's committed template classes
+  # (poetry:install's own recipe, so the file reads as an installer's).
+  vendored_safelist = lambda do
+    Rails.application.eager_load!
+    styles = Poetry::Core::Style.descendants.select(&:name)
+    Poetry::Core::CSS::Safelist.new(style_classes: styles, template_classes: Poetry::Ui.template_classes).text
+  end
+  safelist_path = -> { Poetry::Docs.root.join("tailwind/poetry/safelist.txt") }
+  style_registry = lambda do |*flags|
+    system(RbConfig.ruby, Poetry::Docs.root.join("script/build_style_registry.rb").to_s, *flags)
+  end
+
+  desc "Sync the gems' CSS the docs vendor: the install slots under tailwind/poetry (safelist included) " \
+       "and the nine wrapped themes under tailwind/styles"
+  task vendored: :environment do
+    monorepo_only.call("poetry_docs:vendored")
+    abort "poetry_docs:vendored: script/build_style_registry.rb failed" unless style_registry.call
+    safelist_path.call.write(vendored_safelist.call)
+    puts "wrote tailwind/poetry/safelist.txt (#{safelist_path.call.read.lines.size} lines)"
+  end
+
+  namespace :vendored do
+    # A theme rule or a dictionary class changed in a gem reaches the docs
+    # only through these copies. Before this check a stale copy passed every
+    # gate: the stylesheet verify rebuilds from the copies, so it agreed
+    # with them, and the docs rendered the old rule.
+    desc "Fail when a vendored copy of the gems' CSS (themes, install slots, safelist) differs from the gems"
+    task verify: :environment do
+      monorepo_only.call("poetry_docs:vendored:verify")
+      stale = !style_registry.call("--check")
+      path = safelist_path.call
+      unless path.exist? && path.read == vendored_safelist.call
+        stale = true
+        warn "poetry_docs:vendored:verify: tailwind/poetry/safelist.txt no longer matches the gems' dictionaries " \
+             "and template classes"
+      end
+      if stale
+        abort "poetry_docs:vendored:verify: run bundle exec rake poetry_docs:vendored poetry_docs:css and commit"
+      end
+      puts "poetry_docs:vendored: the safelist matches the gems"
+    end
+  end
+
   desc "Build app/assets/builds/poetry_docs.css from tailwind/application.css (the nine-theme registry inside)"
   task :css do
     monorepo_only.call("poetry_docs:css")
@@ -120,10 +165,13 @@ namespace :poetry_docs do
     end
   end
 
-  desc "Everything the engine regenerates after the gems change: the skills, the API reference, the search index, the stylesheet"
+  desc "Everything the engine regenerates after the gems change: the skills, the API reference, the search index, " \
+       "the vendored CSS, the stylesheet"
   task :refresh do
     monorepo_only.call("poetry_docs:refresh")
-    %w[poetry_docs:skill poetry_docs:api_reference poetry_docs:search_index poetry_docs:css].each do |name|
+    # The vendored copies before the stylesheet, which is built from them.
+    %w[poetry_docs:skill poetry_docs:api_reference poetry_docs:search_index
+       poetry_docs:vendored poetry_docs:css].each do |name|
       Rake::Task[name].invoke
     end
   end
