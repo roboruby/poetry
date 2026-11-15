@@ -46,7 +46,10 @@ namespace :css do
   desc "Every dictionary's diff against its pinned source must match config/dictionary_fidelity/deviations.yml " \
        "exactly (renders every preview; also writes tmp/dictionary_fidelity/diffs.json)"
   task :verify_dictionary_fidelity do
-    sh({ "DICTIONARY_REPORT" => "1" }, "bundle", "exec", "ruby", "-Itest",
+    # One test file cannot meet the suite's coverage floor, so the floor is
+    # off here (as in registry:generate and test:reactionview); with it on,
+    # a passing check exits 2.
+    sh({ "DICTIONARY_REPORT" => "1", "COVERAGE" => "0" }, "bundle", "exec", "ruby", "-Itest",
        File.expand_path("../test/poetry/ui/dictionary_fidelity_test.rb", __dir__))
   end
 end
