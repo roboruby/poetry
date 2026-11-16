@@ -255,6 +255,20 @@
         still send, is accepted too. The browser's checks need no version of their
         own: the server writes them in v1.0's spelling whatever the surface speaks.
       </p>
+      <p id="upgrading-a-log">
+        A log of messages written before 0.2.0 names no version, and it is in
+        neither dialect as it stands: a <code>createSurface</code> there carries
+        its components and data model, as v1.0's does, with bindings spelled
+        <code>path</code> and <code>call</code>, as v0.9's are. To replay one,
+        give each message a version and make it that version's. For
+        <code>"1.0"</code>, respell each binding as <code>@path</code> and each
+        call as <code>@call</code>. For <code>"v0.9"</code>, move the components
+        into an <code>updateComponents</code> and the data model into an
+        <code>updateDataModel</code> after the <code>createSurface</code>. A v0.9
+        <code>createSurface</code> that still carries either is refused, so a log
+        stamped without the change fails where it used to render and never
+        renders empty.
+      </p>
     <% end %>
     <%= poetry_code_block(code: versions_source, language: "json", label: "The same binding in each version") %>
   </section>

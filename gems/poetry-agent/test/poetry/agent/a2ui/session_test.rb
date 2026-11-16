@@ -226,6 +226,45 @@ class SessionTest < Minitest::Test
     assert_empty session.errors
   end
 
+  def test_a_v09_create_surface_that_carries_components_or_data_is_refused_not_emptied
+    v09 = A2UI::Catalogs::Basic::V0_9_IDS.first
+    components = [{ "id" => "root", "component" => "Text", "text" => "Hello" }]
+    create = lambda do |extra|
+      session = A2UI::Session.new
+      changed = session.apply({ "version" => "v0.9",
+                                "createSurface" => { "surfaceId" => "s", "catalogId" => v09 }.merge(extra) })
+      [session, changed]
+    end
+
+    session, changed = create.call("components" => components)
+
+    assert_empty changed
+    assert_nil session.surface("s"), "no empty surface is left behind"
+    assert_equal "INVALID_MESSAGE", session.errors.last.dig("error", "code")
+    assert_equal "v0.9", session.errors.last["version"]
+    assert_equal "createSurface.components is not part of v0.9: send it in updateComponents after createSurface, " \
+                 "or declare version \"1.0\"", session.errors.last.dig("error", "message")
+
+    session, changed = create.call("dataModel" => { "n" => 1 })
+
+    assert_empty changed
+    assert_match(/createSurface\.dataModel is not part of v0\.9: send it in updateDataModel/,
+                 session.errors.last.dig("error", "message"))
+
+    session, changed = create.call("theme" => { "primaryColor" => "#00f" }, "sendDataModel" => true)
+
+    assert_equal ["s"], changed, "what v0.9's createSurface does carry is taken as before"
+    assert_empty session.errors
+
+    session = A2UI::Session.new
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => components, "dataModel" => { "n" => 1 } } })
+
+    assert_empty session.errors
+    assert_equal %w[root], session.surface("s").components.keys, "v1.0 reads both from createSurface"
+  end
+
   def test_capabilities_and_the_renderer_data_model_by_version
     session = A2UI::Session.new
     v09 = A2UI::Catalogs::Basic::V0_9_IDS.first

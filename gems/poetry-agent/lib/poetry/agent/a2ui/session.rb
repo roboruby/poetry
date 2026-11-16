@@ -464,6 +464,10 @@ module Poetry
                           dialect: dialect)
           end
 
+          if (problem = stray_creation_problem(body, dialect))
+            return reject("INVALID_MESSAGE", problem, surface_id, dialect: dialect)
+          end
+
           if dialect.v1? && body.key?("metadata") &&
              (problem = Strict.metadata_problem(body["metadata"], "createSurface.metadata"))
             return reject("VALIDATION_FAILED", problem, surface_id, dialect: dialect, path: "/metadata")
@@ -482,6 +486,24 @@ module Poetry
           @creations[surface_id] = JSON.parse(JSON.generate(body))
           update(surface, body["components"]) if dialect.v1? && body["components"].is_a?(Array)
           [surface_id]
+        end
+
+        # What a v0.9 createSurface must not carry, or nil. v0.9's
+        # createSurface is closed and holds neither components nor a data
+        # model; v1.0 gave both a place there. A message in v1.0's shape
+        # that says v0.9 (a log written before messages named a version,
+        # stamped with the older one) would otherwise create its surface
+        # empty with nothing said, so it is refused and told where each goes.
+        def stray_creation_problem(body, dialect)
+          return if dialect.v1?
+
+          { "components" => "updateComponents", "dataModel" => "updateDataModel" }.each do |key, message|
+            next unless body.key?(key)
+
+            return "createSurface.#{key} is not part of #{dialect.version}: send it in #{message} after " \
+                   "createSurface, or declare version \"#{Dialect::V1_0.version}\""
+          end
+          nil
         end
 
         # Updates a surface's components from an updateComponents body, recording validation errors.
