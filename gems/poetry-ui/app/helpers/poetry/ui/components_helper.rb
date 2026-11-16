@@ -109,6 +109,20 @@ module Poetry
         render(Poetry::Ui::Typeset::Component.new(**), &)
       end
 
+      # Text written in Markdown, by a model or a person, rendered as
+      # prose: the text is parsed and rebuilt from known elements, so
+      # markup in it never reaches the page. streaming: closes what a
+      # reply still being written has left open.
+      #
+      # @example A reply in a transcript
+      #     poetry_markdown(text: message.content, heading_level: 3)
+      # @example A reply still being written
+      #     poetry_markdown(text: reply.text, streaming: true, heading_level: 3)
+      # @see Poetry::Ui::Markdown::Component
+      def poetry_markdown(**)
+        render(Poetry::Ui::Markdown::Component.new(**))
+      end
+
       # A control for selecting, previewing, and removing files to upload.
       #
       # @example Drag-and-drop upload surface

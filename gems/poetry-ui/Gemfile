@@ -8,6 +8,10 @@ gemspec
 # CodeBlock's soft highlighting dependency - the dummy/gate builds exercise
 # the rouge path (hosts without rouge get the plain fallback).
 gem "rouge"
+# Markdown's soft parsing dependency - the dummy/gate builds exercise the
+# commonmarker path, and the redcarpet one through the gem Lookbook brings
+# (hosts with neither get the plain rendering).
+gem "commonmarker"
 
 # The sibling gems ride local paths while the family is checked out side by
 # side (development); anywhere else (CI, a release job, a lone clone) they

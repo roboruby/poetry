@@ -134,6 +134,27 @@ In blocks: `chat` - for a screen, start from the block (MCP compose/describe_blo
 - RULE: webmcp: "name" lets an in-page agent write the text, send and stop through the composer's own gate; leave it off unless the page means an agent to speak for the person.
 - RULE: name: is the message's param key; label: is the field's accessible name - the placeholder is not a label.
 
+## markdown (`poetry_markdown`)
+
+Text written in Markdown, by a model or a person, rendered safely as prose, a reply still streaming included.
+
+Class: Poetry::Ui::Markdown::Component - BEM block `poetry-ui-markdown`.
+- `hard_breaks:` (boolean) - default false - Keeps a single line break inside a paragraph as a line break.
+- `heading_level:` (integer) - one of 1|2|3|4|5|6, default 1 - The level a # heading renders at; deeper headings follow, none past h6.
+- `images:` (boolean) - default false - Renders images in the text as images. Off, an image is a link to it.
+- `link_target:` (string) - The target every link opens in ("_blank" for a new tab).
+- `preset:` (string) - Appends typeset-<preset>, as on Typeset - a tiny class in the app's own CSS retuning the rhythm variables.
+- `streaming:` (boolean) - default false - The text is still being written: what its last block has left open (emphasis, a code span, a link's address, a table's first row) is closed for display.
+- `text:` (string) - The Markdown to render. Blank renders the empty container, a reply's row before its first word.
+- PART `markdown` - The prose container - a Typeset, so the app-owned typeset.css styles every element inside and an embedded CodeBlock keeps its own styles | states: data-streaming (streaming: - the text is still being written)
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
+- RULE: Text a model or a person wrote in Markdown renders with poetry_markdown(text:) - never html_safe, raw, sanitize, or a Markdown gem called in the view. Markup in the text does not reach the page.
+- RULE: Parsing needs `gem "commonmarker"` (or `gem "redcarpet"`) in the host Gemfile - without one the text renders as plain paragraphs, with fenced code still a code block.
+- RULE: While a reply streams, re-render its row with the longer text and streaming: true - an unfinished **bold**, `code`, link or table is closed for display, so raw marks never flash. Render the finished reply without it.
+- RULE: Inside a transcript pass heading_level: 3, so a reply's # headings sit under the page's own.
+- RULE: Images in the text render as links unless images: true - every reader's browser fetches a remote image, which a reply shaped by untrusted content can use to send data out.
+- RULE: It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset, and never pass it HTML: the text is Markdown.
+
 ## message (`poetry_message`)
 
 A chat row pairing an author and avatar with message content.

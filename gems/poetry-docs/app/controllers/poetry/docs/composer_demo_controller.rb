@@ -18,6 +18,12 @@
 # A server-fed menu asks `people` about the word being typed. It answers
 # from a fixed directory, a handful of rows at most, names that start with
 # the word ahead of the rest.
+#
+# The Markdown page's example asks for the reply as Markdown (as=markdown):
+# the same turn, with a reply written in Markdown and sent a few
+# characters at a time, so a frame ends inside a mark as often as not.
+# Each frame renders through poetry_markdown with streaming: on, and the
+# last one, the whole reply, without it.
 module Poetry
   module Docs
     class ComposerDemoController < ApplicationController
@@ -31,6 +37,30 @@ module Poetry
       # How many words each frame adds, and the pause before it.
       WORDS_PER_FRAME = 2
       FRAME_MS = 220
+      # The scripted reply written in Markdown, the characters each frame
+      # adds, and the pause before it.
+      MARKDOWN_REPLY = <<~MARKDOWN
+        # Late orders
+
+        Two orders are **late**, and one is *very* late. The check is `Order#late?`, and
+        [the fulfilment guide](https://example.com/fulfilment) has the thresholds.
+
+        1. ORD-1041, Lumen Labs
+        2. ORD-1039, Gable & Sons
+
+        ```ruby
+        Order.processing.where(due_on: ...Date.current)
+        ```
+
+        | Order | Customer | Total |
+        |:------|:---------|------:|
+        | ORD-1041 | Lumen Labs | $482.50 |
+        | ORD-1039 | Gable & Sons | $2,040.00 |
+
+        ORD-1041 ships ~~today~~ tomorrow.
+      MARKDOWN
+      CHARACTERS_PER_FRAME = 7
+      MARKDOWN_FRAME_MS = 70
       # The files one message may carry here, and the request size that
       # leaves room for them (the examples allow three files of 1 MB).
       MAX_FILES = 3
@@ -100,8 +130,9 @@ module Poetry
 
         reply = token(params[:reply]) || "#{composer}-reply"
         frames.each_with_index do |text, index|
-          pause(FRAME_MS)
-          write_stream(turbo.vreplace(reply, row(id: reply, text: text, version: index + 1)))
+          pause(markdown? ? MARKDOWN_FRAME_MS : FRAME_MS)
+          write_stream(turbo.vreplace(reply, row(id: reply, text: text, version: index + 1, markdown: markdown?,
+                                                 streaming: index < frames.size - 1)))
         end
         # Removing the source is load-bearing: SSE reconnects after the
         # server closes, and a reconnect would replay the reply.
@@ -127,9 +158,18 @@ module Poetry
       # An id from the address, or nil when it is not one.
       def token(value) = value.to_s[/\A[a-z0-9-]{1,64}\z/]
 
+      # Whether the reply is the one written in Markdown.
+      def markdown? = params[:as] == "markdown"
+
+      # The reply as the stream sends it: each frame the text so far, the last one all of it.
       def frames
-        words = REPLY.split
-        (WORDS_PER_FRAME..words.size + WORDS_PER_FRAME - 1).step(WORDS_PER_FRAME).map { |count| words.first(count).join(" ") }
+        @frames ||= if markdown?
+          lengths = (CHARACTERS_PER_FRAME...MARKDOWN_REPLY.length).step(CHARACTERS_PER_FRAME).to_a << MARKDOWN_REPLY.length
+          lengths.map { |length| MARKDOWN_REPLY[0, length] }
+        else
+          words = REPLY.split
+          (WORDS_PER_FRAME..words.size + WORDS_PER_FRAME - 1).step(WORDS_PER_FRAME).map { |count| words.first(count).join(" ") }
+        end
       end
 
       # The action slot, stamped with the clock for the versioned replace.
@@ -138,9 +178,10 @@ module Poetry
         turbo.vreplace("#{composer}-action", slot)
       end
 
-      def row(id:, text:, align: :start, version: nil, files: [])
+      def row(id:, text:, align: :start, version: nil, files: [], markdown: false, streaming: false)
         render_to_string(partial: "poetry/docs/composer_demo/row",
-                         locals: { id: id, text: text, align: align, version: version, files: files })
+                         locals: { id: id, text: text, align: align, version: version, files: files,
+                                   markdown: markdown, streaming: streaming })
       end
 
       # The values a chip menu posted, as the reader's row shows them: name and no size.
@@ -155,7 +196,8 @@ module Poetry
       end
 
       def source_tag(reply)
-        src = composer_demo_reply_path(composer: composer, reply: reply, instant: params[:instant].presence)
+        src = composer_demo_reply_path(composer: composer, reply: reply, instant: params[:instant].presence,
+                                       as: params[:as].presence)
         %(<turbo-stream-source id="#{source}" src="#{ERB::Util.html_escape(src)}"></turbo-stream-source>)
       end
 

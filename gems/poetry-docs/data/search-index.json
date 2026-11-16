@@ -4314,6 +4314,60 @@
     "path": "/components/link#underline"
   },
   {
+    "title": "Markdown",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown"
+  },
+  {
+    "title": "Installation",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#installation"
+  },
+  {
+    "title": "A Markdown gem",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#a-markdown-gem"
+  },
+  {
+    "title": "What reaches the page",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#what-reaches-the-page"
+  },
+  {
+    "title": "A reply still being written",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#a-reply-being-written"
+  },
+  {
+    "title": "Headings in a transcript",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#headings-in-a-transcript"
+  },
+  {
+    "title": "Default",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#default"
+  },
+  {
+    "title": "Live",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#live"
+  },
+  {
+    "title": "Unfinished",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#unfinished"
+  },
+  {
     "title": "Marker",
     "page": "Marker",
     "section": "components",

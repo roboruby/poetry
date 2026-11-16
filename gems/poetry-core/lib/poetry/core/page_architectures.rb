@@ -288,7 +288,7 @@ module Poetry
                            "A reload in the middle of a reply still shows Stop: the server holds the state",
                            "A message sent while a reply runs is refused by the server, not only by the button",
                            "A wide table or a long line of code scrolls in its own box, not the transcript"],
-          "components" => %w[message_scroller message bubble trace typeset composer button icon],
+          "components" => %w[message_scroller message bubble trace markdown composer button icon],
           "block" => "chat"
         }
       ].freeze

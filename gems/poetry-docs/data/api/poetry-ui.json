@@ -423,7 +423,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 260
+          "line": 262
         },
         {
           "name": "block_components",
@@ -450,7 +450,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 387
+          "line": 389
         },
         {
           "name": "charts_registry",
@@ -462,7 +462,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 215
+          "line": 217
         },
         {
           "name": "committed_charts_registry",
@@ -474,7 +474,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 293
+          "line": 295
         },
         {
           "name": "committed_island_registry",
@@ -486,7 +486,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 313
+          "line": 315
         },
         {
           "name": "committed_motion_registry",
@@ -498,7 +498,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 303
+          "line": 305
         },
         {
           "name": "helper_names",
@@ -510,7 +510,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 111
+          "line": 113
         },
         {
           "name": "host_registry",
@@ -522,7 +522,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 205
+          "line": 207
         },
         {
           "name": "island_registry",
@@ -534,7 +534,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 237
+          "line": 239
         },
         {
           "name": "motion_registry",
@@ -546,7 +546,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 226
+          "line": 228
         },
         {
           "name": "recipe_items",
@@ -558,7 +558,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 163
+          "line": 165
         },
         {
           "name": "registry",
@@ -570,7 +570,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 124
+          "line": 126
         },
         {
           "name": "registry_blocks",
@@ -590,7 +590,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 361
+          "line": 363
         },
         {
           "name": "registry_descriptions",
@@ -602,7 +602,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 141
+          "line": 143
         },
         {
           "name": "registry_helpers",
@@ -622,7 +622,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 345
+          "line": 347
         },
         {
           "name": "registry_items",
@@ -634,7 +634,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 151
+          "line": 153
         },
         {
           "name": "root",
@@ -646,7 +646,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "skill_files",
@@ -667,7 +667,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 180
+          "line": 182
         },
         {
           "name": "template_classes",
@@ -684,7 +684,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 101
+          "line": 103
         },
         {
           "name": "theme_owned_names",
@@ -709,7 +709,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 197
+          "line": 199
         }
       ],
       "constants": [
@@ -7470,7 +7470,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1733
+          "line": 1747
         },
         {
           "name": "poetry_alert",
@@ -7487,7 +7487,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 132
+          "line": 146
         },
         {
           "name": "poetry_alert_dialog",
@@ -7504,7 +7504,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1075
+          "line": 1089
         },
         {
           "name": "poetry_aspect_ratio",
@@ -7521,7 +7521,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 342
+          "line": 356
         },
         {
           "name": "poetry_attachment",
@@ -7538,7 +7538,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1519
+          "line": 1533
         },
         {
           "name": "poetry_attachment_for",
@@ -7559,7 +7559,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1548
+          "line": 1562
         },
         {
           "name": "poetry_attachment_group",
@@ -7576,7 +7576,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1530
+          "line": 1544
         },
         {
           "name": "poetry_attachments_for",
@@ -7593,7 +7593,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1579
+          "line": 1593
         },
         {
           "name": "poetry_autocomplete",
@@ -7610,7 +7610,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 383
+          "line": 397
         },
         {
           "name": "poetry_avatar",
@@ -7627,7 +7627,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 392
+          "line": 406
         },
         {
           "name": "poetry_badge",
@@ -7661,7 +7661,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 405
+          "line": 419
         },
         {
           "name": "poetry_bubble",
@@ -7678,7 +7678,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1435
+          "line": 1449
         },
         {
           "name": "poetry_bubble_group",
@@ -7695,7 +7695,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1448
+          "line": 1462
         },
         {
           "name": "poetry_button",
@@ -7729,7 +7729,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 814
+          "line": 828
         },
         {
           "name": "poetry_button_group_separator",
@@ -7746,7 +7746,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 834
+          "line": 848
         },
         {
           "name": "poetry_button_group_text",
@@ -7763,7 +7763,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 823
+          "line": 837
         },
         {
           "name": "poetry_calendar",
@@ -7780,7 +7780,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 461
+          "line": 475
         },
         {
           "name": "poetry_card",
@@ -7797,7 +7797,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 145
+          "line": 159
         },
         {
           "name": "poetry_carousel",
@@ -7814,7 +7814,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 748
+          "line": 762
         },
         {
           "name": "poetry_checkbox",
@@ -7831,7 +7831,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1273
+          "line": 1287
         },
         {
           "name": "poetry_checkbox_group",
@@ -7848,7 +7848,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1289
+          "line": 1303
         },
         {
           "name": "poetry_checkbox_group_all",
@@ -7865,7 +7865,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1304
+          "line": 1318
         },
         {
           "name": "poetry_checkbox_group_item",
@@ -7882,7 +7882,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1314
+          "line": 1328
         },
         {
           "name": "poetry_clipboard_text",
@@ -7899,7 +7899,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1328
+          "line": 1342
         },
         {
           "name": "poetry_code_block",
@@ -7920,7 +7920,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1346
+          "line": 1360
         },
         {
           "name": "poetry_collapsible",
@@ -7937,7 +7937,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1720
+          "line": 1734
         },
         {
           "name": "poetry_color_scheme_script",
@@ -7954,7 +7954,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1929
+          "line": 1943
         },
         {
           "name": "poetry_combobox",
@@ -7971,7 +7971,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1837
+          "line": 1851
         },
         {
           "name": "poetry_command",
@@ -7988,7 +7988,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1863
+          "line": 1877
         },
         {
           "name": "poetry_command_dialog",
@@ -8005,7 +8005,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1876
+          "line": 1890
         },
         {
           "name": "poetry_composer",
@@ -8022,7 +8022,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1625
+          "line": 1639
         },
         {
           "name": "poetry_composer_action",
@@ -8043,7 +8043,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1642
+          "line": 1656
         },
         {
           "name": "poetry_composer_menu_options",
@@ -8064,7 +8064,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1679
+          "line": 1693
         },
         {
           "name": "poetry_composer_prompt",
@@ -8081,7 +8081,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1658
+          "line": 1672
         },
         {
           "name": "poetry_context_menu",
@@ -8098,7 +8098,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1850
+          "line": 1864
         },
         {
           "name": "poetry_data_table",
@@ -8115,7 +8115,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 370
+          "line": 384
         },
         {
           "name": "poetry_date_field",
@@ -8132,7 +8132,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1140
+          "line": 1154
         },
         {
           "name": "poetry_date_picker",
@@ -8149,7 +8149,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 473
+          "line": 487
         },
         {
           "name": "poetry_date_time_field",
@@ -8166,7 +8166,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1164
+          "line": 1178
         },
         {
           "name": "poetry_deferred",
@@ -8183,7 +8183,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 237
+          "line": 251
         },
         {
           "name": "poetry_dialog",
@@ -8200,7 +8200,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1047
+          "line": 1061
         },
         {
           "name": "poetry_drawer",
@@ -8217,7 +8217,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 776
+          "line": 790
         },
         {
           "name": "poetry_dropdown_menu",
@@ -8234,7 +8234,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1807
+          "line": 1821
         },
         {
           "name": "poetry_empty",
@@ -8251,7 +8251,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 355
+          "line": 369
         },
         {
           "name": "poetry_field",
@@ -8268,7 +8268,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1225
+          "line": 1239
         },
         {
           "name": "poetry_field_group",
@@ -8285,7 +8285,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1253
+          "line": 1267
         },
         {
           "name": "poetry_field_separator",
@@ -8302,7 +8302,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1263
+          "line": 1277
         },
         {
           "name": "poetry_fieldset",
@@ -8319,7 +8319,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1237
+          "line": 1251
         },
         {
           "name": "poetry_file_input",
@@ -8336,7 +8336,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 120
+          "line": 134
         },
         {
           "name": "poetry_hover_card",
@@ -8353,7 +8353,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1794
+          "line": 1808
         },
         {
           "name": "poetry_icon",
@@ -8387,7 +8387,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1908
+          "line": 1922
         },
         {
           "name": "poetry_input",
@@ -8404,7 +8404,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1085
+          "line": 1099
         },
         {
           "name": "poetry_input_group",
@@ -8421,7 +8421,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 888
+          "line": 902
         },
         {
           "name": "poetry_input_group_addon",
@@ -8438,7 +8438,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 901
+          "line": 915
         },
         {
           "name": "poetry_input_group_button",
@@ -8455,7 +8455,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 955
+          "line": 969
         },
         {
           "name": "poetry_input_group_input",
@@ -8472,7 +8472,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 930
+          "line": 944
         },
         {
           "name": "poetry_input_group_text",
@@ -8489,7 +8489,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 918
+          "line": 932
         },
         {
           "name": "poetry_input_group_textarea",
@@ -8506,7 +8506,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 941
+          "line": 955
         },
         {
           "name": "poetry_input_otp",
@@ -8523,7 +8523,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1107
+          "line": 1121
         },
         {
           "name": "poetry_item",
@@ -8540,7 +8540,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 426
+          "line": 440
         },
         {
           "name": "poetry_item_separator",
@@ -8557,7 +8557,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 450
+          "line": 464
         },
         {
           "name": "poetry_kbd",
@@ -8574,7 +8574,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 318
+          "line": 332
         },
         {
           "name": "poetry_kbd_group",
@@ -8591,7 +8591,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 330
+          "line": 344
         },
         {
           "name": "poetry_label",
@@ -8608,7 +8608,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1116
+          "line": 1130
         },
         {
           "name": "poetry_link",
@@ -8628,6 +8628,27 @@
           "line": 39
         },
         {
+          "name": "poetry_markdown",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_markdown(**)",
+          "docstring": "Text written in Markdown, by a model or a person, rendered as\nprose: the text is parsed and rebuilt from known elements, so\nmarkup in it never reaches the page. streaming: closes what a\nreply still being written has left open.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "A reply in a transcript",
+              "text": "poetry_markdown(text: message.content, heading_level: 3)"
+            },
+            {
+              "title": "A reply still being written",
+              "text": "poetry_markdown(text: reply.text, streaming: true, heading_level: 3)"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 122
+        },
+        {
           "name": "poetry_marker",
           "scope": "instance",
           "group": null,
@@ -8642,7 +8663,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1507
+          "line": 1521
         },
         {
           "name": "poetry_menubar",
@@ -8659,7 +8680,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1892
+          "line": 1906
         },
         {
           "name": "poetry_message",
@@ -8676,7 +8697,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1486
+          "line": 1500
         },
         {
           "name": "poetry_message_group",
@@ -8693,7 +8714,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1498
+          "line": 1512
         },
         {
           "name": "poetry_message_scroller",
@@ -8710,7 +8731,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1590
+          "line": 1604
         },
         {
           "name": "poetry_message_scroller_item",
@@ -8727,7 +8748,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1604
+          "line": 1618
         },
         {
           "name": "poetry_metadata_list",
@@ -8761,7 +8782,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1174
+          "line": 1188
         },
         {
           "name": "poetry_native_select",
@@ -8778,7 +8799,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 849
+          "line": 863
         },
         {
           "name": "poetry_native_select_optgroup",
@@ -8795,7 +8816,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 871
+          "line": 885
         },
         {
           "name": "poetry_native_select_option",
@@ -8812,7 +8833,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 858
+          "line": 872
         },
         {
           "name": "poetry_navigation_menu",
@@ -8829,7 +8850,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 723
+          "line": 737
         },
         {
           "name": "poetry_navigation_menu_link",
@@ -8846,7 +8867,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 732
+          "line": 746
         },
         {
           "name": "poetry_number_field",
@@ -8863,7 +8884,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1129
+          "line": 1143
         },
         {
           "name": "poetry_optimistic_form",
@@ -8880,7 +8901,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 259
+          "line": 273
         },
         {
           "name": "poetry_pagination",
@@ -8897,7 +8918,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 198
+          "line": 212
         },
         {
           "name": "poetry_popover",
@@ -8914,7 +8935,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1746
+          "line": 1760
         },
         {
           "name": "poetry_progress",
@@ -8931,7 +8952,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 414
+          "line": 428
         },
         {
           "name": "poetry_questionnaire",
@@ -8948,7 +8969,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1398
+          "line": 1412
         },
         {
           "name": "poetry_radio_group",
@@ -8965,7 +8986,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1415
+          "line": 1429
         },
         {
           "name": "poetry_resizable",
@@ -8982,7 +9003,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 761
+          "line": 775
         },
         {
           "name": "poetry_scroll_area",
@@ -8999,7 +9020,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 787
+          "line": 801
         },
         {
           "name": "poetry_search_field",
@@ -9016,7 +9037,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1184
+          "line": 1198
         },
         {
           "name": "poetry_select",
@@ -9033,7 +9054,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1822
+          "line": 1836
         },
         {
           "name": "poetry_sensitive_input",
@@ -9050,7 +9071,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1372
+          "line": 1386
         },
         {
           "name": "poetry_separator",
@@ -9067,7 +9088,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 217
+          "line": 231
         },
         {
           "name": "poetry_sheet",
@@ -9084,7 +9105,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1060
+          "line": 1074
         },
         {
           "name": "poetry_sidebar",
@@ -9101,7 +9122,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 491
+          "line": 505
         },
         {
           "name": "poetry_sidebar_group_action",
@@ -9118,7 +9139,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 621
+          "line": 635
         },
         {
           "name": "poetry_sidebar_group_label",
@@ -9135,7 +9156,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 573
+          "line": 587
         },
         {
           "name": "poetry_sidebar_input",
@@ -9152,7 +9173,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 634
+          "line": 648
         },
         {
           "name": "poetry_sidebar_menu_action",
@@ -9169,7 +9190,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 670
+          "line": 684
         },
         {
           "name": "poetry_sidebar_menu_badge",
@@ -9186,7 +9207,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 685
+          "line": 699
         },
         {
           "name": "poetry_sidebar_menu_button",
@@ -9203,7 +9224,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 596
+          "line": 610
         },
         {
           "name": "poetry_sidebar_menu_skeleton",
@@ -9220,7 +9241,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 646
+          "line": 660
         },
         {
           "name": "poetry_sidebar_menu_sub_button",
@@ -9237,7 +9258,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 698
+          "line": 712
         },
         {
           "name": "poetry_sidebar_rail",
@@ -9254,7 +9275,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 539
+          "line": 553
         },
         {
           "name": "poetry_sidebar_separator",
@@ -9271,7 +9292,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 584
+          "line": 598
         },
         {
           "name": "poetry_sidebar_trigger",
@@ -9288,7 +9309,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 519
+          "line": 533
         },
         {
           "name": "poetry_skeleton",
@@ -9305,7 +9326,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 208
+          "line": 222
         },
         {
           "name": "poetry_slider",
@@ -9322,7 +9343,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1426
+          "line": 1440
         },
         {
           "name": "poetry_spinner",
@@ -9339,7 +9360,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 226
+          "line": 240
         },
         {
           "name": "poetry_stat",
@@ -9373,7 +9394,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1383
+          "line": 1397
         },
         {
           "name": "poetry_table",
@@ -9390,7 +9411,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 164
+          "line": 178
         },
         {
           "name": "poetry_tabs",
@@ -9407,7 +9428,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 800
+          "line": 814
         },
         {
           "name": "poetry_tag_group",
@@ -9424,7 +9445,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1197
+          "line": 1211
         },
         {
           "name": "poetry_textarea",
@@ -9441,7 +9462,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1097
+          "line": 1111
         },
         {
           "name": "poetry_time_field",
@@ -9458,7 +9479,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1152
+          "line": 1166
         },
         {
           "name": "poetry_timeline",
@@ -9492,7 +9513,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1691
+          "line": 1705
         },
         {
           "name": "poetry_toast_trigger",
@@ -9509,7 +9530,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 509
+          "line": 523
         },
         {
           "name": "poetry_toaster",
@@ -9526,7 +9547,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1707
+          "line": 1721
         },
         {
           "name": "poetry_toggle",
@@ -9543,7 +9564,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1460
+          "line": 1474
         },
         {
           "name": "poetry_toggle_group",
@@ -9560,7 +9581,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1473
+          "line": 1487
         },
         {
           "name": "poetry_toolbar",
@@ -9594,7 +9615,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1760
+          "line": 1774
         },
         {
           "name": "poetry_tooltip_provider",
@@ -9611,7 +9632,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1775
+          "line": 1789
         },
         {
           "name": "poetry_trace",
@@ -9628,7 +9649,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1359
+          "line": 1373
         },
         {
           "name": "poetry_tree",
@@ -9645,7 +9666,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1212
+          "line": 1226
         },
         {
           "name": "poetry_typeset",
@@ -9679,7 +9700,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 299
+          "line": 313
         }
       ],
       "constants": [
@@ -15858,6 +15879,478 @@
         }
       ],
       "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Markdown",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Markdown family: text written in Markdown, rendered as prose.",
+      "examples": [],
+      "file": "app/components/poetry/ui/markdown/component.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Markdown::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "Renders text a model or a person wrote in Markdown as prose, inside\na Typeset: headings, paragraphs, lists, quotes, links, tables in a\nscroller, and fenced code as a CodeBlock. The page never receives\nthe parser's HTML. Every element is rebuilt from a short list, so\nmarkup in the text, an unsafe link or a stray attribute has no way\nthrough.\n\nWhile a reply is still being written, streaming: closes what its\nlast block has left open, so each frame reads as finished prose.\nParsing needs a Markdown gem in the host; without one the text\nrenders as plain paragraphs.\n\n**Anatomy** (`data-slot` parts):\n\n- `markdown` - The prose container - a Typeset, so the app-owned typeset.css styles every element inside and an embedded CodeBlock keeps its own styles",
+      "examples": [
+        {
+          "title": "",
+          "text": "render Poetry::Ui::Markdown::Component.new(text: message.content)"
+        },
+        {
+          "title": "A reply still being written",
+          "text": "render Poetry::Ui::Markdown::Component.new(text: reply.text, streaming: true, heading_level: 3)"
+        }
+      ],
+      "file": "app/components/poetry/ui/markdown/component.rb",
+      "methods": [
+        {
+          "name": "hard_breaks",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Keeps a single line break inside a paragraph as a line break.\n\nConstructor option `hard_breaks:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 78
+        },
+        {
+          "name": "heading_level",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The level a # heading renders at; deeper headings follow, none past h6.\n\nConstructor option `heading_level:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": "one of: `(1..6).to_a.freeze`; defaults to `1`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 72
+        },
+        {
+          "name": "images",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Renders images in the text as images. Off, an image is a link to it.\n\nConstructor option `images:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 75
+        },
+        {
+          "name": "link_target",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The target every link opens in (\"_blank\" for a new tab).\n\nConstructor option `link_target:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 77
+        },
+        {
+          "name": "preset",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Appends typeset-<preset>, as on Typeset - a tiny class in the app's own CSS retuning the rhythm variables.\n\nConstructor option `preset:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 69
+        },
+        {
+          "name": "streaming",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The text is still being written: what its last block has left open (emphasis, a code span, a link's address, a table's first row) is closed for display.\n\nConstructor option `streaming:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 65
+        },
+        {
+          "name": "text",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The Markdown to render. Blank renders the empty container, a reply's row before its first word.\n\nConstructor option `text:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/markdown/component.rb",
+          "line": 63
+        }
+      ],
+      "constants": [
+        {
+          "name": "AGENT_RULES",
+          "value": "[\n  \"Text a model or a person wrote in Markdown renders with poetry_markdown(text:) - never html_safe, \" \\\n  \"raw, sanitize, or a Markdown gem called in the view. Markup in the text does not reach the",
+          "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        },
+        {
+          "name": "ALIGNS",
+          "value": "%w[left center right].freeze",
+          "docstring": "The cell alignments a table may ask for."
+        },
+        {
+          "name": "CONTAINERS",
+          "value": "%w[p strong em del s code blockquote ul li thead tbody tr].freeze",
+          "docstring": "Elements rebuilt as they stand, around their rebuilt children."
+        },
+        {
+          "name": "DROPPED",
+          "value": "%w[script style iframe object embed template noscript svg math head title textarea select\noption button].freeze",
+          "docstring": "Elements left out with everything inside them."
+        },
+        {
+          "name": "HEADING_LEVELS",
+          "value": "(1..6).to_a.freeze",
+          "docstring": "The levels a # heading may render at."
+        },
+        {
+          "name": "IMAGE_SCHEMES",
+          "value": "%w[http https].freeze",
+          "docstring": "The schemes an image may load from."
+        },
+        {
+          "name": "LANGUAGE",
+          "value": "/\\A[\\w+#.-]{1,40}\\z/",
+          "docstring": "A code fence's language as CodeBlock takes it."
+        },
+        {
+          "name": "LINK_REL",
+          "value": "\"nofollow noopener noreferrer\"",
+          "docstring": "What every link carries: the text is not the host's."
+        },
+        {
+          "name": "LINK_SCHEMES",
+          "value": "%w[http https mailto tel].freeze",
+          "docstring": "The schemes a link may use; an address with no scheme is the host's own."
+        },
+        {
+          "name": "VOIDS",
+          "value": "%w[br hr].freeze",
+          "docstring": "Elements with no content."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Ui::Markdown::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "Markdown is a Typeset: the prose rules are the app-owned\ntypeset.css, so there is no theme layer here. What the dictionary\nholds is what the component writes onto the elements it rebuilds:\nthe scroller a table sits in, and a cell's alignment.",
+      "examples": [],
+      "file": "app/components/poetry/ui/markdown/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::MarkdownParser",
+      "type": "module",
+      "superclass": null,
+      "docstring": "poetry_markdown's parser seam. Parsing Markdown is a SOFT\ncapability, as highlighting is for CodeBlock: `gem \"commonmarker\"`\n(or `gem \"redcarpet\"`) in the host Gemfile turns it on, and without\neither the text renders as plain paragraphs with its fenced code\nkept as code. Whatever writes the HTML here, the Markdown component\nrebuilds it from the elements it knows, so no parser decides what\nreaches the page.\n\nA host with another parser, or with options of its own, sets\n{renderer} to anything that answers call(text) with HTML:",
+      "examples": [
+        {
+          "title": "",
+          "text": "Poetry::Ui::MarkdownParser.renderer = ->(text) { Kramdown::Document.new(text, input: \"GFM\").to_html }"
+        }
+      ],
+      "file": "lib/poetry/ui/markdown_parser.rb",
+      "methods": [
+        {
+          "name": "available?",
+          "scope": "class",
+          "group": null,
+          "signature": "available?",
+          "docstring": "Whether Markdown is parsed here, or rendered plain.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 70
+        },
+        {
+          "name": "parser",
+          "scope": "class",
+          "group": null,
+          "signature": "parser",
+          "docstring": "The parser in use: :custom for a host's renderer, a gem's name,\nor nil when the host bundles none (memoized).",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 44
+        },
+        {
+          "name": "parser=",
+          "scope": "class",
+          "group": null,
+          "signature": "parser=(name)",
+          "docstring": "Names the parser to use when the host bundles both gems, or\nfalse for the plain rendering. nil reads the bundle again.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "false",
+                "nil"
+              ],
+              "text": ":commonmarker, :redcarpet, false, or nil"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 55
+        },
+        {
+          "name": "plain",
+          "scope": "class",
+          "group": null,
+          "signature": "plain(text)",
+          "docstring": "The plain rendering: the text escaped, a paragraph per block\nwith its line breaks kept, and fenced code as code.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 95
+        },
+        {
+          "name": "renderer",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer",
+          "docstring": "A host's own renderer: anything answering call(text) with HTML.\nIt takes the place of the bundled gems.",
+          "params": [],
+          "return": {
+            "types": [
+              "#call",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 38
+        },
+        {
+          "name": "renderer=",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer=(value)",
+          "docstring": "A host's own renderer: anything answering call(text) with HTML.\nIt takes the place of the bundled gems.",
+          "params": [],
+          "return": {
+            "types": [
+              "#call",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 38
+        },
+        {
+          "name": "to_html",
+          "scope": "class",
+          "group": null,
+          "signature": "to_html(text, hard_breaks: false, with: parser)",
+          "docstring": "The Markdown as HTML, from the parser in use, or from the plain\nrendering when there is none. The HTML is a parser's own: only\nthe Markdown component, which rebuilds it, may put it on a page.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the Markdown"
+            },
+            {
+              "name": "hard_breaks",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a line break in a paragraph is kept"
+            },
+            {
+              "name": "with",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": "a parser to use in place of the one in use"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_parser.rb",
+          "line": 80
+        }
+      ],
+      "constants": [
+        {
+          "name": "COMMONMARKER_EXTENSIONS",
+          "value": "{ table: true, strikethrough: true, autolink: true, tagfilter: true,\ntasklist: false, header_ids: nil }.freeze",
+          "docstring": "Commonmarker's extensions for a reply: what GitHub-flavored\nMarkdown adds, without heading anchors or task-list inputs."
+        },
+        {
+          "name": "FENCE",
+          "value": "/\\A {0,3}(`{3,}|~{3,})\\s*([\\w+#.-]*)/",
+          "docstring": "An opening or closing code fence in the plain rendering."
+        },
+        {
+          "name": "GEMS",
+          "value": "%i[commonmarker redcarpet].freeze",
+          "docstring": "The gems read for, in order of preference."
+        },
+        {
+          "name": "REDCARPET_EXTENSIONS",
+          "value": "{ tables: true, fenced_code_blocks: true, strikethrough: true, autolink: true,\nno_intra_emphasis: true, lax_spacing: true, space_after_headers: true }.freeze",
+          "docstring": "Redcarpet's extensions for the same."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Ui::MarkdownTail",
+      "type": "module",
+      "superclass": null,
+      "docstring": "What a reply still being written has left open, closed for display.\nA reply streams as a growing prefix of its Markdown, and a prefix\nends wherever the last token did: inside a bold phrase, inside a\ncode span, halfway through a link's address, one row into a table.\nParsed as it stands, each of those shows its raw markers until the\nclosing ones arrive, then jumps. {close} returns the text with the\nlast block's unfinished marks closed (or, where nothing follows an\nopening mark yet, taken out), so each frame reads as finished prose.\n\nOnly the last block is touched, since emphasis, code spans and\nlinks never cross a blank line, and nothing is touched inside an\nopen code fence, which a parser already reads to the end of the\ntext. The text itself is never altered for the final render: call\nthis while streaming, and render the finished reply as it is.",
+      "examples": [
+        {
+          "title": "",
+          "text": "MarkdownTail.close(\"Ships **tomorr\") # => \"Ships **tomorr**\"\nMarkdownTail.close(\"See [the docs](https://exam\") # => \"See the docs\""
+        }
+      ],
+      "file": "lib/poetry/ui/markdown_tail.rb",
+      "methods": [
+        {
+          "name": "close",
+          "scope": "class",
+          "group": null,
+          "signature": "close(text)",
+          "docstring": "The text with its last block's unfinished marks closed.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the Markdown written so far"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/markdown_tail.rb",
+          "line": 42
+        }
+      ],
+      "constants": [
+        {
+          "name": "ADDRESS",
+          "value": "/\\A\\S*(\\s+(\"[^\"]*\"?|'[^']*'?)?\\s*)?\\z/",
+          "docstring": "What follows \"](\" in a link still being written: its address, and\nas much of a quoted title as there is. Anything else is prose\nthat happens to hold \"](\", and is left alone."
+        },
+        {
+          "name": "DELIMITER",
+          "value": "/\\A\\s*\\|?[\\s:|-]*\\z/",
+          "docstring": "A delimiter row, whole or as far as it has been written."
+        },
+        {
+          "name": "FENCE",
+          "value": "/\\A {0,3}(`{3,}|~{3,})/",
+          "docstring": "An opening or closing code fence, and what it is made of."
+        },
+        {
+          "name": "MARKS",
+          "value": "{ \"*\" => 3, \"_\" => 3, \"~\" => 2 }.freeze",
+          "docstring": "The emphasis marks, by the character they repeat."
+        },
+        {
+          "name": "ROW",
+          "value": "/\\A\\s*\\|/",
+          "docstring": "A table row that opens with a pipe."
+        }
+      ]
     },
     {
       "path": "Poetry::Ui::Marker",

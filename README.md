@@ -26,7 +26,7 @@ Core also owns the design-token foundation: the semantic token set, the Tailwind
 
 ### [poetry-ui](https://github.com/roboruby/poetry/tree/main/gems/poetry-ui) — the components
 
-The component library itself: 90 components covering forms, overlays, data display, feedback, navigation, chat, and layout, built entirely on poetry-core's public DSL and exposed to views as `poetry_*` helpers. Every component is accessible by construction, themeable through the token layer, and legible to agents through the registry that the helpers, the docs, and the MCP tools all read.
+The component library itself: 91 components covering forms, overlays, data display, feedback, navigation, chat, and layout, built entirely on poetry-core's public DSL and exposed to views as `poetry_*` helpers. Every component is accessible by construction, themeable through the token layer, and legible to agents through the registry that the helpers, the docs, and the MCP tools all read.
 
 Beyond components it carries nine complete visual themes, a model-bound form builder that derives labels, hints, errors, and aria from the model (`form_with(model:, builder: Poetry::Ui::FormBuilder)`), nine vetted blocks for whole screens (app shell, top nav, page header, data index, section card, stepper, action bar, destructive panel, chat), and the agent surface: the `poetry:install` generator that writes the Claude Code skills, `bin/rails poetry:check` for verifying composed markup, and the registry served for `poetry:add`.
 

@@ -1383,6 +1383,7 @@ text-popover-foreground
 text-pretty
 text-primary
 text-primary-foreground
+text-right
 text-secondary-foreground
 text-sidebar-foreground
 text-sidebar-primary-foreground
@@ -1423,6 +1424,7 @@ translate-y-[calc(-50%_-_2px)]
 translate-y-px
 truncate
 typeset
+typeset-scroll
 underline
 underline-offset-4
 w-(--anchor-width)

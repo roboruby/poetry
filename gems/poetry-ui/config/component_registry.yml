@@ -7434,6 +7434,86 @@ components:
     parts:
     - name: link
       description: 'The rendered <a> - the whole component; current: marks it aria-current=page'
+  poetry/ui/markdown:
+    class_name: Poetry::Ui::Markdown::Component
+    identifier: poetry--ui--markdown
+    bem_block: poetry-ui-markdown
+    styles: []
+    options:
+    - name: hard_breaks
+      type: boolean
+      default: false
+      description: Keeps a single line break inside a paragraph as a line break.
+    - name: heading_level
+      type: integer
+      variants:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      default: 1
+      description: 'The level a # heading renders at; deeper headings follow, none
+        past h6.'
+    - name: images
+      type: boolean
+      default: false
+      description: Renders images in the text as images. Off, an image is a link to
+        it.
+    - name: link_target
+      type: string
+      description: The target every link opens in ("_blank" for a new tab).
+    - name: preset
+      type: string
+      description: Appends typeset-<preset>, as on Typeset - a tiny class in the app's
+        own CSS retuning the rhythm variables.
+    - name: streaming
+      type: boolean
+      default: false
+      description: 'The text is still being written: what its last block has left
+        open (emphasis, a code span, a link''s address, a table''s first row) is closed
+        for display.'
+    - name: text
+      type: string
+      description: The Markdown to render. Blank renders the empty container, a reply's
+        row before its first word.
+    slots: []
+    helper: poetry_markdown
+    description: Text written in Markdown, by a model or a person, rendered safely
+      as prose, a reply still streaming included.
+    elements:
+    - table_scroll
+    - align_left
+    - align_center
+    - align_right
+    capsule: ad45dfce5e09
+    agent_rules:
+    - Text a model or a person wrote in Markdown renders with poetry_markdown(text:)
+      - never html_safe, raw, sanitize, or a Markdown gem called in the view. Markup
+      in the text does not reach the page.
+    - Parsing needs `gem "commonmarker"` (or `gem "redcarpet"`) in the host Gemfile
+      - without one the text renders as plain paragraphs, with fenced code still a
+      code block.
+    - 'While a reply streams, re-render its row with the longer text and streaming:
+      true - an unfinished **bold**, `code`, link or table is closed for display,
+      so raw marks never flash. Render the finished reply without it.'
+    - 'Inside a transcript pass heading_level: 3, so a reply''s # headings sit under
+      the page''s own.'
+    - 'Images in the text render as links unless images: true - every reader''s browser
+      fetches a remote image, which a reply shaped by untrusted content can use to
+      send data out.'
+    - 'It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset,
+      and never pass it HTML: the text is Markdown.'
+    content: false
+    identity: false
+    parts:
+    - name: markdown
+      description: The prose container - a Typeset, so the app-owned typeset.css styles
+        every element inside and an embedded CodeBlock keeps its own styles
+      states:
+      - attr: data-streaming
+        condition: 'streaming: - the text is still being written'
   poetry/ui/marker:
     class_name: Poetry::Ui::Marker::Component
     identifier: poetry--ui--marker
@@ -13624,6 +13704,7 @@ blocks:
     - button
     - composer
     - icon
+    - markdown
     - message
     - message_scroller
     - trace
@@ -13830,6 +13911,7 @@ helper_args:
   poetry_kbd_group: 0
   poetry_label: 0
   poetry_link: 0
+  poetry_markdown: 0
   poetry_marker: 0
   poetry_menubar: 0
   poetry_message: 0

@@ -64,7 +64,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "propshaft", ">= 1.0"
   spec.add_dependency "stimulus-rails", ">= 1.3"
   spec.add_dependency "turbo-rails", ">= 2.0"
-  # The guides' live examples: the three pagination adapters and the code blocks.
+  # The guides' live examples: the Markdown parser, the three pagination
+  # adapters and the code blocks' highlighter.
+  spec.add_dependency "commonmarker", ">= 1.0"
   spec.add_dependency "kaminari", ">= 1.2"
   spec.add_dependency "pagy", ">= 43.0"
   spec.add_dependency "rouge", ">= 4.0"

@@ -42,6 +42,7 @@ poetry_components:
   - date-time-field
   - file-input
   - link
+  - markdown
   - metadata-list
   - meter
   - number-field

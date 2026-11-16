@@ -54,7 +54,7 @@ module Poetry
         code_block collapsible command command_dialog composer context_menu
         data_table deferred dialog drawer dropdown_menu empty
         field_separator hover_card icon input_group item kbd label link
-        marker menubar message message_scroller metadata_list meter
+        markdown marker menubar message message_scroller metadata_list meter
         navigation_menu pagination popover progress questionnaire
         resizable scroll_area separator sheet sidebar skeleton spinner
         stat table tabs timeline toast toast_trigger toaster toggle

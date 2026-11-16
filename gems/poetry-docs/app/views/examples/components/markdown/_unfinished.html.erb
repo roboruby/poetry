@@ -1,0 +1,14 @@
+<%# The same unfinished text twice: as it stands, and with streaming:
+    true. The first shows its raw marks until the closing ones arrive;
+    the second reads as finished prose at every frame. %>
+<% written = "ORD-1041 is **late**, and the check is `Order#la" %>
+<div class="mx-auto grid w-full max-w-2xl gap-4 sm:grid-cols-2">
+  <div class="flex flex-col gap-2 rounded-lg border p-4">
+    <p class="text-xs font-medium text-muted-foreground">As written</p>
+    <%= poetry_markdown(text: written) %>
+  </div>
+  <div class="flex flex-col gap-2 rounded-lg border p-4">
+    <p class="text-xs font-medium text-muted-foreground">With streaming: true</p>
+    <%= poetry_markdown(text: written, streaming: true) %>
+  </div>
+</div>

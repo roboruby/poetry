@@ -298,6 +298,28 @@ module Poetry
             })
           ]
         },
+        "chat_reply" => {
+          "description" => "An assistant's reply written in Markdown, shown in a transcript: its heading, " \
+                           "a link out, a block of code, and text in the reply that is markup",
+          "gates" => [
+            # The tell: Markdown rendered by a gem and marked html_safe makes
+            # the model's words the page's markup.
+            Gate.new(:reply_text_is_inert, :cross_arm, lambda { |doc, _html|
+              doc.css("script").empty? && doc.xpath(".//@*[starts-with(name(), 'on')]").empty? &&
+                doc.css("a[href]").none? { |link| link["href"].strip.match?(/\A(javascript|data|vbscript):/i) }
+            }),
+            Gate.new(:headings_sit_under_the_page, :cross_arm, lambda { |doc, _html|
+              doc.css("h1, h2").empty?
+            }),
+            Gate.new(:links_out_are_marked, :cross_arm, lambda { |doc, _html|
+              outward = doc.css("a[href]").select { |link| link["href"].start_with?("http") }
+              outward.any? && outward.all? { |link| link["rel"].to_s.include?("noopener") }
+            }),
+            Gate.new(:code_is_a_block, :cross_arm, lambda { |doc, _html|
+              doc.css("pre").any?
+            })
+          ]
+        },
         "disclosure" => {
           "description" => "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
           "gates" => [

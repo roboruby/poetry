@@ -1,0 +1,19 @@
+<%# A reply being written, live. Send anything: the scripted reply is
+    Markdown, sent a few characters at a time, so a frame ends inside a
+    bold phrase, a link or a table as often as not. The server renders
+    each frame with streaming: true and replaces the reply's row, and the
+    last frame, the whole reply, without it. The two endpoints are docs
+    plumbing; in an app they are your messages controller and the job
+    that runs the model. %>
+<div class="mx-auto flex w-full max-w-xl flex-col gap-3">
+  <%= poetry_message_scroller(id: "markdown-demo-thread", class: "h-96 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "markdown-demo-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Send me anything. I answer in Markdown, a few characters at a time." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_composer(id: "markdown-demo", placeholder: "Write a message",
+                      url: composer_demo_messages_path(composer: "markdown-demo", as: "markdown"),
+                      stop_url: composer_demo_stop_path(composer: "markdown-demo")) %>
+</div>

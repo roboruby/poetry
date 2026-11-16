@@ -211,7 +211,7 @@ Source (adapt freely - the sample content is meant to be replaced):
 ## Block: Chat (`chat`)
 
 A conversation with an assistant: a titled panel, a transcript that follows the newest message (the person's bubbles, the assistant's steps and typeset replies), a welcome with suggested prompts while the transcript is empty, and a composer whose Send the server turns into Stop while a reply runs.
-Composes: bubble, button, composer, icon, message, message_scroller, trace, typeset. Generate: `bin/rails g poetry:block chat`.
+Composes: bubble, button, composer, icon, markdown, message, message_scroller, trace, typeset. Generate: `bin/rails g poetry:block chat`.
 Source (adapt freely - the sample content is meant to be replaced):
 
 <%# locals: (url: "#", stop_url: nil, status: :idle) %>
@@ -255,8 +255,10 @@ Source (adapt freely - the sample content is meant to be replaced):
             <% end %>
           <% end %>
           <%# A reply: the steps the assistant took as a Trace, then its
-              words. The reply is Markdown you have rendered, so it sits in
-              a Typeset, in a ghost bubble that lets it run the row's width. %>
+              words in a ghost bubble, which lets them run the row's width.
+              The sample's words are written out as prose. A model's reply
+              is Markdown: render it in the Typeset's place with
+              poetry_markdown(text: message.content, heading_level: 3). %>
           <%= poetry_message_scroller_item(id: "m2", class: "px-4 py-2") do %>
             <%= poetry_message do %>
               <div class="flex min-w-0 flex-col gap-2">

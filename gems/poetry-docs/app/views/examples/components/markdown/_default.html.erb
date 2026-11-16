@@ -1,0 +1,25 @@
+<%# A reply as a model wrote it: headings, emphasis, a link, a list,
+    fenced code and a table, rendered as prose. The heading starts at h3
+    so it sits under the page's own. %>
+<% reply = <<~MARKDOWN
+  # Late orders
+
+  Two orders are **late**, and one is *very* late. The check is `Order#late?`, and
+  [the fulfilment guide](https://example.com/fulfilment) has the thresholds.
+
+  1. ORD-1041, Lumen Labs
+  2. ORD-1039, Gable & Sons
+
+  ```ruby
+  Order.processing.where(due_on: ...Date.current)
+  ```
+
+  | Order | Customer | Total |
+  |:------|:---------|------:|
+  | ORD-1041 | Lumen Labs | $482.50 |
+  | ORD-1039 | Gable & Sons | $2,040.00 |
+
+  > ORD-1041 ships ~~today~~ tomorrow.
+MARKDOWN
+%>
+<%= poetry_markdown(text: reply, heading_level: 3, class: "mx-auto max-w-xl") %>

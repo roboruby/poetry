@@ -54,6 +54,8 @@ poetry/ui/item: A generic list row with media, content, and actions.
 poetry/ui/kbd: Displays a keyboard key or shortcut.
 poetry/ui/label: An accessible caption bound to a form control.
 poetry/ui/link: A styled navigational hyperlink.
+poetry/ui/markdown: Text written in Markdown, by a model or a person, rendered safely as prose,
+  a reply still streaming included.
 poetry/ui/marker: A transcript divider or inline status marker for chat UIs.
 poetry/ui/menubar: A horizontal bar of menus, like a desktop application menu.
 poetry/ui/message: A chat row pairing an author and avatar with message content.

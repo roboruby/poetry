@@ -18,6 +18,12 @@
       <% end %>
     <% elsif text.blank? %>
       <%= poetry_bubble(variant: :muted) { poetry_spinner(label: "Writing a reply") } %>
+    <% elsif local_assigns[:markdown] %>
+      <%# The reply written in Markdown: streaming: closes what the text
+          so far has left open, and the last frame renders without it. %>
+      <%= poetry_bubble(variant: :ghost) do %>
+        <%= poetry_markdown(text: text, streaming: local_assigns[:streaming], heading_level: 3) %>
+      <% end %>
     <% else %>
       <%= poetry_bubble(variant: :muted) { text } %>
     <% end %>
