@@ -100,6 +100,12 @@
     <code class="text-foreground">streaming:</code>. The closing is for display only: a finished
     reply renders the same either way.
   </p>
+  <p class="max-w-2xl text-muted-foreground">
+    A reply that was stopped, or that failed part way, is never finished, and a host usually keeps
+    what was written. Store what <code class="text-foreground">Poetry::Ui::MarkdownTail.close(text)</code>
+    returns, so the saved text is whole Markdown and renders the same wherever it is shown, or keep
+    rendering that message with <code class="text-foreground">streaming: true</code>.
+  </p>
   <%= poetry_code_block(code: stream_source, language: "ruby", label: "The job") %>
   <%= poetry_code_block(code: reply_source, language: "erb", label: "The row") %>
 </section>

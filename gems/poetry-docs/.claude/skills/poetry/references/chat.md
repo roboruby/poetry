@@ -151,6 +151,7 @@ In blocks: `chat` - for a screen, start from the block (MCP compose/describe_blo
 - RULE: Text a model or a person wrote in Markdown renders with poetry_markdown(text:) - never html_safe, raw, sanitize, or a Markdown gem called in the view. Markup in the text does not reach the page.
 - RULE: Parsing needs `gem "commonmarker"` (or `gem "redcarpet"`) in the host Gemfile - without one the text renders as plain paragraphs, with fenced code still a code block.
 - RULE: While a reply streams, re-render its row with the longer text and streaming: true - an unfinished **bold**, `code`, link or table is closed for display, so raw marks never flash. Render the finished reply without it.
+- RULE: A reply that was stopped or failed part way is never finished: store Poetry::Ui::MarkdownTail.close(text), or keep rendering it with streaming: true.
 - RULE: Inside a transcript pass heading_level: 3, so a reply's # headings sit under the page's own.
 - RULE: Images in the text render as links unless images: true - every reader's browser fetches a remote image, which a reply shaped by untrusted content can use to send data out.
 - RULE: It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset, and never pass it HTML: the text is Markdown.

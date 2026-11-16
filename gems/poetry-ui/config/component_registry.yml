@@ -7498,6 +7498,8 @@ components:
     - 'While a reply streams, re-render its row with the longer text and streaming:
       true - an unfinished **bold**, `code`, link or table is closed for display,
       so raw marks never flash. Render the finished reply without it.'
+    - 'A reply that was stopped or failed part way is never finished: store Poetry::Ui::MarkdownTail.close(text),
+      or keep rendering it with streaming: true.'
     - 'Inside a transcript pass heading_level: 3, so a reply''s # headings sit under
       the page''s own.'
     - 'Images in the text render as links unless images: true - every reader''s browser

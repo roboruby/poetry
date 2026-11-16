@@ -15922,7 +15922,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 78
+          "line": 80
         },
         {
           "name": "heading_level",
@@ -15939,7 +15939,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 72
+          "line": 74
         },
         {
           "name": "images",
@@ -15956,7 +15956,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 75
+          "line": 77
         },
         {
           "name": "link_target",
@@ -15973,7 +15973,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 77
+          "line": 79
         },
         {
           "name": "preset",
@@ -15990,7 +15990,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 69
+          "line": 71
         },
         {
           "name": "streaming",
@@ -16007,7 +16007,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 65
+          "line": 67
         },
         {
           "name": "text",
@@ -16024,7 +16024,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/markdown/component.rb",
-          "line": 63
+          "line": 65
         }
       ],
       "constants": [
