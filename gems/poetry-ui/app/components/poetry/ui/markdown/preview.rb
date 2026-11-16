@@ -40,6 +40,13 @@ module Poetry
           render_component(text: WRITTEN, streaming: true, heading_level: 3, class: "max-w-xl")
         end
 
+        # A reply that cites its sources: each [n] is a citation linked to
+        # the source it numbers, and the list sits under the reply (a
+        # per-example template: two components and their sources).
+        def with_sources
+          render_with_template(template: "poetry/ui/markdown/with_sources_preview")
+        end
+
         # A reply in a transcript: a ghost bubble lets the prose run the
         # row's width (a per-example template: nested components need a
         # view context).

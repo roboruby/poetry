@@ -29,6 +29,8 @@ module Poetry
       # as much of a quoted title as there is. Anything else is prose
       # that happens to hold "](", and is left alone.
       ADDRESS = /\A\S*(\s+("[^"]*"?|'[^']*'?)?\s*)?\z/
+      # What a citation's mark holds between its brackets.
+      NUMBER = /\A\d{1,3}\z/
       # A table row that opens with a pipe.
       ROW = /\A\s*\|/
       # A delimiter row, whole or as far as it has been written.
@@ -87,7 +89,9 @@ module Poetry
         # opening bracket with no closing one yet is taken out, and so is
         # the pair around a label the block ends on, which may be a link
         # whose address has not begun. An image's alt text is left out
-        # whole until the image is.
+        # whole until the image is. A number in brackets is a citation's
+        # mark, not a label: whole, it is left as it is, and half written
+        # it is left out.
         def labels(block)
           open = []
           last = block.rstrip.length - 1
@@ -96,10 +100,15 @@ module Poetry
             when "[" then open << index
             when "]"
               opener = open.pop
-              return labels(unbracketed(block, opener, index)) if opener && index == last
+              next unless opener && index == last && !block[(opener + 1)...index].match?(NUMBER)
+
+              return labels(unbracketed(block, opener, index))
             end
           end
-          open.empty? ? block : labels(unbracketed(block, open.last, nil))
+          return block if open.empty?
+          return labels(block[0, open.last]) if block[(open.last + 1)..].strip.match?(NUMBER)
+
+          labels(unbracketed(block, open.last, nil))
         end
 
         # The positions that are neither escaped nor inside a code span;

@@ -276,6 +276,80 @@ module Poetry
           end
         end
 
+        SOURCES = [
+          { title: "Fulfilment guide", href: "https://example.com/fulfilment" },
+          { title: "Refund policy", url: "https://example.com/refunds" },
+          { title: "Warehouse handbook" }
+        ].freeze
+
+        # A reply that cites as it goes, to cut anywhere.
+        CITED = <<~MARKDOWN
+          Orders ship in **two days** [1]. Refunds take five [2][3].
+
+          - Stock moves on Fridays [3]
+          - Late orders are chased by `Order#chase` [1]
+        MARKDOWN
+
+        def test_a_numbered_mark_becomes_a_citation_linked_to_its_source
+          each_parser do |parser|
+            marks = render_markdown(CITED, sources: SOURCES, link_target: "_blank").css('[data-slot="citation"]')
+
+            assert_equal %w[1 2 3 3 1], marks.map(&:text), parser
+            assert_equal "https://example.com/fulfilment", marks[0]["href"], parser
+            assert_equal "Source 1: Fulfilment guide", marks[0]["aria-label"], parser
+            assert_equal "https://example.com/refunds", marks[1]["href"], parser
+            assert_equal "_blank", marks[1]["target"], parser
+            assert_equal "span", marks[2].name, "#{parser}: a source with no address is the number alone"
+          end
+        end
+
+        # A mark belongs to the word before it: the space between them
+        # does not break, so a citation never starts a line by itself.
+        def test_a_citation_stays_on_the_line_of_the_word_before_it
+          each_parser do |parser|
+            text = render_markdown("Two days [1]. Five[2][3].", sources: SOURCES).at_css("p").text
+
+            assert_equal "Two days 1. Five 2 3.", text, parser
+          end
+        end
+
+        def test_a_number_with_no_source_and_a_mark_in_code_or_in_a_link_stay_text
+          each_parser do |parser|
+            html = render_markdown("See [9], `rows[1]` and [the list [1]](https://example.com).", sources: SOURCES)
+
+            assert_empty html.css('[data-slot="citation"]'), parser
+            assert_includes html.text, "See [9]", parser
+            assert_equal "rows[1]", html.at_css("code").text, parser
+          end
+        end
+
+        def test_without_sources_a_mark_is_text
+          assert_empty render_markdown(CITED).css('[data-slot="citation"]')
+          assert_includes render_markdown(CITED).text, "two days [1]."
+        end
+
+        def test_sources_may_be_objects_and_the_ones_that_name_nothing_are_left_out
+          source = Struct.new(:title, :url)
+          html = render_markdown("One [1] two [2].", sources: [source.new("", ""), source.new("Guide", "/guide")])
+
+          assert_equal(["/guide"], html.css('[data-slot="citation"]').map { |mark| mark["href"] })
+          assert_includes html.text, "two [2]"
+        end
+
+        # With sources, every prefix of a reply that cites reads clean
+        # too: a mark half written shows nothing, a whole one is a citation.
+        def test_no_frame_of_a_streamed_reply_shows_a_raw_citation_mark
+          each_parser do |parser|
+            (1..CITED.length).each do |length|
+              root = render_markdown(CITED[0, length], streaming: true, sources: SOURCES)
+                     .at_css('[data-slot="markdown"]')
+              root.css("code").each(&:remove)
+
+              refute_match(/\*|`|\[|\]/, root.text, "#{parser}: after #{CITED[0, length].inspect}")
+            end
+          end
+        end
+
         def test_a_blank_text_is_the_empty_container
           [nil, "", "  \n"].each do |text|
             root = render_markdown(text, streaming: true).at_css('[data-slot="markdown"]')

@@ -58,6 +58,9 @@ en:
       copied: "Copied to clipboard"
     code_block:
       label: "Code"
+    citation:
+      numbered: "Source %{number}"
+      titled: "Source %{number}: %{title}"
     composer:
       label: "Message"
       send: "Send message"
@@ -105,6 +108,10 @@ en:
       close: "Close"
     sheet:
       close: "Close"
+    sources:
+      count:
+        one: "1 source"
+        other: "%{count} sources"
     toast:
       region_label: "Notifications (%{hotkey})"
       close: "Close"

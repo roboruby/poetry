@@ -5,6 +5,8 @@ require "yaml"
 require_relative "ui/version"
 require_relative "ui/themes"
 require_relative "ui/code_block_highlighter"
+require_relative "ui/addresses"
+require_relative "ui/citations"
 require_relative "ui/markdown_parser"
 require_relative "ui/markdown_tail"
 require_relative "ui/recipes"
@@ -88,7 +90,7 @@ module Poetry
       "feedback" => %w[alert deferred progress skeleton spinner toast toast_trigger toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],
-      "chat" => %w[attachment bubble composer markdown message message_scroller trace],
+      "chat" => %w[attachment bubble citation composer markdown message message_scroller sources trace],
       "layout" => %w[aspect_ratio resizable scroll_area]
     }.freeze
 

@@ -2508,6 +2508,24 @@
     "path": "/components/checkbox#wiring"
   },
   {
+    "title": "Citation",
+    "page": "Citation",
+    "section": "components",
+    "path": "/components/citation"
+  },
+  {
+    "title": "Installation",
+    "page": "Citation",
+    "section": "components",
+    "path": "/components/citation#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Citation",
+    "section": "components",
+    "path": "/components/citation#default"
+  },
+  {
     "title": "Clipboard Text",
     "page": "Clipboard Text",
     "section": "components",
@@ -4350,6 +4368,12 @@
     "path": "/components/markdown#a-reply-being-written"
   },
   {
+    "title": "Cited sources",
+    "page": "Markdown",
+    "section": "components",
+    "path": "/components/markdown#cited-sources"
+  },
+  {
     "title": "Headings in a transcript",
     "page": "Markdown",
     "section": "components",
@@ -5560,6 +5584,36 @@
     "page": "Slider",
     "section": "components",
     "path": "/components/slider#wiring"
+  },
+  {
+    "title": "Sources",
+    "page": "Sources",
+    "section": "components",
+    "path": "/components/sources"
+  },
+  {
+    "title": "Installation",
+    "page": "Sources",
+    "section": "components",
+    "path": "/components/sources#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Sources",
+    "section": "components",
+    "path": "/components/sources#default"
+  },
+  {
+    "title": "With a reply",
+    "page": "Sources",
+    "section": "components",
+    "path": "/components/sources#with-a-reply"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sources",
+    "section": "components",
+    "path": "/components/sources#wiring"
   },
   {
     "title": "Spinner",

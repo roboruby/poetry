@@ -1,0 +1,9 @@
+<%# Marks set in a sentence, each after the claim its source backs. A
+    mark is a link to the source, and its title is the link's name for
+    a screen reader. %>
+<p class="mx-auto max-w-xl text-sm leading-7">
+  Orders ship within two working days
+  <%= poetry_citation(number: 1, href: "https://example.com/fulfilment", title: "Fulfilment guide") %>
+  and a refund is issued within five
+  <%= poetry_citation(number: 2, href: "https://example.com/refunds", title: "Refund policy") %>.
+</p>

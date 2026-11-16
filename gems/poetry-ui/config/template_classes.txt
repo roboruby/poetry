@@ -55,6 +55,7 @@ items-start
 justify-between
 justify-center
 justify-end
+leading-7
 leading-none
 leading-tight
 max-w-2xl

@@ -1,0 +1,11 @@
+<%# The sources under a reply, closed behind their count. Each entry
+    is numbered as the reply cites it. %>
+<div class="mx-auto w-full max-w-xl">
+  <%= poetry_sources do |sources| %>
+    <% sources.with_source("Fulfilment guide", href: "https://example.com/fulfilment",
+                           description: "Orders ship within two working days of payment.") %>
+    <% sources.with_source("Refund policy", href: "https://example.com/refunds",
+                           description: "Refunds are issued within five working days.") %>
+    <% sources.with_source("Warehouse handbook, section 4") %>
+  <% end %>
+</div>

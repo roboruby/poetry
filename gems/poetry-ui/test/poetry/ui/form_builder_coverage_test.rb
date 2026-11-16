@@ -50,13 +50,13 @@ module Poetry
       # (pressed/selection state is view state).
       FORM_EXEMPT = %w[
         accordion alert alert_dialog aspect_ratio attachment avatar badge
-        breadcrumb bubble button_group card carousel clipboard_text
+        breadcrumb bubble button_group card carousel citation clipboard_text
         code_block collapsible command command_dialog composer context_menu
         data_table deferred dialog drawer dropdown_menu empty
         field_separator hover_card icon input_group item kbd label link
         markdown marker menubar message message_scroller metadata_list meter
         navigation_menu pagination popover progress questionnaire
-        resizable scroll_area separator sheet sidebar skeleton spinner
+        resizable scroll_area separator sheet sidebar skeleton sources spinner
         stat table tabs timeline toast toast_trigger toaster toggle
         toggle_group toolbar tooltip trace tree typeset
       ].freeze

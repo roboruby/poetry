@@ -1816,6 +1816,43 @@ components:
       description: A click toggles the checked state and keeps the form input in step.
       elements:
       - root
+  poetry/ui/citation:
+    class_name: Poetry::Ui::Citation::Component
+    identifier: poetry--ui--citation
+    bem_block: poetry-ui-citation
+    styles: []
+    options:
+    - name: href
+      type: string
+      description: 'The source''s address: the mark becomes a link to it. Only an
+        http, https, mailto or tel address, or one on the host, is kept.'
+    - name: number
+      type: integer
+      required: true
+      description: The source's number, as the sources list shows it.
+    - name: title
+      type: string
+      description: The source's title - the link's accessible name and its tooltip.
+    slots: []
+    helper: poetry_citation
+    description: A numbered mark in a sentence that links a claim to its source.
+    elements: []
+    capsule: 214baabbc8be
+    agent_rules:
+    - A source cited in a sentence is a poetry_citation(number:, href:, title:) -
+      never a bracketed number typed into the text or a bare superscript link.
+    - 'title: is the source''s title: it names the link for assistive tech ("Source
+      2: <title>"), so pass it whenever there is an href:.'
+    - Numbers match the sources list under the reply (poetry_sources), in the order
+      sources are first cited.
+    - 'In a reply rendered by poetry_markdown, pass it sources: and let it place the
+      citations - do not render them by hand around Markdown.'
+    content: false
+    identity: false
+    parts:
+    - name: citation
+      description: 'The mark itself, in the Badge''s dress - a link (<a>) when href:
+        holds an address the page may carry, else a <span>'
   poetry/ui/clipboard_text:
     class_name: Poetry::Ui::ClipboardText::Component
     identifier: poetry--ui--clipboard_text
@@ -7468,6 +7505,11 @@ components:
       type: string
       description: Appends typeset-<preset>, as on Typeset - a tiny class in the app's
         own CSS retuning the rhythm variables.
+    - name: sources
+      type:
+      description: 'The sources the text cites, in the order its marks number them:
+        each a hash (or an object) with a title and an href or url. A [2] in the text
+        becomes a citation linked to the second; a number with no source stays text.'
     - name: streaming
       type: boolean
       default: false
@@ -7507,6 +7549,9 @@ components:
       send data out.'
     - 'It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset,
       and never pass it HTML: the text is Markdown.'
+    - 'A reply that cites its sources as [1], [2] takes sources: (the list those numbers
+      count, each with a title and an href) - every mark becomes a poetry_citation
+      linked to its source. Show the list itself with poetry_sources under the reply.'
     content: false
     identity: false
     parts:
@@ -11505,6 +11550,118 @@ components:
       - identifier: poetry--core--slider
         targets:
         - name: input
+  poetry/ui/sources:
+    class_name: Poetry::Ui::Sources::Component
+    identifier: poetry--ui--sources
+    bem_block: poetry-ui-sources
+    styles: []
+    options:
+    - name: label
+      type: string
+      description: The control's text. Defaults to the locale's count, "3 sources".
+    - name: open
+      type: boolean
+      default: false
+      description: Shows the list from the start.
+    slots:
+    - name: sources
+      many: true
+      description: 'One source: its title (positional), href: (its address - the title
+        links to it), and description: (the passage it was cited for).'
+      setter_args:
+        source: 1
+    helper: poetry_sources
+    description: The sources a reply cites, numbered, in a disclosure under it.
+    elements:
+    - trigger
+    - content
+    - list
+    - item
+    - body
+    - heading
+    - title
+    - site
+    - description
+    capsule: 4eb798851022
+    controllers:
+    - identifier: poetry--core--state
+      targets:
+      - content
+      - trigger
+      values:
+      - state
+      actions:
+      - close
+      - open
+      - toggle
+      events: []
+    agent_rules:
+    - The sources a reply cites are a poetry_sources under it, one with_source(title,
+      href:, description:) each - never a hand-rolled list of links.
+    - 'Add sources in the order the reply first cites them: an entry''s number is
+      its position, and that is the number its citations carry.'
+    - 'description: is the passage the source was cited for - a quote, not a summary
+      of yours.'
+    - 'open: true shows the list from the start; the count is always the control that
+      opens it.'
+    - 'A title or an address that came from a model or a tool is safe to pass: text
+      is escaped, and only an http, https, mailto or tel address, or one on the host,
+      becomes a link.'
+    content: false
+    required_slots:
+      source: at least one source (with_source(title, href:))
+    parts:
+    - name: sources
+      description: 'The root - the disclosure: its state rides here'
+      states:
+      - attr: data-open
+        condition: the list is shown (server-rendered from open:; the controller flips
+          the pair)
+      - attr: data-closed
+        condition: the list is hidden
+    - name: sources-trigger
+      description: The control that opens the list - the count, in the ghost Button's
+        dress; mirrors aria-expanded
+    - name: sources-content
+      description: The panel the control opens (hidden while closed)
+      states:
+      - attr: data-open
+        condition: the panel is open or entering
+      - attr: data-closed
+        condition: the panel is closed
+    - name: sources-list
+      description: The numbered list (an <ol>) inside the panel
+    - name: sources-item
+      description: One source's row - its number, then its title, site and passage
+    - name: sources-body
+      description: The column beside the number - the heading line, then the passage
+    - name: sources-heading
+      description: The heading line - the title and the site
+    - name: sources-title
+      description: The source's title - a Link to its address, or plain text without
+        one
+    - name: sources-site
+      description: The site the address is on (example.com), for a web address
+    - name: sources-description
+      description: The passage the source was cited for (description:)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--state
+        registers: true
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: trigger
+        actions:
+        - method: toggle
+          'on': click
+    - element: content
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: content
   poetry/ui/spinner:
     class_name: Poetry::Ui::Spinner::Component
     identifier: poetry--ui--spinner
@@ -13869,6 +14026,7 @@ helper_args:
   poetry_checkbox_group: 0
   poetry_checkbox_group_all: 0
   poetry_checkbox_group_item: 0
+  poetry_citation: 0
   poetry_clipboard_text: 0
   poetry_code_block: 0
   poetry_collapsible: 0
@@ -13964,6 +14122,7 @@ helper_args:
   poetry_sidebar_trigger: 0
   poetry_skeleton: 0
   poetry_slider: 0
+  poetry_sources: 0
   poetry_spinner: 0
   poetry_stat: 0
   poetry_switch: 0

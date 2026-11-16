@@ -39,7 +39,10 @@ module Poetry
           "Images in the text render as links unless images: true - every reader's browser fetches a remote " \
           "image, which a reply shaped by untrusted content can use to send data out.",
           "It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset, and never pass it " \
-          "HTML: the text is Markdown."
+          "HTML: the text is Markdown.",
+          "A reply that cites its sources as [1], [2] takes sources: (the list those numbers count, each " \
+          "with a title and an href) - every mark becomes a poetry_citation linked to its source. Show the " \
+          "list itself with poetry_sources under the reply."
         ].freeze
 
         # Elements rebuilt as they stand, around their rebuilt children.
@@ -49,12 +52,12 @@ module Poetry
         # Elements left out with everything inside them.
         DROPPED = %w[script style iframe object embed template noscript svg math head title textarea select
                      option button].freeze
-        # The schemes a link may use; an address with no scheme is the host's own.
-        LINK_SCHEMES = %w[http https mailto tel].freeze
-        # The schemes an image may load from.
-        IMAGE_SCHEMES = %w[http https].freeze
-        # What every link carries: the text is not the host's.
-        LINK_REL = "nofollow noopener noreferrer"
+        # A citation's mark in the text: a number in brackets.
+        CITATION = /\[(\d{1,3})\]/
+        # What stands between a citation and the text before it, so a
+        # line never breaks there: a no-break space where the text had a
+        # space, a narrow one where it had none.
+        GLUE = { true => " ", false => " " }.freeze
         # A code fence's language as CodeBlock takes it.
         LANGUAGE = /\A[\w+#.-]{1,40}\z/
         # The cell alignments a table may ask for.
@@ -79,6 +82,10 @@ module Poetry
         option :link_target, :string, doc: "The target every link opens in (\"_blank\" for a new tab)."
         option :hard_breaks, :boolean, default: false,
                                        doc: "Keeps a single line break inside a paragraph as a line break."
+        option :sources, ActiveModel::Type::Value.new,
+               doc: "The sources the text cites, in the order its marks number them: each a hash (or an " \
+                    "object) with a title and an href or url. A [2] in the text becomes a citation linked " \
+                    "to the second; a number with no source stays text."
 
         validates :heading_level, inclusion: { in: HEADING_LEVELS }
 
@@ -149,7 +156,7 @@ module Poetry
         # One node as the page receives it: text escaped, a known element
         # written anew, an unknown one reduced to its children.
         def element(node)
-          return ERB::Util.html_escape(node.content) if node.text? || node.cdata?
+          return words(node) if node.text? || node.cdata?
           return "".html_safe unless node.element?
 
           case node.name
@@ -165,6 +172,46 @@ module Poetry
           when /\Ah([1-6])\z/ then heading(node, Regexp.last_match(1).to_i)
           else rebuild(node)
           end
+        end
+
+        # A text node, escaped. With sources, each [n] that numbers one of
+        # them becomes its citation; inside code, and inside a link, a
+        # bracketed number is only text.
+        def words(node)
+          text = node.content
+          return ERB::Util.html_escape(text) if cited.empty? || !text.match?(CITATION) || literal?(node)
+
+          safe_join(text.split(/(#{CITATION.source})/).each_slice(3).flat_map do |before, mark, number|
+            cited_mark = citation(mark, number)
+            cited_mark.is_a?(ActiveSupport::SafeBuffer) ? [glued(before), cited_mark] : [before, cited_mark]
+          end.compact)
+        end
+
+        # The text before a citation, ending in the space that keeps the
+        # mark on its line.
+        def glued(before)
+          before.sub(/[ \t]*\z/) { |space| GLUE.fetch(!space.empty?) }
+        end
+
+        # Whether a text node sits where a mark is not a citation.
+        def literal?(node)
+          node.ancestors.any? { |ancestor| %w[code pre a].include?(ancestor.name) }
+        end
+
+        # The citation for a mark, or the mark as text when no source carries its number.
+        def citation(mark, number)
+          return if mark.nil?
+
+          source = cited[number.to_i - 1] if number.to_i.positive?
+          return mark unless source
+
+          render(Citation::Component.new(number: number.to_i, href: source[:href], title: source[:title],
+                                         target: link_target.presence))
+        end
+
+        # The sources in one shape.
+        def cited
+          @cited ||= Citations.sources(sources)
         end
 
         # A heading at its written level, moved down by heading_level and never past h6.
@@ -192,22 +239,22 @@ module Poetry
 
         # A link with an address the page may carry; with any other, its label alone.
         def link(node)
-          href = address(node["href"], LINK_SCHEMES, relative: true)
+          href = Addresses.link(node["href"])
           return rebuild(node) unless href
 
-          content_tag(:a, rebuild(node), href: href, title: node["title"].presence, rel: LINK_REL,
+          content_tag(:a, rebuild(node), href: href, title: node["title"].presence, rel: Addresses::REL,
                                          target: link_target.presence)
         end
 
         # An image when images are asked for and its address may load; else a link to
         # it, or its alt text.
         def image(node)
-          src = address(node["src"], IMAGE_SCHEMES)
+          src = Addresses.image(node["src"])
           alt = node["alt"].to_s
           if images && src
             tag.img(src: src, alt: alt, title: node["title"].presence, loading: "lazy")
           elsif src
-            content_tag(:a, alt.presence || src, href: src, rel: LINK_REL, target: link_target.presence)
+            content_tag(:a, alt.presence || src, href: src, rel: Addresses::REL, target: link_target.presence)
           else
             ERB::Util.html_escape(alt)
           end
@@ -218,23 +265,6 @@ module Poetry
         def cell(node)
           align = node["align"].presence || node["style"].to_s[/text-align:\s*(\w+)/, 1]
           content_tag(node.name, rebuild(node), class: (css(:"align_#{align}") if ALIGNS.include?(align)))
-        end
-
-        # An address the page may carry, or nil. A scheme has to be one
-        # of the allowed ones. An address with none is the host's own: a
-        # link may be one, since following it is the reader's choice, and
-        # an image may not, since loading it is a request to the host with
-        # the reader's session, made without asking. A colon before the
-        # first slash that is not a scheme, and any control character,
-        # refuse the address: browsers do not all read those alike.
-        def address(value, schemes, relative: false)
-          url = value.to_s.strip
-          return if url.empty? || url.match?(/[[:cntrl:]]/)
-
-          scheme = url[/\A([a-zA-Z][a-zA-Z0-9+.-]*):/, 1]
-          return (url if schemes.include?(scheme.downcase)) if scheme
-
-          url if relative && !url.start_with?("//") && !url[%r{\A[^/?#]*}].include?(":")
         end
       end
     end

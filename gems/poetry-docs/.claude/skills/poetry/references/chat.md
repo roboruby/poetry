@@ -48,6 +48,20 @@ In blocks: `chat` - for a screen, start from the block (MCP compose/describe_blo
 - RULE: Reactions REQUIRE label: (the accessible name for the cluster).
 - RULE: Inside a Message, alignment follows the Message's align - do not set both.
 
+## citation (`poetry_citation`)
+
+A numbered mark in a sentence that links a claim to its source.
+
+Class: Poetry::Ui::Citation::Component - BEM block `poetry-ui-citation`.
+- `href:` (string) - The source's address: the mark becomes a link to it. Only an http, https, mailto or tel address, or one on the host, is kept.
+- `number:` (integer) - required - The source's number, as the sources list shows it.
+- `title:` (string) - The source's title - the link's accessible name and its tooltip.
+- PART `citation` - The mark itself, in the Badge's dress - a link (<a>) when href: holds an address the page may carry, else a <span>
+- RULE: A source cited in a sentence is a poetry_citation(number:, href:, title:) - never a bracketed number typed into the text or a bare superscript link.
+- RULE: title: is the source's title: it names the link for assistive tech ("Source 2: <title>"), so pass it whenever there is an href:.
+- RULE: Numbers match the sources list under the reply (poetry_sources), in the order sources are first cited.
+- RULE: In a reply rendered by poetry_markdown, pass it sources: and let it place the citations - do not render them by hand around Markdown.
+
 ## composer (`poetry_composer`)
 
 A chat message form with a growing field and a Send button the server turns into Stop while a reply runs.
@@ -144,6 +158,7 @@ Class: Poetry::Ui::Markdown::Component - BEM block `poetry-ui-markdown`.
 - `images:` (boolean) - default false - Renders images in the text as images. Off, an image is a link to it.
 - `link_target:` (string) - The target every link opens in ("_blank" for a new tab).
 - `preset:` (string) - Appends typeset-<preset>, as on Typeset - a tiny class in the app's own CSS retuning the rhythm variables.
+- `sources:` () - The sources the text cites, in the order its marks number them: each a hash (or an object) with a title and an href or url. A [2] in the text becomes a citation linked to the second; a number with no source stays text.
 - `streaming:` (boolean) - default false - The text is still being written: what its last block has left open (emphasis, a code span, a link's address, a table's first row) is closed for display.
 - `text:` (string) - The Markdown to render. Blank renders the empty container, a reply's row before its first word.
 - PART `markdown` - The prose container - a Typeset, so the app-owned typeset.css styles every element inside and an embedded CodeBlock keeps its own styles | states: data-streaming (streaming: - the text is still being written)
@@ -155,6 +170,7 @@ In blocks: `chat` - for a screen, start from the block (MCP compose/describe_blo
 - RULE: Inside a transcript pass heading_level: 3, so a reply's # headings sit under the page's own.
 - RULE: Images in the text render as links unless images: true - every reader's browser fetches a remote image, which a reply shaped by untrusted content can use to send data out.
 - RULE: It is a Typeset already (preset: retunes it) - never wrap it in poetry_typeset, and never pass it HTML: the text is Markdown.
+- RULE: A reply that cites its sources as [1], [2] takes sources: (the list those numbers count, each with a title and an href) - every mark becomes a poetry_citation linked to its source. Show the list itself with poetry_sources under the reply.
 
 ## message (`poetry_message`)
 
@@ -202,6 +218,34 @@ In blocks: `chat` - for a screen, start from the block (MCP compose/describe_blo
 - RULE: Append new turns with a Turbo Stream targeting the content element's dom id - content_id:, "<id>-messages" by default.
 - RULE: History loads PREPEND into the content element - the controller preserves the reading position.
 - RULE: Never nest a second scroll container inside the viewport.
+
+## sources (`poetry_sources`)
+
+The sources a reply cites, numbered, in a disclosure under it.
+
+Class: Poetry::Ui::Sources::Component - BEM block `poetry-ui-sources`.
+Slot REQUIRED: with_source (at least one source (with_source(title, href:))) - a call without it raises.
+- `label:` (string) - The control's text. Defaults to the locale's count, "3 sources".
+- `open:` (boolean) - default false - Shows the list from the start.
+Slots: sources (One source: its title (positional), href: (its address - the title links to it), and description: (the passage it was cited for).; many).
+- PART `sources` - The root - the disclosure: its state rides here | states: data-open (the list is shown (server-rendered from open:; the controller flips the pair)); data-closed (the list is hidden)
+- PART `sources-trigger` - The control that opens the list - the count, in the ghost Button's dress; mirrors aria-expanded
+- PART `sources-content` - The panel the control opens (hidden while closed) | states: data-open (the panel is open or entering); data-closed (the panel is closed)
+- PART `sources-list` - The numbered list (an <ol>) inside the panel
+- PART `sources-item` - One source's row - its number, then its title, site and passage
+- PART `sources-body` - The column beside the number - the heading line, then the passage
+- PART `sources-heading` - The heading line - the title and the site
+- PART `sources-title` - The source's title - a Link to its address, or plain text without one
+- PART `sources-site` - The site the address is on (example.com), for a web address
+- PART `sources-description` - The passage the source was cited for (description:)
+- WIRING root: `poetry--core--state` registers
+- WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
+- WIRING content: `poetry--core--state` targets content
+- RULE: The sources a reply cites are a poetry_sources under it, one with_source(title, href:, description:) each - never a hand-rolled list of links.
+- RULE: Add sources in the order the reply first cites them: an entry's number is its position, and that is the number its citations carry.
+- RULE: description: is the passage the source was cited for - a quote, not a summary of yours.
+- RULE: open: true shows the list from the start; the count is always the control that opens it.
+- RULE: A title or an address that came from a model or a tool is safe to pass: text is escaped, and only an http, https, mailto or tel address, or one on the host, becomes a link.
 
 ## trace (`poetry_trace`)
 

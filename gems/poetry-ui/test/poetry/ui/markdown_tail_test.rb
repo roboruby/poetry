@@ -30,6 +30,9 @@ module Poetry
         "**bold `co" => "**bold `co`**",
         # A link whose address is still being written is its label; an image is nothing.
         "See [the fulf" => "See the fulf",
+        # A citation's mark half written is left out until it is whole.
+        "Ships in two days [1" => "Ships in two days ",
+        "Ships in two days [" => "Ships in two days ",
         "See [the docs]" => "See the docs",
         "**see [the do" => "**see the do**",
         "Chart: ![sales ch" => "Chart: ",
@@ -54,6 +57,8 @@ module Poetry
         "snake_case_name and more",
         "5 * 3 = 15",
         "a [b] c",
+        "Ships in two days [1]",
+        "Ships [12] and refunds [3]",
         "`items[0` is code",
         "Call items[0](see below and more",
         "* a bullet",

@@ -34,6 +34,7 @@ poetry_components:
   reason: Poetry additions with no source file at the pin.
   list:
   - autocomplete
+  - citation
   - clipboard-text
   - composer
   - data-table
@@ -48,6 +49,7 @@ poetry_components:
   - number-field
   - search-field
   - sensitive-input
+  - sources
   - stat
   - tag-group
   - time-field

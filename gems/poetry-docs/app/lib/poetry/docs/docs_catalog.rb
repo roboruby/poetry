@@ -309,7 +309,8 @@ module Poetry
                                metadata-list stat table timeline tree typeset],
           "Feedback & status" => %w[alert deferred empty meter progress skeleton spinner toast
                                     toast-trigger toaster],
-          "Chat & streaming" => %w[attachment bubble composer markdown marker message message-scroller trace]
+          "Chat & streaming" => %w[attachment bubble citation composer markdown marker message message-scroller
+                                   sources trace]
         }.freeze
 
         # COMPONENT_GROUPS resolved to entries. Raises when the group map and

@@ -16,7 +16,7 @@ module Poetry
                       poetry/ui/attachment poetry/ui/autocomplete poetry/ui/avatar poetry/ui/badge
                       poetry/ui/breadcrumb poetry/ui/bubble
                       poetry/ui/button poetry/ui/button_group poetry/ui/calendar poetry/ui/card poetry/ui/carousel
-                      poetry/ui/checkbox poetry/ui/clipboard_text poetry/ui/code_block
+                      poetry/ui/checkbox poetry/ui/citation poetry/ui/clipboard_text poetry/ui/code_block
                       poetry/ui/collapsible
                       poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/composer
                       poetry/ui/context_menu
@@ -42,7 +42,7 @@ module Poetry
                       poetry/ui/search_field poetry/ui/select
                       poetry/ui/sensitive_input
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
-                      poetry/ui/spinner poetry/ui/stat
+                      poetry/ui/sources poetry/ui/spinner poetry/ui/stat
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group
                       poetry/ui/textarea poetry/ui/time_field poetry/ui/timeline poetry/ui/toast
                       poetry/ui/toast_trigger

@@ -123,6 +123,28 @@ module Poetry
         render(Poetry::Ui::Markdown::Component.new(**))
       end
 
+      # A numbered mark set in a sentence, pointing a claim at its source.
+      #
+      # @example
+      #     Orders ship in two days <%= poetry_citation(number: 1, href: source.url, title: source.title) %>.
+      # @see Poetry::Ui::Citation::Component
+      def poetry_citation(**)
+        render(Poetry::Ui::Citation::Component.new(**))
+      end
+
+      # The sources a reply cites, in a disclosure under it.
+      #
+      # @example
+      #     poetry_sources do |sources|
+      #       sources.with_source("Fulfilment guide", href: "https://example.com/fulfilment")
+      #       sources.with_source("Refund policy", href: "https://example.com/refunds",
+      #                           description: "Refunds are issued within five working days.")
+      #     end
+      # @see Poetry::Ui::Sources::Component
+      def poetry_sources(**, &)
+        render(Poetry::Ui::Sources::Component.new(**), &)
+      end
+
       # A control for selecting, previewing, and removing files to upload.
       #
       # @example Drag-and-drop upload surface

@@ -1,0 +1,11 @@
+<%# A reply that cites as it goes: each [n] is a citation linked to the
+    source that number counts. The list itself is a poetry_sources
+    under the reply. %>
+<% sources = [
+     { title: "Fulfilment guide", href: "https://example.com/fulfilment" },
+     { title: "Refund policy", href: "https://example.com/refunds" }
+   ] %>
+<div class="max-w-xl p-4">
+  <%= poetry_markdown(text: "Orders ship within **two working days** [1], and a refund is issued within five [2]. " \
+                            "ORD-1041 is past the first of those [1].", sources: sources) %>
+</div>

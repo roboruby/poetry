@@ -117,7 +117,7 @@ alone, run `rails g poetry:agents` from `test/dummy` with the destination
 set to the engine root.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (126 components + 9 blocks)
+## Building UI with poetry (128 components + 9 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted

@@ -22,6 +22,15 @@
     end
     message.broadcast_replace_to(chat, partial: "messages/reply", locals: { message: message, text: text, streaming: false })
   CODE
+  cited_source = <<~CODE
+    #{o}# sources numbered for the model, or a provider's own citations #{e}
+    #{o} text, sources = Poetry::Ui::Citations.mark(message.content, message.citations) #{e}
+
+    #{o}= poetry_markdown(text: text, sources: sources, heading_level: 3) #{e}
+    #{o}= poetry_sources do |list| #{e}
+      #{o} sources.each { |source| list.with_source(source[:title], href: source[:href], description: source[:description]) } #{e}
+    #{o} end #{e}
+  CODE
   reply_source = <<~CODE
     #{o}# app/views/messages/_reply.html.erb #{e}
     #{o}= poetry_message_scroller_item(id: message.id, dom_id: dom_id(message), class: "px-4 py-2") do #{e}
@@ -108,6 +117,29 @@
   </p>
   <%= poetry_code_block(code: stream_source, language: "ruby", label: "The job") %>
   <%= poetry_code_block(code: reply_source, language: "erb", label: "The row") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="cited-sources">Cited sources</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A model told to cite writes numbered marks in its text, <code class="text-foreground">[1]</code>,
+    against sources you numbered for it. Pass the same list as
+    <code class="text-foreground">sources:</code>, each entry with a
+    <code class="text-foreground">title</code> and an <code class="text-foreground">href</code>, and
+    every mark that numbers one of them becomes a
+    <%= link_to "citation", component_path("citation"), class: "text-foreground underline underline-offset-4" %>
+    linked to it and named for it. A number with no source stays text, and so does a bracketed
+    number inside code. Show the list itself with
+    <%= link_to "Sources", component_path("sources"), class: "text-foreground underline underline-offset-4" %>
+    under the reply. While the reply streams, a mark half written shows nothing.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    A provider that cites by itself reports spans of the reply instead, each with the source it
+    rests on, as RubyLLM's <code class="text-foreground">message.citations</code> are.
+    <code class="text-foreground">Poetry::Ui::Citations.mark(text, citations)</code> turns those
+    into the marked text and the list of sources, in the order the reply first cites them.
+  </p>
+  <%= poetry_code_block(code: cited_source, language: "erb", label: "A reply with its sources") %>
 </section>
 
 <section class="flex flex-col gap-3">

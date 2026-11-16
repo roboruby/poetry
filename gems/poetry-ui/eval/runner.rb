@@ -300,7 +300,7 @@ module Poetry
         },
         "chat_reply" => {
           "description" => "An assistant's reply written in Markdown, shown in a transcript: its heading, " \
-                           "a link out, a block of code, and text in the reply that is markup",
+                           "a link out, a cited source, a block of code, and text in the reply that is markup",
           "gates" => [
             # The tell: Markdown rendered by a gem and marked html_safe makes
             # the model's words the page's markup.
@@ -314,6 +314,12 @@ module Poetry
             Gate.new(:links_out_are_marked, :cross_arm, lambda { |doc, _html|
               outward = doc.css("a[href]").select { |link| link["href"].start_with?("http") }
               outward.any? && outward.all? { |link| link["rel"].to_s.include?("noopener") }
+            }),
+            # A citation whose whole text is a number says nothing to a
+            # screen reader unless it is named for its source.
+            Gate.new(:citations_name_their_source, :cross_arm, lambda { |doc, _html|
+              marks = doc.css("a[href]").select { |link| link.text.strip.match?(/\A\[?\d+\]?\z/) }
+              marks.any? && marks.all? { |link| link["aria-label"].to_s.match?(/[[:alpha:]]/) }
             }),
             Gate.new(:code_is_a_block, :cross_arm, lambda { |doc, _html|
               doc.css("pre").any?

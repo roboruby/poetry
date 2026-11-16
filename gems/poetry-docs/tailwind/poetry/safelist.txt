@@ -23,6 +23,7 @@
 -left-12
 -ml-4
 -mr-0.5
+-ms-2.5
 -mt-4
 -mx-1
 -mx-3
@@ -174,6 +175,7 @@ after:top-0
 after:transition-opacity
 after:w-1
 after:w-[2px]
+align-baseline
 align-bottom
 animate-caret-blink
 animate-pulse
@@ -1140,6 +1142,7 @@ justify-self-end
 justify-self-start
 justify-start
 last:mt-0
+leading-7
 leading-none
 leading-normal
 leading-snug
@@ -1277,6 +1280,7 @@ pt-1
 pt-4
 pt-64
 px-1
+px-1.5
 px-10
 px-2
 px-3

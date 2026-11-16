@@ -21,6 +21,7 @@ poetry/ui/calendar: A month grid for selecting single dates or ranges.
 poetry/ui/card: A container that groups related content and actions.
 poetry/ui/carousel: A slideshow for cycling through content, built on native scroll-snap.
 poetry/ui/checkbox: A control for toggling a single value on or off.
+poetry/ui/citation: A numbered mark in a sentence that links a claim to its source.
 poetry/ui/clipboard_text: A read-only value with a button to copy it to the clipboard.
 poetry/ui/code_block: A syntax-highlighted code panel with a copy button and optional
   line numbers.
@@ -82,6 +83,7 @@ poetry/ui/sheet: A dialog that slides in from a screen edge.
 poetry/ui/sidebar: A collapsible app-shell navigation column.
 poetry/ui/skeleton: A pulsing placeholder shown while content loads.
 poetry/ui/slider: An input for selecting a value or range along a track.
+poetry/ui/sources: The sources a reply cites, numbered, in a disclosure under it.
 poetry/ui/spinner: An indeterminate loading indicator that announces itself.
 poetry/ui/stat: 'A single KPI: a muted label over a large metric value.'
 poetry/ui/switch: A toggle for turning a setting on or off.
