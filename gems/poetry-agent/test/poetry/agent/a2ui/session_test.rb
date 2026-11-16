@@ -385,6 +385,102 @@ class SessionTest < Minitest::Test
     assert_equal data, action.forwarded_props.dig("a2uiAction", "dataModel")
   end
 
+  # A form whose one field carries the given properties, in a version's spelling.
+  def amount_form(field, version: "1.0")
+    path = version == "1.0" ? "@path" : "path"
+    components = [
+      { "id" => "root", "component" => "Column", "children" => %w[amount go] },
+      { "id" => "amount", "component" => "TextField", "label" => "Amount",
+        "value" => { path => "/amount" } }.merge(field),
+      { "id" => "go", "component" => "Button", "child" => "label", "action" => { "event" => { "name" => "go" } } },
+      { "id" => "label", "component" => "Text", "text" => "Apply" }
+    ]
+    catalog = version == "1.0" ? A2UI::Catalogs::Basic::ID : A2UI::Catalogs::Basic::V0_9_IDS.first
+    create = { "surfaceId" => "s", "catalogId" => catalog }
+    return [{ "version" => version, "createSurface" => create.merge("components" => components) }] if version == "1.0"
+
+    [{ "version" => version, "createSurface" => create },
+     { "version" => version, "updateComponents" => { "surfaceId" => "s", "components" => components } }]
+  end
+
+  # A check on a call with no value to judge fails whatever is typed, so
+  # its form could never be sent and nothing said why. It is refused when
+  # it arrives, in words a model can act on, whatever the mode.
+  def test_a_call_that_leaves_out_a_required_argument_is_refused_in_every_mode
+    check = { "condition" => { "@call" => "numeric", "args" => { "min" => 1 } }, "message" => "Enter a number" }
+    [false, true].each do |strict|
+      session = A2UI::Session.new(strict: strict)
+      session.apply_all(amount_form({ "checks" => [check] }))
+      error = session.errors.last.fetch("error")
+
+      assert_equal "VALIDATION_FAILED", error["code"], "strict: #{strict}"
+      assert_includes error["message"], "numeric: missing value", "strict: #{strict}"
+      assert_empty session.surface("s").components, "strict: #{strict}"
+    end
+  end
+
+  def test_the_refusal_names_the_component_and_shows_how_arguments_are_written
+    session = A2UI::Session.new
+    session.apply_all(amount_form({ "checks" => [{ "condition" => { "@call" => "numeric" }, "message" => "x" }] }))
+    error = session.errors.last.fetch("error")
+
+    assert_equal "/components/amount", error["path"]
+    assert_equal "numeric: missing value - a call's arguments go under args, as in " \
+                 '{ "@call": "numeric", "args": { "value": ... } }', error["message"]
+  end
+
+  def test_a_call_inside_another_calls_arguments_is_read_too
+    inner = { "@call" => "and", "args" => { "values" => [
+      { "@call" => "required", "args" => { "value" => { "@path" => "/amount" } } }, { "@call" => "numeric" }
+    ] } }
+    session = A2UI::Session.new
+    session.apply_all(amount_form({ "checks" => [{ "condition" => inner, "message" => "x" }] }))
+
+    assert_includes session.errors.last.dig("error", "message"), "numeric: missing value"
+  end
+
+  def test_a_formatting_call_that_leaves_out_its_value_is_refused_as_a_check_is
+    session = A2UI::Session.new
+    session.apply_all(amount_form({ "label" => { "@call" => "formatNumber", "args" => { "decimals" => 2 } } }))
+
+    assert_includes session.errors.last.dig("error", "message"), "formatNumber: missing value"
+  end
+
+  def test_the_refusal_speaks_the_surfaces_dialect
+    session = A2UI::Session.new
+    session.apply_all(amount_form({ "checks" => [{ "condition" => { "call" => "numeric" }, "message" => "x" }] },
+                                  version: "v0.9"))
+
+    assert_includes session.errors.last.dig("error", "message"), '{ "call": "numeric", "args": { "value": ... } }'
+  end
+
+  def test_a_whole_call_applies_and_an_unknown_function_is_still_left_to_strict_mode
+    whole = { "condition" => { "@call" => "numeric", "args" => { "value" => { "@path" => "/amount" }, "min" => 1 } },
+              "message" => "Enter a number" }
+    unknown = { "condition" => { "@call" => "luhn", "args" => { "value" => { "@path" => "/amount" } } },
+                "message" => "x" }
+    [whole, unknown].each do |check|
+      session = A2UI::Session.new
+      session.apply_all(amount_form({ "checks" => [check] }))
+
+      assert_empty session.errors
+      assert_equal %w[root amount go label], session.surface("s").components.keys
+    end
+  end
+
+  def test_a_refused_update_is_taken_once_the_argument_is_there
+    session = A2UI::Session.new
+    session.apply_all(amount_form({ "checks" => [{ "condition" => { "@call" => "numeric" }, "message" => "x" }] }))
+    fixed = amount_form({ "checks" => [{ "condition" => { "@call" => "numeric",
+                                                          "args" => { "value" => { "@path" => "/amount" } } },
+                                         "message" => "Enter a number" }] }).first["createSurface"]["components"]
+    session.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s", "components" => fixed } })
+    session.apply({ "version" => "1.0",
+                    "updateDataModel" => { "surfaceId" => "s", "path" => "/amount", "value" => "12" } })
+
+    assert_predicate session.action(surface_id: "s", source: "go"), :valid?
+  end
+
   def test_a_failing_check_rejects_the_action_with_errors_by_component
     session = A2UI::Session.new
     session.apply({ "version" => "1.0", "createSurface" => {

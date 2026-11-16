@@ -244,7 +244,7 @@ module Poetry
         # @return [String, nil]
         def argument_problem(name, args, dialect)
           definition = @definitions[name] or return "unknown function #{name.inspect}"
-          missing = definition.required - args.keys
+          missing = missing_arguments(name, args)
           return "#{name}: missing #{missing.join(", ")}" if missing.any?
 
           mistyped = definition.params.find do |param, schema|
@@ -252,6 +252,16 @@ module Poetry
             !value.nil? && !dialect.binding?(value) && !dialect.call?(value) && !typed?(value, schema)
           end
           "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
+        end
+
+        # The arguments a declared function requires that a call leaves
+        # out; none for a function that is not declared.
+        # @param name [String]
+        # @param args [Object] the arguments as written
+        # @return [Array<String>]
+        def missing_arguments(name, args)
+          definition = @definitions[name] or return []
+          definition.required - (args.is_a?(Hash) ? args.keys : [])
         end
 
         # Whether a declared function needs a user's gesture (an agent's call never is one).

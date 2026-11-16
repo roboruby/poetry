@@ -3948,7 +3948,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 260
+          "line": 270
         },
         {
           "name": "agent_callable?",
@@ -4022,7 +4022,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 320
+          "line": 330
         },
         {
           "name": "argument_problem",
@@ -4101,7 +4101,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 284
+          "line": 294
         },
         {
           "name": "declared?",
@@ -4126,7 +4126,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 273
+          "line": 283
         },
         {
           "name": "define",
@@ -4266,6 +4266,38 @@
           "line": 129
         },
         {
+          "name": "missing_arguments",
+          "scope": "instance",
+          "group": null,
+          "signature": "missing_arguments(name, args)",
+          "docstring": "The arguments a declared function requires that a call leaves\nout; none for a function that is not declared.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Object"
+              ],
+              "text": "the arguments as written"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 262
+        },
+        {
           "name": "names",
           "scope": "instance",
           "group": null,
@@ -4280,7 +4312,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 266
+          "line": 276
         },
         {
           "name": "parse",
@@ -4337,7 +4369,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 304
+          "line": 314
         }
       ],
       "constants": [
@@ -4414,7 +4446,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 377
+          "line": 387
         },
         {
           "name": "list",
@@ -4431,7 +4463,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/functions.rb",
-          "line": 369
+          "line": 379
         }
       ],
       "constants": [
@@ -8311,7 +8343,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 137
+          "line": 152
         },
         {
           "name": "identifier_problems",
@@ -8419,6 +8451,38 @@
           "line": 106
         },
         {
+          "name": "missing_argument_problems",
+          "scope": "class",
+          "group": null,
+          "signature": "missing_argument_problems(list, surface)",
+          "docstring": "The calls every mode refuses: a call to a declared function that\nleaves out an argument the function requires. Such a call has no\nvalue to judge, so a check built on it fails whatever is typed and\nits form can never be sent, with nothing to say why.",
+          "params": [
+            {
+              "name": "list",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            },
+            {
+              "name": "surface",
+              "types": [
+                "Surface"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/strict.rb",
+          "line": 138
+        },
+        {
           "name": "named",
           "scope": "class",
           "group": null,
@@ -8448,7 +8512,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/a2ui/strict.rb",
-          "line": 159
+          "line": 174
         },
         {
           "name": "topology_problems",

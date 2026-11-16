@@ -409,6 +409,15 @@
         also emits the attribute: required, a pattern, a length range, an email
         type.
       </p>
+      <p>
+        A call that leaves out an argument its function requires is refused when
+        it arrives, in every mode, with the function and the argument named
+        (<code>numeric: missing value</code>). A check built on such a call has
+        nothing to judge, so it would fail whatever was typed and its form could
+        never be sent. The refusal goes back to the agent like any other
+        <code>VALIDATION_FAILED</code>, under the component's path, and the
+        update applies once the argument is there.
+      </p>
     <% end %>
   </section>
 

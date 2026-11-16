@@ -128,6 +128,21 @@ module Poetry
           end
         end
 
+        # The calls every mode refuses: a call to a declared function that
+        # leaves out an argument the function requires. Such a call has no
+        # value to judge, so a check built on it fails whatever is typed and
+        # its form can never be sent, with nothing to say why.
+        # @param list [Array<Hash>]
+        # @param surface [Surface]
+        # @return [Array<Hash>]
+        def missing_argument_problems(list, surface)
+          list.grep(Hash).filter_map do |component|
+            values = component.except("id", "component", "catalogId").values
+            message = first(values) { |value| missing_argument(value, surface) } or next
+            problem("VALIDATION_FAILED", message, "/components/#{component["id"]}")
+          end
+        end
+
         # The composition problems of a candidate set: a child its container's
         # `allowedChildren` leaves out, a component under a parent its
         # `allowedParents` leaves out (the root's parent is the `Surface`).
@@ -204,6 +219,29 @@ module Poetry
             own = surface.function_call?(value) ? function_problem(value, surface) : nil
             own || first(value.values) { |item| call_problem(item, surface) }
           end
+        end
+
+        # What the first call in a value that leaves out a required
+        # argument is missing, calls inside its arguments included.
+        def missing_argument(value, surface)
+          case value
+          when Array then first(value) { |item| missing_argument(item, surface) }
+          when Hash
+            own = surface.function_call?(value) ? missing_argument_of(value, surface) : nil
+            own || first(value.values) { |item| missing_argument(item, surface) }
+          end
+        end
+
+        # What one call leaves out, as the model should read it: the
+        # function, the argument, and how an argument is written.
+        def missing_argument_of(call, surface)
+          name = surface.dialect.call_name(call)
+          catalog = surface.lookup(call).first or return
+          missing = catalog.functions.missing_arguments(name, call["args"])
+          return if missing.empty?
+
+          "#{name}: missing #{missing.join(", ")} - a call's arguments go under args, as in " \
+            "{ \"#{surface.dialect.call_key}\": \"#{name}\", \"args\": { \"#{missing.first}\": ... } }"
         end
 
         # Why one call's function cannot run: a name that is not an
@@ -310,7 +348,8 @@ module Poetry
 
         private_class_method :problem, :first, :hash_limit_problem, :dangling_problems, :reference_fields,
                              :reachable, :call_problem, :function_problem, :definition, :child_problem,
-                             :parent_problem, :names, :tree_depth
+                             :parent_problem, :names, :tree_depth,
+                             :missing_argument, :missing_argument_of
       end
     end
   end

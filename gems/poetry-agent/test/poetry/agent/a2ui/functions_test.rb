@@ -282,6 +282,15 @@ class FunctionsTest < Minitest::Test
     assert_equal '{"a":[1]}', ev.stringify({ "a" => [1] })
   end
 
+  def test_a_function_names_the_required_arguments_a_call_leaves_out
+    functions = Poetry::Agent::A2UI::Functions.basic
+
+    assert_equal %w[value], functions.missing_arguments("numeric", { "min" => 1 })
+    assert_equal %w[value pattern], functions.missing_arguments("regex", nil)
+    assert_empty functions.missing_arguments("numeric", { "value" => 3 })
+    assert_empty functions.missing_arguments("notDeclared", {})
+  end
+
   def test_checks_yield_failures_with_messages_and_severities
     s = surface({ "email" => "nope", "terms" => "" })
     ev = A2UI::Evaluator.new(s)

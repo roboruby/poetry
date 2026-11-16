@@ -525,7 +525,7 @@ module Poetry
           duplicate = ids.detect { |id| ids.count(id) > 1 }
           return reject("INTEGRITY_ERROR", "Duplicate component ID: '#{duplicate}'", surface.id) if duplicate
 
-          problems = @strict ? strict_problems(surface, components) : structure_problems(surface, components)
+          problems = @strict ? strict_problems(surface, components) : lenient_problems(surface, components)
           if problems.any?
             record(surface.id, problems)
             return []
@@ -549,6 +549,13 @@ module Poetry
           return [schema] if schema
 
           structure_problems(surface, components)
+        end
+
+        # What an update is refused for outside strict mode: a call that
+        # leaves out a required argument, then what every mode refuses.
+        def lenient_problems(surface, components)
+          missing = Strict.missing_argument_problems(components, surface)
+          missing.any? ? missing : structure_problems(surface, components)
         end
 
         # What every mode refuses an update for: the topology of the set it
