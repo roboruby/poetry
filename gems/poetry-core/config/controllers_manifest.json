@@ -424,7 +424,7 @@
     }
   },
   "poetry--core--composer": {
-    "doc": "The Composer seams: a chat message form whose state the SERVER holds. The form is never replaced; the server redraws one slot inside it with a Send button or a Stop button, and a Stop button on the page is the whole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always sends; with submit-on-enter off a bare Enter is a line break). An Enter that confirms an input-method composition never sends. The form's own submit event is the one gate, so the key and the button obey the same rules: nothing is sent while the field is blank, while a reply runs, or while a send is already on its way. Turbo marks the form aria-busy for the length of a request; the one moment before that mark lands is bridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and whatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the attachments target): a message of files alone is not blank, and once the server accepts it the sent event names the files that went, so the file-input controller beside this one drops their chips and keeps any file added since. The event names the per-message fields that went as well (elements marked data-composer-field, a chosen reference's hidden input), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it where it was, so a field being typed in keeps its on-screen keyboard and a reader who put the keyboard away is not handed it back. A button pressed from the keyboard does hold focus, and the server is about to disable or replace it, so focus goes to the field instead of the page.",
+    "doc": "The Composer seams: a chat message form whose state the SERVER holds. The form is never replaced; the server redraws one slot inside it with a Send button or a Stop button, and a Stop button on the page is the whole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always sends; with submit-on-enter off a bare Enter is a line break). An Enter that confirms an input-method composition never sends. The form's own submit event is the one gate, so the key and the button obey the same rules: nothing is sent while the field is blank, while a reply runs, or while a send is already on its way. Turbo marks the form aria-busy for the length of a request; the one moment before that mark lands is bridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and whatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the attachments target): a message of files alone is not blank, and once the server accepts it the sent event names the files that went, so the file-input controller beside this one drops their chips and keeps any file added since. The event names the per-message fields that went as well (elements marked data-composer-field, a chosen reference's hidden input), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it where it was, so a field being typed in keeps its on-screen keyboard and a reader who put the keyboard away is not handed it back. A button pressed from the keyboard does hold focus, and the server is about to disable or replace it, so focus goes to the field instead of the page.\n\nA suggested prompt reaches the composer as a poetry:composer:prompt event on the window that names it by id (the composer-prompt controller's press). The composer writes the text and, asked to, sends it through the same gate. A prompt that could not go writes nothing, so a draft is never traded for a prompt the gate refused.",
     "targets": [
       "attachments",
       "form",
@@ -459,7 +459,7 @@
     ],
     "method_docs": {
       "changed": "The field's input action, the file input's change action and the root's turbo:morph-element action: keeps data-empty on the root honest. A morph puts the server's attributes back on the root while the field keeps its draft, so the emptiness is read again from the field once the morph has passed.",
-      "connect": "Reflects the field's emptiness (a browser may restore a draft the server never rendered).",
+      "connect": "Reflects the field's emptiness (a browser may restore a draft the server never rendered) and starts hearing prompts meant for this composer.",
       "disconnect": "Undoes the per-connect scope (the pending flag's timer).",
       "guard": "The form's submit action, the one gate for the key and the button: refuses a blank message, a send while a reply runs (a Stop button is on the page), and a second send while the first is on its way.",
       "holdFocus": "The Send and Stop buttons' pointerdown action: a press does not take focus. A field being typed in keeps it, and with it the on-screen keyboard.",
@@ -524,6 +524,35 @@
       "restore": "The root's turbo:morph-element action: a morph puts the server's render back on the options and the field, which highlights nothing and names no option, while the reader is still on the same word. Once the whole composer has been morphed the open list is filtered again and the highlight returns to the option it was on.",
       "sent": "The composer's sent action: the chips that went with an accepted message leave, and a chip added since stays.",
       "track": "The field's input, keyup, click and focus action: reads the word at the caret and opens, filters or closes the list it calls for. A word whose list was dismissed stays without one."
+    }
+  },
+  "poetry--core--composer-prompt": {
+    "doc": "A suggested prompt for a Composer elsewhere on the page: a chip under an empty conversation, a quick reply, a retry. Pressed, it asks the named composer to take its text, and by default to send it, by dispatching poetry:composer:prompt on the window. The composer does the writing and the sending itself, through its own gate, so a prompt can do nothing a typed message could not.",
+    "targets": [],
+    "values": {
+      "composer": {
+        "type": "String",
+        "doc": "The id of the composer the prompt is for."
+      },
+      "text": {
+        "type": "String",
+        "doc": "The text the prompt writes in place of the draft."
+      },
+      "send": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the composer sends the text at once. Off, the text is written and the caret put after it, for the person to finish."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "write"
+    ],
+    "events": [
+      "poetry:composer:prompt"
+    ],
+    "method_docs": {
+      "write": "The click action: hands the prompt to the composer it names."
     }
   },
   "poetry--core--context-menu": {

@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/index.js",
-          "line": 215
+          "line": 218
         }
       ],
       "constants": [
@@ -5636,7 +5636,7 @@
       "path": "poetry--core--composer",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the\nattachments target): a message of files alone is not blank, and once\nthe server accepts it the sent event names the files that went, so the\nfile-input controller beside this one drops their chips and keeps any\nfile added since. The event names the per-message fields that went as\nwell (elements marked data-composer-field, a chosen reference's hidden\ninput), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\n**Targets**: `attachments`, `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.\n\n**Events**: `poetry:composer:sent`",
+      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the\nattachments target): a message of files alone is not blank, and once\nthe server accepts it the sent event names the files that went, so the\nfile-input controller beside this one drops their chips and keeps any\nfile added since. The event names the per-message fields that went as\nwell (elements marked data-composer-field, a chosen reference's hidden\ninput), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\nA suggested prompt reaches the composer as a poetry:composer:prompt\nevent on the window that names it by id (the composer-prompt\ncontroller's press). The composer writes the text and, asked to, sends\nit through the same gate. A prompt that could not go writes nothing,\nso a draft is never traded for a prompt the gate refused.\n\n**Targets**: `attachments`, `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.\n\n**Events**: `poetry:composer:sent`",
       "examples": [],
       "file": "app/javascript/poetry/core/composer_controller.js",
       "methods": [
@@ -5645,12 +5645,12 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Reflects the field's emptiness (a browser may restore a draft the server never rendered).",
+          "docstring": "Reflects the field's emptiness (a browser may restore a draft the\nserver never rendered) and starts hearing prompts meant for this\ncomposer.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 60
+          "line": 71
         },
         {
           "name": "disconnect",
@@ -5662,7 +5662,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 65
+          "line": 77
         },
         {
           "name": "keydown",
@@ -5682,7 +5682,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 76
+          "line": 88
         },
         {
           "name": "changed",
@@ -5694,7 +5694,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 94
+          "line": 106
         },
         {
           "name": "submit",
@@ -5706,7 +5706,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 102
+          "line": 114
         },
         {
           "name": "guard",
@@ -5726,7 +5726,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 113
+          "line": 125
         },
         {
           "name": "settle",
@@ -5746,7 +5746,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 144
+          "line": 156
         },
         {
           "name": "setText",
@@ -5771,7 +5771,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 175
+          "line": 187
         },
         {
           "name": "send",
@@ -5788,7 +5788,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 196
+          "line": 208
         },
         {
           "name": "stop",
@@ -5805,7 +5805,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 212
+          "line": 224
         },
         {
           "name": "holdFocus",
@@ -5825,7 +5825,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 226
+          "line": 238
         },
         {
           "name": "returnFocus",
@@ -5845,7 +5845,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/composer_controller.js",
-          "line": 238
+          "line": 250
         }
       ],
       "constants": []
@@ -6133,6 +6133,29 @@
           "examples": [],
           "file": "app/javascript/poetry/core/composer_menu_controller.js",
           "line": 333
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--composer-prompt",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "A suggested prompt for a Composer elsewhere on the page: a chip under\nan empty conversation, a quick reply, a retry. Pressed, it asks the\nnamed composer to take its text, and by default to send it, by\ndispatching poetry:composer:prompt on the window. The composer does\nthe writing and the sending itself, through its own gate, so a prompt\ncan do nothing a typed message could not.\n\n**Values**:\n- `composer` (String): The id of the composer the prompt is for.\n- `text` (String): The text the prompt writes in place of the draft.\n- `send` (Boolean, default: true): Whether the composer sends the text at once. Off, the text is written and the caret put after it, for the person to finish.\n\n**Events**: `poetry:composer:prompt`",
+      "examples": [],
+      "file": "app/javascript/poetry/core/composer_prompt_controller.js",
+      "methods": [
+        {
+          "name": "write",
+          "scope": "instance",
+          "group": null,
+          "signature": "write()",
+          "docstring": "The click action: hands the prompt to the composer it names.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_prompt_controller.js",
+          "line": 27
         }
       ],
       "constants": []

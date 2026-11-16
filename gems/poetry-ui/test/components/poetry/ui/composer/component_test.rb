@@ -712,6 +712,51 @@ module Poetry
           catalog.delete(registrar) unless had
         end
 
+        PROMPT = "poetry--core--composer-prompt"
+
+        def test_autofocus_is_the_fields_native_attribute_and_off_by_default
+          assert render_composer(autofocus: true).at_css("textarea").key?("autofocus")
+          refute render_composer.at_css("textarea").key?("autofocus")
+        end
+
+        def prompts(erb)
+          Nokogiri::HTML5.fragment(render_erb(erb)).css("button[data-slot=composer-prompt]").to_a
+        end
+
+        def test_a_prompt_is_a_button_that_names_its_composer_and_its_text
+          prompt = prompts(%(<%= poetry_composer_prompt(composer: "chat", text: "Show <b> & more") %>)).first
+
+          assert_equal "button", prompt["type"], "a prompt never submits a form it sits in"
+          assert_equal PROMPT, prompt["data-controller"]
+          assert_equal "chat", prompt["data-#{PROMPT}-composer-value"]
+          assert_equal "Show <b> & more", prompt["data-#{PROMPT}-text-value"]
+          assert_equal "click->#{PROMPT}#write", prompt["data-action"]
+          refute prompt.key?("data-#{PROMPT}-send-value"), "sending is the controller's default"
+          assert_equal "Show <b> & more", prompt.text.strip, "the text is the label, escaped"
+          assert_equal "outline", prompt["data-variant"]
+          assert_equal "sm", prompt["data-size"]
+        end
+
+        def test_a_prompt_that_only_writes_says_so_and_takes_a_label_and_the_buttons_options
+          prompt = prompts(<<~ERB).first
+            <%= poetry_composer_prompt(composer: "chat", text: "Compare ", submit: false, variant: :ghost, size: :default,
+                                       class: "mine", data: { action: "click->host#seen" }) { "Compare two…" } %>
+          ERB
+
+          assert_equal "false", prompt["data-#{PROMPT}-send-value"]
+          assert_equal "Compare ", prompt["data-#{PROMPT}-text-value"]
+          assert_equal "Compare two…", prompt.text.strip
+          assert_equal "ghost", prompt["data-variant"]
+          assert_includes prompt["class"].split, "mine"
+          assert_equal %W[click->#{PROMPT}#write click->host#seen].sort, prompt["data-action"].split.sort,
+                       "a host's own action joins the prompt's"
+        end
+
+        def test_a_prompt_needs_its_composer_and_its_text
+          assert_match(/composer:/, assert_raises(ArgumentError) { Prompt.new(text: "Hello") }.message)
+          assert_match(/text:/, assert_raises(ArgumentError) { Prompt.new(composer: "chat") }.message)
+        end
+
         def test_the_helper_renders_the_slot_the_composer_renders
           %i[idle running stopping].each do |status|
             inside = slot(render_composer(status: status, stop_url: "/stop", version: 3), "composer-action").to_html

@@ -15,7 +15,7 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'id="composer-demo-action"'
     assert_includes response.body, "/components/composer/messages?composer=composer-demo"
     assert_includes response.body, "/components/composer/stop?composer=composer-demo"
-    %w[state ordering stop files mentions server-fed-menus keys].each do |anchor|
+    %w[state ordering stop files mentions server-fed-menus suggested-prompts keys].each do |anchor|
       assert_includes response.body, %(id="#{anchor}")
     end
   end

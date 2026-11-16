@@ -7470,7 +7470,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1717
+          "line": 1733
         },
         {
           "name": "poetry_alert",
@@ -7937,7 +7937,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1704
+          "line": 1720
         },
         {
           "name": "poetry_color_scheme_script",
@@ -7954,7 +7954,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1913
+          "line": 1929
         },
         {
           "name": "poetry_combobox",
@@ -7971,7 +7971,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1821
+          "line": 1837
         },
         {
           "name": "poetry_command",
@@ -7988,7 +7988,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1847
+          "line": 1863
         },
         {
           "name": "poetry_command_dialog",
@@ -8005,7 +8005,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1860
+          "line": 1876
         },
         {
           "name": "poetry_composer",
@@ -8064,7 +8064,24 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1663
+          "line": 1679
+        },
+        {
+          "name": "poetry_composer_prompt",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_composer_prompt(**, &)",
+          "docstring": "A suggested prompt for a composer elsewhere on the page: a chip\nunder an empty conversation, a quick reply. Pressed, the composer\nnamed by composer: writes the text in place of the draft and sends\nit, through the same gate a typed message passes, so nothing goes\nwhile a reply is running. submit: false only writes the text and\nputs the caret after it. It is a Poetry Button: variant: and size:\nare the Button's, and a block gives a label other than the text.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "Prompts under an empty conversation",
+              "text": "<%= poetry_composer_prompt(composer: \"composer\", text: \"Summarize this thread\") %>\n<%= poetry_composer_prompt(composer: \"composer\", text: \"Compare \", submit: false) { \"Compare…\" } %>"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1658
         },
         {
           "name": "poetry_context_menu",
@@ -8081,7 +8098,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1834
+          "line": 1850
         },
         {
           "name": "poetry_data_table",
@@ -8217,7 +8234,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1791
+          "line": 1807
         },
         {
           "name": "poetry_empty",
@@ -8336,7 +8353,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1778
+          "line": 1794
         },
         {
           "name": "poetry_icon",
@@ -8370,7 +8387,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1892
+          "line": 1908
         },
         {
           "name": "poetry_input",
@@ -8642,7 +8659,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1876
+          "line": 1892
         },
         {
           "name": "poetry_message",
@@ -8897,7 +8914,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1730
+          "line": 1746
         },
         {
           "name": "poetry_progress",
@@ -9016,7 +9033,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1806
+          "line": 1822
         },
         {
           "name": "poetry_sensitive_input",
@@ -9475,7 +9492,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1675
+          "line": 1691
         },
         {
           "name": "poetry_toast_trigger",
@@ -9509,7 +9526,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1691
+          "line": 1707
         },
         {
           "name": "poetry_toggle",
@@ -9577,7 +9594,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1744
+          "line": 1760
         },
         {
           "name": "poetry_tooltip_provider",
@@ -9594,7 +9611,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1759
+          "line": 1775
         },
         {
           "name": "poetry_trace",
@@ -9751,7 +9768,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 156
+          "line": 164
         },
         {
           "name": "attach_label",
@@ -9768,7 +9785,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 168
+          "line": 176
         },
         {
           "name": "attachments",
@@ -9785,7 +9802,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 150
+          "line": 158
         },
         {
           "name": "attachments_name",
@@ -9802,7 +9819,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 153
+          "line": 161
+        },
+        {
+          "name": "autofocus",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Puts the caret in the field when the page opens (the native autofocus attribute) - for a page that is the conversation, one composer at most.\n\nConstructor option `autofocus:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/composer/component.rb",
+          "line": 135
         },
         {
           "name": "composer_id",
@@ -9819,7 +9853,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 420
+          "line": 428
         },
         {
           "name": "direct_upload",
@@ -9836,7 +9870,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 160
+          "line": 168
         },
         {
           "name": "direct_upload_url",
@@ -9853,7 +9887,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 163
+          "line": 171
         },
         {
           "name": "disabled",
@@ -9870,7 +9904,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 146
+          "line": 154
         },
         {
           "name": "http_method",
@@ -9887,7 +9921,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 124
+          "line": 129
         },
         {
           "name": "id",
@@ -9904,7 +9938,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 119
+          "line": 124
         },
         {
           "name": "input_class",
@@ -9921,7 +9955,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 131
+          "line": 139
         },
         {
           "name": "label",
@@ -9938,7 +9972,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 130
+          "line": 138
         },
         {
           "name": "max_files",
@@ -9955,7 +9989,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 159
+          "line": 167
         },
         {
           "name": "max_size",
@@ -9972,7 +10006,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 158
+          "line": 166
         },
         {
           "name": "name",
@@ -9989,7 +10023,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 127
+          "line": 132
         },
         {
           "name": "placeholder",
@@ -10006,7 +10040,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 129
+          "line": 134
         },
         {
           "name": "root_attributes",
@@ -10018,7 +10052,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 426
+          "line": 434
         },
         {
           "name": "send_label",
@@ -10035,7 +10069,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 147
+          "line": 155
         },
         {
           "name": "status",
@@ -10052,7 +10086,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 134
+          "line": 142
         },
         {
           "name": "stop_label",
@@ -10069,7 +10103,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 149
+          "line": 157
         },
         {
           "name": "stop_url",
@@ -10086,7 +10120,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 137
+          "line": 145
         },
         {
           "name": "submit_on_enter",
@@ -10103,7 +10137,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 143
+          "line": 151
         },
         {
           "name": "upload",
@@ -10120,7 +10154,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 165
+          "line": 173
         },
         {
           "name": "url",
@@ -10137,7 +10171,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 123
+          "line": 128
         },
         {
           "name": "value",
@@ -10154,7 +10188,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 128
+          "line": 133
         },
         {
           "name": "version",
@@ -10171,7 +10205,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 140
+          "line": 148
         }
       ],
       "constants": [

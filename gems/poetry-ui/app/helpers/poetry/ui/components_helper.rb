@@ -1643,6 +1643,22 @@ module Poetry
         render(Poetry::Ui::Composer::Action.new(**))
       end
 
+      # A suggested prompt for a composer elsewhere on the page: a chip
+      # under an empty conversation, a quick reply. Pressed, the composer
+      # named by composer: writes the text in place of the draft and sends
+      # it, through the same gate a typed message passes, so nothing goes
+      # while a reply is running. submit: false only writes the text and
+      # puts the caret after it. It is a Poetry Button: variant: and size:
+      # are the Button's, and a block gives a label other than the text.
+      #
+      # @example Prompts under an empty conversation
+      #   <%= poetry_composer_prompt(composer: "composer", text: "Summarize this thread") %>
+      #   <%= poetry_composer_prompt(composer: "composer", text: "Compare ", submit: false) { "Compare…" } %>
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_prompt(**, &)
+        render(Poetry::Ui::Composer::Prompt.new(**), &)
+      end
+
       # A server-fed composer menu's answer: the options for the word
       # being typed, in the Turbo frame that asked. A menu given src:
       # requests that address with the word (?q=word); the view there

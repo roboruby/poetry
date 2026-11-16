@@ -39,6 +39,7 @@ import ToggleGroupController from "@poetry/controllers/toggle_group_controller"
 import QuestionnaireController from "@poetry/controllers/questionnaire_controller"
 import ComposerController from "@poetry/controllers/composer_controller"
 import ComposerMenuController from "@poetry/controllers/composer_menu_controller"
+import ComposerPromptController from "@poetry/controllers/composer_prompt_controller"
 import RadioGroupController from "@poetry/controllers/radio_group_controller"
 import SliderController from "@poetry/controllers/slider_controller"
 import OtpController from "@poetry/controllers/otp_controller"
@@ -94,6 +95,7 @@ export { default as PressedController } from "@poetry/controllers/pressed_contro
 export { default as ToggleGroupController } from "@poetry/controllers/toggle_group_controller"
 export { default as QuestionnaireController } from "@poetry/controllers/questionnaire_controller"
 export { default as ComposerController } from "@poetry/controllers/composer_controller"
+export { default as ComposerPromptController } from "@poetry/controllers/composer_prompt_controller"
 export { default as RadioGroupController } from "@poetry/controllers/radio_group_controller"
 export { default as SliderController } from "@poetry/controllers/slider_controller"
 export { default as OtpController } from "@poetry/controllers/otp_controller"
@@ -171,6 +173,7 @@ export const controllers = {
   "poetry--core--questionnaire": QuestionnaireController,
   "poetry--core--composer": ComposerController,
   "poetry--core--composer-menu": ComposerMenuController,
+  "poetry--core--composer-prompt": ComposerPromptController,
   "poetry--core--radio-group": RadioGroupController,
   "poetry--core--slider": SliderController,
   "poetry--core--otp": OtpController,

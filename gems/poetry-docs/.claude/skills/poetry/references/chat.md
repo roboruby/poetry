@@ -56,6 +56,7 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - `attach_label:` (string) - The paperclip button's accessible name. Defaults to the locale's "Attach files".
 - `attachments:` (boolean) - default false - Files join the message: a paperclip button, a drop on the composer and a paste into the field, each file a chip above the field.
 - `attachments_name:` (string) - default "attachments[]" - The param key the files arrive under - ending in [] for Rails params, since a message may carry several.
+- `autofocus:` (boolean) - default false - Puts the caret in the field when the page opens (the native autofocus attribute) - for a page that is the conversation, one composer at most.
 - `direct_upload:` (boolean) - default false - Uploads the files straight to storage through Active Storage's direct uploads, so the message posts signed ids instead of bytes.
 - `direct_upload_url:` (string) - A direct uploads endpoint other than Rails' own (an authenticated or scoped route); it turns direct uploads on.
 - `disabled:` (boolean) - default false - Disables the field and the Send button.
@@ -96,6 +97,7 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - PART `composer-reference-template` - The <template> holding one reference chip the controller clones per choice
 - WIRING send: `poetry--core--composer` actions holdFocus on pointerdown; targets send
 - WIRING stop: `poetry--core--composer` actions holdFocus on pointerdown, returnFocus on click; targets stop
+- WIRING prompt: `poetry--core--composer-prompt` registers; values composer, text, send (if prompt_writes_only?); actions write on click
 - WIRING root: `poetry--core--file-drop` (if attachments) registers; values accept, multiple, max_files, max_size, paste, messages | `poetry--core--file-input` (if attachments) registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files, discard on poetry:composer:sent | `poetry--core--composer-menu` (if menus?) registers; values messages; actions sent on poetry:composer:sent, restore on turbo:morph-element | `poetry--core--composer` registers; values submit_on_enter; actions changed on turbo:morph-element
 - WIRING form: `poetry--core--composer` actions guard on submit, settle on turbo:submit-end; targets form
 - WIRING input: `poetry--core--composer-menu` (if menus?) actions keydown on keydown, track on input/keyup/click/focus, blurred on blur; targets input | `poetry--core--composer` actions keydown on keydown, changed on input; targets input
@@ -126,6 +128,7 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - RULE: What a menu sends is plain: a text menu leaves "@value " in the message (or the item's insert:), a chip menu (inserts: :chip, name:) posts the chosen values as hidden fields under name: and leaves the text clean. Never invent bracket or directive syntax for a reference, and look the handle or the value up again on the server.
 - RULE: A menu too large to render with the page takes src: (an address) and the view there answers with poetry_composer_menu_options and one with_item per match: the server decides what matches and the order, and Turbo carries the request. Never fetch options with hand-written JavaScript, and scope the answer to what the person may see, as with any search endpoint.
 - RULE: Commands: at: :start opens the menu only on the message's first word; insert: "/summarize " leaves text the server reads from the start of the message, and run: true takes the typed word out and only reports the choice (the poetry:composer-menu:choose event).
+- RULE: A suggested prompt (a chip under an empty conversation, a quick reply) is poetry_composer_prompt(composer: "<id>", text:): pressed, the composer writes the text and sends it through its own gate; submit: false only writes it. Never reach into the composer's controller or set the field's value from page script.
 - RULE: webmcp: "name" lets an in-page agent write the text, send and stop through the composer's own gate; leave it off unless the page means an agent to speak for the person.
 - RULE: name: is the message's param key; label: is the field's accessible name - the placeholder is not a label.
 

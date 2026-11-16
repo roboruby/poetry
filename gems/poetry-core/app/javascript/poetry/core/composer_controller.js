@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { teardown } from "@poetry/controllers/helpers/scope"
+import { useListen } from "@poetry/controllers/behaviors/listen"
 import { useTimeout } from "@poetry/controllers/behaviors/interval"
 
 const EVENT_PREFIX = "poetry:composer"
@@ -36,6 +37,12 @@ const EVENT_PREFIX = "poetry:composer"
  * and a reader who put the keyboard away is not handed it back. A button
  * pressed from the keyboard does hold focus, and the server is about to
  * disable or replace it, so focus goes to the field instead of the page.
+ *
+ * A suggested prompt reaches the composer as a poetry:composer:prompt
+ * event on the window that names it by id (the composer-prompt
+ * controller's press). The composer writes the text and, asked to, sends
+ * it through the same gate. A prompt that could not go writes nothing,
+ * so a draft is never traded for a prompt the gate refused.
  */
 export default class ComposerController extends Controller {
   // The events this controller dispatches (manifest surface;
@@ -56,9 +63,14 @@ export default class ComposerController extends Controller {
   #fields = []
   #within = false
 
-  /** Reflects the field's emptiness (a browser may restore a draft the server never rendered). */
+  /**
+   * Reflects the field's emptiness (a browser may restore a draft the
+   * server never rendered) and starts hearing prompts meant for this
+   * composer.
+   */
   connect() {
     this.#reflect()
+    useListen(this, window, "poetry:composer:prompt", (event) => this.#prompted(event))
   }
 
   /** Undoes the per-connect scope (the pending flag's timer). */
@@ -237,6 +249,35 @@ export default class ComposerController extends Controller {
    */
   returnFocus(event) {
     if (document.activeElement === event.currentTarget) this.inputTarget.focus()
+  }
+
+  /**
+   * A prompt dispatched on the window: taken when it names this composer
+   * by id. To be sent it must be able to go now, so the draft is left
+   * alone while a reply runs, a send is on its way or the field is
+   * disabled. Without a send the text is written and the caret put after
+   * it.
+   *
+   * @param {CustomEvent} event - detail.composer is the composer's id, detail.text the prompt, detail.send whether to send it
+   */
+  #prompted(event) {
+    const { composer, text, send = true } = event.detail ?? {}
+
+    if (!this.element.id || composer !== this.element.id) return
+
+    const field = this.inputTarget
+    const next = String(text ?? "")
+
+    if (field.disabled) return
+    if (send && (this.#sending || this.#busy() || this.hasStopTarget)) return
+
+    this.setText(next)
+    if (send) {
+      this.submit()
+      return
+    }
+    field.focus()
+    field.setSelectionRange(next.length, next.length)
   }
 
   /**

@@ -28,6 +28,7 @@ class PoetryTesterProofs
                                              "came, the newest word's, and options the page rendered",
     composer_keeps_the_page_when_a_menus_server_fails: "composer keeps the page and the draft when a menu's " \
                                                        "server answers with an error or without the frame",
+    composer_takes_a_suggested_prompt: "composer takes a suggested prompt: one writes and sends, one only writes",
     registration_guard_passes: "registration guard finds every poetry controller registered",
     registration_guard_names_the_stray: "registration guard names an unregistered poetry controller"
   }.freeze
@@ -287,6 +288,31 @@ class PoetryTesterProofs
       )
       raise "#{answer}: Turbo wrote #{written.inspect} into a list" unless written.empty?
     end
+  end
+
+  # Suggested prompts, buttons outside the composer: the first writes its
+  # text and sends it; the second only writes and leaves the caret in the
+  # field after the text.
+  def composer_takes_a_suggested_prompt
+    visit("/previews/poetry/ui/composer/with_prompts")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    sends, writes = @session.all("button[data-slot='composer-prompt']").to_a
+
+    count_composer_submits
+    sends.click
+    submits = @session.evaluate_script("window.__composerSubmits")
+    sent = "Summarize the open pull requests"
+    raise "the sending prompt's text #{composer.text.inspect}" unless composer.text == sent
+    raise "the sending prompt's submits #{submits.inspect}" unless submits == %w[composer-prompts-form]
+
+    writes.click
+    raise "the writing prompt's text #{composer.text.inspect}" unless composer.text == "Compare "
+    raise "the writing prompt sent" unless @session.evaluate_script("window.__composerSubmits").size == 1
+
+    caret = @session.evaluate_script(<<~JS)
+      (() => { const f = document.activeElement; return f.tagName === "TEXTAREA" ? [f.selectionStart, f.selectionEnd] : null })()
+    JS
+    raise "the caret after a writing prompt #{caret.inspect}" unless caret == [8, 8]
   end
 
   # The registration guard finds nothing missing on a healthy page.

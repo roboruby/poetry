@@ -67,6 +67,7 @@ module Poetry
         include ActionWiring
         include FileInput::Uploads
         include Menus
+        include PromptWiring
 
         # The closed vocabulary for the status axis.
         STATUSES = %i[idle running stopping].freeze
@@ -110,6 +111,10 @@ module Poetry
           "Commands: at: :start opens the menu only on the message's first word; insert: \"/summarize \" " \
           "leaves text the server reads from the start of the message, and run: true takes the typed " \
           "word out and only reports the choice (the poetry:composer-menu:choose event).",
+          "A suggested prompt (a chip under an empty conversation, a quick reply) is " \
+          "poetry_composer_prompt(composer: \"<id>\", text:): pressed, the composer writes the text and sends " \
+          "it through its own gate; submit: false only writes it. Never reach into the composer's controller " \
+          "or set the field's value from page script.",
           "webmcp: \"name\" lets an in-page agent write the text, send and stop through the composer's own " \
           "gate; leave it off unless the page means an agent to speak for the person.",
           "name: is the message's param key; label: is the field's accessible name - the placeholder " \
@@ -127,6 +132,9 @@ module Poetry
         option :name, :string, default: "message", doc: "The param key the message text arrives under."
         option :value, :string, doc: "A draft to open with, rendered as the field's content."
         option :placeholder, :string, doc: "Hint text shown while the field is empty - never a substitute for label:."
+        option :autofocus, :boolean, default: false,
+                                     doc: "Puts the caret in the field when the page opens (the native autofocus " \
+                                          "attribute) - for a page that is the conversation, one composer at most."
         option :label, :string, doc: "The field's accessible name (aria-label). Defaults to the locale's \"Message\"."
         option :input_class, :string,
                doc: "Classes merged onto the field - min-h-24 opens it taller, max-h-80 raises the ceiling " \
@@ -467,6 +475,7 @@ module Poetry
             attrs["aria-controls"] = menu_models.each_index.map { |index| menu_list_id(index) }.join(" ")
           end
           attrs["placeholder"] = placeholder if placeholder.present?
+          attrs["autofocus"] = "" if autofocus
           attrs["disabled"] = "" if disabled
           element_attributes(:input, attrs)
         end

@@ -2940,6 +2940,12 @@
     "path": "/components/composer#server-fed-menus"
   },
   {
+    "title": "Suggested prompts",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#suggested-prompts"
+  },
+  {
     "title": "Keys",
     "page": "Composer",
     "section": "components",
@@ -2980,6 +2986,12 @@
     "page": "Composer",
     "section": "components",
     "path": "/components/composer#people-search"
+  },
+  {
+    "title": "Prompts",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#prompts"
   },
   {
     "title": "Running",

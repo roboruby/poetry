@@ -1,0 +1,10 @@
+<%# Suggested prompts: buttons outside the composer that write into it.
+    The first sends its text at once; the second only writes it and
+    leaves the caret after it. %>
+<div class="flex max-w-xl flex-col gap-3 p-4">
+  <div class="flex flex-wrap gap-2">
+    <%= poetry_composer_prompt(composer: "composer-prompts", text: "Summarize the open pull requests") %>
+    <%= poetry_composer_prompt(composer: "composer-prompts", text: "Compare ", submit: false) { "Compare two things…" } %>
+  </div>
+  <%= poetry_composer(id: "composer-prompts", url: "#", placeholder: "Ask anything") %>
+</div>

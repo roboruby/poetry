@@ -168,6 +168,12 @@
       render layout: false
     end
   CODE
+  prompts_source = <<~CODE
+    #{o}= poetry_composer_prompt(composer: "composer", text: "Summarize the open pull requests") #{e}
+    #{o}= poetry_composer_prompt(composer: "composer", text: "Compare ", submit: false) { "Compare two things…" } #{e}
+
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), autofocus: true) #{e}
+  CODE
   job_source = <<~CODE
     # app/jobs/chat_response_job.rb
     class ChatResponseJob < ApplicationJob
@@ -351,6 +357,26 @@
     and a live region says how many suggestions there are. This arrangement passes the automated
     accessibility checks; it has not yet been tested by a person using VoiceOver or NVDA.
   </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="suggested-prompts">Suggested prompts</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    The chips under an empty conversation, a quick reply, a "try again":
+    <code class="text-foreground">poetry_composer_prompt</code> is a button anywhere on the page that
+    names a composer by id. Pressed, the composer writes the prompt's text in place of the draft and
+    sends it, through the same gate a typed message passes, so nothing goes while a reply is running
+    and a draft is never traded for a prompt that could not go.
+    <code class="text-foreground">submit: false</code> only writes the text and puts the caret after
+    it, for a prompt the person finishes. It is a Poetry Button and takes a Button's
+    <code class="text-foreground">variant:</code> and <code class="text-foreground">size:</code>; a
+    block gives a label other than the text.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">autofocus: true</code> on the composer puts the caret in the field
+    when the page opens, for a page that is the conversation.
+  </p>
+  <%= poetry_code_block(code: prompts_source, language: "erb", label: "Two prompts and their composer") %>
 </section>
 
 <section class="flex flex-col gap-3">

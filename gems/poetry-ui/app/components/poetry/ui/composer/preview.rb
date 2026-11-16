@@ -74,6 +74,13 @@ module Poetry
           render_with_template(template: "poetry/ui/composer/server_menu_preview")
         end
 
+        # Suggested prompts: buttons outside the composer that write their
+        # text into it. One sends at once; one only writes, for the person
+        # to finish.
+        def with_prompts
+          render_with_template(template: "poetry/ui/composer/prompts_preview")
+        end
+
         # Enter breaks the line; Cmd/Ctrl+Enter sends.
         def line_breaks
           render_component(id: "composer-lines", url: "#", submit_on_enter: false, input_class: "min-h-24",

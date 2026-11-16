@@ -1,0 +1,21 @@
+<%# Suggested prompts. Each chip names the composer by id. The first two
+    send their text at once, through the composer's own gate: press one
+    while the scripted reply is still arriving and nothing happens. The
+    third only writes its text and leaves the caret after it. %>
+<div class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <%= poetry_message_scroller(id: "composer-prompts-thread", class: "h-72 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "composer-prompts-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Pick a prompt, or write your own." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <div class="flex flex-wrap gap-2">
+    <%= poetry_composer_prompt(composer: "composer-prompts", text: "How does Stop work?") %>
+    <%= poetry_composer_prompt(composer: "composer-prompts", text: "What stays in the field?") %>
+    <%= poetry_composer_prompt(composer: "composer-prompts", text: "Compare ", submit: false) { "Compare…" } %>
+  </div>
+  <%= poetry_composer(id: "composer-prompts", placeholder: "Ask anything",
+                      url: composer_demo_messages_path(composer: "composer-prompts"),
+                      stop_url: composer_demo_stop_path(composer: "composer-prompts")) %>
+</div>
