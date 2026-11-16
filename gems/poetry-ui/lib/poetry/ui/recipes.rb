@@ -36,6 +36,14 @@ module Poetry
                                              "destructive-panel blocks: SettingsController, the composed view, " \
                                              "and a system test. Add `resource :settings, only: :show` to routes.",
                                 dependencies: %w[page-header section-card destructive-panel]
+           ),
+           screen(
+             "screen-chat", title: "Chat screen",
+                            description: "The chat block as a working feature slice: ChatsController (show, " \
+                                         "create, stop) with a stand-in reply where your model goes, the screen " \
+                                         "view, the row partial a message is appended with, and tests. Add " \
+                                         "`resource :chat, only: %i[show create] do post :stop end` to routes.",
+                            dependencies: ["chat"]
            )]
         end
 

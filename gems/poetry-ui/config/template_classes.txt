@@ -39,10 +39,14 @@ grid
 grid-cols-2
 grid-cols-3
 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
+group-has-data-[slot=message-scroller-item]/chat:hidden
+group/chat
 h-14
 h-96
+h-[min(80dvh,44rem)]
 h-px
 inline-block
+inset-0
 inset-x-8
 invisible
 items-center
@@ -57,10 +61,12 @@ max-w-2xl
 max-w-3xl
 max-w-5xl
 max-w-md
+max-w-sm
 max-w-xl
 md:grid-cols-2
 md:grid-cols-3
 md:grid-cols-4
+min-h-0
 min-h-64
 min-h-72
 min-w-0
@@ -88,6 +94,7 @@ relative
 rounded-full
 rounded-lg
 rounded-md
+rounded-xl
 shadow-lg
 shrink-0
 size-8
@@ -101,6 +108,7 @@ tabular-nums
 text-2xl
 text-3xl
 text-base
+text-center
 text-destructive
 text-foreground
 text-left
@@ -111,6 +119,7 @@ text-primary
 text-primary-foreground
 text-sidebar-primary-foreground
 text-sm
+text-xl
 text-xs
 tracking-tight
 transition-[height]

@@ -108,7 +108,7 @@ all nine themes).
   + committed results (judged); `eval/README.md` is the doctrine.
 - `lib/generators/poetry/` — the install surface (installer, per-adapter
   generators, the AGENTS/skills sections) and `block/templates/*.html.erb`,
-  the canonical source of the eight blocks (docs previews render these
+  the canonical source of the nine blocks (docs previews render these
   files per request).
 - `lib/poetry/ui/recipes.rb` — the recipes channel roster: registry
   items projected LIVE from gem-shipped sources

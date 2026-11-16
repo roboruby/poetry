@@ -1,0 +1,18 @@
+<%# locals: (id:, role:, text:) %>
+<%# installed by the poetry `screen-chat` recipe - yours to adapt. One
+    row of the transcript, built as the chat block's sample rows are: the
+    person's words in a bubble at the end, the assistant's flowing from
+    the start. The text is escaped. A reply written in Markdown is yours
+    to render first, inside poetry_typeset. dom_id: gives the row an id
+    to replace as a reply's text grows. %>
+<%= poetry_message_scroller_item(id: id, dom_id: id, anchor: role.to_sym == :user, class: "px-4 py-2") do %>
+  <% if role.to_sym == :user %>
+    <%= poetry_message(align: :end) do %>
+      <%= poetry_bubble { text } %>
+    <% end %>
+  <% else %>
+    <%= poetry_message do %>
+      <%= poetry_bubble(variant: :ghost) { text } %>
+    <% end %>
+  <% end %>
+<% end %>

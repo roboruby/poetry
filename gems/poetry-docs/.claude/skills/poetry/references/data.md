@@ -439,6 +439,7 @@ Class: Poetry::Ui::Typeset::Component - BEM block `poetry-ui-typeset`.
 Content block REQUIRED (the rendered prose HTML) - a blockless call raises.
 - `preset:` (string) - Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables (e.g. "docs").
 - PART `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; components (data-slot) keep their own styles, and not-typeset (class or data attribute) opts a subtree out
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) - never app chrome; poetry components style themselves.
 - RULE: preset: "docs" appends typeset-docs - a preset is a tiny class in the app's own CSS setting --typeset-size/-leading/-flow (and font vars).
 - RULE: Embedded poetry components keep their own styles - the prose rules skip anything with data-slot. Opt a plain-HTML subtree OUT with class: "not-typeset".

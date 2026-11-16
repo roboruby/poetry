@@ -216,6 +216,15 @@
     <code class="text-foreground">409</code> or <code class="text-foreground">422</code>, leaves the
     field as it was.
   </p>
+  <p class="max-w-2xl text-muted-foreground">
+    For the screen around a composer, start from the
+    <%= link_to "chat block", block_path("chat"), class: "text-foreground underline underline-offset-4" %>:
+    a panel, a transcript, a welcome with suggested prompts, and a composer wired to two addresses.
+    <code class="text-foreground">bin/rails g poetry:block chat</code> copies it into your app, and the
+    <code class="text-foreground">screen-chat</code>
+    <%= link_to "recipe", recipes_path, class: "text-foreground underline underline-offset-4" %>
+    adds a controller that answers it, with a stand-in where your model goes.
+  </p>
 </section>
 
 <section class="flex flex-col gap-3">

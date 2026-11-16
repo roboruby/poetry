@@ -990,6 +990,7 @@ group-focus-within/sensitive:invisible
 group-focus-within/sensitive:visible
 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
 group-has-data-[slot=message-footer]/message:-translate-y-8
+group-has-data-[slot=message-scroller-item]/chat:hidden
 group-has-data-horizontal/field:text-balance
 group-hover/menu-item:opacity-100
 group-hover/sensitive:invisible
@@ -1007,6 +1008,7 @@ group/button
 group/calendar
 group/card
 group/card-header
+group/chat
 group/code-block
 group/combobox-content
 group/command-item
@@ -1061,6 +1063,7 @@ h-4
 h-9
 h-96
 h-[calc(100%-1px)]
+h-[min(80dvh,44rem)]
 h-auto
 h-fit
 h-full
@@ -1386,6 +1389,7 @@ text-sidebar-primary-foreground
 text-sm
 text-start
 text-transparent
+text-xl
 text-xs
 top-0
 top-1.5

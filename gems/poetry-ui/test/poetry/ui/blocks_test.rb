@@ -20,7 +20,7 @@ module Poetry
       end
 
       def test_the_shipped_blocks_roster
-        assert_equal %w[action-bar app-shell data-index destructive-panel page-header section-card
+        assert_equal %w[action-bar app-shell chat data-index destructive-panel page-header section-card
                         stepper top-nav],
                      registry_blocks.keys.sort
       end
@@ -91,6 +91,45 @@ module Poetry
         assert_includes source, "group-has-data-[collapsible=icon]/sidebar-wrapper:",
                         "the marker ships only WITH its consumer"
         assert_includes Poetry::Ui::Sidebar::Style.css(:wrapper), "group/sidebar-wrapper"
+      end
+
+      # The chat block is the page half of a contract: a host appends rows
+      # to the transcript and redraws the composer action slot by id, and
+      # the slot is drawn from the status the host passes.
+      def test_the_chat_block_carries_the_ids_the_server_targets
+        source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "chat.html.erb").read
+        idle = BlocksController.render(inline: source, layout: nil)
+        running = BlocksController.render(inline: source, layout: nil,
+                                          locals: { url: "/chat", stop_url: "/chat/stop", status: :running })
+
+        assert_includes idle, %(id="chat-thread-messages")
+        assert_includes idle, %(id="chat-action")
+        refute_includes idle, "data-running"
+        assert_includes running, "data-running"
+        assert_includes running, %(action="/chat")
+        assert_includes running, %(action="/chat/stop")
+      end
+
+      # The welcome shows while the transcript holds no row, by a rule that
+      # reads the rows: the rule ships only with the slot name it reads.
+      def test_the_chat_block_welcome_reads_the_transcript_rows
+        source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "chat.html.erb").read
+
+        assert_includes source, "group-has-data-[slot=message-scroller-item]/chat:hidden"
+        assert_includes BlocksController.render(inline: source, layout: nil), %(data-slot="message-scroller-item")
+      end
+
+      # "New chat" in the sample is a plain link to ?new: the block renders
+      # without its sample rows, so the welcome and its prompts are what a
+      # new conversation shows, with no server code behind it.
+      def test_the_chat_block_opens_on_its_welcome_for_a_new_chat
+        source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "chat.html.erb").read
+        fresh = BlocksController.renderer.new("QUERY_STRING" => "new").render(inline: source, layout: nil)
+
+        refute_includes fresh, %(data-slot="message-scroller-item")
+        assert_includes fresh, %(id="chat-thread-messages")
+        assert_equal 3, fresh.scan(%(data-slot="composer-prompt")).size
+        assert_includes source, %(href: "?new")
       end
 
       def test_served_llms_text_carries_the_blocks_catalog

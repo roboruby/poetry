@@ -666,6 +666,12 @@
     "path": "/recipes#scaffold-templates"
   },
   {
+    "title": "Chat screen",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-chat"
+  },
+  {
     "title": "Data index screen",
     "page": "Recipes",
     "section": "docs",
@@ -7468,6 +7474,36 @@
     "page": "App shell",
     "section": "blocks",
     "path": "/blocks/app-shell#styling"
+  },
+  {
+    "title": "Chat",
+    "page": "Chat",
+    "section": "blocks",
+    "path": "/blocks/chat"
+  },
+  {
+    "title": "Installation",
+    "page": "Chat",
+    "section": "blocks",
+    "path": "/blocks/chat#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Chat",
+    "section": "blocks",
+    "path": "/blocks/chat#default"
+  },
+  {
+    "title": "Orders assistant",
+    "page": "Chat",
+    "section": "blocks",
+    "path": "/blocks/chat#chat-title"
+  },
+  {
+    "title": "Styling",
+    "page": "Chat",
+    "section": "blocks",
+    "path": "/blocks/chat#styling"
   },
   {
     "title": "Data index",

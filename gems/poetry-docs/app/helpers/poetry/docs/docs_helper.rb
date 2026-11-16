@@ -363,6 +363,16 @@ module Poetry
         sidebar_sections_links_value: links.to_json }
     end
 
+    # What a block's preview is rendered with, beyond its own defaults.
+    # The chat block posts to the Composer page's scripted reply, so its
+    # preview sends, streams and stops as a host's would; the ids that
+    # endpoint answers to are the block's own ("chat", "chat-thread").
+    def block_preview_locals(slug)
+      return {} unless slug == "chat"
+
+      { url: composer_demo_messages_path(composer: "chat"), stop_url: composer_demo_stop_path(composer: "chat") }
+    end
+
     # Example/block source panels ride the CodeBlock component: the
     # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
     # every code tab gains the copy affordance.

@@ -921,6 +921,24 @@ module Poetry
       end
     end
 
+    # The chat slice: the controller, its views and both tests land, the
+    # block comes with its locals intact (the screen passes them), and the
+    # routes the slice needs are named at the end of the run.
+    def test_add_screen_chat_installs_the_slice_its_block_and_names_the_routes
+      output = run_generator ["screen-chat"]
+
+      assert_file "app/controllers/chats_controller.rb", /class ChatsController/
+      assert_file "app/views/chats/show.html.erb", %r{render "blocks/chat", url: chat_path, stop_url: stop_chat_path}
+      assert_file "app/views/chats/_message.html.erb", /poetry_message_scroller_item/
+      assert_file "test/controllers/chats_controller_test.rb", /post chat_path/
+      assert_file "test/system/chat_test.rb", /Orders assistant/
+      assert_file "app/views/blocks/_chat.html.erb" do |block|
+        assert_match(/locals: \(url: "#", stop_url: nil, status: :idle\)/, block)
+        assert_match(/poetry_composer\(id: "chat", url: url, status: status, stop_url: stop_url/, block)
+      end
+      assert_match(/Add `resource :chat, only: %i\[show create\] do post :stop end` to routes/, output)
+    end
+
     # The overrides ledger writes `created:` as a bare YAML date; a later
     # add still reads the manifest and keeps the ledger.
     def test_add_keeps_a_dated_overrides_ledger

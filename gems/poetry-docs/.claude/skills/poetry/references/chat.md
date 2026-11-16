@@ -41,6 +41,7 @@ Slots: reactions (The reactions pill overlaid on an edge; label: names the clust
 - PART `bubble` - The message surface root - variant and alignment ride here | states: data-variant=default|secondary|muted|tinted|outline|ghost|destructive (always - the resolved variant); data-align=start|end (always - the resolved align)
 - PART `bubble-content` - The body (<div>, or a <button>/<a> quick reply via tag:) - the content block renders here
 - PART `bubble-reactions` - The reactions pill overlay (role=group, named by label:) | states: data-side (always - which edge the pill overlays (default bottom)); data-align (always - placement along that edge (default end))
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: One Bubble per message; stack a sender's run inside poetry_bubble_group.
 - RULE: Quick replies are tag: :button (with the caller's data-action) or tag: :a + href: - never a click handler on a div.
 - RULE: ghost is for tool output / system text flowing full-width - not a visual preference.
@@ -95,6 +96,7 @@ Class: Poetry::Ui::Composer::Component - BEM block `poetry-ui-composer`.
 - PART `composer-menu-option-description` - Muted text beside the name (description:)
 - PART `composer-references` - The chips' row for chosen references (a chip menu) - filled by the controller, each chip holding its hidden field; hidden while empty | states: data-align=block-start (always - the row sits over the field)
 - PART `composer-reference-template` - The <template> holding one reference chip the controller clones per choice
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING send: `poetry--core--composer` actions holdFocus on pointerdown; targets send
 - WIRING stop: `poetry--core--composer` actions holdFocus on pointerdown, returnFocus on click; targets stop
 - WIRING prompt: `poetry--core--composer-prompt` registers; values composer, text, send (if prompt_writes_only?); actions write on click
@@ -144,6 +146,7 @@ Slots: avatar (The sender's avatar, kept beside the content column - decorative 
 - PART `message-content` - The content column - header, the body block (the Bubbles), footer
 - PART `message-header` - Sender identity line above the bubbles (header slot)
 - PART `message-footer` - Timestamps / delivery state below the bubbles (footer slot - it lifts the avatar)
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: One Message per turn: avatar slot + header/footer slots; the body block holds the Bubbles.
 - RULE: align: :end is the local user's side - set it on the Message, never on the Bubbles inside.
 - RULE: The avatar slot is decorative context by default - pass meaningful sender identity in the header.
@@ -166,6 +169,7 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - PART `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions
 - PART `message-scroller-item` - One transcript row (poetry_message_scroller_item) - the id is how anchoring and Streams find it | states: data-message-id (always - the row's message id); data-scroll-anchor (anchor: true - the turn the controller holds at the reading line)
 - PART `message-scroller-spacer` - Tail spacer faking scroll room below a short anchored turn - hidden at height 0
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING root: `poetry--core--message-scroller` registers; values auto_scroll, default_scroll_position, preserve_scroll_on_prepend, track_visibility
 - WIRING viewport: `poetry--core--message-scroller` targets viewport
 - WIRING content: `poetry--core--message-scroller` targets content
@@ -191,6 +195,7 @@ Slots: steps (One step: the title (positional), optional icon:, description:, st
 - PART `trace-collapsible-trigger` - The disclosure button around the step's line - mirrors aria-expanded
 - PART `trace-collapsible-content` - The detail panel - its height animates over the measured --collapsible-panel-height | states: data-open (the detail is open or entering); data-closed (the detail is closed or animating out (hidden lands after the exit)); data-starting-style (the first painted frame of an entry (controller-written)); data-ending-style (the whole exit, until hidden lands (controller-written))
 - PART `trace-collapsible-content-inner` - The detail itself - indented on the theme's rail
+In blocks: `chat` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING collapsible: `poetry--core--state` registers
 - WIRING collapsible_trigger: `poetry--core--state` actions toggle on click; targets trigger
 - WIRING collapsible_content: `poetry--core--state` targets content

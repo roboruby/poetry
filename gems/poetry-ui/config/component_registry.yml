@@ -13613,6 +13613,39 @@ blocks:
     - overview
     - stats
     - chrome
+  chat:
+    title: Chat
+    description: 'A conversation with an assistant: a titled panel, a transcript that
+      follows the newest message (the person''s bubbles, the assistant''s steps and
+      typeset replies), a welcome with suggested prompts while the transcript is empty,
+      and a composer whose Send the server turns into Stop while a reply runs.'
+    components:
+    - bubble
+    - button
+    - composer
+    - icon
+    - message
+    - message_scroller
+    - trace
+    - typeset
+    template: lib/generators/poetry/block/templates/chat.html.erb
+    keywords:
+    - chat
+    - assistant
+    - conversation
+    - messages
+    - message
+    - ai
+    - agent
+    - copilot
+    - llm
+    - prompt
+    - composer
+    - thread
+    - ask
+    - support
+    - bot
+    - chatbot
   data-index:
     title: Data index
     description: 'A contained records screen: title bar with primary action, search-and-filter

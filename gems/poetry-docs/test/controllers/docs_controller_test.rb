@@ -293,8 +293,49 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2#styling", 1
   end
 
+  # The chat block's preview is live: its composer posts to the Composer
+  # page's scripted reply, whose answers are addressed to the block's own
+  # ids, and the Code tab still shows the block's own defaults.
+  test "the chat block's preview posts to the scripted reply" do
+    get "/blocks/chat"
+
+    assert_response :success
+    # Read, not selected: assert_select fills a "?" in a selector with its
+    # next argument.
+    assert_equal "/components/composer/messages?composer=chat", css_select("form#chat-form").first["action"]
+    assert_equal "/components/composer/stop?composer=chat", css_select("form#chat-stop").first["action"]
+    assert_select "#chat-thread-messages [data-slot=message-scroller-item]", 4
+    assert_select "#chat-action", 1
+    assert_select "[data-slot=composer-prompt]", 3
+
+    get "/examples/blocks/chat"
+
+    assert_response :success
+    assert_equal "/components/composer/messages?composer=chat", css_select("form#chat-form").first["action"]
+  end
+
+  # The block's own "New chat" link, inside the preview's frame: the
+  # sample rows are left out and the welcome is what shows.
+  test "the chat block's preview opens on its welcome for a new chat" do
+    get "/blocks/chat?new"
+
+    assert_response :success
+    assert_select "turbo-frame#chat-preview", 1
+    assert_select "turbo-frame#chat-preview [data-slot=message-scroller-item]", 0
+    assert_select "turbo-frame#chat-preview [data-slot=composer-prompt]", 3
+  end
+
+  test "the scripted reply answers the chat block's ids" do
+    post "/components/composer/messages?composer=chat", params: { message: "Which orders are late?" }
+
+    assert_response :success
+    assert_includes response.body, %(target="chat-thread-messages")
+    assert_includes response.body, %(target="chat-action")
+    assert_includes response.body, "Which orders are late?"
+  end
+
   test "the blocks gallery covers every registry block" do
-    assert_equal %w[action-bar app-shell data-index destructive-panel page-header section-card
+    assert_equal %w[action-bar app-shell chat data-index destructive-panel page-header section-card
                     stepper top-nav],
                  Poetry::Docs::DocsCatalog.blocks.map(&:slug)
 

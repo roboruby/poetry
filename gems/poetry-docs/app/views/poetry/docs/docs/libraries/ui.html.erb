@@ -235,7 +235,7 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="blocks">Blocks and recipes</h2>
       <p>
-        Above the components sit eight blocks, full page sections composed
+        Above the components sit nine blocks, full page sections composed
         from the catalog and installed as editable starting points:
         <%= link_to "app-shell", block_path("app-shell") %>,
         <%= link_to "data-index", block_path("data-index") %>,
@@ -243,11 +243,12 @@
         <%= link_to "section-card", block_path("section-card") %>,
         <%= link_to "destructive-panel", block_path("destructive-panel") %>,
         <%= link_to "stepper", block_path("stepper") %>,
-        <%= link_to "action-bar", block_path("action-bar") %>, and
-        <%= link_to "top-nav", block_path("top-nav") %>.
+        <%= link_to "action-bar", block_path("action-bar") %>,
+        <%= link_to "top-nav", block_path("top-nav") %>, and
+        <%= link_to "chat", block_path("chat") %>.
         <%= link_to "Recipes", recipes_path %> go one step further:
-        multi-file slices like a working data-index screen with its
-        controller and system test, plus the scaffold template set that
+        multi-file slices like a working data-index screen or a chat
+        screen with its controller and tests, plus the scaffold template set that
         makes <code>rails g scaffold</code> itself produce Poetry-composed
         views.
       </p>

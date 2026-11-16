@@ -1,0 +1,9 @@
+<%# installed by the poetry `screen-chat` recipe - yours to adapt. The
+    screen is the chat block with its two addresses: where a message
+    posts and where Stop posts. The block partial is the same source
+    `bin/rails g poetry:block chat` copies in. It opens on its sample
+    conversation, and on its welcome at ?new: put your own messages in
+    the sample's place with
+    render partial: "chats/message", collection: @messages
+    (with no message yet, the block shows its welcome). %>
+<%= render "blocks/chat", url: chat_path, stop_url: stop_chat_path %>

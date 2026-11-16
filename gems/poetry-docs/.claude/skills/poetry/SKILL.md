@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (90 components + 13 chart components + 21 motion effects + 1 island components + 8 blocks). After updating
+Generated from the poetry registry (90 components + 13 chart components + 21 motion effects + 1 island components + 9 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -68,7 +68,7 @@ lines) for its components:
 - **foundations** (`references/foundations.md`): icon, kbd, link, marker, separator
 - **chat** (`references/chat.md`): attachment, bubble, composer, message, message_scroller, trace
 - **layout** (`references/layout.md`): aspect_ratio, resizable, scroll_area
-- **blocks** (`references/blocks.md`): action-bar, app-shell, data-index, destructive-panel, page-header, section-card, stepper, top-nav
+- **blocks** (`references/blocks.md`): action-bar, app-shell, chat, data-index, destructive-panel, page-header, section-card, stepper, top-nav
 - **charts** (`references/charts.md`): adapter_chart, area_chart, bar_chart, composed_chart, container, legend_content, line_chart, pie_chart, radar_chart, radial_bar_chart, scatter_chart, tooltip_content, tooltip_layer
 - **motion** (`references/motion.md`): animated_list, background, confetti, dock, draggable, globe, layout_group, magnetic, marquee, number_ticker, parallax, particles, scramble, scroll_progress, shared_element, spotlight_card, swipe_cards, text_reveal, tilt_card, typewriter, word_rotate
 - **islands** (`references/islands.md`): island
