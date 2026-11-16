@@ -10,6 +10,8 @@ const OPTION = "[role=option]"
 const SPACE = /\s/
 // The count is said once a burst of keystrokes has settled, not per key.
 const STATUS_DEBOUNCE = 100
+// A server-fed menu asks about a word once typing has paused.
+const FETCH_DEBOUNCE = 150
 
 // VoiceOver does not speak the option aria-activedescendant names while
 // focus stays in a text field, so there the option is announced as well.
@@ -31,6 +33,20 @@ const speaksOptions = () => !/Mac|iP(hone|ad|od)/.test(navigator.userAgentData?.
  * and never syntax inside it. An option marked to run takes the typed
  * word out and only reports the choice. Every choice is reported with
  * the choose event.
+ *
+ * A menu with data-src is fed by the server. Its listbox is a Turbo
+ * frame, and the word being typed is asked about at that address
+ * (?q=word, under the menu's data-param) once typing has paused. What
+ * the server answers is shown as it came: the server decides what
+ * matches and in what order. The frame is stamped with the word its
+ * options answer (data-query), so a longer word narrows them here at
+ * once while the server is asked again, and a word they cannot answer
+ * shows no list until the server has. The menu carries data-loading
+ * from the moment a word is to be asked about until its answer lands.
+ * An answer that is an error, or that holds no such frame, leaves the
+ * list as it was: Turbo is kept from writing its own message into the
+ * list, and from making a page visit of an error page that asks for
+ * one, as Rails' own does in development.
  *
  * Arrow keys move the highlight, Enter and Tab choose, and Escape
  * closes the list for the word being typed: it stays closed until the
@@ -57,6 +73,8 @@ export default class ComposerMenuController extends Controller {
   #count = -1
   #pending = null
   #marked = null
+  #markedValue = null
+  #remote = new Map()
 
   /** Takes the announcement surface for this connect. */
   connect() {
@@ -65,8 +83,10 @@ export default class ComposerMenuController extends Controller {
 
   /** Closes an open list so its state never outlives the controller. */
   disconnect() {
+    this.#rest()
     this.#close()
     teardown(this)
+    this.#remote.clear()
     this.#announce = null
   }
 
@@ -86,23 +106,19 @@ export default class ComposerMenuController extends Controller {
 
     if (!context) {
       this.#dismissed = null
+      this.#rest()
       this.#close()
       return
     }
     if (this.#dismissed === context.start) {
+      this.#rest()
       this.#close()
       return
     }
     this.#dismissed = null
     if (this.#same(context)) return
 
-    const shown = this.#filter(context.menu, context.query)
-
-    if (shown.length === 0) {
-      this.#close()
-      return
-    }
-    this.#open(context, shown)
+    this.#present(context)
   }
 
   /**
@@ -138,6 +154,7 @@ export default class ComposerMenuController extends Controller {
         // Consumed: this press closes the list; the next reaches the layer above.
         event.stopPropagation()
         this.#dismissed = this.#active.start
+        this.#rest()
         this.#close()
         break
     }
@@ -179,7 +196,67 @@ export default class ComposerMenuController extends Controller {
 
   /** The field's blur action: a list is open only while the field has focus. */
   blurred() {
+    this.#rest()
     this.#close()
+  }
+
+  /**
+   * A server-fed list's turbo:frame-load action: the server's options
+   * for the word last asked about are in the list. The list is stamped
+   * with that word, and when the reader is still on a word it answers
+   * the list opens on the new options, with the highlight on the option
+   * it was on when that option is still among them.
+   *
+   * @param {CustomEvent} event - dispatched by the menu's own listbox frame
+   */
+  loaded(event) {
+    const menu = this.#fed(event.target)
+
+    if (!menu) return
+
+    const state = this.#state(menu)
+
+    event.target.setAttribute("data-query", state.sent ?? "")
+    if (state.wanted === state.sent) state.wanted = null
+    // A newer word may be waiting its turn: the menu is loading until that one lands.
+    if (state.wanted === null) menu.removeAttribute("data-loading")
+    this.#refresh(menu)
+  }
+
+  /**
+   * A server-fed list's turbo:before-fetch-response action: an answer
+   * that is an error is not handed to Turbo. Rails' exception page in
+   * development asks Turbo for a full page visit, which would take the
+   * draft along; any other error page would be written over the
+   * options. The list stays as it was.
+   *
+   * @param {CustomEvent} event - detail.fetchResponse is the answer
+   */
+  answered(event) {
+    if (event.detail?.fetchResponse?.succeeded !== false) return
+
+    const menu = this.#fed(event.target)
+
+    if (!menu) return
+    event.preventDefault()
+    this.#fail(menu)
+  }
+
+  /**
+   * A server-fed list's turbo:frame-missing and turbo:fetch-request-error
+   * action: an answer without the list's frame, or no answer at all. A
+   * missing frame is not handed to Turbo either, which would write
+   * "Content missing" where the options go. The list stays as it was,
+   * and the same word is not asked about again until the word changes.
+   *
+   * @param {CustomEvent} event
+   */
+  failed(event) {
+    const menu = this.#fed(event.target)
+
+    if (!menu) return
+    if (event.type === "turbo:frame-missing") event.preventDefault()
+    this.#fail(menu)
   }
 
   /**
@@ -204,18 +281,32 @@ export default class ComposerMenuController extends Controller {
    * @param {CustomEvent} event - acted on when it is the root's own
    */
   restore(event) {
+    if (event.target !== this.element) return
+
+    // The server's render is back on every list, with its own stamp: a
+    // request made for the render before it answers nothing here.
+    for (const [menu, state] of this.#remote) {
+      state.cancel?.()
+      Object.assign(state, { cancel: null, wanted: null, sent: null, failed: null })
+      menu.removeAttribute("data-loading")
+    }
+
     const context = this.#active
 
-    if (event.target !== this.element || !context) return
+    if (!context) {
+      // A word still waiting on the server is asked about again.
+      if (document.activeElement === this.inputTarget) this.track()
+      return
+    }
 
-    const shown = this.#filter(context.menu, context.query)
+    const shown = this.#options(context)
 
     if (shown.length === 0) {
       this.#close()
       return
     }
     this.#show(context.menu)
-    this.#highlight(shown.find((option) => option.id === this.#marked) ?? shown[0], false)
+    this.#highlight(this.#again(context.menu, shown) ?? shown[0], false)
   }
 
   /**
@@ -293,27 +384,212 @@ export default class ComposerMenuController extends Controller {
   }
 
   /**
-   * Shows the options that match the query, best first, and hides the
-   * rest.
+   * Opens the context's list on the options that answer its word, or
+   * closes whichever list is open when there are none.
+   *
+   * @param {{ menu: Element, start: number, query: string }} context
+   */
+  #present(context) {
+    const shown = this.#options(context)
+
+    if (shown.length === 0) {
+      this.#close()
+      return
+    }
+    this.#open(context, shown)
+  }
+
+  /**
+   * The options that answer the context's word, shown and in order. A
+   * menu the server rendered whole is filtered and ranked here. A
+   * server-fed menu shows what the server answered for this word as it
+   * came, narrows what it answered for a shorter word until it answers
+   * again, and has nothing to show for a word its options cannot
+   * answer. Any word but the one the list is stamped with is asked
+   * about.
+   *
+   * @param {{ menu: Element, query: string }} context
+   * @returns {Element[]}
+   */
+  #options({ menu, query }) {
+    const frame = this.#frame(menu)
+
+    if (!frame) return this.#filter(menu, query, true)
+
+    const loaded = frame.getAttribute("data-query")
+
+    if (loaded !== query) this.#request(menu, frame, query)
+    if (loaded === null || !query.startsWith(loaded)) return []
+
+    return this.#filter(menu, loaded === query ? "" : query, false)
+  }
+
+  /**
+   * Shows the options that match the query and hides the rest. Ranked,
+   * the shown options are moved best first; unranked, they keep the
+   * order the server gave them.
    *
    * @param {Element} menu
    * @param {string} query
+   * @param {boolean} ranked
    * @returns {Element[]} the options shown, in order
    */
-  #filter(menu, query) {
+  #filter(menu, query, ranked) {
     const list = menu.querySelector("[role=listbox]") ?? menu
     const scored = Array.from(menu.querySelectorAll(OPTION)).map((option, index) => ({
       option, index, score: scoreItem(option, query)
     }))
     const shown = scored.filter((entry) => entry.score !== SCORE_HIDDEN)
-      .sort((a, b) => b.score - a.score || a.index - b.index)
 
+    if (ranked) shown.sort((a, b) => b.score - a.score || a.index - b.index)
     for (const entry of scored) entry.option.hidden = entry.score === SCORE_HIDDEN
     // Best first: the option Enter would choose is the closest match.
-    for (const entry of shown) list.append(entry.option)
+    if (ranked) for (const entry of shown) list.append(entry.option)
     list.scrollTop = 0
 
     return shown.map((entry) => entry.option)
+  }
+
+  /**
+   * A server-fed menu's listbox frame; null for a menu the server
+   * rendered whole.
+   *
+   * @param {Element} menu
+   * @returns {Element | null}
+   */
+  #frame(menu) {
+    return menu.hasAttribute("data-src") ? menu.querySelector("[role=listbox]") : null
+  }
+
+  /**
+   * The server-fed menu whose listbox frame this is; null for any other
+   * element, so a frame an option happens to hold is never taken for it.
+   *
+   * @param {EventTarget} frame
+   * @returns {Element | null}
+   */
+  #fed(frame) {
+    return this.menuTargets.find((menu) => this.#frame(menu) === frame) ?? null
+  }
+
+  /**
+   * What is known of a server-fed menu's requests: the word waiting to
+   * be asked about or on its way (wanted), the word last sent (sent),
+   * the word the server failed to answer (failed), and the wait before
+   * the next request (cancel).
+   *
+   * @param {Element} menu
+   * @returns {{ wanted: string | null, sent: string | null, failed: string | null, cancel: Function | null }}
+   */
+  #state(menu) {
+    if (!this.#remote.has(menu)) this.#remote.set(menu, { wanted: null, sent: null, failed: null, cancel: null })
+
+    return this.#remote.get(menu)
+  }
+
+  /**
+   * Asks the server about a word once typing has paused. A word already
+   * asked about, or one the server just failed to answer, is not asked
+   * about again.
+   *
+   * @param {Element} menu
+   * @param {Element} frame
+   * @param {string} query
+   */
+  #request(menu, frame, query) {
+    const state = this.#state(menu)
+
+    if (state.wanted === query || state.failed === query) return
+
+    state.wanted = query
+    state.failed = null
+    menu.setAttribute("data-loading", "")
+    state.cancel?.()
+    state.cancel = useTimeout(this, () => {
+      state.cancel = null
+      this.#fetch(menu, frame, query)
+    }, FETCH_DEBOUNCE)
+  }
+
+  /**
+   * Points the frame at the menu's address with the word in its query.
+   * Turbo makes the request, and drops one still on its way. An address
+   * the frame already holds is loaded again.
+   *
+   * @param {Element} menu
+   * @param {Element} frame
+   * @param {string} query
+   */
+  #fetch(menu, frame, query) {
+    const url = new URL(menu.getAttribute("data-src"), document.baseURI)
+
+    url.searchParams.set(menu.getAttribute("data-param") || "q", query)
+    this.#state(menu).sent = query
+    if (frame.getAttribute("src") === url.href && typeof frame.reload === "function") frame.reload()
+    else frame.setAttribute("src", url.href)
+  }
+
+  /**
+   * Records that the server did not answer the word last sent.
+   *
+   * @param {Element} menu
+   */
+  #fail(menu) {
+    const state = this.#state(menu)
+
+    state.failed = state.sent
+    state.wanted = null
+    menu.removeAttribute("data-loading")
+  }
+
+  /** Drops every request still waiting to be sent: the word it was for is gone. */
+  #rest() {
+    for (const [menu, state] of this.#remote) {
+      state.cancel?.()
+      state.cancel = null
+      state.wanted = null
+      menu.removeAttribute("data-loading")
+    }
+  }
+
+  /**
+   * Shows a server-fed menu's new options when the reader is still in
+   * the field, on a word that opens this menu.
+   *
+   * @param {Element} menu
+   */
+  #refresh(menu) {
+    const context = this.#context()
+
+    if (!context || context.menu !== menu || this.#dismissed === context.start) return
+    if (document.activeElement !== this.inputTarget) return
+
+    // Read before the list opens again, which moves the highlight to the top.
+    const marked = this.#active?.menu === menu ? { id: this.#marked, value: this.#markedValue } : null
+
+    this.#present(context)
+    if (!marked || !this.#active) return
+
+    const again = this.#again(menu, this.#shown(), marked)
+
+    if (again) this.#highlight(again, false)
+  }
+
+  /**
+   * The option the highlight was last on, among those shown: by its id
+   * in a menu the server rendered whole, by its value in a server-fed
+   * one, whose ids count positions in an answer.
+   *
+   * @param {Element} menu
+   * @param {Element[]} shown
+   * @param {{ id: string | null, value: string | null }} [marked] - the highlight as it was; as it is now by default
+   * @returns {Element | null}
+   */
+  #again(menu, shown, marked = { id: this.#marked, value: this.#markedValue }) {
+    if (!this.#frame(menu)) return shown.find((option) => option.id === marked.id) ?? null
+    if (marked.value === null) return null
+
+    return shown.find((option) => option.getAttribute("data-value") === marked.value) ?? null
   }
 
   /**
@@ -367,6 +643,7 @@ export default class ComposerMenuController extends Controller {
     for (const menu of this.menuTargets) this.#hide(menu)
     this.#active = null
     this.#marked = null
+    this.#markedValue = null
     this.#count = -1
     // A count still waiting to be said is for a list that is gone.
     this.#pending?.()
@@ -431,6 +708,7 @@ export default class ComposerMenuController extends Controller {
     option.setAttribute("data-highlighted", "")
     option.setAttribute("aria-selected", "true")
     this.#marked = option.id
+    this.#markedValue = option.getAttribute("data-value")
     this.inputTarget.setAttribute("aria-activedescendant", option.id)
     option.scrollIntoView?.({ block: "nearest" })
     if (spoken && !speaksOptions()) this.#announce?.(option.getAttribute("data-label") ?? option.textContent.trim())
@@ -464,6 +742,7 @@ export default class ComposerMenuController extends Controller {
 
     // A word taken out from between two spaces takes one of them along.
     if (text === "" && SPACE.test(field.value[end] ?? "") && (start === 0 || SPACE.test(field.value[start - 1]))) end += 1
+    this.#rest()
     this.#close()
     field.setRangeText(text, start, end, "end")
     // A REAL input event: the composer's emptiness and a host's own

@@ -473,7 +473,7 @@
     }
   },
   "poetry--core--composer-menu": {
-    "doc": "The Composer's menus: lists the server rendered that open over the composer while the word at the caret starts with a menu's trigger (\"@\", \"/\"), filter as the word grows, and put the chosen option into the message. The field stays a plain textarea and keeps focus throughout: the open list is named by aria-controls, the highlighted option by aria-activedescendant, and a live region says how many suggestions there are, because a textarea takes no expanded state.\n\nWhat a choice does is the menu's to say. A text menu replaces the typed word with the option's text (\"@ana \"). A chip menu takes the typed word out and adds a chip beside the field with a hidden field for the server, so the reference is context for the whole message and never syntax inside it. An option marked to run takes the typed word out and only reports the choice. Every choice is reported with the choose event.\n\nArrow keys move the highlight, Enter and Tab choose, and Escape closes the list for the word being typed: it stays closed until the caret leaves that word. A key this controller takes is claimed (preventDefault), which is how the composer controller beside it knows an Enter was a choice and not a send.",
+    "doc": "The Composer's menus: lists the server rendered that open over the composer while the word at the caret starts with a menu's trigger (\"@\", \"/\"), filter as the word grows, and put the chosen option into the message. The field stays a plain textarea and keeps focus throughout: the open list is named by aria-controls, the highlighted option by aria-activedescendant, and a live region says how many suggestions there are, because a textarea takes no expanded state.\n\nWhat a choice does is the menu's to say. A text menu replaces the typed word with the option's text (\"@ana \"). A chip menu takes the typed word out and adds a chip beside the field with a hidden field for the server, so the reference is context for the whole message and never syntax inside it. An option marked to run takes the typed word out and only reports the choice. Every choice is reported with the choose event.\n\nA menu with data-src is fed by the server. Its listbox is a Turbo frame, and the word being typed is asked about at that address (?q=word, under the menu's data-param) once typing has paused. What the server answers is shown as it came: the server decides what matches and in what order. The frame is stamped with the word its options answer (data-query), so a longer word narrows them here at once while the server is asked again, and a word they cannot answer shows no list until the server has. The menu carries data-loading from the moment a word is to be asked about until its answer lands. An answer that is an error, or that holds no such frame, leaves the list as it was: Turbo is kept from writing its own message into the list, and from making a page visit of an error page that asks for one, as Rails' own does in development.\n\nArrow keys move the highlight, Enter and Tab choose, and Escape closes the list for the word being typed: it stays closed until the caret leaves that word. A key this controller takes is claimed (preventDefault), which is how the composer controller beside it knows an Enter was a choice and not a send.",
     "targets": [
       "chips",
       "input",
@@ -489,12 +489,15 @@
     },
     "classes": [],
     "methods": [
+      "answered",
       "blurred",
       "connect",
       "disconnect",
+      "failed",
       "hold",
       "keep",
       "keydown",
+      "loaded",
       "pick",
       "point",
       "remove",
@@ -506,12 +509,15 @@
       "poetry:composer-menu:choose"
     ],
     "method_docs": {
+      "answered": "A server-fed list's turbo:before-fetch-response action: an answer that is an error is not handed to Turbo. Rails' exception page in development asks Turbo for a full page visit, which would take the draft along; any other error page would be written over the options. The list stays as it was.",
       "blurred": "The field's blur action: a list is open only while the field has focus.",
       "connect": "Takes the announcement surface for this connect.",
       "disconnect": "Closes an open list so its state never outlives the controller.",
+      "failed": "A server-fed list's turbo:frame-missing and turbo:fetch-request-error action: an answer without the list's frame, or no answer at all. A missing frame is not handed to Turbo either, which would write \"Content missing\" where the options go. The list stays as it was, and the same word is not asked about again until the word changes.",
       "hold": "A list's pointerdown action: a press never takes focus from the field, so the list stays open under it and the on-screen keyboard stays up.",
       "keep": "The chips' row's turbo:before-morph-element action: the chips and their hidden fields are the client's, and the server renders the row empty. A morph that reached it would drop what the reader chose, so the row is left as it is.",
       "keydown": "The field's keydown action, ahead of the composer's own: while a list is open the arrows move its highlight, Enter and Tab choose the highlighted option and Escape dismisses the list. Each of those keys is claimed. Keys held with a modifier, and keys that belong to an input-method composition, are left alone.",
+      "loaded": "A server-fed list's turbo:frame-load action: the server's options for the word last asked about are in the list. The list is stamped with that word, and when the reader is still on a word it answers the list opens on the new options, with the highlight on the option it was on when that option is still among them.",
       "pick": "A list's click action: chooses the option under it. A click and not a press, so a finger that scrolls the list chooses nothing.",
       "point": "A list's pointermove action: the highlight follows the pointer.",
       "remove": "A chip's remove action: the reference and its hidden field leave the message, and focus goes to the field.",

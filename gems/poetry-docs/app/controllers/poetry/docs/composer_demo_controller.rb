@@ -14,6 +14,10 @@
 # which the reader's row shows, and are not kept; a request larger than
 # the examples' own limits allow is refused before it is read. The values
 # a chip menu posted are shown the same way, as the server received them.
+#
+# A server-fed menu asks `people` about the word being typed. It answers
+# from a fixed directory, a handful of rows at most, names that start with
+# the word ahead of the rest.
 module Poetry
   module Docs
     class ComposerDemoController < ApplicationController
@@ -31,6 +35,21 @@ module Poetry
       # leaves room for them (the examples allow three files of 1 MB).
       MAX_FILES = 3
       MAX_REQUEST_BYTES = 4.megabytes
+      # The directory a server-fed menu searches, and the most rows one
+      # answer holds. The names are invented.
+      TEAMS = %w[Design Engineering Research Support Sales Finance Legal Operations].freeze
+      DIRECTORY = [
+        "Ana Diaz", "Jordan Lee", "Priya Shah", "Sam Okafor", "Mara Voss", "Marco Reyes", "Maya Lindqvist",
+        "Malik Osei", "Noor Haddad", "Nina Petrov", "Omar Farouk", "Olivia Brandt", "Pablo Santos",
+        "Quinn Abara", "Rosa Park", "Rob Lin", "Robin Vale", "Ravi Menon", "Sara Koenig", "Sofia Ricci",
+        "Tariq Aziz", "Tessa Moreau", "Uma Krishnan", "Victor Hale", "Wanjiru Kamau", "Xavier Roche",
+        "Yara Nasser", "Yuki Tanaka", "Zoe Albrecht", "Aiko Mori", "Ben Achebe", "Carla Mendes",
+        "Dmitri Volkov", "Elena Fuentes", "Farah Qureshi", "Gus Halloran", "Hana Sato", "Idris Bello",
+        "Jules Fontaine", "Kemi Adeyemi"
+      ].each_with_index.map do |name, index|
+        { name: name, handle: name.split.first.downcase, team: TEAMS[index % TEAMS.size] }
+      end.freeze
+      MAX_PEOPLE = 8
 
       # POST: a message, with or without files.
       def create
@@ -49,6 +68,18 @@ module Poetry
           turbo.append(composer, source_tag(reply)),
           action(:running)
         )
+      end
+
+      # GET: the people a server-fed menu shows for the word being typed.
+      # A name that starts with the word comes first, then a name or a
+      # team that holds it. The page never holds the teams, so a match by
+      # one shows the list is the server's answer.
+      def people
+        word = params[:q].to_s.strip.downcase.first(40)
+        leading, rest = DIRECTORY.select { |person| "#{person[:name]} #{person[:team]}".downcase.include?(word) }
+                                 .partition { |person| person[:name].downcase.start_with?(word) }
+        @people = (leading + rest).first(MAX_PEOPLE)
+        render layout: false
       end
 
       # POST: Stop.

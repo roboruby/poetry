@@ -15,7 +15,69 @@ class ComposerDemoTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'id="composer-demo-action"'
     assert_includes response.body, "/components/composer/messages?composer=composer-demo"
     assert_includes response.body, "/components/composer/stop?composer=composer-demo"
-    %w[state ordering stop files mentions keys].each { |anchor| assert_includes response.body, %(id="#{anchor}") }
+    %w[state ordering stop files mentions server-fed-menus keys].each do |anchor|
+      assert_includes response.body, %(id="#{anchor}")
+    end
+  end
+
+  test "the page's server-fed example names the people endpoint and renders no person" do
+    get "/components/composer"
+
+    menu = Nokogiri::HTML5(response.body).at_css("#composer-people [data-slot=composer-menu]")
+    list = menu.at_css("[role=listbox]")
+
+    assert_equal "/components/composer/people", menu["data-src"]
+    assert_equal "q", menu["data-param"]
+    assert_equal "turbo-frame", list.name
+    assert_empty list.element_children
+  end
+
+  def people(word, frame: "composer-people-menu-0")
+    get "/components/composer/people", params: { q: word }, headers: { "Turbo-Frame" => frame }
+
+    assert_response :success
+    Nokogiri::HTML5.fragment(response.body)
+  end
+
+  test "the people endpoint answers in the frame that asked, with no layout around it" do
+    answer = people("ro")
+    frame = answer.at_css("turbo-frame")
+
+    assert_equal "composer-people-menu-0", frame["id"]
+    assert_equal [ frame ], answer.element_children.to_a, "the frame is the whole answer"
+    assert_equal %w[composer-people-menu-0-option-0 composer-people-menu-0-option-1],
+                 frame.css("[role=option]").first(2).pluck("id")
+    assert(frame.css("[role=option]").all? { |option| option.at_css("svg") })
+  end
+
+  test "names that start with the word come first, then names and teams that hold it" do
+    labels = people("ro").css("[role=option]").pluck("data-label")
+
+    assert_equal [ "Rosa Park", "Rob Lin", "Robin Vale" ], labels.first(3)
+    assert_includes labels, "Omar Farouk", "a name that holds the word follows"
+    assert_equal %w[rosa rob robin], people("ro").css("[role=option]").first(3).pluck("data-value")
+  end
+
+  test "a team matches, though the page never holds one" do
+    design = people("design").css("[role=option]")
+
+    assert_predicate design, :any?
+    assert(design.all? { |option| option.at_css("[data-slot=composer-menu-option-description]").text == "Design" })
+    assert(design.none? { |option| option["data-label"].downcase.include?("design") })
+  end
+
+  test "an answer holds eight rows at most, and none for a word nobody answers to" do
+    assert_equal 8, people("").css("[role=option]").size
+    assert_equal 8, people("a").css("[role=option]").size
+    assert_empty people("zzzz").css("[role=option]")
+    assert_equal "composer-people-menu-0", people("zzzz").at_css("turbo-frame")["id"]
+  end
+
+  test "the word is the reader's: markup in it matches nobody and is never echoed" do
+    answer = people("<script>alert(1)</script>")
+
+    assert_empty answer.css("[role=option]")
+    refute_includes response.body, "<script>"
   end
 
   test "a message draws Stop, appends both rows and hands the page the reply's source" do

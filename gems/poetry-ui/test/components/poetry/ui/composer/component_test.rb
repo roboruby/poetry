@@ -451,7 +451,118 @@ module Poetry
           assert_nil people["data-name"]
           assert_equal "context[]", files["data-name"]
           assert_equal "menu", commands["data-#{MENU}-target"]
-          assert_equal "pointerdown->#{MENU}#hold click->#{MENU}#pick pointermove->#{MENU}#point", people["data-action"]
+          assert_equal "pointerdown->#{MENU}#hold click->#{MENU}#pick pointermove->#{MENU}#point " \
+                       "turbo:frame-load->#{MENU}#loaded turbo:before-fetch-response->#{MENU}#answered " \
+                       "turbo:frame-missing->#{MENU}#failed turbo:fetch-request-error->#{MENU}#failed",
+                       people["data-action"]
+          assert(menus.none? { |menu| menu.key?("data-src") || menu.key?("data-param") })
+        end
+
+        def render_with_a_server_menu(param: "q", &)
+          render_composer do |composer|
+            composer.with_menu(trigger: "@", label: "People", icon: :user, src: "/people/mentions?team=7",
+                               param: param, &)
+            composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu|
+              menu.with_item(label: "summarize")
+            end
+          end
+        end
+
+        def test_a_server_fed_menu_names_its_address_and_its_listbox_is_a_turbo_frame
+          composer = render_with_a_server_menu
+          people, commands = composer.css("[data-slot=composer-menu]").to_a
+          list = people.at_css("[role=listbox]")
+
+          assert_equal "/people/mentions?team=7", people["data-src"]
+          assert_equal "q", people["data-param"]
+          assert_equal "turbo-frame", list.name
+          assert_equal "composer-menu-0", list["id"]
+          assert_equal "People", list["aria-label"]
+          assert_includes list["class"].split, "block", "a frame is an inline box until told otherwise"
+          assert_empty list.element_children
+          refute list.key?("data-query"), "nothing rendered answers no word yet"
+          refute list.key?("src"), "the controller points the frame; the page never fetches at load"
+          assert_equal "div", commands.at_css("[role=listbox]").name
+          refute commands.key?("data-src")
+          assert_equal "composer-menu-0 composer-menu-1", composer.at_css("textarea")["aria-controls"]
+        end
+
+        def test_options_rendered_in_a_server_fed_menu_answer_the_bare_trigger
+          composer = render_with_a_server_menu { |menu| menu.with_item(value: "ana", label: "Ana Diaz") }
+          list = composer.at_css("#composer-menu-0")
+
+          assert_equal "", list["data-query"]
+          assert_equal %w[composer-menu-0-option-0], list.element_children.pluck("id")
+          assert list.at_css("[role=option] svg"), "the menu's icon leads the option"
+        end
+
+        def test_a_server_fed_menu_needs_a_query_key
+          menu = render_with_a_server_menu(param: "term").at_css("[data-slot=composer-menu]")
+
+          assert_equal "term", menu["data-param"]
+
+          ["", "two words"].each do |param|
+            error = assert_raises(ArgumentError) { render_with_a_server_menu(param: param) }
+
+            assert_match(/param:/, error.message)
+          end
+        end
+
+        # frame: is the Turbo-Frame header the request carries; nil is a
+        # request no frame made (the test request outlives one render).
+        def answer(frame: nil, **, &)
+          vc_test_request.headers["Turbo-Frame"] = frame
+          Nokogiri::HTML5.fragment(render_inline(MenuOptions.new(**), &).to_html)
+        end
+
+        def test_the_answer_is_the_frame_that_asked_with_the_options_a_menu_renders
+          frame = answer(frame: "composer-menu-0", icon: :user) do |menu|
+            menu.with_item(value: "ana", label: "Ana <Diaz>", description: "Design", keywords: %w[ux])
+            menu.with_item(value: "jordan", icon: :star)
+          end.at_css("turbo-frame")
+          ana, jordan = frame.element_children.to_a
+          page = render_composer do |composer|
+            composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu|
+              menu.with_item(value: "ana", label: "Ana <Diaz>", description: "Design", keywords: %w[ux])
+            end
+          end.at_css("#composer-menu-0-option-0")
+
+          assert_equal "composer-menu-0", frame["id"]
+          assert_equal %w[id], frame.keys, "the page's frame keeps its role, its name and its classes"
+          assert_equal %w[composer-menu-0-option-0 composer-menu-0-option-1], [ana["id"], jordan["id"]]
+          assert_equal page.to_html, ana.to_html, "an answered option is the option the page renders"
+          assert_equal "Ana <Diaz>", ana.at_css("[data-slot=composer-menu-option-label]").text
+          assert_equal "jordan", jordan["data-label"]
+          assert jordan.at_css("svg"), "an item's own icon"
+        end
+
+        def test_the_answer_takes_an_id_and_falls_back_when_no_frame_asked
+          named = answer(id: "inbox-menu-2", frame: "composer-menu-0") do |menu|
+            menu.with_item(value: "ana")
+          end
+          alone = answer { |menu| menu.with_item(value: "ana") }
+
+          assert_equal "inbox-menu-2", named.at_css("turbo-frame")["id"]
+          assert_equal "inbox-menu-2-option-0", named.at_css("[role=option]")["id"]
+          assert_equal MenuOptions::FALLBACK_ID, alone.at_css("turbo-frame")["id"]
+        end
+
+        def test_an_answer_with_no_matches_is_an_empty_frame_and_an_item_needs_a_value_or_a_label
+          frame = answer(frame: "composer-menu-0").at_css("turbo-frame")
+
+          assert_empty frame.element_children
+          assert_raises(ArgumentError) { answer { |menu| menu.with_item(description: "nobody") } }
+        end
+
+        def test_the_answer_helper_renders_the_frame
+          html = render_erb(<<~ERB)
+            <%= poetry_composer_menu_options(id: "composer-menu-0", icon: :user) do |menu| %>
+              <% menu.with_item(value: "ana", label: "Ana Diaz") %>
+            <% end %>
+          ERB
+          frame = Nokogiri::HTML5.fragment(html).at_css("turbo-frame#composer-menu-0")
+
+          assert_equal %w[ana], frame.css("[role=option]").pluck("data-value")
         end
 
         def test_a_menus_listbox_is_named_and_holds_options_only

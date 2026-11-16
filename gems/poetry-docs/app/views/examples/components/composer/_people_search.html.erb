@@ -1,0 +1,19 @@
+<%# A menu the server feeds. The page renders no person here: type @ and
+    a few letters, and the docs server answers from a directory of forty
+    people, eight at most, names that start with the word first. It also
+    matches a team, which the page never holds: try "@design". A newer
+    word drops the request for an older one. %>
+<div class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <%= poetry_message_scroller(id: "composer-people-thread", class: "h-72 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "composer-people-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Type @ and a few letters of a name, or of a team." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_composer(id: "composer-people", placeholder: "Mention someone with @",
+                      url: composer_demo_messages_path(composer: "composer-people"),
+                      stop_url: composer_demo_stop_path(composer: "composer-people")) do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user, src: composer_demo_people_path) %>
+  <% end %>
+</div>

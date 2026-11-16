@@ -65,6 +65,15 @@ module Poetry
           render_with_template(template: "poetry/ui/composer/menus_preview")
         end
 
+        # A menu the server feeds: its listbox is a Turbo frame, and the
+        # word after "@" is asked about at src: as it is typed. The two
+        # people rendered here answer the bare trigger. The preview host
+        # runs no Turbo, so nothing is fetched and those two are filtered
+        # in place.
+        def with_server_menu
+          render_with_template(template: "poetry/ui/composer/server_menu_preview")
+        end
+
         # Enter breaks the line; Cmd/Ctrl+Enter sends.
         def line_breaks
           render_component(id: "composer-lines", url: "#", submit_on_enter: false, input_class: "min-h-24",

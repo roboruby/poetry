@@ -4,17 +4,14 @@
     With attachments the chips' row sits over the field, the native file
     input and its paperclip lead the footer, and the rejections follow the
     field surface. Menus sit over the composer, outside the form: a
-    listbox holds options and nothing else. %>
+    listbox holds options and nothing else, and a server-fed menu's
+    listbox is the Turbo frame its answers land in. %>
 <%= element_tag(:div, **root_attributes) do %>
   <% menu_models.each_with_index do |menu, index| %>
     <%= element_tag(:div, **menu_attributes(menu)) do %>
-      <%= element_tag(:div, **menu_list_attributes(menu, index)) do %>
+      <%= element_tag(menu_list_tag(menu), **menu_list_attributes(menu, index)) do %>
         <% menu.items.each_with_index do |item, position| %>
-          <%= element_tag(:div, **menu_option_attributes(item, index, position)) do %>
-            <% if item.icon %><%= render Poetry::Ui::Icon::Component.new(name: item.icon) %><% end %>
-            <span data-slot="composer-menu-option-label" class="<%= css(:menu_option_label) %>"><%= item.label %></span>
-            <% if item.description.present? %><span data-slot="composer-menu-option-description" class="<%= css(:menu_option_description) %>"><%= item.description %></span><% end %>
-          <% end %>
+          <%= menu_option_tag(item, menu_list_id(index), position) %>
         <% end %>
       <% end %>
     <% end %>

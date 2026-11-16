@@ -1,0 +1,10 @@
+<%# A server-fed menu: src: is where the word after "@" is asked about.
+    The preview leaves room above the composer, where the menu opens. %>
+<div class="max-w-xl p-4 pt-64">
+  <%= poetry_composer(id: "composer-server-menu", url: "#", placeholder: "Type @ and a name") do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user, src: "/people/mentions") do |menu| %>
+      <% menu.with_item(value: "ana", label: "Ana Diaz", description: "Design") %>
+      <% menu.with_item(value: "jordan", label: "Jordan Lee", description: "Engineering") %>
+    <% end %>
+  <% end %>
+</div>

@@ -3,7 +3,8 @@
 require "tmpdir"
 
 # The shipped interaction testers (lib/poetry/ui/testing) proven against
-# poetry's own preview pages: one method per proof, each driving a
+# poetry's own preview pages (and, for what needs Turbo, the dummy host's
+# composer menu gate): one method per proof, each driving a
 # component through the tester consumers will use and raising on any
 # outcome the dommy tier pins - if a controller contract drifts, the
 # tester (and every consumer test written through it) fails here first.
@@ -23,6 +24,10 @@ class PoetryTesterProofs
     composer_reads_the_status: "composer reads idle, running and stopping from the slot, and presses Stop",
     composer_attaches_files: "composer attaches a file, lists it and removes it",
     composer_chooses_from_menus: "composer chooses a mention by keyboard and a reference by pointer",
+    composer_chooses_from_a_server_fed_menu: "composer chooses from a menu the server feeds: its answer as it " \
+                                             "came, the newest word's, and options the page rendered",
+    composer_keeps_the_page_when_a_menus_server_fails: "composer keeps the page and the draft when a menu's " \
+                                                       "server answers with an error or without the frame",
     registration_guard_passes: "registration guard finds every poetry controller registered",
     registration_guard_names_the_stray: "registration guard names an unregistered poetry controller"
   }.freeze
@@ -216,6 +221,72 @@ class PoetryTesterProofs
 
     composer.remove_reference("Roadmap.md")
     raise "still referenced: #{composer.references.inspect}" unless composer.references.empty?
+  end
+
+  # A menu the server feeds, under real Turbo. A match by an address the
+  # page never holds proves the answer is shown as it came. The word "r"
+  # is answered late: the request for it is dropped when "ro" is asked
+  # about, so the list is the newer word's and stays so. Options the page
+  # rendered answer the bare trigger with no request.
+  def composer_chooses_from_a_server_fed_menu
+    visit("/cgate")
+    composer = Poetry::Ui::Testing::Composer.new(@session.find("#people-composer"), session: @session)
+
+    composer.choose("@pri", "Priya Shah")
+    raise "mention text #{composer.text.inspect}" unless composer.text == "@priya "
+
+    composer.choose("@acme", "Jordan Lee", via: :mouse)
+    raise "text after a match by address #{composer.text.inspect}" unless composer.text == "@priya @jordan "
+
+    composer.write("")
+    field = @session.find("#people-composer textarea")
+    field.send_keys("@r")
+    sleep 0.3
+    field.send_keys("o")
+    newest = composer.options
+    raise "the newer word's answer #{newest.inspect}" unless newest == ["Rosa Park", "Rob Lin"]
+
+    sleep 0.8
+    raise "a dropped answer landed: #{composer.options.inspect}" unless composer.options == newest
+
+    recent = Poetry::Ui::Testing::Composer.new(@session.find("#recent-composer"), session: @session)
+    asked = "performance.getEntriesByType('resource').filter((entry) => entry.name.includes('/cgate/people')).length"
+    requests = -> { @session.evaluate_script(asked) }
+    before = requests.call
+    @session.find("#recent-composer textarea").send_keys("@")
+    raise "rendered options #{recent.options.inspect}" unless recent.options == ["Ana Diaz", "Rob Lin"]
+    raise "the bare trigger asked the server" unless requests.call == before
+
+    recent.write("")
+    recent.choose("@rosa", "Rosa Park")
+    raise "a server's person in a menu with rendered options #{recent.text.inspect}" unless recent.text == "@rosa "
+  end
+
+  # A menu whose server fails. Left to Turbo, an error page that asks for
+  # a full visit (Rails' own, in development) takes the page and the draft
+  # with it, and an answer with no frame puts "Content missing" where the
+  # options go. Neither happens: the page and the draft stay, the list
+  # holds nothing, and no list opens.
+  def composer_keeps_the_page_when_a_menus_server_fails
+    visit("/cgate")
+    composer = Poetry::Ui::Testing::Composer.new(@session.find("#broken-composer"), session: @session)
+    field = @session.find("#broken-composer textarea")
+
+    { "@" => "an error answer", "#" => "an answer without the frame" }.each do |trigger, answer|
+      composer.write("")
+      field.send_keys("#{trigger}ana")
+      @session.assert_no_selector("#broken-composer [data-slot='composer-menu'][data-loading]", visible: :all)
+      sleep 0.3
+      raise "#{answer}: path #{@session.current_path.inspect}" unless @session.current_path == "/cgate"
+      raise "#{answer}: draft #{composer.text.inspect}" unless composer.text == "#{trigger}ana"
+      raise "#{answer} opened a list" if composer.menu_open?
+
+      written = @session.evaluate_script(
+        "Array.from(document.querySelectorAll('#broken-composer [role=listbox]'))" \
+        ".map((list) => list.textContent.trim()).join('')"
+      )
+      raise "#{answer}: Turbo wrote #{written.inspect} into a list" unless written.empty?
+    end
   end
 
   # The registration guard finds nothing missing on a healthy page.

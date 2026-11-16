@@ -35,6 +35,8 @@ module Poetry
         element :menu, "cn-combobox-content cn-menu-translucent absolute inset-x-0 bottom-full z-50 mb-1.5 " \
                        "outline-hidden"
         element :menu_list, "max-h-60"
+        # A server-fed list is a Turbo frame, an inline box until told otherwise.
+        element :menu_frame, "block"
         element :menu_option, "gap-2"
         element :menu_option_label, "min-w-0 truncate"
         element :menu_option_description, "ms-auto min-w-0 shrink truncate ps-2 text-xs text-muted-foreground"

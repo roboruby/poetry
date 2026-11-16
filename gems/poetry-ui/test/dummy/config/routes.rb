@@ -32,6 +32,13 @@ Rails.application.routes.draw do
   get "/mgate" => "morph_state_gate#index"
   post "/mgate" => "morph_state_gate#save"
 
+  # The composer menu gate (rake test:testers): server-fed menus under
+  # real Turbo - permanent for the same reason.
+  get "/cgate" => "composer_menu_gate#index"
+  get "/cgate/people" => "composer_menu_gate#people"
+  get "/cgate/broken" => "composer_menu_gate#broken"
+  get "/cgate/missing" => "composer_menu_gate#missing"
+
   get "/phost/kaminari" => "pagination_host#kaminari_page"
   get "/phost/kaminari_options" => "pagination_host#kaminari_options_page"
   get "/phost/pagy" => "pagination_host#pagy_page"

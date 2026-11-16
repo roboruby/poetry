@@ -7,10 +7,15 @@ module Poetry
       # word being typed starts with a menu's trigger, built with
       # with_menu and each menu's with_item. The server renders every
       # option; the composer-menu controller filters them as the word
-      # grows and puts the chosen one into the message.
+      # grows and puts the chosen one into the message. A menu given src:
+      # is fed by the server instead: its listbox is a Turbo frame, the
+      # controller asks that address about the word being typed, and the
+      # view there answers with poetry_composer_menu_options.
       #
       # @api private
       module Menus
+        include OptionMarkup
+
         # The closed vocabulary for a menu's inserts: (what a choice puts in the message).
         INSERTS = %i[text chip].freeze
         # The closed vocabulary for a menu's at: (where its trigger opens it).
@@ -21,9 +26,10 @@ module Poetry
         # One option of a menu, as with_item collected it.
         Item = Struct.new(:value, :label, :description, :keywords, :icon, :insert, :run, keyword_init: true)
 
-        # One menu, as with_menu collected it, and the builder its block adds options to.
-        Menu = Struct.new(:trigger, :label, :inserts, :name, :at, :icon, :items, keyword_init: true) do
-          # Adds one option to the menu.
+        # What collects options: a menu on the page and a server's answer
+        # alike. The includer holds the items and the icon they default to.
+        module ItemBuilder
+          # Adds one option.
           #
           # @param value [String, nil] what the server receives: the text after the trigger for a text
           #   menu ("ana" for "@ana"), the hidden field's value for a chip menu. Defaults to the label.
@@ -48,6 +54,11 @@ module Poetry
           end
         end
 
+        # One menu, as with_menu collected it, and the builder its block adds options to.
+        Menu = Struct.new(:trigger, :label, :inserts, :name, :at, :icon, :src, :param, :items, keyword_init: true) do
+          include ItemBuilder
+        end
+
         # Adds a menu that opens over the composer while the word at the
         # caret starts with its trigger. Its block adds the options.
         #
@@ -60,11 +71,16 @@ module Poetry
         # @param at [Symbol] where the trigger opens the menu: :word at the start of any word, :start
         #   only on the message's first word (commands)
         # @param icon [Symbol, nil] the icon each option leads with, unless it names its own
+        # @param src [String, nil] an address that answers with the options for the word being typed
+        #   (a view that renders poetry_composer_menu_options). The menu asks it as the word grows and
+        #   shows what it answers, in its order; options added here show for the bare trigger until
+        #   the word is asked about. Needs Turbo on the page.
+        # @param param [String] the query key the typed word arrives under at src: ("q")
         # @yield [menu] the menu, to add options to with with_item
         # @return [self]
-        def with_menu(trigger:, label:, inserts: :text, name: nil, at: :word, icon: nil)
+        def with_menu(trigger:, label:, inserts: :text, name: nil, at: :word, icon: nil, src: nil, param: "q")
           menu = Menu.new(trigger: trigger.to_s, label: label, inserts: inserts, name: name, at: at, icon: icon,
-                          items: [])
+                          src: src.presence, param: param.to_s, items: [])
           validate_menu!(menu)
           yield menu if block_given?
           menu_models << menu
@@ -105,6 +121,8 @@ module Poetry
             "at: must be one of #{POSITIONS.inspect}"
           elsif menu.inserts == :chip && menu.name.blank?
             "inserts: :chip needs name: (the param key its values post under)"
+          elsif menu.src && (menu.param.empty? || menu.param.match?(/\s/))
+            "param: #{menu.param.inspect} must name the query key the typed word arrives under"
           end
         end
 
@@ -123,28 +141,23 @@ module Poetry
             "data-slot" => "composer-menu", "class" => css(:menu), "hidden" => "",
             "data-closed" => "", "data-trigger" => menu.trigger,
             "data-inserts" => menu.inserts.to_s, "data-at" => menu.at.to_s,
-            "data-name" => menu.name
+            "data-name" => menu.name, "data-src" => menu.src, "data-param" => (menu.param if menu.src)
           }.compact)
         end
 
-        # A menu's listbox: named, and holding options only.
-        def menu_list_attributes(menu, index)
-          { "data-slot" => "composer-menu-list", "role" => "listbox", "id" => menu_list_id(index),
-            "aria-label" => menu.label, "class" => classnames(Command::Style.css(:list), css(:menu_list)) }
-        end
+        # A menu's listbox element: a Turbo frame when the server feeds it,
+        # so the answer lands in the list itself.
+        def menu_list_tag(menu) = menu.src ? "turbo-frame" : :div
 
-        # One option: its id for aria-activedescendant, what filtering
-        # matches, and what a choice writes.
-        def menu_option_attributes(item, index, position)
-          attrs = {
-            "data-slot" => "composer-menu-option", "role" => "option",
-            "id" => "#{menu_list_id(index)}-option-#{position}", "aria-selected" => "false",
-            "class" => classnames(Command::Style.css(:item), css(:menu_option)),
-            "data-value" => item.value, "data-label" => item.label, "data-filter-value" => item.label,
-            "data-keywords" => [item.value, *item.keywords].join(" ")
-          }
-          attrs["data-insert"] = item.insert if item.insert
-          attrs["data-run"] = "" if item.run
+        # A menu's listbox: named, and holding options only. A server-fed
+        # list that renders options is stamped as answering the bare
+        # trigger (data-query=""), so they show before any request.
+        def menu_list_attributes(menu, index)
+          attrs = { "data-slot" => "composer-menu-list", "role" => "listbox", "id" => menu_list_id(index),
+                    "aria-label" => menu.label,
+                    "class" => classnames(Command::Style.css(:list), css(:menu_list),
+                                          (css(:menu_frame) if menu.src)) }
+          attrs["data-query"] = "" if menu.src && menu.items.any?
           attrs
         end
 

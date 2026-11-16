@@ -146,7 +146,9 @@ module Poetry
         # Types `typed` at the caret, which opens the menu its trigger
         # belongs to, then chooses the option with that visible name.
         # via: :keyboard moves the highlight with the arrow keys and
-        # presses Enter; :mouse presses the option.
+        # presses Enter; :mouse presses the option. A menu fed by the
+        # server (src:) is waited for: the choice is made from its answer
+        # for the whole of `typed`.
         #
         # @param typed [String] the trigger and, if you like, the start of the option ("@an")
         # @param option [String] the option's visible name ("Ana Diaz")
@@ -155,6 +157,7 @@ module Poetry
         def choose(typed, option, via: :keyboard)
           focus(field)
           field.send_keys(typed)
+          settle_menus
           menu = open_menu
           target = menu.find("[data-slot='composer-menu-option'][data-label='#{option}']")
           case via
@@ -173,10 +176,12 @@ module Poetry
           root.has_selector?("[data-slot='composer-menu'][data-open]", wait: wait)
         end
 
-        # The open menu's options, in the order shown.
+        # The open menu's options, in the order shown. A menu fed by the
+        # server is read once its answer has landed.
         #
         # @return [Array<String>] each option's visible name
         def options
+          settle_menus
           return [] unless menu_open?
 
           open_menu.all("[data-slot='composer-menu-option']", minimum: 0).map { |option| option["data-label"] }
@@ -209,6 +214,13 @@ module Poetry
         # The menu that is open, waited for.
         def open_menu
           root.find("[data-slot='composer-menu'][data-open]")
+        end
+
+        # Waits out a server-fed menu's request: the menu carries
+        # data-loading from the first key until the answer for the last
+        # one lands, and the options are replaced when it does.
+        def settle_menus
+          root.assert_no_selector("[data-slot='composer-menu'][data-loading]", visible: :all)
         end
 
         # Arrows down to the target option, at most once round the list, and presses Enter.

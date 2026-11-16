@@ -1,0 +1,6 @@
+<%# The answer to a server-fed menu: the matches, in the frame that asked. %>
+<%= poetry_composer_menu_options(icon: :user) do |menu| %>
+  <% @people.each do |person| %>
+    <% menu.with_item(value: person[:handle], label: person[:name], description: person[:team]) %>
+  <% end %>
+<% end %>

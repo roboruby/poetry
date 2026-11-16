@@ -2934,6 +2934,12 @@
     "path": "/components/composer#mentions"
   },
   {
+    "title": "A menu the server feeds",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#server-fed-menus"
+  },
+  {
     "title": "Keys",
     "page": "Composer",
     "section": "components",
@@ -2968,6 +2974,12 @@
     "page": "Composer",
     "section": "components",
     "path": "/components/composer#menus"
+  },
+  {
+    "title": "People search",
+    "page": "Composer",
+    "section": "components",
+    "path": "/components/composer#people-search"
   },
   {
     "title": "Running",

@@ -43,7 +43,10 @@ module Poetry
       # "@ana " in the message; a chip menu (inserts: :chip) takes the typed
       # word out and posts the chosen value in a hidden field, with a chip
       # above the field; an item with run: true is only reported to the
-      # page. The field stays a native textarea throughout.
+      # page. The field stays a native textarea throughout. A menu too
+      # large to render with the page (a company directory) takes src:,
+      # an address the composer asks about the word as it is typed; the
+      # view there answers with poetry_composer_menu_options.
       #
       # @example A composer with a people menu and a files menu
       #   render Poetry::Ui::Composer::Component.new(id: "composer", url: chat_messages_path(chat)) do |composer|
@@ -100,6 +103,10 @@ module Poetry
           "insert:), a chip menu (inserts: :chip, name:) posts the chosen values as hidden fields under " \
           "name: and leaves the text clean. Never invent bracket or directive syntax for a reference, and " \
           "look the handle or the value up again on the server.",
+          "A menu too large to render with the page takes src: (an address) and the view there answers " \
+          "with poetry_composer_menu_options and one with_item per match: the server decides what matches " \
+          "and the order, and Turbo carries the request. Never fetch options with hand-written JavaScript, " \
+          "and scope the answer to what the person may see, as with any search endpoint.",
           "Commands: at: :start opens the menu only on the message's first word; insert: \"/summarize \" " \
           "leaves text the server reads from the start of the message, and run: true takes the typed " \
           "word out and only reports the choice (the poetry:composer-menu:choose event).",
@@ -224,12 +231,19 @@ module Poetry
             end
           end
           # A press on a menu holds focus in the field; a click chooses.
+          # A server-fed menu's frame reports here: its load shows the
+          # answer, and an answer that failed is kept from Turbo, which
+          # would write its own message into the list or, for an error
+          # page that asks for it, visit that page.
           on :menu do
             controller :composer_menu do
               target :menu
               action :hold, on: :pointerdown
               action :pick, on: :click
               action :point, on: :pointermove
+              action :loaded, on: :"turbo:frame-load"
+              action :answered, on: :"turbo:before-fetch-response"
+              action :failed, on: %i[turbo:frame-missing turbo:fetch-request-error]
             end
           end
           # The chips are the client's and the server renders their rows
@@ -345,10 +359,19 @@ module Poetry
                                    values: %w[text chip] },
                "data-at" => { condition: "always - where the trigger opens the menu",
                               values: %w[word start] },
-               "data-name" => "name: given - the param key a chip menu's hidden fields post under"
+               "data-name" => "name: given - the param key a chip menu's hidden fields post under",
+               "data-loading" => "a server-fed menu is to ask, or has asked, about the word being typed " \
+                                 "and the answer has not landed (controller-set)",
+               "data-src" => "src: given - the address the menu asks about the word being typed",
+               "data-param" => "src: given - the query key the word arrives under"
              }
         part "composer-menu-list", "The menu's listbox (dom id <id>-menu-<n>, named by label:) - " \
-                                   "holds options only; the field's aria-controls names it"
+                                   "holds options only; the field's aria-controls names it. With src: " \
+                                   "it is the <turbo-frame> the server's answers land in",
+             states: {
+               "data-query" => "a server-fed list holds options - the word they answer (empty for the " \
+                               "bare trigger; controller-set after each answer)"
+             }
         part "composer-menu-option", "One option (role=option) - the field's aria-activedescendant " \
                                      "names the highlighted one",
              states: {

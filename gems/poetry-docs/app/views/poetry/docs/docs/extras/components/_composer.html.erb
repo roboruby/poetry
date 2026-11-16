@@ -148,6 +148,26 @@
       # ...
     end
   CODE
+  server_menu_source = <<~CODE
+    #{o}# The composer: no person is rendered with the page. #{e}
+    #{o} composer.with_menu(trigger: "@", label: "People", icon: :user, src: mentions_chat_path(@chat)) #{e}
+
+    #{o}# app/views/chats/mentions.html.erb #{e}
+    #{o}= poetry_composer_menu_options(icon: :user) do |menu| #{e}
+      #{o} @people.each do |person| #{e}
+        #{o} menu.with_item(value: person.handle, label: person.name, description: person.team) #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+  server_menu_controller_source = <<~CODE
+    # app/controllers/chats_controller.rb
+    def mentions
+      chat = Current.user.chats.find(params[:id])
+      # Only people this chat may mention, a handful of rows, in your order.
+      @people = chat.members.search(params[:q]).limit(8)
+      render layout: false
+    end
+  CODE
   job_source = <<~CODE
     # app/jobs/chat_response_job.rb
     class ChatResponseJob < ApplicationJob
@@ -290,6 +310,33 @@
   </p>
   <%= poetry_code_block(code: menus_view_source, language: "erb", label: "Three menus") %>
   <%= poetry_code_block(code: menus_server_source, language: "ruby", label: "Reading them") %>
+  <h3 class="font-medium" id="server-fed-menus">A menu the server feeds</h3>
+  <p class="max-w-2xl text-muted-foreground">
+    A menu too large to render with the page, such as a company directory, takes
+    <code class="text-foreground">src:</code>. The composer asks that address about the word being
+    typed, <code class="text-foreground">?q=ma</code>, a moment after the typing pauses, and shows what
+    comes back as it came. You decide what matches and in what order, so a match on a team or an
+    address the page never holds works. The view there answers with
+    <code class="text-foreground">poetry_composer_menu_options</code>, which takes the same
+    <code class="text-foreground">with_item</code> a menu does. <code class="text-foreground">param:</code>
+    names a query key other than <code class="text-foreground">q</code>.
+  </p>
+  <%= poetry_code_block(code: server_menu_source, language: "erb", label: "The menu and its answer") %>
+  <%= poetry_code_block(code: server_menu_controller_source, language: "ruby", label: "The search") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Options you render in the menu itself show for the bare trigger with no request, which suits a
+    short list of recent people; the first letter asks the server. While an answer is on its way, a
+    longer word narrows the options already shown, and a newer word drops the request for an older
+    one. Turbo carries the request, so the page needs Turbo, and the answer is the frame the helper
+    renders. An answer that fails leaves the list as it was, and the composer keeps Turbo from putting
+    an error page in its place. While a word waits for its first answer no list is open, so Enter
+    sends the message with the word as it was typed.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Scope the search as you would any other: to the people this person may mention, and to a handful
+    of rows. The menu carries <code class="text-foreground">data-loading</code> while a word waits for
+    its answer, for a style of your own.
+  </p>
   <p class="max-w-2xl text-muted-foreground">
     A command menu usually opens only on the first word,
     <code class="text-foreground">at: :start</code>, so a path in the middle of a sentence does not

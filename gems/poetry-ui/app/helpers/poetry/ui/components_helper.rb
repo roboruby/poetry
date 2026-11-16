@@ -1643,6 +1643,27 @@ module Poetry
         render(Poetry::Ui::Composer::Action.new(**))
       end
 
+      # A server-fed composer menu's answer: the options for the word
+      # being typed, in the Turbo frame that asked. A menu given src:
+      # requests that address with the word (?q=word); the view there
+      # renders this with one with_item per match, in the order the
+      # server ranks them. with_item takes what a menu's own with_item
+      # takes. The frame's id comes from the request, so one view answers
+      # every composer that points at it; id: names it by hand.
+      #
+      # @example The menu, on the page
+      #   composer.with_menu(trigger: "@", label: "People", src: mentions_path)
+      # @example The view at mentions_path
+      #   <%= poetry_composer_menu_options(icon: :user) do |menu| %>
+      #     <% @people.each do |person| %>
+      #       <% menu.with_item(value: person.handle, label: person.name, description: person.title) %>
+      #     <% end %>
+      #   <% end %>
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_menu_options(**, &)
+        render(Poetry::Ui::Composer::MenuOptions.new(**), &)
+      end
+
       # A brief, auto-dismissing notification message.
       #
       # @example An undo toast (persistent because it carries an action)

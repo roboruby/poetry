@@ -7470,7 +7470,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1696
+          "line": 1717
         },
         {
           "name": "poetry_alert",
@@ -7937,7 +7937,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1683
+          "line": 1704
         },
         {
           "name": "poetry_color_scheme_script",
@@ -7954,7 +7954,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1892
+          "line": 1913
         },
         {
           "name": "poetry_combobox",
@@ -7971,7 +7971,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1800
+          "line": 1821
         },
         {
           "name": "poetry_command",
@@ -7988,7 +7988,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1826
+          "line": 1847
         },
         {
           "name": "poetry_command_dialog",
@@ -8005,7 +8005,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1839
+          "line": 1860
         },
         {
           "name": "poetry_composer",
@@ -8046,6 +8046,27 @@
           "line": 1642
         },
         {
+          "name": "poetry_composer_menu_options",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_composer_menu_options(**, &)",
+          "docstring": "A server-fed composer menu's answer: the options for the word\nbeing typed, in the Turbo frame that asked. A menu given src:\nrequests that address with the word (?q=word); the view there\nrenders this with one with_item per match, in the order the\nserver ranks them. with_item takes what a menu's own with_item\ntakes. The frame's id comes from the request, so one view answers\nevery composer that points at it; id: names it by hand.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "The menu, on the page",
+              "text": "composer.with_menu(trigger: \"@\", label: \"People\", src: mentions_path)"
+            },
+            {
+              "title": "The view at mentions_path",
+              "text": "<%= poetry_composer_menu_options(icon: :user) do |menu| %>\n  <% @people.each do |person| %>\n    <% menu.with_item(value: person.handle, label: person.name, description: person.title) %>\n  <% end %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1663
+        },
+        {
           "name": "poetry_context_menu",
           "scope": "instance",
           "group": null,
@@ -8060,7 +8081,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1813
+          "line": 1834
         },
         {
           "name": "poetry_data_table",
@@ -8196,7 +8217,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1770
+          "line": 1791
         },
         {
           "name": "poetry_empty",
@@ -8315,7 +8336,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1757
+          "line": 1778
         },
         {
           "name": "poetry_icon",
@@ -8349,7 +8370,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1871
+          "line": 1892
         },
         {
           "name": "poetry_input",
@@ -8621,7 +8642,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1855
+          "line": 1876
         },
         {
           "name": "poetry_message",
@@ -8876,7 +8897,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1709
+          "line": 1730
         },
         {
           "name": "poetry_progress",
@@ -8995,7 +9016,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1785
+          "line": 1806
         },
         {
           "name": "poetry_sensitive_input",
@@ -9454,7 +9475,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1654
+          "line": 1675
         },
         {
           "name": "poetry_toast_trigger",
@@ -9488,7 +9509,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1670
+          "line": 1691
         },
         {
           "name": "poetry_toggle",
@@ -9556,7 +9577,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1723
+          "line": 1744
         },
         {
           "name": "poetry_tooltip_provider",
@@ -9573,7 +9594,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1738
+          "line": 1759
         },
         {
           "name": "poetry_trace",
@@ -9702,7 +9723,7 @@
       "path": "Poetry::Ui::Composer::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A chat message composer: one form holding a growing textarea, a\ntools row and an action slot that shows Send or Stop. Reach for it\nwherever a person writes to a model or to another person.\n\nThe server holds the running state. Render status: from your own\nrecord, and when it changes redraw the slot alone -\npoetry_composer_action(id:, status:) in a Turbo Stream that replaces\n\"<id>-action\". The form and the field are never replaced, so a draft\ntyped while a reply streams is kept. A Stop button on the page is\nthe whole fact that a reply is running: the controller holds no copy\nof it.\n\nStop is a second small form of its own (stop_url:, a POST), so\nstopping never sends the draft. Enter sends and Shift+Enter breaks\nthe line; an Enter that confirms an input-method composition does\nnot send. Nothing is sent while the field is blank, while a reply\nruns, or while a send is already on its way. When the server accepts\na message the sent text leaves the field; a refused message (any\nanswer that is not a success) stays whole. The field grows with its\ncontent by CSS up to a ceiling, then scrolls. Without JavaScript it\nis a plain form with a submit button.\n\nattachments: true makes files part of the message. A paperclip\nopens the picker, a file dropped on the composer or pasted into the\nfield lands in it, and every file shows as a chip above the field\nthat the reader can remove. The files post with the message under\nattachments_name:, or as Active Storage signed ids with\ndirect_upload:. A message of files alone can be sent, and the chips\nleave when the server accepts the message. Attaching needs\nJavaScript.\n\nwith_menu adds a list that opens over the composer while the word\nbeing typed starts with its trigger: people behind \"@\", commands\nbehind \"/\". The server renders the options and the composer filters\nthem as the word grows; arrows move, Enter and Tab choose, Escape\ncloses. What reaches the server stays plain. A text menu leaves\n\"@ana \" in the message; a chip menu (inserts: :chip) takes the typed\nword out and posts the chosen value in a hidden field, with a chip\nabove the field; an item with run: true is only reported to the\npage. The field stays a native textarea throughout.\n\n**Anatomy** (`data-slot` parts):\n\n- `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here\n- `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight\n- `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside\n- `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling\n- `input-group-addon` - The footer row under the field - the tools (block content) and the action slot\n- `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element\n- `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given\n- `composer-attachments` - The chips' row above the field (attachments:) - one Attachment per file, filled by the controller; hidden while empty\n- `composer-attachments-control` - The hidden native <input type=file> (dom id <id>-attachments) - the files' form value; the paperclip opens its picker\n- `composer-attachment-template` - The <template> holding one Attachment chip the controller clones per file\n- `composer-errors` - The rejections <ul> (role=alert) under the field surface - one line per refused file; hidden until a file is refused\n- `composer-menu` - One menu's popup over the composer (with_menu) - hidden until the word at the caret starts with its trigger\n- `composer-menu-list` - The menu's listbox (dom id <id>-menu-<n>, named by label:) - holds options only; the field's aria-controls names it\n- `composer-menu-option` - One option (role=option) - the field's aria-activedescendant names the highlighted one\n- `composer-menu-option-label` - The option's name\n- `composer-menu-option-description` - Muted text beside the name (description:)\n- `composer-references` - The chips' row for chosen references (a chip menu) - filled by the controller, each chip holding its hidden field; hidden while empty\n- `composer-reference-template` - The <template> holding one reference chip the controller clones per choice",
+      "docstring": "A chat message composer: one form holding a growing textarea, a\ntools row and an action slot that shows Send or Stop. Reach for it\nwherever a person writes to a model or to another person.\n\nThe server holds the running state. Render status: from your own\nrecord, and when it changes redraw the slot alone -\npoetry_composer_action(id:, status:) in a Turbo Stream that replaces\n\"<id>-action\". The form and the field are never replaced, so a draft\ntyped while a reply streams is kept. A Stop button on the page is\nthe whole fact that a reply is running: the controller holds no copy\nof it.\n\nStop is a second small form of its own (stop_url:, a POST), so\nstopping never sends the draft. Enter sends and Shift+Enter breaks\nthe line; an Enter that confirms an input-method composition does\nnot send. Nothing is sent while the field is blank, while a reply\nruns, or while a send is already on its way. When the server accepts\na message the sent text leaves the field; a refused message (any\nanswer that is not a success) stays whole. The field grows with its\ncontent by CSS up to a ceiling, then scrolls. Without JavaScript it\nis a plain form with a submit button.\n\nattachments: true makes files part of the message. A paperclip\nopens the picker, a file dropped on the composer or pasted into the\nfield lands in it, and every file shows as a chip above the field\nthat the reader can remove. The files post with the message under\nattachments_name:, or as Active Storage signed ids with\ndirect_upload:. A message of files alone can be sent, and the chips\nleave when the server accepts the message. Attaching needs\nJavaScript.\n\nwith_menu adds a list that opens over the composer while the word\nbeing typed starts with its trigger: people behind \"@\", commands\nbehind \"/\". The server renders the options and the composer filters\nthem as the word grows; arrows move, Enter and Tab choose, Escape\ncloses. What reaches the server stays plain. A text menu leaves\n\"@ana \" in the message; a chip menu (inserts: :chip) takes the typed\nword out and posts the chosen value in a hidden field, with a chip\nabove the field; an item with run: true is only reported to the\npage. The field stays a native textarea throughout. A menu too\nlarge to render with the page (a company directory) takes src:,\nan address the composer asks about the word as it is typed; the\nview there answers with poetry_composer_menu_options.\n\n**Anatomy** (`data-slot` parts):\n\n- `composer` - The root - holds the message form and the Stop form; the controller and the emptiness state ride here\n- `composer-form` - The message <form> - never replaced. Turbo marks it aria-busy while a send is in flight\n- `composer-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside\n- `input-group-control` - The native <textarea> - InputGroup's control slot (the themes' focus-ring hook); grows with its content by CSS up to a ceiling\n- `input-group-addon` - The footer row under the field - the tools (block content) and the action slot\n- `composer-action` - The slot the server redraws (dom id <id>-action) - holds Send or Stop. poetry_composer_action renders exactly this element\n- `composer-stop-form` - The hidden <form> the Stop button submits (dom id <id>-stop) - rendered when stop_url: is given\n- `composer-attachments` - The chips' row above the field (attachments:) - one Attachment per file, filled by the controller; hidden while empty\n- `composer-attachments-control` - The hidden native <input type=file> (dom id <id>-attachments) - the files' form value; the paperclip opens its picker\n- `composer-attachment-template` - The <template> holding one Attachment chip the controller clones per file\n- `composer-errors` - The rejections <ul> (role=alert) under the field surface - one line per refused file; hidden until a file is refused\n- `composer-menu` - One menu's popup over the composer (with_menu) - hidden until the word at the caret starts with its trigger\n- `composer-menu-list` - The menu's listbox (dom id <id>-menu-<n>, named by label:) - holds options only; the field's aria-controls names it. With src: it is the <turbo-frame> the server's answers land in\n- `composer-menu-option` - One option (role=option) - the field's aria-activedescendant names the highlighted one\n- `composer-menu-option-label` - The option's name\n- `composer-menu-option-description` - Muted text beside the name (description:)\n- `composer-references` - The chips' row for chosen references (a chip menu) - filled by the controller, each chip holding its hidden field; hidden while empty\n- `composer-reference-template` - The <template> holding one reference chip the controller clones per choice",
       "examples": [
         {
           "title": "A composer with a people menu and a files menu",
@@ -9730,7 +9751,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 149
+          "line": 156
         },
         {
           "name": "attach_label",
@@ -9747,7 +9768,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 161
+          "line": 168
         },
         {
           "name": "attachments",
@@ -9764,7 +9785,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 143
+          "line": 150
         },
         {
           "name": "attachments_name",
@@ -9781,7 +9802,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 146
+          "line": 153
         },
         {
           "name": "composer_id",
@@ -9798,7 +9819,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 397
+          "line": 420
         },
         {
           "name": "direct_upload",
@@ -9815,7 +9836,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 153
+          "line": 160
         },
         {
           "name": "direct_upload_url",
@@ -9832,7 +9853,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 156
+          "line": 163
         },
         {
           "name": "disabled",
@@ -9849,7 +9870,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 139
+          "line": 146
         },
         {
           "name": "http_method",
@@ -9866,7 +9887,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 117
+          "line": 124
         },
         {
           "name": "id",
@@ -9883,7 +9904,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 112
+          "line": 119
         },
         {
           "name": "input_class",
@@ -9900,7 +9921,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 124
+          "line": 131
         },
         {
           "name": "label",
@@ -9917,7 +9938,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 123
+          "line": 130
         },
         {
           "name": "max_files",
@@ -9934,7 +9955,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 152
+          "line": 159
         },
         {
           "name": "max_size",
@@ -9951,7 +9972,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "name",
@@ -9968,7 +9989,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 120
+          "line": 127
         },
         {
           "name": "placeholder",
@@ -9985,7 +10006,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 122
+          "line": 129
         },
         {
           "name": "root_attributes",
@@ -9997,7 +10018,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 403
+          "line": 426
         },
         {
           "name": "send_label",
@@ -10014,7 +10035,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 140
+          "line": 147
         },
         {
           "name": "status",
@@ -10031,7 +10052,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 127
+          "line": 134
         },
         {
           "name": "stop_label",
@@ -10048,7 +10069,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 142
+          "line": 149
         },
         {
           "name": "stop_url",
@@ -10065,7 +10086,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 130
+          "line": 137
         },
         {
           "name": "submit_on_enter",
@@ -10082,7 +10103,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 136
+          "line": 143
         },
         {
           "name": "upload",
@@ -10099,7 +10120,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 158
+          "line": 165
         },
         {
           "name": "url",
@@ -10116,7 +10137,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 116
+          "line": 123
         },
         {
           "name": "value",
@@ -10133,7 +10154,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 121
+          "line": 128
         },
         {
           "name": "version",
@@ -10150,7 +10171,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/composer/component.rb",
-          "line": 133
+          "line": 140
         }
       ],
       "constants": [
@@ -22637,7 +22658,7 @@
           "scope": "instance",
           "group": null,
           "signature": "choose(typed, option, via: :keyboard)",
-          "docstring": "Types `typed` at the caret, which opens the menu its trigger\nbelongs to, then chooses the option with that visible name.\nvia: :keyboard moves the highlight with the arrow keys and\npresses Enter; :mouse presses the option.",
+          "docstring": "Types `typed` at the caret, which opens the menu its trigger\nbelongs to, then chooses the option with that visible name.\nvia: :keyboard moves the highlight with the arrow keys and\npresses Enter; :mouse presses the option. A menu fed by the\nserver (src:) is waited for: the choice is made from its answer\nfor the whole of `typed`.",
           "params": [
             {
               "name": "typed",
@@ -22669,7 +22690,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/composer.rb",
-          "line": 155
+          "line": 157
         },
         {
           "name": "empty?",
@@ -22736,14 +22757,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/composer.rb",
-          "line": 172
+          "line": 175
         },
         {
           "name": "options",
           "scope": "instance",
           "group": null,
           "signature": "options",
-          "docstring": "The open menu's options, in the order shown.",
+          "docstring": "The open menu's options, in the order shown. A menu fed by the\nserver is read once its answer has landed.",
           "params": [],
           "return": {
             "types": [
@@ -22753,7 +22774,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/composer.rb",
-          "line": 179
+          "line": 183
         },
         {
           "name": "references",
@@ -22770,7 +22791,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/composer.rb",
-          "line": 188
+          "line": 193
         },
         {
           "name": "remove_attachment",
@@ -22820,7 +22841,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/composer.rb",
-          "line": 196
+          "line": 201
         },
         {
           "name": "running?",

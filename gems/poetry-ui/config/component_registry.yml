@@ -3281,13 +3281,14 @@ components:
     - errors
     - menu
     - menu_list
+    - menu_frame
     - menu_option
     - menu_option_label
     - menu_option_description
     - input
     - action
     - send
-    capsule: ebe011f25597
+    capsule: 2a8aaaac8196
     controllers:
     - identifier: poetry--core--composer
       targets:
@@ -3320,10 +3321,13 @@ components:
       values:
       - messages
       actions:
+      - answered
       - blurred
+      - failed
       - hold
       - keep
       - keydown
+      - loaded
       - pick
       - point
       - remove
@@ -3410,6 +3414,11 @@ components:
       as hidden fields under name: and leaves the text clean. Never invent bracket
       or directive syntax for a reference, and look the handle or the value up again
       on the server.'
+    - 'A menu too large to render with the page takes src: (an address) and the view
+      there answers with poetry_composer_menu_options and one with_item per match:
+      the server decides what matches and the order, and Turbo carries the request.
+      Never fetch options with hand-written JavaScript, and scope the answer to what
+      the person may see, as with any search endpoint.'
     - 'Commands: at: :start opens the menu only on the message''s first word; insert:
       "/summarize " leaves text the server reads from the start of the message, and
       run: true takes the typed word out and only reports the choice (the poetry:composer-menu:choose
@@ -3508,9 +3517,21 @@ components:
       - attr: data-name
         condition: 'name: given - the param key a chip menu''s hidden fields post
           under'
+      - attr: data-loading
+        condition: a server-fed menu is to ask, or has asked, about the word being
+          typed and the answer has not landed (controller-set)
+      - attr: data-src
+        condition: 'src: given - the address the menu asks about the word being typed'
+      - attr: data-param
+        condition: 'src: given - the query key the word arrives under'
     - name: composer-menu-list
-      description: The menu's listbox (dom id <id>-menu-<n>, named by label:) - holds
-        options only; the field's aria-controls names it
+      description: 'The menu''s listbox (dom id <id>-menu-<n>, named by label:) -
+        holds options only; the field''s aria-controls names it. With src: it is the
+        <turbo-frame> the server''s answers land in'
+      states:
+      - attr: data-query
+        condition: a server-fed list holds options - the word they answer (empty for
+          the bare trigger; controller-set after each answer)
     - name: composer-menu-option
       description: One option (role=option) - the field's aria-activedescendant names
         the highlighted one
@@ -3654,6 +3675,14 @@ components:
           'on': click
         - method: point
           'on': pointermove
+        - method: loaded
+          'on': turbo:frame-load
+        - method: answered
+          'on': turbo:before-fetch-response
+        - method: failed
+          'on':
+          - turbo:frame-missing
+          - turbo:fetch-request-error
     - element: references
       controllers:
       - identifier: poetry--core--composer-menu
@@ -13422,6 +13451,7 @@ helpers:
     - name: stop_label
       type: string
       description: the Stop button's accessible name
+  poetry_composer_menu_options: {}
   poetry_id_integrity_script: {}
   poetry_input_group_addon:
     options:
@@ -13700,6 +13730,7 @@ helper_args:
   poetry_command_dialog: 0
   poetry_composer: 0
   poetry_composer_action: 0
+  poetry_composer_menu_options: 0
   poetry_context_menu: 0
   poetry_data_table: 0
   poetry_date_field: 0
@@ -13909,7 +13940,9 @@ internals:
 - Poetry::Ui::Command::ItemSet
 - Poetry::Ui::Composer::Action
 - Poetry::Ui::Composer::ActionWiring
+- Poetry::Ui::Composer::MenuOptions
 - Poetry::Ui::Composer::Menus
+- Poetry::Ui::Composer::OptionMarkup
 - Poetry::Ui::ContextMenu::Group
 - Poetry::Ui::ContextMenu::ItemSlots
 - Poetry::Ui::ContextMenu::RadioGroup
