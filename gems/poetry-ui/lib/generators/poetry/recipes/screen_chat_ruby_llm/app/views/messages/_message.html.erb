@@ -1,0 +1,30 @@
+<%# locals: (message:, text: nil, streaming: false) %>
+<%# installed by the poetry `screen-chat-ruby-llm` recipe - yours to adapt.
+    One row of the transcript. The person's words are escaped text in a
+    bubble at the end. The reply is the model's Markdown: poetry_markdown
+    parses it with the Markdown gem in your Gemfile (commonmarker or
+    redcarpet) and lets no markup through. text: is the reply as far as a
+    stream has written it, rendered with streaming: so what it has left
+    open is closed for display; without it the stored text renders. A
+    reply with no text yet shows that it has begun. %>
+<%= poetry_message_scroller_item(id: message.id, dom_id: dom_id(message), anchor: message.role == "user",
+                                 class: "px-4 py-2") do %>
+  <% if message.role == "user" %>
+    <%= poetry_message(align: :end) do %>
+      <%= poetry_bubble { message.content } %>
+    <% end %>
+  <% else %>
+    <% written = text || message.content.to_s %>
+    <%= poetry_message do %>
+      <% if written.blank? %>
+        <%= poetry_trace do |trace| %>
+          <% trace.with_step("Thinking", icon: :brain, status: :running) %>
+        <% end %>
+      <% else %>
+        <%= poetry_bubble(variant: :ghost) do %>
+          <%= poetry_markdown(text: written, streaming: streaming, heading_level: 3) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

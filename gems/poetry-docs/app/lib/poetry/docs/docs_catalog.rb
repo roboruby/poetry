@@ -85,7 +85,7 @@ module Poetry
                                "204/no-redirect server contract."),
         Entry.new(slug: "recipes", title: "Recipes", section: "docs", icon: :package,
                   description: "Multi-file payloads beyond components: skill bundles, the scaffold " \
-                               "template set, and screen slices (controller + view + system test, " \
+                               "template set, and screen slices (controller + view + test, " \
                                "blocks pulled as dependencies) - installable with bin/rails g " \
                                "poetry:add <name> or any shadcn-compatible registry client."),
         Entry.new(slug: "community", title: "Community components", section: "docs", icon: :users,

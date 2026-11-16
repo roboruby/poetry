@@ -1,5 +1,5 @@
 <%# poetry:block title="Chat" description="A conversation with an assistant: a titled panel, a transcript that follows the newest message (the person's bubbles, the assistant's steps and typeset replies), a welcome with suggested prompts while the transcript is empty, and a composer whose Send the server turns into Stop while a reply runs." keywords="chat, assistant, conversation, messages, message, ai, agent, copilot, llm, prompt, composer, thread, ask, support, bot, chatbot" %>
-<%# locals: (url: "#", stop_url: nil, status: :idle) %>
+<%# locals: (url: "#", stop_url: nil, status: :idle, rows: nil, new_chat_url: "?new") %>
 <%# The page half of a chat; the server half is yours. url: is where a
     message posts and stop_url: where Stop posts. status: is your record
     of the reply (:idle, :running, :stopping): the composer draws Send or
@@ -11,10 +11,13 @@
     poetry_composer_action(id: "chat", status:) when a reply starts and
     when it ends - never the form, the draft lives there.
     The welcome needs no server at all: it shows while the transcript
-    holds no row and leaves when the first one lands. The sample rows
-    stand where your messages go. "New chat" is a plain link to ?new,
-    which renders the block without them, on its welcome: swap the link
-    for your own route and the rows for your messages.
+    holds no row and leaves when the first one lands.
+    rows: is your messages, already rendered, one
+    poetry_message_scroller_item each. Pass it, even as nil for a
+    conversation with no message yet, and the sample rows are left out.
+    Without it the block shows its sample conversation, and "New chat",
+    a plain link to ?new, renders the block without them, on its
+    welcome. new_chat_url: is where that link goes in your app.
     Page framing: the panel keeps a container and a height of its own
     when the chat is the page's subject. Inside an app shell, drop the
     wrapper and give the panel h-full. %>
@@ -26,14 +29,16 @@
         <%= poetry_icon(name: :sparkles, class: "size-4 shrink-0 text-muted-foreground") %>
         <h2 id="chat-title" class="truncate text-sm font-medium">Orders assistant</h2>
       </div>
-      <%= poetry_button(tag: :a, href: "?new", variant: :ghost, size: :sm) do |button| %>
+      <%= poetry_button(tag: :a, href: new_chat_url, variant: :ghost, size: :sm) do |button| %>
         <% button.with_leading { poetry_icon(name: :plus) } %>
         New chat
       <% end %>
     </header>
     <div class="relative min-h-0 flex-1">
       <%= poetry_message_scroller(id: "chat-thread") do %>
-        <% unless params.key?(:new) %>
+        <% if local_assigns.key?(:rows) %>
+          <%= rows %>
+        <% elsif !params.key?(:new) %>
           <%= poetry_message_scroller_item(id: "m1", anchor: true, class: "px-4 py-2") do %>
             <%= poetry_message(align: :end) do %>
               <%= poetry_bubble { "Which orders are still processing, and is any of them late?" } %>

@@ -1,0 +1,5 @@
+<%# installed by the poetry `screen-chat-ruby-llm` recipe - yours to adapt.
+    A new conversation: the chat block with no rows, so it opens on its
+    welcome, and its composer posting the first message to create. A
+    suggested prompt is sent the same way. %>
+<%= render "blocks/chat", url: chats_path, new_chat_url: new_chat_path, rows: nil %>

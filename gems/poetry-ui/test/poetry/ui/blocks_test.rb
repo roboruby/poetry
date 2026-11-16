@@ -129,7 +129,32 @@ module Poetry
         refute_includes fresh, %(data-slot="message-scroller-item")
         assert_includes fresh, %(id="chat-thread-messages")
         assert_equal 3, fresh.scan(%(data-slot="composer-prompt")).size
-        assert_includes source, %(href: "?new")
+        assert_includes source, %(new_chat_url: "?new")
+        assert_includes BlocksController.render(inline: source, layout: nil), %(href="?new")
+      end
+
+      # rows: is the host's messages. Passed, they are the transcript and
+      # the sample rows are left out; passed as nil (a collection render
+      # of no message answers nil) the block opens on its welcome, which
+      # an absent local would have filled with the sample.
+      def test_the_chat_block_renders_the_hosts_rows_in_place_of_the_sample
+        source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "chat.html.erb").read
+        row = %(<div data-slot="message-scroller-item" data-message-id="mine">mine</div>).html_safe
+        given = BlocksController.render(inline: source, layout: nil, locals: { rows: row })
+        none = BlocksController.render(inline: source, layout: nil, locals: { rows: nil })
+
+        assert_equal 1, given.scan(%(data-slot="message-scroller-item")).size
+        assert_includes given, %(data-message-id="mine")
+        refute_includes none, %(data-slot="message-scroller-item")
+        assert_equal 3, none.scan(%(data-slot="composer-prompt")).size
+      end
+
+      def test_the_chat_block_sends_new_chat_where_the_host_says
+        source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "chat.html.erb").read
+        html = BlocksController.render(inline: source, layout: nil, locals: { new_chat_url: "/chats/new" })
+
+        assert_includes html, %(href="/chats/new")
+        refute_includes html, %(href="?new")
       end
 
       def test_served_llms_text_carries_the_blocks_catalog

@@ -911,7 +911,7 @@ module Poetry
 
       assert_file "app/controllers/settings_controller.rb", /class SettingsController/
       assert_file "app/views/settings/show.html.erb", %r{render "blocks/page_header"}
-      assert_file "test/system/settings_show_test.rb", /Usage-based billing/
+      assert_file "test/integration/settings_show_test.rb", /Usage-based billing/
       # registryDependencies pull the composed blocks through the block path
       assert_file "app/views/blocks/_page_header.html.erb"
       assert_file "app/views/blocks/_section_card.html.erb"
@@ -931,12 +931,33 @@ module Poetry
       assert_file "app/views/chats/show.html.erb", %r{render "blocks/chat", url: chat_path, stop_url: stop_chat_path}
       assert_file "app/views/chats/_message.html.erb", /poetry_message_scroller_item/
       assert_file "test/controllers/chats_controller_test.rb", /post chat_path/
-      assert_file "test/system/chat_test.rb", /Orders assistant/
+      assert_no_file "test/system/chat_test.rb"
       assert_file "app/views/blocks/_chat.html.erb" do |block|
-        assert_match(/locals: \(url: "#", stop_url: nil, status: :idle\)/, block)
+        assert_match(/locals: \(url: "#", stop_url: nil, status: :idle, rows: nil, new_chat_url: "\?new"\)/, block)
         assert_match(/poetry_composer\(id: "chat", url: url, status: status, stop_url: stop_url/, block)
       end
       assert_match(/Add `resource :chat, only: %i\[show create\] do post :stop end` to routes/, output)
+    end
+
+    # The RubyLLM slice: every file lands where Rails looks for it, the
+    # block comes with it, and the run ends on the routes to add.
+    def test_add_screen_chat_ruby_llm_installs_the_slice_and_names_the_routes
+      output = run_generator ["screen-chat-ruby-llm"]
+
+      assert_file "app/controllers/chats_controller.rb", /chat\.begin_turn!/
+      assert_file "app/controllers/messages_controller.rb", /head\(:conflict\) if @chat\.responding\?/
+      assert_file "app/jobs/chat_response_job.rb", /rescue RubyLLM::CancelledError/
+      assert_file "app/models/concerns/chat_turn.rb", /module ChatTurn/
+      assert_file "app/models/chat_stream.rb", /class ChatStream/
+      assert_file "app/models/concerns/chat_turn.rb", /g migration AddRespondingSinceToChats responding_since:datetime/
+      assert_no_directory "db/migrate"
+      assert_file "app/views/chats/show.html.erb", /turbo_stream_from @chat/
+      assert_file "app/views/chats/new.html.erb", /rows: nil/
+      assert_file "app/views/messages/_message.html.erb", /poetry_markdown\(text: written, streaming: streaming/
+      assert_file "app/views/blocks/_chat.html.erb", /local_assigns\.key\?\(:rows\)/
+      assert_file "test/controllers/chats_controller_test.rb"
+      assert_includes output, "Add `resources :chats, only: %i[new create show] do post :stop, on: :member; " \
+                              "resources :messages, only: :create end` to routes"
     end
 
     # The overrides ledger writes `created:` as a bare YAML date; a later

@@ -7,6 +7,15 @@ require "test_helper"
 # transcript, and a refused one answers with an error, which is what
 # keeps the typed text in the field.
 class ChatsControllerTest < ActionDispatch::IntegrationTest
+  test "the chat screen renders the chat block with its two addresses" do
+    get chat_path
+
+    assert_response :success
+    assert_includes response.body, "Orders assistant"
+    assert_select "form[action='#{chat_path}'] textarea[name='message']", 1
+    assert_select "form[action='#{stop_chat_path}']", 1
+  end
+
   test "a message answers with the person's row and a reply" do
     post chat_path, params: { message: "Which orders are late?" }
 

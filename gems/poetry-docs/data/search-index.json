@@ -672,6 +672,12 @@
     "path": "/recipes#screen-chat"
   },
   {
+    "title": "Chat screen on RubyLLM",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-chat-ruby-llm"
+  },
+  {
     "title": "Data index screen",
     "page": "Recipes",
     "section": "docs",

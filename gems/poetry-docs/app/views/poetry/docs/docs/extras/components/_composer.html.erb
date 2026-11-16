@@ -220,10 +220,11 @@
     For the screen around a composer, start from the
     <%= link_to "chat block", block_path("chat"), class: "text-foreground underline underline-offset-4" %>:
     a panel, a transcript, a welcome with suggested prompts, and a composer wired to two addresses.
-    <code class="text-foreground">bin/rails g poetry:block chat</code> copies it into your app, and the
-    <code class="text-foreground">screen-chat</code>
-    <%= link_to "recipe", recipes_path, class: "text-foreground underline underline-offset-4" %>
-    adds a controller that answers it, with a stand-in where your model goes.
+    <code class="text-foreground">bin/rails g poetry:block chat</code> copies it into your app. Two
+    <%= link_to "recipes", recipes_path, class: "text-foreground underline underline-offset-4" %>
+    add the server half: <code class="text-foreground">screen-chat</code> is a controller with a
+    stand-in where your model goes, and <code class="text-foreground">screen-chat-ruby-llm</code> is
+    the whole turn on RubyLLM, with the reply streamed as Markdown and Stop.
   </p>
 </section>
 

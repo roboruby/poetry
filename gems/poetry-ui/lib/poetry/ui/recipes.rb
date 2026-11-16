@@ -26,7 +26,7 @@ module Poetry
            screen(
              "screen-data-index", title: "Data index screen",
                                   description: "The data-index block as a working feature slice: OrdersController, " \
-                                               "its index view rendering the block, and a system test. Add " \
+                                               "its index view rendering the block, and a test. Add " \
                                                "`resources :orders, only: :index` to routes.",
                                   dependencies: ["data-index"]
            ),
@@ -34,7 +34,7 @@ module Poetry
              "screen-settings", title: "Settings screen",
                                 description: "A settings page composed from the page-header, section-card, and " \
                                              "destructive-panel blocks: SettingsController, the composed view, " \
-                                             "and a system test. Add `resource :settings, only: :show` to routes.",
+                                             "and a test. Add `resource :settings, only: :show` to routes.",
                                 dependencies: %w[page-header section-card destructive-panel]
            ),
            screen(
@@ -44,6 +44,20 @@ module Poetry
                                          "view, the row partial a message is appended with, and tests. Add " \
                                          "`resource :chat, only: %i[show create] do post :stop end` to routes.",
                             dependencies: ["chat"]
+           ),
+           screen(
+             "screen-chat-ruby-llm", title: "Chat screen on RubyLLM",
+                                     description: "The chat block answered by a model through RubyLLM 2: " \
+                                                  "ChatsController and MessagesController, ChatResponseJob " \
+                                                  "writing the reply into the page as Markdown while it is " \
+                                                  "written, Stop, the turn recorded on the chat (ChatTurn), " \
+                                                  "the views and tests. Run `bin/rails g ruby_llm:install` " \
+                                                  "first, `include ChatTurn` in Chat, and add the column: " \
+                                                  "`bin/rails g migration AddRespondingSinceToChats " \
+                                                  "responding_since:datetime`. Add `resources :chats, only: %i[new " \
+                                                  "create show] do post :stop, on: :member; resources " \
+                                                  ":messages, only: :create end` to routes.",
+                                     dependencies: ["chat"]
            )]
         end
 
