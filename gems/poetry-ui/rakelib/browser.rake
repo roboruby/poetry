@@ -95,6 +95,37 @@ def poetry_ui_visit_preview(session, url)
   # A scroller that never settles is a failure to report, not a shot from the top.
   raise "a scroller never settled at #{url}" unless session.has_no_css?("[data-pending-scroll]", wait: 10)
   raise "Stimulus never booted at #{url}" unless session.has_css?("html[data-poetry-ready]", wait: 10)
+
+  poetry_ui_wait_for_paint(session, url)
+end
+
+# Whether every transcript row in view has been rendered. A scroller's rows
+# are content-visibility: auto, so a row is skipped until the browser finds
+# it on screen, and a scroller that has just jumped to its newest row can
+# be caught with the rows it brought into view still unpainted.
+POETRY_UI_ROWS_PAINTED_JS = <<~JS
+  (() => [...document.querySelectorAll("[data-slot=message-scroller-viewport]")].every((viewport) => {
+    const box = viewport.getBoundingClientRect();
+    return [...viewport.querySelectorAll("[data-slot=message-scroller-item]")].every((item) => {
+      const row = item.getBoundingClientRect();
+      const child = item.firstElementChild;
+      if (row.bottom <= box.top || row.top >= box.bottom || !child) return true;
+      return child.checkVisibility({ contentVisibilityAuto: true });
+    });
+  }))()
+JS
+
+# Lets the page paint what it has laid out before anything reads it: the
+# rows a scroller brought into view, then two frames for the paint itself.
+# The chat block's shot came out with its upper rows blank in two full
+# walks of five, hundreds of pages into the session and never alone.
+def poetry_ui_wait_for_paint(session, url)
+  painted = 40.times.any? do
+    session.evaluate_script(POETRY_UI_ROWS_PAINTED_JS) || (sleep(0.05) && false)
+  end
+  raise "transcript rows never painted at #{url}" unless painted
+
+  session.evaluate_async_script("requestAnimationFrame(() => requestAnimationFrame(() => arguments[0](true)))")
 end
 
 # ---------------------------------------------------------------------------
