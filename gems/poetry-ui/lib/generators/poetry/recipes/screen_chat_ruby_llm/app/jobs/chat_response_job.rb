@@ -10,9 +10,11 @@
 # message is whole it is rendered once more from what was stored.
 #
 # Stop (chat.cancel) raises RubyLLM::CancelledError here at the next
-# chunk. RubyLLM removes its empty message on a stop or a failure, so
+# chunk. The empty message a reply began as is removed on a stop or a
+# failure (by RubyLLM, or here when the error is not one it expects), so
 # what was written is kept as a message of its own, closed where the
-# stream left it. A turn that fails says so in the transcript, whatever
+# stream left it. A turn that stops or fails says so in the transcript,
+# on the message it ends after, and the line is stored with it, whatever
 # failed: the provider, or a model or a key that is not set up yet,
 # which is what a first run meets. However the turn ends, the composer
 # draws Send again.
@@ -46,7 +48,9 @@ class ChatResponseJob < ApplicationJob
     end
 
     chat.complete do |chunk|
-      next if chunk.content.blank?
+      # A chunk can be a space or a paragraph break on its own: only one
+      # with no text at all (a tool call, a thought) is passed over.
+      next if chunk.content.to_s.empty?
 
       text << chunk.content
       next if reply.nil? || now - shown_at < INTERVAL
@@ -56,13 +60,12 @@ class ChatResponseJob < ApplicationJob
     end
   rescue RubyLLM::CancelledError
     wait_out(started_at)
-    keep(chat, stream, reply, text)
-    stream&.note("Stopped")
+    stream&.note(keep(chat, stream, reply, text) || last_message(chat), "Stopped")
   rescue StandardError => e
     Rails.logger.error("ChatResponseJob #{chat_id}: #{e.class}: #{e.message}")
     wait_out(started_at)
-    keep(chat, stream, reply, text)
-    stream&.note(Rails.env.local? ? "The reply failed: #{e.message.to_s.truncate(300)}" : "The reply failed.")
+    failed = Rails.env.local? ? "The reply failed: #{e.message.to_s.truncate(300)}" : "The reply failed."
+    stream&.note(keep(chat, stream, reply, text) || last_message(chat), failed)
   ensure
     wait_out(started_at)
     chat&.end_turn!
@@ -80,15 +83,34 @@ class ChatResponseJob < ApplicationJob
 
   # The text of a reply that did not finish, as a message of its own in
   # the place of the row that showed it. Poetry closes what the text left
-  # open, so the stored message is whole Markdown.
+  # open, so the stored message is whole Markdown. Returns the message,
+  # or nil when nothing had been written.
   def keep(chat, stream, reply, text)
     return if chat.nil? || stream.nil?
 
-    stream.remove(reply) if reply
+    discard(chat, stream, reply)
     written = Poetry::Ui::MarkdownTail.close(text.to_s).strip
     return if written.empty?
 
-    stream.show(chat.messages.create!(role: "assistant", content: written))
+    chat.messages.create!(role: "assistant", content: written).tap { |kept| stream.show(kept) }
+  end
+
+  # Takes the row a stream was writing out of the page, and its empty
+  # message out of the conversation. RubyLLM removes that message itself
+  # after a stop or a provider's error; after any other error it is still
+  # there, blank, and a blank reply would be sent to the model with the
+  # next turn.
+  def discard(chat, stream, reply)
+    return unless reply
+
+    stream.remove(reply)
+    chat.messages.where(id: reply.id, content: [nil, ""]).destroy_all
+  end
+
+  # The message a turn's ending is noted on when no text was kept: the
+  # person's, which went unanswered.
+  def last_message(chat)
+    chat.messages.order(:id).last if chat
   end
 
   def now

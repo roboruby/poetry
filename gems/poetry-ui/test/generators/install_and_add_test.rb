@@ -953,11 +953,18 @@ module Poetry
       assert_no_directory "db/migrate"
       assert_file "app/views/chats/show.html.erb", /turbo_stream_from @chat/
       assert_file "app/views/chats/new.html.erb", /rows: nil/
-      assert_file "app/views/messages/_message.html.erb", /poetry_markdown\(text: written, streaming: streaming/
+      assert_file "app/views/messages/_message.html.erb" do |row|
+        assert_match(/poetry_markdown\(text: written, streaming: true, heading_level: 3\)/, row)
+        assert_match(/poetry_markdown\(text: marked, sources: sources, heading_level: 3\)/, row)
+        assert_match(/g migration AddNoteAndFeedbackToMessages note:string feedback:string/, row)
+      end
+      assert_file "app/views/messages/_feedback.html.erb", /poetry_toggle\(pressed: chosen/
+      assert_no_file "app/views/messages/_note.html.erb"
       assert_file "app/views/blocks/_chat.html.erb", /local_assigns\.key\?\(:rows\)/
       assert_file "test/controllers/chats_controller_test.rb"
+      assert_file "test/jobs/chat_response_job_test.rb", /class ScriptedProvider < RubyLLM::Provider/
       assert_includes output, "Add `resources :chats, only: %i[new create show] do post :stop, on: :member; " \
-                              "resources :messages, only: :create end` to routes"
+                              "resources :messages, only: %i[create update] end` to routes"
     end
 
     # The overrides ledger writes `created:` as a bare YAML date; a later

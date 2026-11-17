@@ -6,6 +6,10 @@ unless ENV["COVERAGE"] == "0"
   SimpleCov.start do
     enable_coverage :branch
     skip %r{^/test/}
+    # A recipe's files are what it installs in a host (controllers, jobs,
+    # tests that need the host's models): none of them runs here, and the
+    # recipes are proven in a generated app instead.
+    skip %r{\Alib/generators/poetry/recipes/}
     cover "{app,lib}/**/*.rb"
     # The floor: one point under the measured value, identical on both CI
     # Rubies. Raise it when coverage climbs; never lower it in a feature commit.

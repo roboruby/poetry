@@ -29,10 +29,14 @@ class ChatStream
     Turbo::StreamsChannel.broadcast_remove_to(@chat, target: dom_id(message))
   end
 
-  # A line in the transcript that is not a message: a stop, a failure.
-  def note(text)
-    Turbo::StreamsChannel.broadcast_append_to(@chat, target: "chat-thread-messages", partial: "messages/note",
-                                                     locals: { text: text })
+  # How a turn ended when it did not end with a reply: a stop, a failure.
+  # The line is stored on the message it follows and that row is drawn
+  # again, so a reload shows it where it was.
+  def note(message, text)
+    return if message.nil?
+
+    message.update!(note: text)
+    show(message)
   end
 
   # The composer's action slot, as the chat's record stands.

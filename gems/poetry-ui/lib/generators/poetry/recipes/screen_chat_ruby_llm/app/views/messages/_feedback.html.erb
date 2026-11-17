@@ -1,0 +1,17 @@
+<%# locals: (message:) %>
+<%# installed by the poetry `screen-chat-ruby-llm` recipe - yours to adapt.
+    What the person thought of a reply: two toggles, each a form of its
+    own, so they work before any script loads. Pressing one stores it,
+    pressing the pressed one clears it, and the answer redraws this
+    element from what was stored. %>
+<div id="<%= dom_id(message, :feedback) %>" class="flex items-center gap-0.5 text-muted-foreground">
+  <% { "up" => [ :"thumbs-up", "Good reply" ], "down" => [ :"thumbs-down", "Bad reply" ] }.each do |value, (icon, label)| %>
+    <% chosen = message.feedback == value %>
+    <%= form_with url: chat_message_path(message.chat_id, message), method: :patch, class: "contents" do %>
+      <%= hidden_field_tag :feedback, chosen ? "" : value, id: nil %>
+      <%= poetry_toggle(pressed: chosen, size: :sm, label: label, type: :submit) do %>
+        <%= poetry_icon(name: icon) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

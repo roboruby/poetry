@@ -51,12 +51,17 @@ module Poetry
                                                   "ChatsController and MessagesController, ChatResponseJob " \
                                                   "writing the reply into the page as Markdown while it is " \
                                                   "written, Stop, the turn recorded on the chat (ChatTurn), " \
-                                                  "the views and tests. Run `bin/rails g ruby_llm:install` " \
-                                                  "first, `include ChatTurn` in Chat, and add the column: " \
-                                                  "`bin/rails g migration AddRespondingSinceToChats " \
-                                                  "responding_since:datetime`. Add `resources :chats, only: %i[new " \
-                                                  "create show] do post :stop, on: :member; resources " \
-                                                  ":messages, only: :create end` to routes.",
+                                                  "a reply's cited sources and its thumbs, how a stopped or " \
+                                                  "failed turn ended kept in the transcript, the views and " \
+                                                  "tests (the job's among them, against a scripted provider). " \
+                                                  "Run `bin/rails g ruby_llm:install` first, `include " \
+                                                  "ChatTurn` in Chat, and add the columns: `bin/rails g " \
+                                                  "migration AddRespondingSinceToChats " \
+                                                  "responding_since:datetime` and `bin/rails g migration " \
+                                                  "AddNoteAndFeedbackToMessages note:string feedback:string`. " \
+                                                  "Add `resources :chats, only: %i[new create show] do post " \
+                                                  ":stop, on: :member; resources :messages, only: %i[create " \
+                                                  "update] end` to routes.",
                                      dependencies: ["chat"]
            )]
         end

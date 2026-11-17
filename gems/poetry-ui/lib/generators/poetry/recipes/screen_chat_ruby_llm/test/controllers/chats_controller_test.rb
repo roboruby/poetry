@@ -88,6 +88,56 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "turbo-stream[action=replace][target=chat-action]", 1
   end
+  test "a thumb on a reply is stored, redrawn from what was stored, and cleared by a second press" do
+    chat = chat_with("Which orders are late?")
+    reply = chat.messages.create!(role: "assistant", content: "Two orders are late.")
+
+    patch chat_message_path(chat, reply), params: { feedback: "up" }, as: :turbo_stream
+
+    assert_response :success
+    assert_equal "up", reply.reload.feedback
+    assert_select "turbo-stream[action=replace][target='#{dom_id(reply, :feedback)}']", 1
+    assert_select "template button[aria-pressed=true][aria-label='Good reply']", 1
+    assert_select "template button[aria-pressed=false][aria-label='Bad reply']", 1
+
+    patch chat_message_path(chat, reply), params: { feedback: "" }, as: :turbo_stream
+
+    assert_nil reply.reload.feedback
+
+    patch chat_message_path(chat, reply), params: { feedback: "sideways" }
+
+    assert_redirected_to chat_path(chat)
+    assert_nil reply.reload.feedback
+  end
+
+  test "a thumb is for a reply: the person's own message has none" do
+    chat = chat_with("Which orders are late?")
+    asked = chat.messages.order(:id).last
+
+    patch chat_message_path(chat, asked), params: { feedback: "up" }
+
+    assert_response :not_found
+  end
+
+  test "the conversation shows how a turn ended, a reply's sources and its thumbs" do
+    chat = chat_with("Which orders are late?")
+    chat.messages.order(:id).last.update!(note: "Stopped")
+    text = "Orders ship within two days."
+    cited = chat.messages.create!(
+      role: "assistant", content: text, feedback: "down",
+      citations: [{ url: "https://example.com/fulfilment", title: "Fulfilment guide",
+                    cited_text: "Orders ship within two working days.", start_index: 0, end_index: text.length }]
+    )
+
+    get chat_path(chat)
+
+    assert_response :success
+    assert_select "[data-slot=marker]", text: "Stopped"
+    assert_select "##{dom_id(cited)} [data-component=citation][href='https://example.com/fulfilment']", 1
+    assert_select "##{dom_id(cited)} [data-component=sources]", 1
+    assert_select "##{dom_id(cited, :feedback)} button[aria-pressed=true][aria-label='Bad reply']", 1
+    assert_select "##{dom_id(cited, :feedback)} form[action='#{chat_message_path(chat, cited)}']", 2
+  end
 
   private
 

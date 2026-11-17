@@ -1,7 +1,0 @@
-<%# locals: (text:) %>
-<%# installed by the poetry `screen-chat-ruby-llm` recipe. A line in the
-    transcript that is not a message: a stop, a failure. Nothing is
-    stored for it. %>
-<%= poetry_message_scroller_item(id: "note-#{SecureRandom.hex(4)}", class: "px-4 py-1") do %>
-  <%= poetry_marker { text } %>
-<% end %>
