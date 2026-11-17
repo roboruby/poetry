@@ -44,6 +44,7 @@
 
 ### Changed
 
+- The status badges (success, warning, info) and the positive stat figure take their text colour from `text-success`, `text-warning` and `text-info` in all nine themes, where each rule wrote the darkening out itself (`text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success`). The classes read poetry-core's `-strong` companions, so the colours are the same to the pixel; a theme author writes the plain class from now on.
 - `poetry:editor` writes a `.herb.yml` pinned to Herb 0.11.2 with every rule on: the one it switched off, `html-no-nested-forms`, was fixed upstream in 0.11.1 (marcoroth/herb#2708).
 - The block templates `poetry:block` copies (stepper, action bar) and the preview templates declare their locals with `<%# locals: (...) %>`, as Herb's `actionview-no-local-assigns` rule asks. The Kaminari paginator template keeps reading `local_assigns`, since Kaminari hands it every `paginate` option, with that rule disabled on those lines.
 - The dialog family's `<dialog>` panel carries an id, `<root id>-content` (Dialog, Sheet, Drawer, AlertDialog), so a Turbo morph pairs the panel by identity rather than by position and the morph guard keeps its open state on that node. The new browser gate `rake test:morph_state` drives a keyed page of Tabs, Input, two Collapsibles and a Dialog with a form through the dialog's own submit-and-redirect and a stream-style refresh under `turbo-refresh-method=morph`, and asserts what the client changed survives, what the server changed lands, and the dialog closes on its own submit.

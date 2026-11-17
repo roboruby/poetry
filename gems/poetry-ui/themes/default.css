@@ -231,15 +231,15 @@
 }
 
 .cn-badge-variant-success {
-  @apply border-transparent bg-success/10 text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success dark:bg-success/20 [a&]:hover:bg-success/20;
+  @apply border-transparent bg-success/10 text-success dark:bg-success/20 [a&]:hover:bg-success/20;
 }
 
 .cn-badge-variant-warning {
-  @apply border-transparent bg-warning/10 text-[oklch(from_var(--warning)_calc(l*0.85)_c_h)] dark:text-warning dark:bg-warning/20 [a&]:hover:bg-warning/20;
+  @apply border-transparent bg-warning/10 text-warning dark:bg-warning/20 [a&]:hover:bg-warning/20;
 }
 
 .cn-badge-variant-info {
-  @apply border-transparent bg-info/10 text-[oklch(from_var(--info)_calc(l*0.85)_c_h)] dark:text-info dark:bg-info/20 [a&]:hover:bg-info/20;
+  @apply border-transparent bg-info/10 text-info dark:bg-info/20 [a&]:hover:bg-info/20;
 }
 
 /* MARK: Breadcrumb */
@@ -1792,7 +1792,7 @@
 
 /* MARK: Stat */
 .cn-stat-delta-positive {
-  @apply text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success;
+  @apply text-success;
 }
 
 /* MARK: Questionnaire */

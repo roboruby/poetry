@@ -228,15 +228,15 @@
 }
 
 .cn-badge-variant-success {
-  @apply bg-success/10 [a]:hover:bg-success/20 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success dark:bg-success/20;
+  @apply bg-success/10 [a]:hover:bg-success/20 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 text-success dark:bg-success/20;
 }
 
 .cn-badge-variant-warning {
-  @apply bg-warning/10 [a]:hover:bg-warning/20 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 text-[oklch(from_var(--warning)_calc(l*0.85)_c_h)] dark:text-warning dark:bg-warning/20;
+  @apply bg-warning/10 [a]:hover:bg-warning/20 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 text-warning dark:bg-warning/20;
 }
 
 .cn-badge-variant-info {
-  @apply bg-info/10 [a]:hover:bg-info/20 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 text-[oklch(from_var(--info)_calc(l*0.85)_c_h)] dark:text-info dark:bg-info/20;
+  @apply bg-info/10 [a]:hover:bg-info/20 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 text-info dark:bg-info/20;
 }
 
 /* MARK: Breadcrumb */
@@ -1760,7 +1760,7 @@
 
 /* MARK: Stat */
 .cn-stat-delta-positive {
-  @apply text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success;
+  @apply text-success;
 }
 
 /* MARK: Questionnaire */
