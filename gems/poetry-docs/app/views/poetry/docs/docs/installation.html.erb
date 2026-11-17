@@ -274,7 +274,7 @@
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <h2 id="ownership">The three ownership tiers</h2>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Tier</th><th>Examples</th><th>Upgrades via</th></tr>
         </thead>
@@ -295,7 +295,7 @@
             <td>you; <code>poetry:diff</code> reports</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 

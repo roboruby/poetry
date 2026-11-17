@@ -70,7 +70,7 @@ CODE
     <% end %>
     <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Editor</th><th>What it writes</th><th>Gets</th></tr>
         </thead>
@@ -82,7 +82,7 @@ CODE
           <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
           <tr><td>Any Herb-aware editor</td><td><code>.herb.yml</code></td><td>linter + language server config</td></tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 

@@ -81,6 +81,8 @@
 - The AG-UI Relay demo's scripted agent emits conformant AG-UI 1.0: each `RUN_STARTED` declares `protocolVersion`, `REASONING_MESSAGE_START` carries its required `role: "reasoning"`, and the reasoning message has an id of its own instead of sharing the text message's. A 1.0 client rejected run one outright.
 - The AG-UI Relay demo's interrupt prompt falls back to the interrupt's reason when it carries no message, and a message a snapshot drops leaves the scroller with its item.
 - The AG-UI Relay demo's standalone example (`/examples/demos/agui-relay/default`) renders: it raised `NoMethodError` for want of the history the demo page prepares.
+- No docs page scrolls sideways on a phone. A sweep of all 206 pages at 390px found 25 that did: tables now scroll inside their own box, a preview box scrolls a demo wider than itself (centred while it fits), and a long path, route or signature wraps.
+- `Poetry::Docs::HostStylesheet.build` holds its result to the engine's own stylesheet: Tailwind was found to leave a group of theme rules out of about one build in forty made on a busy machine, with nothing reported. A build that lacks any engine rule is made again, up to three times, and one that still does is kept with a warning that names what is missing. `poetry_docs:css:verify` builds a second time before calling the committed stylesheet stale.
 
 ## [0.1.13] - 2026-10-13
 

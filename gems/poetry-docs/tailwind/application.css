@@ -36,3 +36,10 @@
   --typeset-leading: 1.75;
   --typeset-flow: 1.25em;
 }
+
+/* A path, a route or a signature is one long word. In the docs' prose and
+   reference it breaks where it has to, instead of pushing the page wider
+   than a phone. Code blocks scroll on their own and are left alone. */
+main :where(code, .font-mono):not(pre *, [data-slot="code-block"] *) {
+  overflow-wrap: anywhere;
+}

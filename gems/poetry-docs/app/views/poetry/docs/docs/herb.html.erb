@@ -226,7 +226,7 @@
     <% end %>
     <%= poetry_code_block(code: settings_source, language: "ruby", label: "The documented setup") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Setting</th><th>What it does</th><th>Poetry components</th></tr>
         </thead>
@@ -262,7 +262,7 @@
             <td>No effect</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
       <h3 id="debug-mode">Debug mode and sibling selectors</h3>
       <p>
         The span debug mode puts around an output has
@@ -383,7 +383,7 @@
       <p>
         What this page works around, what upstream has fixed since, and where each one is tracked.
       </p>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Issue</th><th>What happens</th><th>What Poetry does</th></tr>
         </thead>
@@ -444,7 +444,7 @@
             <td><code>poetry:check</code> compiles them</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 </div>

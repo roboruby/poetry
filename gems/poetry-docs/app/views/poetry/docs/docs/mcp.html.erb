@@ -98,7 +98,7 @@
       <h2 id="tools">The twelve tools</h2>
     <% end %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Tool</th><th>Returns</th><th>When an agent reaches for it</th></tr>
         </thead>
@@ -116,7 +116,7 @@
           <tr><td><code>guidance</code></td><td>curated composition guidance by topic</td><td>deciding which component fits</td></tr>
           <tr><td><code>report_gap</code></td><td>a link that opens a prefilled issue for something the library lacked; nothing is sent</td><td>after working around a missing component, variant or option</td></tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 

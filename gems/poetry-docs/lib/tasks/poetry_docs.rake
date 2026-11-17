@@ -183,6 +183,12 @@ namespace :poetry_docs do
       abort "poetry_docs:css:verify: no committed stylesheet - run rake poetry_docs:css" unless committed.exist?
       before = committed.read
       Rake::Task["poetry_docs:css"].invoke
+      # Tailwind has been seen to leave rules out of a build made on a busy
+      # machine, so one build that differs is not yet a stale stylesheet.
+      unless committed.read == before
+        Rake::Task["poetry_docs:css"].reenable
+        Rake::Task["poetry_docs:css"].invoke
+      end
       if committed.read == before
         puts "poetry_docs:css: the committed stylesheet is fresh"
       else

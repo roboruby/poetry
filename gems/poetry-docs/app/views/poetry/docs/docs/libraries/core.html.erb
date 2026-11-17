@@ -193,7 +193,7 @@
       </p>
     <% end %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Layer</th><th>What ships</th></tr>
         </thead>
@@ -223,7 +223,7 @@
             <td>the registry, check, and llms/skill text that <code>poetry-agent</code> projects - the MCP server binary and the WebMCP runtime live in <%= link_to "poetry-agent", library_path("agent") %></td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 

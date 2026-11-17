@@ -110,7 +110,7 @@
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <h2 id="categories">Categories</h2>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Category</th><th>Screens</th></tr>
         </thead>
@@ -129,7 +129,7 @@
           <tr><td><code>billing</code></td><td>billing, charges, subscriptions and their changes, payment methods and pricing</td></tr>
           <tr><td><code>madmin</code></td><td>the admin dashboard and the array field</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <p>
         A few views stay Jumpstart's, because they cannot be recreated
         without copying them: the payment processors' checkout forms, the
