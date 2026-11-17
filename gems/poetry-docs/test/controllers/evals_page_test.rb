@@ -36,10 +36,22 @@ class EvalsPageTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Poetry was preferred on 1, 6 and 5 of 12"
   end
 
-  test "the page is in the catalog and the sidebar" do
+  test "the page is served and linked from nowhere" do
     get "/evals"
 
-    assert_select "a[href='/evals']", minimum: 1
+    assert_response :success
+    assert_select "a[href='/evals']", 0
     assert_select "link[rel=alternate][type='text/markdown'][href='/evals.md']"
+
+    get "/docs"
+
+    assert_select "a[href='/evals']", 0
+    refute Poetry::Docs::DocsCatalog.all.any? { |entry| entry.slug == "evals" }, "no list of pages names it"
+    refute_includes Poetry::Docs::SearchIndex::PATH.read, "/evals"
+    refute_includes Poetry::Docs::DocsMarkdown.site_index, "/evals"
+
+    get "/sitemap.xml"
+
+    refute_includes response.body, "/evals"
   end
 end

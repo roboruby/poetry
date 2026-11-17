@@ -888,48 +888,6 @@
     "path": "/page-agent#provenance"
   },
   {
-    "title": "Evals",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals"
-  },
-  {
-    "title": "What is measured",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#what-is-measured"
-  },
-  {
-    "title": "Every judged run",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#runs"
-  },
-  {
-    "title": "How to read it",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#reading"
-  },
-  {
-    "title": "Where the judge preferred which",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#axes"
-  },
-  {
-    "title": "A longer conversation",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#long-conversations"
-  },
-  {
-    "title": "What this does not cover",
-    "page": "Evals",
-    "section": "docs",
-    "path": "/evals#limits"
-  },
-  {
     "title": "Agent Skills",
     "page": "Agent Skills",
     "section": "docs",

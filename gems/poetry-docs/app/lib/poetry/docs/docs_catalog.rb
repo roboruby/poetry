@@ -109,10 +109,6 @@ module Poetry
                                "opt-in, bring-your-own key) configured with Poetry's operator " \
                                "register - watch a GUI agent operate the components, and see which " \
                                "tasks succeed through ARIA alone."),
-        Entry.new(slug: "evals", title: "Evals", section: "docs", icon: :"flask-conical",
-                  description: "What happens when an agent builds the same screen with Poetry and with plain " \
-                               "Tailwind: every judged run stored so far, with the uncertainty its sample size " \
-                               "allows, the checks each side passed, and what the numbers can and cannot say."),
         Entry.new(slug: "agent-skills", title: "Agent Skills", section: "docs", icon: :"graduation-cap",
                   description: "The installable skills catalog: what each skill teaches, served live " \
                                "with a discovery index (agentskills.io schema, sha256 digests) so " \
@@ -184,6 +180,17 @@ module Poetry
       # The interaction demos are the one hand-curated section: full-page
       # machinery (server round trips, streaming, cross-chart sync) that no
       # single registry component owns.
+      # Pages that are served and linked from nowhere: not the sidebar, the
+      # palette, the search index, the site index for agents or the sitemap.
+      # A page lives here while it waits for a decision to publish it; move
+      # its entry into DOCS (and a sidebar group) to list it.
+      UNLISTED = [
+        Entry.new(slug: "evals", title: "Evals", section: "docs", icon: :"flask-conical",
+                  description: "What happens when an agent builds the same screen with Poetry and with plain " \
+                               "Tailwind: every judged run stored so far, with the uncertainty its sample size " \
+                               "allows, the checks each side passed, and what the numbers can and cannot say.")
+      ].freeze
+
       DEMOS = [
         Entry.new(slug: "chat-replay", title: "Chat Replay", section: "demos",
                   description: "A scripted AI conversation replayed through the REAL streaming " \
@@ -266,6 +273,9 @@ module Poetry
 
         def docs = DOCS
 
+        # The pages no surface lists (see UNLISTED).
+        def unlisted = UNLISTED
+
         # The sidebar's guide sections. Order within a section is the display
         # order; Agent stays last in AI Native while it is experimental.
         DOC_SECTIONS = {
@@ -274,7 +284,7 @@ module Poetry
           "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
                            engines
                            herb],
-          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent evals]
+          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent]
         }.freeze
 
         # DOC_SECTIONS resolved to entries. Raises when the section map and

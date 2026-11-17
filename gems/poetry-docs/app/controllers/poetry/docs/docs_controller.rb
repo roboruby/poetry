@@ -271,7 +271,7 @@ module Poetry
       end
 
       def guide_entry(slug)
-        DocsCatalog.docs.find { |entry| entry.slug == slug }
+        (DocsCatalog.docs + DocsCatalog.unlisted).find { |entry| entry.slug == slug }
       end
     end
   end

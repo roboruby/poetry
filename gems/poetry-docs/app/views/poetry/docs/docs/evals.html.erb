@@ -1,4 +1,4 @@
-<% entry = Poetry::Docs::DocsCatalog.docs.find { |candidate| candidate.slug == "evals" } %>
+<% entry = Poetry::Docs::DocsCatalog.unlisted.find { |candidate| candidate.slug == "evals" } %>
 <% content_for :title, entry.title %>
 <% content_for :breadcrumb do %>
   <%= poetry_breadcrumb do |crumb| %>
