@@ -398,7 +398,7 @@ namespace :test do
     summary = results.map { |theme, ok| "#{theme}=#{ok ? "ok" : "DIFFS"}" }.join(" ")
     puts "visual walk summary: #{summary}"
     failed = results.reject { |_, ok| ok }.keys
-    return if failed.empty?
+    next if failed.empty?
 
     abort "visual walk: diffs in #{failed.join(", ")} - review with script/visual_review.rb <theme>"
   end
