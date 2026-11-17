@@ -10324,7 +10324,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 54
+          "line": 69
         },
         {
           "name": "load",
@@ -10350,14 +10350,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 63
+          "line": 78
         },
         {
           "name": "color",
           "scope": "instance",
           "group": null,
           "signature": "color(mode, name)",
-          "docstring": "The color of one semantic role in one mode.",
+          "docstring": "The color of one semantic role in one mode. A status role's\ncompanion (\"success-strong\") is not in the file: it is worked out\nfrom its role, {STRONG_LIGHTNESS} of its lightness in light mode\nand the role itself in dark.",
           "params": [
             {
               "name": "mode",
@@ -10382,7 +10382,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 99
+          "line": 124
         },
         {
           "name": "color_names",
@@ -10407,7 +10407,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 89
+          "line": 104
         },
         {
           "name": "data",
@@ -10419,7 +10419,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 68
+          "line": 83
         },
         {
           "name": "initialize",
@@ -10444,7 +10444,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 73
+          "line": 88
         },
         {
           "name": "modes",
@@ -10461,7 +10461,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
-          "line": 81
+          "line": 96
         },
         {
           "name": "radius_css",
@@ -10475,6 +10475,23 @@
               "String"
             ],
             "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/tokens.rb",
+          "line": 140
+        },
+        {
+          "name": "strong_names",
+          "scope": "instance",
+          "group": null,
+          "signature": "strong_names",
+          "docstring": "The names of the status roles' text-safe companions.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "(\"success-strong\", \"warning-strong\", ...)"
           },
           "examples": [],
           "file": "lib/poetry/core/tokens.rb",
@@ -10496,6 +10513,16 @@
           "name": "SHADCN_V4_COMPAT_VARS",
           "value": "%w[\n  background foreground\n  card card-foreground\n  popover popover-foreground\n  primary primary-foreground\n  secondary secondary-foreground\n  muted muted-foreground\n  accent accent-foreground\n  dest",
           "docstring": "The exact CSS custom-property set of the widely-distributed v4\ntheme convention (cssVarsV4, plus --radius). This is the drop-in\ncontract: any theme block written to that convention defines exactly\nthese names, so it can replace poetry's tokens.css wholesale."
+        },
+        {
+          "name": "STRONG_LIGHTNESS",
+          "value": "0.85",
+          "docstring": "The share of a status role's lightness its text-safe companion\nkeeps in light mode: the largest at which success clears AA on its\nown 10% tint, and the share the themes' own status rules have\nalways written out."
+        },
+        {
+          "name": "STRONG_SUFFIX",
+          "value": "\"-strong\"",
+          "docstring": "A status role is a fill and a tint. As text it is too light in\nlight mode (success is 3.67:1 on white), so each role has a\ntext-safe companion, --<role>-strong: the role at\n{STRONG_LIGHTNESS} of its lightness in light mode, and the role\nitself in dark, where it already reads. The text-<role> utilities\nread the companion; the other utilities (bg-, border-, ring-) keep\nthe role. This is the companion's suffix."
         }
       ]
     },

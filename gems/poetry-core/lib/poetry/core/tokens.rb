@@ -46,6 +46,21 @@ module Poetry
       # the theme chooses to override.
       POETRY_STATUS_VARS = %w[success warning info].freeze
 
+      # A status role is a fill and a tint. As text it is too light in
+      # light mode (success is 3.67:1 on white), so each role has a
+      # text-safe companion, --<role>-strong: the role at
+      # {STRONG_LIGHTNESS} of its lightness in light mode, and the role
+      # itself in dark, where it already reads. The text-<role> utilities
+      # read the companion; the other utilities (bg-, border-, ring-) keep
+      # the role. This is the companion's suffix.
+      STRONG_SUFFIX = "-strong"
+
+      # The share of a status role's lightness its text-safe companion
+      # keeps in light mode: the largest at which success clears AA on its
+      # own 10% tint, and the share the themes' own status rules have
+      # always written out.
+      STRONG_LIGHTNESS = 0.85
+
       class << self
         # The gem's canonical token file path ({DEFAULT_RELATIVE_PATH}
         # under the gem root).
@@ -90,19 +105,33 @@ module Poetry
         data.fetch("color").fetch(mode).keys.reject { |k| k.start_with?("$") }
       end
 
-      # The color of one semantic role in one mode.
+      # The names of the status roles' text-safe companions.
+      #
+      # @return [Array<String>] ("success-strong", "warning-strong", ...)
+      def strong_names
+        POETRY_STATUS_VARS.map { |role| "#{role}#{STRONG_SUFFIX}" }
+      end
+
+      # The color of one semantic role in one mode. A status role's
+      # companion ("success-strong") is not in the file: it is worked out
+      # from its role, {STRONG_LIGHTNESS} of its lightness in light mode
+      # and the role itself in dark.
       #
       # @param mode [String] "light" or "dark"
       # @param name [String] the role name ("primary", "destructive", ...)
       # @return [Color]
       # @raise [KeyError] when the mode has no such role
       def color(mode, name)
-        @colors[[mode, name]] ||= begin
-          token = data.fetch("color").fetch(mode).fetch(name) do
-            raise KeyError, "no #{mode} color token #{name.inspect}"
+        @colors[[mode, name]] ||=
+          if strong_names.include?(name)
+            role = color(mode, name.delete_suffix(STRONG_SUFFIX))
+            mode == "light" ? role.with(l: role.l * STRONG_LIGHTNESS) : role
+          else
+            token = data.fetch("color").fetch(mode).fetch(name) do
+              raise KeyError, "no #{mode} color token #{name.inspect}"
+            end
+            Color.from_dtcg(token.fetch("$value"))
           end
-          Color.from_dtcg(token.fetch("$value"))
-        end
       end
 
       # The radius dimension as CSS ("0.625rem").

@@ -179,7 +179,7 @@
             163.225
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. A green base chart hue; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. A green base chart hue. A fill and a tint; as text it is read through --success-strong, which the contrast gate holds to AA."
       },
       "warning": {
         "$type": "color",
@@ -191,7 +191,7 @@
             48.998
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. The orange base's primary; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. The orange base's primary. A fill and a tint; as text it is read through --warning-strong, which the contrast gate holds to AA."
       },
       "info": {
         "$type": "color",
@@ -203,7 +203,7 @@
             262.881
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop. A fill and a tint; as text it is read through --info-strong, which the contrast gate holds to AA."
       },
       "border": {
         "$type": "color",
@@ -559,7 +559,7 @@
             163.223
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. A green base chart hue; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. A green base chart hue. A fill and a tint; as text it is read through --success-strong, which the contrast gate holds to AA."
       },
       "warning": {
         "$type": "color",
@@ -571,7 +571,7 @@
             84.429
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. The orange base's primary; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. The orange base's primary. A fill and a tint; as text it is read through --warning-strong, which the contrast gate holds to AA."
       },
       "info": {
         "$type": "color",
@@ -583,7 +583,7 @@
             251.813
           ]
         },
-        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop; AA-gated like every role."
+        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop. A fill and a tint; as text it is read through --info-strong, which the contrast gate holds to AA."
       },
       "border": {
         "$type": "color",

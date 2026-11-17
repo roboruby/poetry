@@ -117,6 +117,16 @@ poetry:
       4.5)"
     - "[dark] sidebar-primary-foreground on sidebar-primary: 6.54:1 (locked AA, needs
       >= 4.5)"
+    - "[light] success-strong on background: 5.19:1 (locked AA, needs >= 4.5)"
+    - "[light] success-strong on muted: 4.76:1 (locked AA, needs >= 4.5)"
+    - "[light] success-strong on success/10% over background: 4.60:1 (locked AA, needs
+      >= 4.5)"
+    - "[light] warning-strong on muted: 6.59:1 (locked AA, needs >= 4.5)"
+    - "[light] warning-strong on warning/10% over background: 6.26:1 (locked AA, needs
+      >= 4.5)"
+    - "[light] info-strong on muted: 6.93:1 (locked AA, needs >= 4.5)"
+    - "[light] info-strong on info/10% over background: 6.54:1 (locked AA, needs >=
+      4.5)"
 ---
 # DESIGN.md - poetry maia
 

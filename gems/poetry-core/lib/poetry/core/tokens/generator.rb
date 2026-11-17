@@ -35,7 +35,8 @@ module Poetry
           "separate series.",
           "success, warning, info: poetry additions - the source ships no status roles. success and info " \
           "reuse source hues (a green base chart hue; the blue ramp's third stop); warning is the orange " \
-          "base's primary. All three are gated like every other role."
+          "base's primary. As text each is read through its -strong companion (the text-success, " \
+          "text-warning and text-info utilities), which the contrast gate holds to AA in both modes."
         ].freeze
 
         # The reference theme's distributed radius scale (@theme inline), in the
@@ -74,9 +75,19 @@ module Poetry
           @tokens.color_names("light").each do |name|
             lines << "  --#{name}: #{@tokens.color("light", name).css};"
           end
+          # The status roles' text-safe companions are written as what
+          # they are, the role darkened, so a theme that changes --success
+          # gets the matching --success-strong without naming it.
+          Tokens::POETRY_STATUS_VARS.each do |role|
+            lines << "  --#{role}#{Tokens::STRONG_SUFFIX}: " \
+                     "oklch(from var(--#{role}) calc(l * #{format("%g", Tokens::STRONG_LIGHTNESS)}) c h);"
+          end
           lines << "}" << "" << ".dark {" << "  color-scheme: dark;"
           @tokens.color_names("dark").each do |name|
             lines << "  --#{name}: #{@tokens.color("dark", name).css};"
+          end
+          Tokens::POETRY_STATUS_VARS.each do |role|
+            lines << "  --#{role}#{Tokens::STRONG_SUFFIX}: var(--#{role});"
           end
           lines << "}"
           "#{lines.join("\n")}\n"
@@ -105,6 +116,16 @@ module Poetry
           RADIUS_SCALE.each { |step, value| lines << "  --radius-#{step}: #{value};" }
           @tokens.color_names("light").each do |name|
             lines << "  --color-#{name}: var(--#{name});"
+          end
+          # A status role's text-safe companion as a color of its own, and
+          # the text utilities pointed at it: text-success reads
+          # --success-strong, while bg-success, border-success and
+          # ring-success keep the role.
+          @tokens.strong_names.each do |name|
+            lines << "  --color-#{name}: var(--#{name});"
+          end
+          Tokens::POETRY_STATUS_VARS.each do |role|
+            lines << "  --text-color-#{role}: var(--#{role}#{Tokens::STRONG_SUFFIX});"
           end
           lines << "}"
           "#{lines.join("\n")}\n"
@@ -160,6 +181,13 @@ module Poetry
             "colors" => @tokens.modes.to_h do |mode|
               [mode, @tokens.color_names(mode).to_h { |n| [n, @tokens.color(mode, n).css] }]
             end,
+            "status_text" => {
+              "roles" => Tokens::POETRY_STATUS_VARS,
+              "companions" => @tokens.strong_names.map { |name| "--#{name}" },
+              "light" => "the role at #{format("%g", Tokens::STRONG_LIGHTNESS)} of its lightness",
+              "dark" => "the role itself",
+              "utilities" => "text-<role> reads the companion; bg-, border- and ring-<role> keep the role"
+            },
             "contrast_policy" => {
               "floor" => "WCAG 2.2 AA (4.5:1) - locked, every gated pair",
               "target" => "AAA (7:1) wherever achievable at lock time",
