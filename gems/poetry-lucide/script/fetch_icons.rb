@@ -4,8 +4,10 @@
 # the supply-chain stance): downloads the upstream tarball,
 # sanitizes every SVG, and writes each icon's INNER markup to icons/<name>.svg
 # (the Icon component owns the <svg> wrapper), plus icons/aliases.json: the
-# old names Lucide renamed, each to its current name, from the icons' own
-# metadata. Run from the gem root:
+# old names Lucide renamed, each to its current name, and icons/tags.json:
+# the words Lucide files each icon under ("trash" under delete, garbage,
+# remove), which is what a search by meaning reads. Both come from the
+# icons' own metadata. Run from the gem root:
 #
 #   bundle exec ruby script/fetch_icons.rb
 #
@@ -42,8 +44,11 @@ module PoetryLucide
       icons.each { |name, svg| File.write(File.join(@dest, "#{name}.svg"), "#{sanitize(svg)}\n") }
       aliases = aliases_from(metadata, icons.keys)
       File.write(File.join(@dest, "aliases.json"), "#{JSON.pretty_generate(aliases)}\n")
+      tags = tags_from(metadata, icons.keys)
+      File.write(File.join(@dest, "tags.json"), "#{JSON.generate(tags).gsub('],"', "],\n\"")}\n")
       File.write(File.join(@dest, "VENDORED_COMMIT"), "#{PINNED_COMMIT}\n")
-      puts "vendored #{icons.size} icons and #{aliases.size} aliases at #{PINNED_COMMIT[0, 12]} -> #{@dest}"
+      puts "vendored #{icons.size} icons, #{aliases.size} aliases and tags for #{tags.size} icons " \
+           "at #{PINNED_COMMIT[0, 12]} -> #{@dest}"
     end
 
     # The sanitizer, exposed for the seeded-malicious-SVG test: takes full
@@ -112,6 +117,19 @@ module PoetryLucide
           aliases[old] = current if old.to_s.match?(/\A[a-z0-9][a-z0-9-]*\z/) && !names.include?(old)
         end
       end.sort.to_h
+    end
+
+    # Name => the words the icon is filed under, lowercased, one line per
+    # icon in the file. Only plain words and phrases are kept: a tag is
+    # text an agent reads back, so anything else is dropped.
+    def tags_from(metadata, names)
+      names.sort.each_with_object({}) do |name, tags|
+        words = Array(metadata.dig(name, "tags")).filter_map do |tag|
+          word = tag.to_s.downcase.strip
+          word if word.match?(/\A[a-z0-9][a-z0-9 .+&'-]{0,39}\z/)
+        end
+        tags[name] = words.uniq unless words.empty?
+      end
     end
   end
 end

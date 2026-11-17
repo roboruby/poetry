@@ -35,7 +35,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 51
+          "line": 52
         },
         {
           "name": "configure",
@@ -57,7 +57,7 @@
             }
           ],
           "file": "lib/poetry/agent.rb",
-          "line": 63
+          "line": 64
         },
         {
           "name": "root",
@@ -74,7 +74,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 44
+          "line": 45
         }
       ],
       "constants": [
@@ -17436,6 +17436,175 @@
       "constants": []
     },
     {
+      "path": "Poetry::Agent::GapReport",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Something the library lacked for a task, written up so its owner can\nhear of it: a component, a variant, an option or a block that was\nmissing, or documentation that was wrong. An agent that works around\na gap usually tells no one; this turns what it knows into an issue a\nperson can file with one click.\n\nNothing is sent from here. The report is a title, a body and a link\nthat opens the repository's new-issue form with both filled in; the\nperson the agent is working for reads it and decides.",
+      "examples": [
+        {
+          "title": "",
+          "text": "report = GapReport.new(summary: \"Badge has no warning variant\", kind: \"variant\", component: \"badge\")\nreport.url # => \"https://github.com/roboruby/poetry/issues/new?title=Gap%3A+Badge+has+...\""
+        }
+      ],
+      "file": "lib/poetry/agent/gap_report.rb",
+      "methods": [
+        {
+          "name": "body",
+          "scope": "instance",
+          "group": null,
+          "signature": "body",
+          "docstring": "The issue's body: one labelled line per thing known, then where\nthe report came from.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/gap_report.rb",
+          "line": 59
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(summary:, kind: \"other\", component: nil, wanted: nil, workaround: nil, client: nil)",
+          "docstring": "A report of one gap; every field but the summary is optional.",
+          "params": [
+            {
+              "name": "summary",
+              "types": [
+                "String"
+              ],
+              "text": "the gap in one line"
+            },
+            {
+              "name": "kind",
+              "types": [
+                "String"
+              ],
+              "text": "one of {KINDS}; anything else reads as \"other\""
+            },
+            {
+              "name": "component",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the component or block it concerns"
+            },
+            {
+              "name": "wanted",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what the task needed"
+            },
+            {
+              "name": "workaround",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what was done instead"
+            },
+            {
+              "name": "client",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the agent that met the gap, as it named itself"
+            }
+          ],
+          "return": {
+            "types": [
+              "GapReport"
+            ],
+            "text": "a new instance of GapReport"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/gap_report.rb",
+          "line": 39
+        },
+        {
+          "name": "title",
+          "scope": "instance",
+          "group": null,
+          "signature": "title",
+          "docstring": "The issue's title.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/gap_report.rb",
+          "line": 51
+        },
+        {
+          "name": "to_s",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_s",
+          "docstring": "The report as an agent or a terminal shows it: that nothing was\nsent, the link, then what the link holds.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/gap_report.rb",
+          "line": 79
+        },
+        {
+          "name": "url",
+          "scope": "instance",
+          "group": null,
+          "signature": "url",
+          "docstring": "The link that opens the new-issue form with the report filled in.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/gap_report.rb",
+          "line": 71
+        }
+      ],
+      "constants": [
+        {
+          "name": "FIELD_LIMIT",
+          "value": "600",
+          "docstring": "The most characters kept of each longer field."
+        },
+        {
+          "name": "ISSUES",
+          "value": "\"https://github.com/roboruby/poetry/issues/new\"",
+          "docstring": "Where a report is filed."
+        },
+        {
+          "name": "KINDS",
+          "value": "%w[component variant option block docs other].freeze",
+          "docstring": "What a gap can be."
+        },
+        {
+          "name": "SUMMARY_LIMIT",
+          "value": "120",
+          "docstring": "The most characters kept of the summary, and of each longer field:\nthe whole report has to fit in a link."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Agent::MCP",
       "type": "module",
       "superclass": null,
@@ -18003,7 +18172,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/bundled.rb",
-          "line": 60
+          "line": 61
         },
         {
           "name": "icon_names",
@@ -18015,7 +18184,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/bundled.rb",
-          "line": 51
+          "line": 52
+        },
+        {
+          "name": "icon_tags",
+          "scope": "class",
+          "group": null,
+          "signature": "icon_tags",
+          "docstring": "The words Lucide files each icon under, or nil without poetry-lucide\n(find_icon then searches by name alone).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/bundled.rb",
+          "line": 72
         },
         {
           "name": "server",
@@ -18133,6 +18314,23 @@
           "examples": [],
           "file": "lib/poetry/agent/mcp/http.rb",
           "line": 38
+        },
+        {
+          "name": "inspect",
+          "scope": "instance",
+          "group": null,
+          "signature": "inspect",
+          "docstring": "A short name instead of the default, which would print the whole\nserver once it is built: Rails prints a mounted app's inspect on\nits routing-error page, and a catalog's worth of text there is\nmore than its sanitizer accepts.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/http.rb",
+          "line": 61
         }
       ],
       "constants": []
@@ -18154,7 +18352,7 @@
           "name": "from_registries",
           "scope": "class",
           "group": null,
-          "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil)",
+          "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil)",
           "docstring": "Several registry roots as one catalog (Registry.merged: later\nroots win a path collision, block templates resolve to absolute\npaths): the gems' published registries and, when the app\ncommitted its own with `bin/rails poetry:registry`, the app's -\nits components then describe, check and compose like a gem's.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
@@ -18189,6 +18387,14 @@
               "text": "the active set's old names => current\nnames, so check warns on a renamed icon instead of rejecting it"
             },
             {
+              "name": "icon_tags",
+              "types": [
+                "Hash{String => Array<String>}",
+                "nil"
+              ],
+              "text": "the active set's names => the\nwords each icon is filed under, which find_icon searches by meaning"
+            },
+            {
               "name": "skills",
               "types": [
                 "Hash{String => #call}"
@@ -18214,13 +18420,13 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 242
+          "line": 287
         },
         {
           "name": "from_registry",
           "scope": "class",
           "group": null,
-          "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil)",
+          "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil)",
           "docstring": "skills: skill name => a zero-arg callable returning the skill's\n{relative path => content} file map (the get_skill tool).\nLazy because the usage skill is generated from the registry on\nfirst fetch - server boot stays instant.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
@@ -18256,6 +18462,14 @@
               "text": "the active set's old names => current\nnames, so check warns on a renamed icon instead of rejecting it"
             },
             {
+              "name": "icon_tags",
+              "types": [
+                "Hash{String => Array<String>}",
+                "nil"
+              ],
+              "text": "the active set's names => the\nwords each icon is filed under, which find_icon searches by meaning"
+            },
+            {
               "name": "skills",
               "types": [
                 "Hash{String => #call}"
@@ -18281,7 +18495,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 218
+          "line": 261
         },
         {
           "name": "mapped_helpers",
@@ -18301,7 +18515,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 277
+          "line": 324
         },
         {
           "name": "apps",
@@ -18326,7 +18540,19 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 351
+          "line": 448
+        },
+        {
+          "name": "configuration",
+          "scope": "instance",
+          "group": null,
+          "signature": "configuration",
+          "docstring": "The gem's configuration for this server: every request runs inside {#notify}.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 387
         },
         {
           "name": "handle",
@@ -18352,13 +18578,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 363
+          "line": 460
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [])",
+          "signature": "initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [], icons: nil)",
           "docstring": "app_root: the HOST app directory (where `bundle exec poetry-agent`\nruns, i.e. Dir.pwd), so build_page's probe/direct steps can read\nthe app's config/theme. nil => the host is not inspected and those\nsteps degrade gracefully; the registry read (root) is unaffected.\nrecipes: registry-item SUMMARIES (content-free) from the owning\ngem's RecipeItems projection - the exe passes them so this class\nstays poetry-ui-free.",
           "params": [
             {
@@ -18411,6 +18637,14 @@
                 "Array<Hash>"
               ],
               "text": "registry-item summaries (see above)"
+            },
+            {
+              "name": "icons",
+              "types": [
+                "Poetry::Core::Icons::Finder",
+                "nil"
+              ],
+              "text": "the active icon set's finder, or nil\nfor a bundle with no icon set (find_icon then says so)"
             }
           ],
           "return": {
@@ -18421,7 +18655,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 296
+          "line": 345
+        },
+        {
+          "name": "inspect",
+          "scope": "instance",
+          "group": null,
+          "signature": "inspect",
+          "docstring": "A short name: the default would print every registry entry, every\nblock and every icon the server holds.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 421
         },
         {
           "name": "mcp",
@@ -18438,7 +18689,37 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 335
+          "line": 431
+        },
+        {
+          "name": "notify",
+          "scope": "instance",
+          "group": null,
+          "signature": "notify(data, &)",
+          "docstring": "Runs one request inside an ActiveSupport::Notifications event.\nThe payload says what was asked and by whom: method (\"tools/call\"),\ntool (the tool's name, for a call), client (what the agent named\nitself in the handshake, when it did) and error (the gem's error\nkind, when the request failed). A tool's arguments are left out:\nthey can be a whole template.",
+          "params": [
+            {
+              "name": "data",
+              "types": [
+                "Hash"
+              ],
+              "text": "what the gem knows of the request, filled in as it runs"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the request's own result"
+          },
+          "examples": [
+            {
+              "title": "Count tool calls by agent",
+              "text": "ActiveSupport::Notifications.subscribe(\"request.poetry_agent\") do |event|\n  StatsD.increment(\"poetry.tool\", tags: [\"tool:#{event.payload[:tool]}\"]) if event.payload[:tool]\nend"
+            }
+          ],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 408
         },
         {
           "name": "serve",
@@ -18465,7 +18746,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 373
+          "line": 470
         }
       ],
       "constants": [
@@ -18473,6 +18754,21 @@
           "name": "ARCHETYPE_MATCH",
           "value": "2",
           "docstring": "The brief-word -> page-architecture routing table."
+        },
+        {
+          "name": "EVENT",
+          "value": "\"request.poetry_agent\"",
+          "docstring": "The event every request to the server is reported as, for a host\nthat wants to know how its agents use the library."
+        },
+        {
+          "name": "ICON_HINT",
+          "value": "\"Say what it draws or what it is used for in one or two plain words (\\\"trash\\\", \" \\\n\"\\\"delete\\\", \\\"arrow left\\\"); a set files its icons under everyday words.\"",
+          "docstring": "What find_icon suggests when nothing answered."
+        },
+        {
+          "name": "NO_ICON_SET",
+          "value": "\"find_icon: this bundle has no icon set to search. Add one (gem \\\"poetry-lucide\\\" is \" \\\n\"the default set) and restart the server.\"",
+          "docstring": "What find_icon answers in a bundle with no icon set."
         },
         {
           "name": "STEPS",

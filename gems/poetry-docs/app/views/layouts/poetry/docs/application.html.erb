@@ -119,7 +119,12 @@
       <% end %>
       <% shell.with_inset do %>
         <%= render "poetry/docs/shared/header" %>
-        <main class="mx-auto w-full max-w-4xl flex-1 p-6 lg:p-10">
+        <%# A page with a Markdown twin carries the page menu on its title's
+            line; the title keeps clear of it, so a long one wraps before
+            it instead of running underneath. %>
+        <% markdown_path = respond_to?(:markdown_alternate_path) ? markdown_alternate_path : nil %>
+        <main class="mx-auto w-full max-w-4xl flex-1 p-6 lg:p-10 <%= "md:[&_h1]:pr-48" if markdown_path %>">
+          <%= render "poetry/docs/shared/page_menu", markdown_path: markdown_path if markdown_path %>
           <%= yield %>
         </main>
       <% end %>

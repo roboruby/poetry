@@ -328,6 +328,7 @@ module Poetry
           details << "default #{prop["default"].inspect}" if prop.key?("default")
           details << "required" if prop["required"]
           details << "format: #{prop["format"]}" if prop["format"]
+          details << Poetry::Core::Check::Renames.notice(prop["deprecated"]) if prop["deprecated"]
           line = "- `#{prop["name"]}:` (#{prop["type"]})#{" - #{details.join(", ")}" if details.any?}"
           prop["description"] ? "#{line} - #{prop["description"]}" : line
         end

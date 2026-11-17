@@ -2,6 +2,7 @@
 
 require "json"
 require "mcp"
+require "active_support/notifications"
 
 module Poetry
   module Agent
@@ -151,6 +152,25 @@ module Poetry
           "annotations" => { "readOnlyHint" => true }
         },
         {
+          "name" => "find_icon",
+          "description" => "Which icon means this? Give what the icon should stand for (\"delete\", " \
+                           "\"warning\", \"send message\") or part of a name, and get the names in the " \
+                           "active icon set that answer it, best first, each with the words it is filed " \
+                           "under. Call it before writing poetry_icon(name:) for a name you have not " \
+                           "seen in this catalog: check rejects a name the set does not have.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "query" => { "type" => "string",
+                           "description" => "what the icon should mean, in a word or two, or part of its name" },
+              "limit" => { "type" => "integer", "minimum" => 1, "maximum" => 50, "default" => 8,
+                           "description" => "the most names to return" }
+            },
+            "required" => ["query"]
+          },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
           "name" => "get_skill",
           "description" => "A poetry Claude Code skill served at runtime - for hosts where " \
                            "the installed .claude/skills files are absent (hosted agents, sessions " \
@@ -186,6 +206,27 @@ module Poetry
             "required" => ["topic"]
           },
           "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "report_gap",
+          "description" => "The library lacked something this task needed: a component, a variant, an option " \
+                           "or a block, or its documentation was wrong. Describe it and get back a link that " \
+                           "opens a prefilled issue. Nothing is sent from here: show the link to the person " \
+                           "you are working for, who decides whether to file it. Call it after you have " \
+                           "worked around the gap, never instead of finishing the task.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "summary" => { "type" => "string",
+                             "description" => "the gap in one line, e.g. Badge has no warning variant" },
+              "kind" => { "type" => "string", "enum" => Poetry::Agent::GapReport::KINDS, "default" => "other" },
+              "component" => { "type" => "string", "description" => "the component or block it concerns, if any" },
+              "wanted" => { "type" => "string", "description" => "what the task needed, in a sentence or two" },
+              "workaround" => { "type" => "string", "description" => "what you did instead" }
+            },
+            "required" => ["summary"]
+          },
+          "annotations" => { "readOnlyHint" => true }
         }
       ].freeze
 
@@ -210,16 +251,18 @@ module Poetry
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
         # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
         #   names, so check warns on a renamed icon instead of rejecting it
+        # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
+        #   words each icon is filed under, which find_icon searches by meaning
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         # rubocop:disable Metrics/ParameterLists
         def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
-                               icon_aliases: nil)
+                               icon_aliases: nil, icon_tags: nil)
           # rubocop:enable Metrics/ParameterLists
-          from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills,
-                                  app_root: app_root, recipes: recipes, icon_aliases: icon_aliases)
+          from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills, app_root: app_root,
+                                  recipes: recipes, icon_aliases: icon_aliases, icon_tags: icon_tags)
         end
 
         # Several registry roots as one catalog (Registry.merged: later
@@ -234,13 +277,15 @@ module Poetry
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
         # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
         #   names, so check warns on a renamed icon instead of rejecting it
+        # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
+        #   words each icon is filed under, which find_icon searches by meaning
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         # rubocop:disable Metrics/ParameterLists
         def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
-                                 icon_aliases: nil)
+                                 icon_aliases: nil, icon_tags: nil)
           # rubocop:enable Metrics/ParameterLists
           committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
@@ -265,8 +310,10 @@ module Poetry
                                                                         icon_aliases: icon_aliases,
                                                                         helper_args: committed.helper_args,
                                                                         host_helpers: host_helpers)
+          icons = icon_names && Poetry::Core::Icons::Finder.new(names: icon_names, aliases: icon_aliases || {},
+                                                                tags: icon_tags || {})
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
-              root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes)
+              root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes, icons: icons)
         end
 
         # The helper each entry names, so an explicit helper list never
@@ -293,7 +340,10 @@ module Poetry
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning the skill's file map
         # @param app_root [String, nil] the host app directory (see above)
         # @param recipes [Array<Hash>] registry-item summaries (see above)
-        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: []) # rubocop:disable Metrics/ParameterLists
+        # @param icons [Poetry::Core::Icons::Finder, nil] the active icon set's finder, or nil
+        #   for a bundle with no icon set (find_icon then says so)
+        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [], icons: nil) # rubocop:disable Metrics/ParameterLists
+          @icons = icons
           @entries = entries
           @catalog = catalog
           @blocks = blocks
@@ -304,6 +354,13 @@ module Poetry
           @recipes = recipes
           @documents = []
         end
+
+        # What find_icon answers in a bundle with no icon set.
+        NO_ICON_SET = "find_icon: this bundle has no icon set to search. Add one (gem \"poetry-lucide\" is " \
+                      "the default set) and restart the server."
+        # What find_icon suggests when nothing answered.
+        ICON_HINT = "Say what it draws or what it is used for in one or two plain words (\"trash\", " \
+                    "\"delete\", \"arrow left\"); a set files its icons under everyday words."
 
         # compose routing: the strong-match threshold, and the words
         # too generic to signal a block - connectives, task verbs, and
@@ -326,6 +383,45 @@ module Poetry
           title titles description descriptions action actions
         ].to_set.freeze
 
+        # The gem's configuration for this server: every request runs inside {#notify}.
+        def configuration
+          ::MCP::Configuration.new(around_request: method(:notify))
+        end
+
+        # The event every request to the server is reported as, for a host
+        # that wants to know how its agents use the library.
+        EVENT = "request.poetry_agent"
+
+        # Runs one request inside an ActiveSupport::Notifications event.
+        # The payload says what was asked and by whom: method ("tools/call"),
+        # tool (the tool's name, for a call), client (what the agent named
+        # itself in the handshake, when it did) and error (the gem's error
+        # kind, when the request failed). A tool's arguments are left out:
+        # they can be a whole template.
+        #
+        # @param data [Hash] what the gem knows of the request, filled in as it runs
+        # @return [Object] the request's own result
+        # @example Count tool calls by agent
+        #   ActiveSupport::Notifications.subscribe("request.poetry_agent") do |event|
+        #     StatsD.increment("poetry.tool", tags: ["tool:#{event.payload[:tool]}"]) if event.payload[:tool]
+        #   end
+        def notify(data, &)
+          ActiveSupport::Notifications.instrument(EVENT) do |payload|
+            yield
+          ensure
+            payload.merge!({ method: data[:method], tool: data[:tool_name], client: data[:client],
+                             error: data[:error] }.compact)
+          end
+        end
+
+        # A short name: the default would print every registry entry, every
+        # block and every icon the server holds.
+        #
+        # @return [String]
+        def inspect
+          "#<#{self.class.name} #{TOOLS.size} tools, #{@entries.size} components>"
+        end
+
         # The gem's server over the roster: JSON-RPC, the protocol
         # negotiation, the argument validation and the transports are its;
         # every tool dispatches here. Public so a host can define its own
@@ -335,7 +431,8 @@ module Poetry
         def mcp
           @mcp ||= ::MCP::Server.new(name: SERVER_INFO["name"], version: SERVER_INFO["version"],
                                      capabilities: capabilities, tools: tool_classes,
-                                     resources: @documents.map(&:resource)).tap do |server|
+                                     resources: @documents.map(&:resource),
+                                     configuration: configuration).tap do |server|
             server.resources_read_handler(&Apps.reader(@documents)) if @documents.any?
           end
         end
@@ -422,6 +519,8 @@ module Poetry
             when "list_blocks" then list_blocks
             when "describe_block" then describe_block(arguments)
             when "list_recipes" then list_recipes
+            when "find_icon" then find_icon(arguments)
+            when "report_gap" then report_gap(arguments)
             when "get_skill" then get_skill(arguments)
             when "guidance" then guidance(arguments)
             end
@@ -917,6 +1016,42 @@ module Poetry
           end.join("\n")
         end
 
+        # The report_gap tool: what the task lacked, as a link that opens a
+        # prefilled issue. Nothing leaves the server.
+        def report_gap(arguments)
+          Poetry::Agent::GapReport.new(
+            summary: arguments["summary"], kind: arguments.fetch("kind", "other"), component: arguments["component"],
+            wanted: arguments["wanted"], workaround: arguments["workaround"]
+          ).to_s
+        end
+
+        # The find_icon tool: the icon names that answer a description,
+        # best first, each with the words it is filed under (the ones that
+        # matched ahead of the rest).
+        def find_icon(arguments)
+          return NO_ICON_SET unless @icons
+
+          query = arguments["query"].to_s.strip
+          matches = @icons.find(query, limit: arguments.fetch("limit", Poetry::Core::Icons::Finder::LIMIT))
+          return "No icon answers #{query.inspect}. #{ICON_HINT}" if matches.empty?
+
+          lines = matches.map { |match| icon_line(match) }
+          example = matches.first[:name]
+          ["#{matches.size} icon#{"s" if matches.size > 1} for #{query.inspect}, best first:", *lines,
+           "Render one with poetry_icon(name: #{icon_symbol(example)}). A name with a hyphen is a quoted " \
+           "symbol, as in poetry_icon(name: :\"circle-alert\")."].join("\n")
+        end
+
+        # One answer: the name, then up to six of its tags (the finder
+        # lists the ones that answered first).
+        def icon_line(match)
+          filed = match[:tags].first(6)
+          filed.empty? ? "- #{match[:name]}" : "- #{match[:name]} (filed under: #{filed.join(", ")})"
+        end
+
+        # An icon name as the Ruby symbol a template writes.
+        def icon_symbol(name) = name.include?("-") ? ":\"#{name}\"" : ":#{name}"
+
         # Runtime skill delivery: the SAME
         # files `rails g poetry:skill` installs, served over MCP for hosts
         # that cannot write files. SKILL.md alone first - the skill's own
@@ -1006,6 +1141,7 @@ module Poetry
             facets << prop["variants"].join("|") if prop["variants"]
             facets << "required" if prop["required"] && !prop.key?("default")
             facets << "format: #{prop["format"]}" if prop["format"]
+            facets << Poetry::Core::Check::Renames.notice(prop["deprecated"]) if prop["deprecated"]
             suffix = facets.any? ? " (#{facets.join("; ")})" : ""
             description = prop["description"] ? " - #{prop["description"]}" : ""
             "- #{prop["name"]}: #{prop["type"]}#{suffix}#{description}"

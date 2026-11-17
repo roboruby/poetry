@@ -86,6 +86,33 @@ namespace :poetry_docs do
     Rails::Generators.invoke("poetry:skill", [ "--force" ], destination_root: Poetry::Docs.root.to_s)
   end
 
+  desc "Rebuild data/eval-ledger.json from the judged runs stored under poetry-ui's eval/results"
+  task eval_ledger: :environment do
+    monorepo_only.call("poetry_docs:eval_ledger")
+    count = Poetry::Docs::EvalLedger.write!
+    puts "wrote data/eval-ledger.json (#{count} runs)"
+  end
+
+  desc "Write the Claude Code plugin the repository publishes: .claude-plugin/marketplace.json and plugins/poetry"
+  task plugin: :environment do
+    monorepo_only.call("poetry_docs:plugin")
+    count = Poetry::Docs::PluginBundle.write
+    puts "wrote the plugin (#{count} files under .claude-plugin and #{Poetry::Docs::PluginBundle::SOURCE})"
+  end
+
+  namespace :plugin do
+    desc "Fail when the committed plugin differs from the skills and metadata it is generated from"
+    task verify: :environment do
+      monorepo_only.call("poetry_docs:plugin:verify")
+      stale = Poetry::Docs::PluginBundle.stale
+      if stale.any?
+        abort "poetry_docs:plugin:verify: #{stale.size} file#{"s" if stale.size > 1} differ (#{stale.first(3).join(", ")}) " \
+              "- run bundle exec rake poetry_docs:plugin and commit"
+      end
+      puts "poetry_docs:plugin: the committed plugin matches the skills"
+    end
+  end
+
   # The safelist an install would write in this host: every loaded gem's
   # style dictionaries plus poetry-ui's committed template classes
   # (poetry:install's own recipe, so the file reads as an installer's).
@@ -165,13 +192,13 @@ namespace :poetry_docs do
     end
   end
 
-  desc "Everything the engine regenerates after the gems change: the skills, the API reference, the search index, " \
-       "the vendored CSS, the stylesheet"
+  desc "Everything the engine regenerates after the gems change: the skills, the plugin, the eval ledger, " \
+       "the API reference, the search index, the vendored CSS, the stylesheet"
   task :refresh do
     monorepo_only.call("poetry_docs:refresh")
     # The vendored copies before the stylesheet, which is built from them.
-    %w[poetry_docs:skill poetry_docs:api_reference poetry_docs:search_index
-       poetry_docs:vendored poetry_docs:css].each do |name|
+    %w[poetry_docs:skill poetry_docs:plugin poetry_docs:eval_ledger poetry_docs:api_reference
+       poetry_docs:search_index poetry_docs:vendored poetry_docs:css].each do |name|
       Rake::Task[name].invoke
     end
   end

@@ -1,0 +1,639 @@
+{
+  "runs": [
+    {
+      "id": "2026-07-07",
+      "briefs": 31,
+      "model": "claude-sonnet-5",
+      "poetry": 13,
+      "raw": 18,
+      "inconclusive": 0,
+      "share": 0.419,
+      "interval": [
+        0.264,
+        0.592
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 8,
+          "raw": 22,
+          "tied": 1
+        },
+        "composition": {
+          "poetry": 9,
+          "raw": 21,
+          "tied": 1
+        },
+        "clarity": {
+          "poetry": 10,
+          "raw": 21,
+          "tied": 0
+        },
+        "brief_fit": {
+          "poetry": 18,
+          "raw": 13,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 162,
+          "of": 196,
+          "rate": 0.827
+        },
+        "raw": {
+          "passed": 132,
+          "of": 196,
+          "rate": 0.673
+        }
+      },
+      "cost_usd": 73.3602
+    },
+    {
+      "id": "2026-07-08",
+      "briefs": 5,
+      "model": "claude-sonnet-5",
+      "poetry": 2,
+      "raw": 3,
+      "inconclusive": 0,
+      "share": 0.4,
+      "interval": [
+        0.118,
+        0.769
+      ]
+    },
+    {
+      "id": "2026-07-09",
+      "briefs": 10,
+      "model": "claude-sonnet-5",
+      "poetry": 4,
+      "raw": 6,
+      "inconclusive": 0,
+      "share": 0.4,
+      "interval": [
+        0.168,
+        0.687
+      ]
+    },
+    {
+      "id": "2026-07-09-rebaseline",
+      "briefs": 31,
+      "model": "claude-sonnet-5",
+      "poetry": 12,
+      "raw": 16,
+      "inconclusive": 3,
+      "share": 0.429,
+      "interval": [
+        0.265,
+        0.609
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw": 21,
+          "tied": 4
+        },
+        "composition": {
+          "poetry": 5,
+          "raw": 25,
+          "tied": 1
+        },
+        "clarity": {
+          "poetry": 7,
+          "raw": 23,
+          "tied": 1
+        },
+        "brief_fit": {
+          "poetry": 18,
+          "raw": 13,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 152,
+          "of": 196,
+          "rate": 0.776
+        },
+        "raw": {
+          "passed": 132,
+          "of": 196,
+          "rate": 0.673
+        }
+      },
+      "cost_usd": 23.3986
+    },
+    {
+      "id": "2026-07-09-v11",
+      "briefs": 6,
+      "model": "claude-sonnet-5",
+      "poetry": 1,
+      "raw": 4,
+      "inconclusive": 1,
+      "share": 0.2,
+      "interval": [
+        0.036,
+        0.624
+      ]
+    },
+    {
+      "id": "2026-07-10-designfire",
+      "briefs": 31,
+      "model": "claude-sonnet-5",
+      "poetry": 11,
+      "raw": 19,
+      "inconclusive": 1,
+      "share": 0.367,
+      "interval": [
+        0.219,
+        0.545
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 9,
+          "raw": 20,
+          "tied": 2
+        },
+        "composition": {
+          "poetry": 6,
+          "raw": 20,
+          "tied": 5
+        },
+        "clarity": {
+          "poetry": 8,
+          "raw": 21,
+          "tied": 2
+        },
+        "brief_fit": {
+          "poetry": 14,
+          "raw": 14,
+          "tied": 3
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 146,
+          "of": 196,
+          "rate": 0.745
+        },
+        "raw": {
+          "passed": 132,
+          "of": 196,
+          "rate": 0.673
+        }
+      },
+      "cost_usd": 20.3132
+    },
+    {
+      "id": "2026-07-11-anyof",
+      "briefs": 31,
+      "model": "claude-sonnet-5",
+      "poetry": 15,
+      "raw": 15,
+      "inconclusive": 1,
+      "share": 0.5,
+      "interval": [
+        0.332,
+        0.668
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 9,
+          "raw": 19,
+          "tied": 3
+        },
+        "composition": {
+          "poetry": 8,
+          "raw": 21,
+          "tied": 2
+        },
+        "clarity": {
+          "poetry": 11,
+          "raw": 17,
+          "tied": 3
+        },
+        "brief_fit": {
+          "poetry": 23,
+          "raw": 7,
+          "tied": 1
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 172,
+          "of": 196,
+          "rate": 0.878
+        },
+        "raw": {
+          "passed": 132,
+          "of": 196,
+          "rate": 0.673
+        }
+      },
+      "cost_usd": 20.4592
+    },
+    {
+      "id": "2026-07-11-blockpath",
+      "briefs": 31,
+      "model": "claude-sonnet-5",
+      "poetry": 11,
+      "raw": 17,
+      "inconclusive": 3,
+      "share": 0.393,
+      "interval": [
+        0.236,
+        0.576
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 9,
+          "raw": 21,
+          "tied": 1
+        },
+        "composition": {
+          "poetry": 8,
+          "raw": 20,
+          "tied": 3
+        },
+        "clarity": {
+          "poetry": 9,
+          "raw": 21,
+          "tied": 1
+        },
+        "brief_fit": {
+          "poetry": 16,
+          "raw": 14,
+          "tied": 1
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 160,
+          "of": 196,
+          "rate": 0.816
+        },
+        "raw": {
+          "passed": 132,
+          "of": 196,
+          "rate": 0.673
+        }
+      },
+      "cost_usd": 18.61
+    },
+    {
+      "id": "2026-07-11-pagescale",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 4,
+      "raw": 8,
+      "inconclusive": 0,
+      "share": 0.333,
+      "interval": [
+        0.138,
+        0.609
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw": 9,
+          "tied": 0
+        },
+        "composition": {
+          "poetry": 3,
+          "raw": 7,
+          "tied": 2
+        },
+        "clarity": {
+          "poetry": 4,
+          "raw": 8,
+          "tied": 0
+        },
+        "brief_fit": {
+          "poetry": 5,
+          "raw": 7,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 38,
+          "of": 48,
+          "rate": 0.792
+        },
+        "raw": {
+          "passed": 40,
+          "of": 48,
+          "rate": 0.833
+        }
+      },
+      "cost_usd": 16.2834
+    },
+    {
+      "id": "g-control-1",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 1,
+      "raw": 9,
+      "inconclusive": 2,
+      "share": 0.1,
+      "interval": [
+        0.018,
+        0.404
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 2,
+          "raw": 9,
+          "tied": 1
+        },
+        "composition": {
+          "poetry": 3,
+          "raw": 8,
+          "tied": 1
+        },
+        "clarity": {
+          "poetry": 1,
+          "raw": 10,
+          "tied": 1
+        },
+        "brief_fit": {
+          "poetry": 4,
+          "raw": 8,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 31,
+          "of": 48,
+          "rate": 0.646
+        },
+        "raw": {
+          "passed": 39,
+          "of": 48,
+          "rate": 0.813
+        }
+      },
+      "cost_usd": 16.2143
+    },
+    {
+      "id": "g-control-2",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 6,
+      "raw": 6,
+      "inconclusive": 0,
+      "share": 0.5,
+      "interval": [
+        0.254,
+        0.746
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw": 6,
+          "tied": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw": 6,
+          "tied": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw": 6,
+          "tied": 0
+        },
+        "brief_fit": {
+          "poetry": 7,
+          "raw": 5,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 39,
+          "of": 48,
+          "rate": 0.813
+        },
+        "raw": {
+          "passed": 34,
+          "of": 48,
+          "rate": 0.708
+        }
+      },
+      "cost_usd": 14.4007
+    },
+    {
+      "id": "g-control-3",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 5,
+      "raw": 7,
+      "inconclusive": 0,
+      "share": 0.417,
+      "interval": [
+        0.193,
+        0.68
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw": 7,
+          "tied": 2
+        },
+        "composition": {
+          "poetry": 5,
+          "raw": 7,
+          "tied": 0
+        },
+        "clarity": {
+          "poetry": 5,
+          "raw": 7,
+          "tied": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw": 6,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 33,
+          "of": 48,
+          "rate": 0.688
+        },
+        "raw": {
+          "passed": 37,
+          "of": 48,
+          "rate": 0.771
+        }
+      },
+      "cost_usd": 15.381
+    },
+    {
+      "id": "g-treatment-1",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 5,
+      "raw": 5,
+      "inconclusive": 2,
+      "share": 0.5,
+      "interval": [
+        0.237,
+        0.763
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw": 8,
+          "tied": 1
+        },
+        "composition": {
+          "poetry": 4,
+          "raw": 6,
+          "tied": 2
+        },
+        "clarity": {
+          "poetry": 5,
+          "raw": 7,
+          "tied": 0
+        },
+        "brief_fit": {
+          "poetry": 5,
+          "raw": 5,
+          "tied": 2
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 36,
+          "of": 48,
+          "rate": 0.75
+        },
+        "raw": {
+          "passed": 39,
+          "of": 48,
+          "rate": 0.813
+        }
+      },
+      "cost_usd": 15.093
+    },
+    {
+      "id": "g-treatment-2",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 3,
+      "raw": 7,
+      "inconclusive": 2,
+      "share": 0.3,
+      "interval": [
+        0.108,
+        0.603
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw": 7,
+          "tied": 2
+        },
+        "composition": {
+          "poetry": 3,
+          "raw": 8,
+          "tied": 1
+        },
+        "clarity": {
+          "poetry": 2,
+          "raw": 8,
+          "tied": 2
+        },
+        "brief_fit": {
+          "poetry": 4,
+          "raw": 8,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 32,
+          "of": 48,
+          "rate": 0.667
+        },
+        "raw": {
+          "passed": 39,
+          "of": 48,
+          "rate": 0.813
+        }
+      },
+      "cost_usd": 14.4375
+    },
+    {
+      "id": "g-treatment-3",
+      "briefs": 12,
+      "model": "claude-sonnet-5",
+      "poetry": 2,
+      "raw": 10,
+      "inconclusive": 0,
+      "share": 0.167,
+      "interval": [
+        0.047,
+        0.448
+      ],
+      "axes": {
+        "hierarchy": {
+          "poetry": 2,
+          "raw": 10,
+          "tied": 0
+        },
+        "composition": {
+          "poetry": 3,
+          "raw": 9,
+          "tied": 0
+        },
+        "clarity": {
+          "poetry": 1,
+          "raw": 9,
+          "tied": 2
+        },
+        "brief_fit": {
+          "poetry": 2,
+          "raw": 10,
+          "tied": 0
+        }
+      },
+      "checks": {
+        "poetry": {
+          "passed": 30,
+          "of": 48,
+          "rate": 0.625
+        },
+        "raw": {
+          "passed": 38,
+          "of": 48,
+          "rate": 0.792
+        }
+      },
+      "cost_usd": 15.3038
+    }
+  ],
+  "degradation": {
+    "id": "2026-07-13-degradation",
+    "briefs": 10,
+    "pass_rates": {
+      "poetry": {
+        "p0": 0.889,
+        "p1": 0.889,
+        "p2": 0.889
+      },
+      "raw": {
+        "p0": 0.619,
+        "p1": 0.619,
+        "p2": 0.619
+      }
+    },
+    "judged_poetry_wins": {
+      "p0": 8,
+      "p2": 7
+    }
+  }
+}

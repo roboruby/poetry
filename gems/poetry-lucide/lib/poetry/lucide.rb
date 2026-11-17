@@ -22,7 +22,16 @@ module Poetry
       #
       # @return [Poetry::Core::Icons::FileSet]
       def set
-        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"), aliases: aliases)
+        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"), aliases: aliases, tags: tags)
+      end
+
+      # The words Lucide files each icon under (icons/tags.json, from the
+      # icons' own metadata): what `Poetry::Core::Icons.find` reads to
+      # answer "which icon means delete".
+      #
+      # @return [Hash{String => Array<String>}]
+      def tags
+        @tags ||= JSON.parse(root.join("icons/tags.json").read).freeze
       end
 
       # The names Lucide renamed, each to the current name it renders as

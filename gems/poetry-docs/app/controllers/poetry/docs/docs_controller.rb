@@ -128,6 +128,11 @@ module Poetry
         @recipes = Poetry::Ui.recipe_items.summaries
       end
 
+      # The judged runs, from the committed ledger.
+      def evals
+        @ledger = EvalLedger.read
+      end
+
       # The human half of the skills surface: cards projected from the same
       # SkillCatalog the discovery index serves, with install commands built
       # on the live origin.
@@ -242,6 +247,7 @@ module Poetry
         when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
         when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug.tr('-', '_')}", icon_entry)
         when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
+        when "evals" then DocsMarkdown.evals(guide_entry("evals"))
         when "community_items" then DocsMarkdown.community_items(guide_entry("community-items"))
         when "community_updates" then DocsMarkdown.community_updates(guide_entry("community-updates"))
         when "community_publishing" then DocsMarkdown.community_publishing(guide_entry("community-publishing"))

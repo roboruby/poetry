@@ -109,6 +109,10 @@ module Poetry
                                "opt-in, bring-your-own key) configured with Poetry's operator " \
                                "register - watch a GUI agent operate the components, and see which " \
                                "tasks succeed through ARIA alone."),
+        Entry.new(slug: "evals", title: "Evals", section: "docs", icon: :"flask-conical",
+                  description: "What happens when an agent builds the same screen with Poetry and with plain " \
+                               "Tailwind: every judged run stored so far, with the uncertainty its sample size " \
+                               "allows, the checks each side passed, and what the numbers can and cannot say."),
         Entry.new(slug: "agent-skills", title: "Agent Skills", section: "docs", icon: :"graduation-cap",
                   description: "The installable skills catalog: what each skill teaches, served live " \
                                "with a discovery index (agentskills.io schema, sha256 digests) so " \
@@ -270,7 +274,7 @@ module Poetry
           "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
                            engines
                            herb],
-          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent]
+          "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui mcp-apps page-agent evals]
         }.freeze
 
         # DOC_SECTIONS resolved to entries. Raises when the section map and

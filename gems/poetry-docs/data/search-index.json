@@ -60,6 +60,12 @@
     "path": "/installation#upgrade"
   },
   {
+    "title": "Names that changed",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#renames"
+  },
+  {
     "title": "The three ownership tiers",
     "page": "Installation",
     "section": "docs",
@@ -882,6 +888,48 @@
     "path": "/page-agent#provenance"
   },
   {
+    "title": "Evals",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals"
+  },
+  {
+    "title": "What is measured",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#what-is-measured"
+  },
+  {
+    "title": "Every judged run",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#runs"
+  },
+  {
+    "title": "How to read it",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#reading"
+  },
+  {
+    "title": "Where the judge preferred which",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#axes"
+  },
+  {
+    "title": "A longer conversation",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#long-conversations"
+  },
+  {
+    "title": "What this does not cover",
+    "page": "Evals",
+    "section": "docs",
+    "path": "/evals#limits"
+  },
+  {
     "title": "Agent Skills",
     "page": "Agent Skills",
     "section": "docs",
@@ -898,6 +946,12 @@
     "page": "Agent Skills",
     "section": "docs",
     "path": "/agent-skills#poetry"
+  },
+  {
+    "title": "As a Claude Code plugin",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#plugin"
   },
   {
     "title": "In a Rails app with Poetry",
@@ -1326,10 +1380,16 @@
     "path": "/mcp-server#loop"
   },
   {
-    "title": "The ten tools",
+    "title": "The twelve tools",
     "page": "MCP Server",
     "section": "docs",
     "path": "/mcp-server#tools"
+  },
+  {
+    "title": "Hearing back from agents",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#hearing-back"
   },
   {
     "title": "Over HTTP",
@@ -8554,6 +8614,12 @@
     "page": "Lucide",
     "section": "icons",
     "path": "/icons/lucide#names"
+  },
+  {
+    "title": "Finding an icon by what it means",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#finding"
   },
   {
     "title": "The pin",

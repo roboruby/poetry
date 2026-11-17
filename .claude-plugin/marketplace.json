@@ -1,0 +1,15 @@
+{
+  "name": "poetry",
+  "description": "The Poetry component library for Rails, for Claude Code.",
+  "owner": {
+    "name": "Matt Solt",
+    "url": "https://poetryui.com"
+  },
+  "plugins": [
+    {
+      "name": "poetry",
+      "source": "./plugins/poetry",
+      "description": "Skills for building Rails interfaces with Poetry, a ViewComponent and Stimulus component library: using the components, composing a page, authoring a component, and reading the documentation site."
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "active_support/notifications"
 
 module Poetry
   module Core
@@ -36,7 +37,9 @@ module Poetry
       # 1-based into that file. suggestion is a did-you-mean fix or nil.
       #
       # @api private
-      Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, keyword_init: true) do
+      # subject is the name the finding is about, where a rename can act on
+      # it (the retired option, the renamed icon); it is not printed.
+      Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, :subject, keyword_init: true) do
         # The finding as a hash with its nil fields dropped.
         def to_h
           { rule: rule, severity: severity, message: message,
@@ -663,7 +666,19 @@ module Poetry
             end
           end
 
+          retired = entry && entry["deprecated"]
+          findings << deprecated_finding(helper_of(path), key, retired, line) if retired
           findings + (entry ? value_findings(entry, helper_of(path), key, value, line, library: library) : [])
+        end
+
+        # An option its component has retired: it still works, and the
+        # warning carries the option to write instead when one replaces it.
+        def deprecated_finding(owner, key, notice, line)
+          since = notice["since"] ? " since #{notice["since"]}" : ""
+          advice = [notice["use"] && "use #{notice["use"]}:", notice["note"]].compact.join(" - ")
+          Finding.new(rule: "deprecated-option", severity: :warning,
+                      message: "#{key}: is deprecated on #{owner}#{since}#{" - #{advice}" unless advice.empty?}",
+                      line: line, suggestion: notice["use"], subject: key)
         end
 
         # The value-contract tier: the call shapes that raise or misrender
@@ -732,7 +747,7 @@ module Poetry
           Finding.new(rule: "renamed-icon", severity: :warning,
                       message: "#{key}: #{value.inspect} was renamed #{current.to_sym.inspect} upstream; " \
                                "the old name still renders through an alias",
-                      line: line, suggestion: current)
+                      line: line, suggestion: current, subject: value)
         end
 
         # A `library:` no registered set answers to: the render raises.
@@ -1902,7 +1917,14 @@ module Poetry
           @renderable = renderable
         end
 
-        # Every finding across the paths, each stamped with its file.
+        # The ActiveSupport::Notifications event a run is reported as, for
+        # a host that wants to know how often its templates are checked and
+        # what the check finds: the payload carries files, errors and
+        # warnings as counts.
+        EVENT = "check.poetry"
+
+        # Every finding across the paths, each stamped with its file. The
+        # run is one {EVENT}.
         # @param paths [Array<String>] the files to lint
         # @param root [String, Pathname, nil] the app root the paths sit
         #   under, so a template is read as a mailer's by its path inside
@@ -1910,11 +1932,16 @@ module Poetry
         # @param calls [Array<Call>, nil] a sink the helper calls of every
         #   template are appended to, each stamped with its file
         def run(paths, root: nil, calls: nil)
-          paths.flat_map do |path|
-            before = calls&.size || 0
-            findings = run_one(path, root, calls)
-            calls&.drop(before)&.each { |call| call.file = path }
-            findings.each { |finding| finding.file = path }
+          ActiveSupport::Notifications.instrument(EVENT, files: paths.size) do |payload|
+            findings = paths.flat_map do |path|
+              before = calls&.size || 0
+              found = run_one(path, root, calls)
+              calls&.drop(before)&.each { |call| call.file = path }
+              found.each { |finding| finding.file = path }
+            end
+            payload[:errors] = findings.count { |finding| finding.severity == :error }
+            payload[:warnings] = findings.size - payload[:errors]
+            findings
           end
         end
 

@@ -134,12 +134,118 @@ module Poetry
         assert result.dig("capabilities", "tools")
       end
 
+      ICON_TAGS = { "trash" => %w[garbage delete remove], "circle-alert" => %w[warning error],
+                    "x" => %w[cancel close delete] }.freeze
+
+      def icon_server
+        finder = Poetry::Core::Icons::Finder.new(names: %w[circle-alert trash triangle-alert x],
+                                                 aliases: { "alert-circle" => "circle-alert" }, tags: ICON_TAGS)
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES)
+        MCP::Server.new(entries: ENTRIES, catalog: catalog, icons: finder)
+      end
+
+      def test_find_icon_answers_a_meaning_with_names_best_first
+        text = call_on(icon_server, "find_icon", "query" => "delete")
+
+        assert_equal <<~TEXT.chomp, text
+          2 icons for "delete", best first:
+          - trash (filed under: delete, garbage, remove)
+          - x (filed under: delete, cancel, close)
+          Render one with poetry_icon(name: :trash). A name with a hyphen is a quoted symbol, as in poetry_icon(name: :"circle-alert").
+        TEXT
+      end
+
+      def test_find_icon_writes_a_hyphenated_name_as_a_quoted_symbol_and_keeps_the_limit
+        text = call_on(icon_server, "find_icon", "query" => "alert", "limit" => 1)
+
+        assert_includes text, %(1 icon for "alert", best first:)
+        assert_includes text, "- circle-alert (filed under: warning, error)"
+        assert_includes text, %(poetry_icon(name: :"circle-alert"))
+        refute_includes text, "triangle-alert"
+      end
+
+      def test_find_icon_says_so_when_nothing_answers_or_no_set_is_bundled
+        nothing = call_on(icon_server, "find_icon", "query" => "zeppelin")
+
+        assert_includes nothing, %(No icon answers "zeppelin".)
+        assert_includes nothing, "one or two plain words"
+        assert_includes call("find_icon", "query" => "delete"), "this bundle has no icon set to search"
+      end
+
+      def test_the_server_and_its_finder_print_short
+        assert_equal "#<Poetry::Agent::MCP::Server 12 tools, #{ENTRIES.size} components>", icon_server.inspect
+        assert_equal "#<Poetry::Core::Icons::Finder 4 icons>", icon_server.instance_variable_get(:@icons).inspect
+      end
+
+      def test_report_gap_answers_with_a_link_and_sends_nothing
+        text = call("report_gap", "summary" => "Badge has no warning variant", "kind" => "variant",
+                                  "component" => "badge", "wanted" => "An amber badge for a late order.",
+                                  "workaround" => "Used the outline badge with a class.")
+        link = text.lines[1].chomp
+        query = URI.decode_www_form(URI(link).query).to_h
+
+        assert_equal "Nothing was sent. To report this, open the link and press Submit:", text.lines.first.chomp
+        assert_equal "https://github.com/roboruby/poetry/issues/new", link.split("?").first
+        assert_equal "Gap: Badge has no warning variant", query["title"]
+        assert_includes query["body"], "**Kind:** variant"
+        assert_includes query["body"], "**Component:** badge"
+        assert_includes query["body"], "**What was done instead:** Used the outline badge with a class."
+        assert_includes query["body"], "Reported through poetry-agent #{Poetry::Agent::VERSION}."
+        assert_equal "gap", query["labels"]
+      end
+
+      def test_report_gap_requires_a_summary_and_reads_an_unknown_kind_as_other
+        missing = tool_result(server, "report_gap", "summary" => "")
+
+        assert missing["isError"]
+        assert_includes call("report_gap", "summary" => "No timeline component"), "**Kind:** other"
+      end
+
+      def test_every_request_is_an_event_naming_the_tool_and_leaving_its_arguments_out
+        events = []
+        subscriber = ActiveSupport::Notifications.subscribe("request.poetry_agent") { |event| events << event.payload }
+        call("describe_component", "name" => "button")
+        call("check", "source" => %(<%= poetry_button { "Save" } %>))
+        server.handle("jsonrpc" => "2.0", "id" => 9, "method" => "tools/list")
+
+        assert_equal(%w[describe_component check], events.filter_map { |payload| payload[:tool] })
+        assert_equal(%w[tools/call tools/call tools/list], events.map { |payload| payload[:method] })
+        assert(events.none? { |payload| payload.key?(:tool_arguments) || payload.to_s.include?("poetry_button") })
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      def test_a_deprecated_option_is_marked_in_a_components_contract
+        entries = ENTRIES.merge("poetry/ui/button" => ENTRIES.fetch("poetry/ui/button").merge(
+          "options" => [{ "name" => "kind", "type" => "symbol",
+                          "deprecated" => { "use" => "variant", "since" => "0.2.0" } }]
+        ))
+        target = MCP::Server.new(entries: entries, catalog: Poetry::Core::Check::Catalog.new(entries))
+
+        assert_includes call_on(target, "describe_component", "name" => "button"),
+                        "- kind: symbol (DEPRECATED since 0.2.0 - use variant:)"
+      end
+
+      def test_find_icon_requires_a_query
+        result = tool_result(icon_server, "find_icon", "query" => " ")
+
+        assert result["isError"]
+        assert_includes result.dig("content", 0, "text"), "find_icon: missing required argument query"
+      end
+
+      def test_the_bundled_server_searches_lucide_by_meaning
+        text = call_on(MCP::Bundled.server(app_root: Dir.mktmpdir), "find_icon", "query" => "delete", "limit" => 6)
+
+        assert_includes text, "- trash (filed under: delete"
+        assert_includes text, "- delete"
+      end
+
       def test_tools_list_advertises_the_read_only_tools_compose_first
         tools = server.handle("jsonrpc" => "2.0", "id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
         assert_equal %w[compose build_page list_components describe_component check list_blocks
-                        describe_block list_recipes get_skill guidance], names
+                        describe_block list_recipes find_icon get_skill guidance report_gap], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 

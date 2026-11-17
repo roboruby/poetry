@@ -30,6 +30,25 @@ class PoetryLucideTest < Minitest::Test
     assert_equal PoetryLucide::Fetcher::PINNED_COMMIT, Poetry::Lucide.vendored_commit
   end
 
+  # Lucide files every icon under words for what it is used for; a search
+  # by meaning reads them.
+  def test_icons_are_found_by_meaning_through_lucides_tags
+    tags = Poetry::Lucide.tags
+    names = Poetry::Lucide.set.names.map(&:to_s)
+
+    assert_includes tags.fetch("trash"), "delete"
+    assert_empty tags.keys - names, "a tagged name that is not a vendored icon"
+    assert_operator tags.size, :>, names.size * 0.95, "nearly every icon carries tags"
+    assert(tags.values.flatten.all? { |tag| tag.match?(/\A[a-z0-9][a-z0-9 .+&'-]*\z/) }, "tags are plain words")
+
+    found = Poetry::Core::Icons.find("delete", :lucide).map { |match| match[:name] }
+
+    assert_equal "delete", found.first
+    assert_includes found, "trash"
+    assert_equal "triangle-alert", Poetry::Core::Icons.find("warning triangle", :lucide).first[:name]
+    assert_equal "search", Poetry::Core::Icons.find("search", :lucide).first[:name]
+  end
+
   # Lucide renamed icons upstream; the old names render through aliases.
   def test_renamed_icons_render_through_their_aliases
     aliases = Poetry::Lucide.aliases

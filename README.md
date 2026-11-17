@@ -48,6 +48,16 @@ bin/rails generate poetry:install
 
 The generator wires the engine, the Tailwind entry point, and the importmap pins, and writes the agent skills into `.claude/skills/`. From there, `poetry_button`, `poetry_dialog`, `poetry_data_table` and the rest are available in every view.
 
+### In Claude Code, before there is an app
+
+The same skills ship as a Claude Code plugin from this repository, for a session that has no Rails app in front of it yet:
+
+```
+/plugin install poetry --marketplace roboruby/poetry
+```
+
+On a Claude Code older than 2.1.275, add the marketplace first: `/plugin marketplace add roboruby/poetry`, then `/plugin install poetry@poetry`. The plugin carries the three skills the generator writes (`poetry`, `poetry-design`, `poetry-component`) and one for reading the documentation site. Inside an app, prefer the generator's copies: they are written from the versions in your bundle.
+
 ## Additional ecosystem gems
 
 Add what you use; nothing here is pulled in by the umbrella. The family releases in lockstep, and every gem pins its siblings to its own version, so add these without version constraints and Bundler resolves them to the umbrella's release.

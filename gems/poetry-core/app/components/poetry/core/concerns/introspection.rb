@@ -168,6 +168,8 @@ module Poetry
             definition[:required] = true if required_attribute?(name)
             format = option_format(name)
             definition[:format] = format if format
+            deprecated = option_deprecation(name)
+            definition[:deprecated] = deprecated if deprecated
             doc = option_docs[name.to_sym]
             definition[:description] = doc if doc
             definition

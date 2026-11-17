@@ -25,6 +25,15 @@
     Poetry::Core::Config.current.on_missing_icon =
       ->(name:, library:, error:) { Rails.logger.warn("missing icon \#{name}") }
   CODE
+  finding_source = <<~CODE
+    $ bin/rails "poetry:icons[delete]"
+    delete          backspace, remove
+    strikethrough   delete, cross out, remove, format
+    eraser          delete, pencil, drawing, undo, clear, trash
+    x               delete, cancel, close, cross, ex, remove
+    shredder        delete, file, paper, tear, cut, destroy
+    trash           delete, empty, deletion, cleanup, junk, clear
+  CODE
   pin_source = <<~CODE
     Poetry::Lucide.vendored_commit  # the upstream commit the icons ship from
   CODE
@@ -91,6 +100,34 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: config_source, language: "ruby", label: "Configuration") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="finding">Finding an icon by what it means</h2>
+      <p>
+        A name says what an icon draws; you usually know what it should
+        stand for. Lucide files every icon under everyday words
+        (<code>trash</code> under delete, garbage and remove), and the gem
+        ships them, so an icon can be asked for by meaning.
+        <code>bin/rails "poetry:icons[delete]"</code> prints the names that
+        answer, best first, each with the words it is filed under. The
+        same search is <code>Poetry::Core::Icons.find("delete")</code> in
+        Ruby and the <code>find_icon</code> tool on the
+        <%= link_to "MCP server", mcp_path %>, where an agent asks before it
+        writes a name it has not seen.
+      </p>
+      <p>
+        An icon that answers more of the description comes first, then a
+        match in the name over a match in the tags, then the plainer name:
+        <code>warning triangle</code> gives <code>triangle-alert</code>, and
+        <code>delete</code> gives <code>trash</code> and <code>x</code>
+        ahead of <code>bookmark-minus</code>. Any icon set is searched by
+        name; the search by meaning needs a set that ships its tags, which
+        Lucide does.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: finding_source, language: "bash", label: "Terminal") %>
   </section>
 
   <section class="flex flex-col gap-4">

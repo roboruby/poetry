@@ -54,6 +54,20 @@
   <% end %>
 
   <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="plugin">As a Claude Code plugin</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      The repository is a Claude Code plugin marketplace carrying these same
+      skills, for a session with no Rails app in front of it yet. Each skill
+      then runs under the plugin's name, as
+      <code class="text-foreground">/poetry:poetry-design</code>. On a Claude
+      Code older than 2.1.275, add the marketplace first with
+      <code class="text-foreground">/plugin marketplace add roboruby/poetry</code>,
+      then <code class="text-foreground">/plugin install poetry@poetry</code>.
+    </p>
+    <%= poetry_code_block(code: "/plugin install poetry --marketplace roboruby/poetry", language: "bash", label: "Claude Code") %>
+  </section>
+
+  <section class="flex flex-col gap-3">
     <h2 class="text-lg font-medium" id="in-app">In a Rails app with Poetry</h2>
     <p class="max-w-2xl text-muted-foreground">
       Skip the network entirely: <code class="text-foreground">bin/rails g poetry:skill</code>

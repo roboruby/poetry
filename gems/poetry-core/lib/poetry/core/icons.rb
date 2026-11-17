@@ -60,6 +60,13 @@ module Poetry
         # @return [Hash{String => String}]
         attr_reader :aliases
 
+        # The words each icon is filed under by its makers ("trash" under
+        # delete and remove), which a search by meaning reads. Empty for a
+        # set that ships none.
+        #
+        # @return [Hash{String => Array<String>}]
+        attr_reader :tags
+
         # The credit a set's license requires on every copy, or nil. The Icon
         # component renders it as an HTML comment inside each svg, so a host
         # serving the icons carries it without doing anything.
@@ -77,8 +84,11 @@ module Poetry
         #   an old name still renders, and `poetry check` warns with the rename
         # @param attribution [String, nil] the credit the icons' license
         #   requires, rendered as a comment inside every svg
-        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)
+        # @param tags [Hash{String => Array<String>}] name => the words the
+        #   icon is filed under, for {Icons.find}
+        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {})
           @dir = Pathname.new(dir)
+          @tags = tags
           @attribution = Icons.comment_safe(attribution)
           @svg_attributes = svg_attributes.freeze
           @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
@@ -285,6 +295,35 @@ module Poetry
 
           require "did_you_mean"
           DidYouMean::SpellChecker.new(dictionary: candidates).correct(name).first
+        end
+
+        # The icons of a set that answer a description, best first: by
+        # name, by a name the icon used to have, and by the words its set
+        # files it under, when the set ships them (Lucide does).
+        #
+        # @param query [String] what the icon should mean ("delete",
+        #   "warning sign"), or part of its name
+        # @param library [Symbol, String, nil] the set's key; nil reads
+        #   `config.icon_library`
+        # @param limit [Integer] the most icons to return
+        # @return [Array<Hash>] each `{ name:, score:, answers:, tags: }`
+        #   (see {Finder#find})
+        # @raise [Poetry::Core::Error] when no set is registered under the key
+        # @example
+        #   Poetry::Core::Icons.find("delete").map { |match| match[:name] }
+        #   # => ["delete", "eraser", "trash", ...]
+        def find(query, library = nil, limit: Finder::LIMIT)
+          finder(set(library)).find(query, limit: limit)
+        end
+
+        # A finder over one set's names, former names and tags.
+        #
+        # @param set [Object] an icon set
+        # @return [Finder]
+        def finder(set)
+          Finder.new(names: set.names,
+                     aliases: set.respond_to?(:aliases) ? set.aliases : {},
+                     tags: set.respond_to?(:tags) ? set.tags : {})
         end
 
         # The registered icon sets, library key => set object. Icon gems

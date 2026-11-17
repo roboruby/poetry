@@ -25,6 +25,15 @@ module Poetry
         JSON.parse(last_response.body)
       end
 
+      # Rails prints a mounted app's inspect on its routing-error page; with
+      # the server built that was the whole catalog, more than the page's
+      # sanitizer takes.
+      def test_the_mount_prints_short_even_with_its_server_built
+        rpc("initialize", INITIALIZE)
+
+        assert_equal "#<Poetry::Agent::MCP::HTTP>", app.inspect
+      end
+
       def test_initialize_and_tools_list_over_http
         reply = rpc("initialize", INITIALIZE)
 

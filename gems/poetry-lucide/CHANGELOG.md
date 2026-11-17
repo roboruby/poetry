@@ -9,6 +9,7 @@
 ### Added
 
 - `icons/aliases.json` and `Poetry::Lucide.aliases`: the 264 names Lucide has renamed, each mapped to its current name, read from the icons' own metadata at vendor time. An old name keeps rendering after an update, and `poetry check` warns with the new one. The fetch now also removes icons the upstream dropped.
+- `icons/tags.json` and `Poetry::Lucide.tags`: the words Lucide files each of the 1,890 icons under (`trash` under delete, garbage and remove), read from the icons' own metadata at vendor time. The set hands them to `Poetry::Core::Icons.find`, so an icon can be asked for by what it means.
 
 ## [0.1.13] - 2026-10-13
 

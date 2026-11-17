@@ -53,6 +53,7 @@ Poetry::Docs::Engine.routes.draw do
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
+  get "evals" => "docs#evals", as: :evals
   get "community-items" => "docs#community_items", as: :community_items
   get "community-updates" => "docs#community_updates", as: :community_updates
   get "community-publishing" => "docs#community_publishing", as: :community_publishing

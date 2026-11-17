@@ -43,6 +43,8 @@ module Poetry
             style :outlined, variants: :boolean, default: false
             option :label, :string
             option :count, :integer, default: 3
+            option :tone, :symbol, deprecated: { use: :color, since: "0.2.0" }
+            option :glyph, :symbol, deprecated: "pass the icon in the icon slot"
 
             renders_one :icon
             renders_many :items
@@ -146,6 +148,28 @@ module Poetry
 
           assert_equal :"icon-name", name[:format]
           refute label.key?(:format), "no format declared means no format key"
+        end
+
+        def test_a_deprecated_option_carries_its_notice_and_still_works
+          tone = props[:options].find { |option| option[:name] == :tone }
+          glyph = props[:options].find { |option| option[:name] == :glyph }
+          label = props[:options].find { |option| option[:name] == :label }
+
+          assert_equal({ use: "color", since: "0.2.0" }, tone[:deprecated])
+          assert_equal({ note: "pass the icon in the icon slot" }, glyph[:deprecated])
+          refute label.key?(:deprecated), "an option in good standing carries no notice"
+          assert_equal :warm, Probe::Component.new(tone: :warm).tone, "the marker changes nothing at render"
+          assert_equal({ use: "color", since: "0.2.0" }, Class.new(Probe::Component).option_deprecation(:tone),
+                       "a subclass inherits the notice")
+        end
+
+        def test_a_deprecation_takes_only_the_keys_it_knows
+          error = assert_raises(ArgumentError) do
+            Class.new(Poetry::Core::Component) { option :kind, :symbol, deprecated: { replaced_by: :variant } }
+          end
+
+          assert_includes error.message, "deprecated: takes use:, since: and note:"
+          assert_raises(ArgumentError) { Class.new(Poetry::Core::Component) { option :kind, :symbol, deprecated: {} } }
         end
 
         def test_a_typed_slot_carries_its_component_path

@@ -95,10 +95,12 @@ module Poetry
             arrive from data meet a runtime tier: an off-list variant or a missing
             required option raises at construction in development and test.
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
-            `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
+            `["exec", "poetry-agent"]`, the poetry-agent gem) serves twelve tools from the live registry
             with no app boot - `compose`, `build_page`, `list_components`,
             `describe_component`, `check`, `list_blocks`, `describe_block`,
-            `list_recipes`, `get_skill`, and `guidance`. Prefer `compose` (or `build_page` for a
+            `list_recipes`, `find_icon` (which icon means this), `get_skill`, `guidance`, and
+            `report_gap` (a link that reports something the library lacked; nothing is sent).
+            Prefer `compose` (or `build_page` for a
             whole screen) to start, and its `check` tool when iterating. Wire it
             into every editor at once with `bin/rails g poetry:editor` (MCP
             configs for VS Code / Cursor / Claude Code / Zed / RubyMine plus

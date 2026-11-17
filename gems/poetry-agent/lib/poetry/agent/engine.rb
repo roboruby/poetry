@@ -12,6 +12,8 @@ module Poetry
     # integration step; the host imports `@poetry/agent` beside
     # `@poetry/controllers`.
     class Engine < ::Rails::Engine
+      rake_tasks { load File.expand_path("../../tasks/poetry/gap.rake", __dir__) }
+
       initializer "poetry_agent.controllers_manifest", before: :eager_load! do
         Poetry::Core::Stimulus::Manifest.register(Poetry::Agent::WebMCP.manifest_path.to_s)
       end

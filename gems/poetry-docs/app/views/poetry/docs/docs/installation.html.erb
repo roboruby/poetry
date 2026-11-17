@@ -33,6 +33,11 @@
     bin/rails generate poetry_jumpstart_pro:install   # runs poetry:install when needed
     bin/rails tailwindcss:build
   CODE
+  rename_source = <<~CODE
+    bin/rails poetry:check                # warns: kind: is deprecated on poetry_pill since 0.2.0 - use variant:
+    DRY_RUN=1 bin/rails poetry:rename     # app/views/orders/show.html.erb:12: kind -> variant
+    bin/rails poetry:rename               # poetry:rename: 1 rename made
+  CODE
   upgrade_source = <<~CODE
     bundle update poetry poetry-agent poetry-charts
     bin/rails g poetry:install     # your theme choice sticks; --theme switches
@@ -245,6 +250,25 @@
         and everything copied in) are never rewritten.
       </p>
     <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="renames">Names that changed</h2>
+      <p>
+        When a release renames an option, the old one keeps working for a
+        while and is marked deprecated. After an update,
+        <code>bin/rails poetry:check</code> warns wherever a deprecated
+        option is still written and names the one to write instead, and it
+        does the same for an icon its set has renamed.
+        <code>bin/rails poetry:rename</code> makes those changes for you:
+        each is one name on one line, replaced where the warning points.
+        A name written twice on its line is left alone and listed, and
+        <code>DRY_RUN=1</code> lists every change without writing any.
+        Review the diff and commit.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: rename_source, language: "shell", label: "After an update") %>
   </section>
 
   <section class="flex flex-col gap-4">

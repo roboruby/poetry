@@ -34,6 +34,17 @@ module Poetry
         end
       end
 
+      def test_a_deprecated_option_is_marked_where_an_agent_reads_the_contract
+        entry = { "styles" => [], "options" => [
+          { "name" => "variant", "type" => "symbol" },
+          { "name" => "kind", "type" => "symbol", "deprecated" => { "use" => "variant", "since" => "0.2.0" } }
+        ] }
+        registry = FakeRegistry.new(entries: {}, blocks: {}, source_root: nil)
+        lines = LlmsText.new(registry: registry).send(:prop_lines, entry)
+
+        assert_equal ["- `variant:` (symbol)", "- `kind:` (symbol) - DEPRECATED since 0.2.0 - use variant:"], lines
+      end
+
       def test_index_and_full_open_on_the_five_usage_rules
         with_registry do |registry|
           text = LlmsText.new(registry: registry)

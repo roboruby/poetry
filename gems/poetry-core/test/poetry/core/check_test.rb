@@ -597,6 +597,62 @@ module Poetry
         assert_includes finding.message, "kebab-case"
       end
 
+      RETIRING = Check::Catalog.new(
+        { "demo/pill" => { "class_name" => "Demo::Pill::Component", "helper" => "demo_pill", "styles" => [],
+                           "slots" => [],
+                           "options" => [
+                             { "name" => "variant", "type" => "symbol" },
+                             { "name" => "kind", "type" => "symbol",
+                               "deprecated" => { "use" => "variant", "since" => "0.2.0" } },
+                             { "name" => "glyph", "type" => "symbol",
+                               "deprecated" => { "note" => "use the icon slot" } }
+                           ] } }
+      )
+
+      def test_a_run_is_an_event_that_counts_what_it_found
+        events = []
+        subscriber = ActiveSupport::Notifications.subscribe("check.poetry") { |event| events << event.payload }
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "show.html.erb")
+          File.write(path, %(<%= demo_pill(kind: :soft) %>\n<%= demo_pill(variant: :soft) %>\n))
+          Check::Runner.new(RETIRING).run([path])
+        end
+
+        assert_equal [{ files: 1, errors: 0, warnings: 1 }], events
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      def test_a_deprecated_option_warns_with_the_option_to_write_instead
+        finding = Check.lint(%(<%= demo_pill(kind: :soft) %>), catalog: RETIRING).sole
+
+        assert_equal %w[deprecated-option warning], [finding.rule, finding.severity.to_s]
+        assert_equal "kind: is deprecated on demo_pill since 0.2.0 - use variant:", finding.message
+        assert_equal %w[variant kind], [finding.suggestion, finding.subject]
+        refute finding.to_h.key?(:subject), "the subject is for the rename, not for the report"
+      end
+
+      def test_a_deprecation_with_no_replacement_warns_with_its_note_and_the_current_option_is_quiet
+        finding = Check.lint(%(<%= demo_pill(glyph: :star) %>), catalog: RETIRING).sole
+
+        assert_equal "glyph: is deprecated on demo_pill - use the icon slot", finding.message
+        assert_nil finding.suggestion
+        assert_empty Check.lint(%(<%= demo_pill(variant: :soft) %>), catalog: RETIRING)
+      end
+
+      def test_the_warnings_that_carry_a_rename_fix_the_template_they_point_at
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "show.html.erb")
+          File.write(path, %(<%= demo_pill(kind: :soft) %>\n<%= demo_pill(glyph: :star) %>\n))
+          findings = Check::Runner.new(RETIRING).run([path])
+          changes = Check::Renames.new(findings).apply
+
+          assert_equal [true], changes.map(&:applied), "the renamed option is rewritten; a note is left to a person"
+          assert_equal %(<%= demo_pill(variant: :soft) %>\n<%= demo_pill(glyph: :star) %>\n), File.read(path)
+          assert_equal ["deprecated-option"], Check::Runner.new(RETIRING).run([path]).map(&:rule)
+        end
+      end
+
       def test_a_renamed_icon_warns_with_its_current_name
         catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash],
                                                                          icon_aliases: { "trash-2" => "trash" })

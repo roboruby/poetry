@@ -208,7 +208,7 @@ module Poetry
           <<~MD
             #{header(entry)}
 
-            Poetry's agent surface is a standard stdio MCP server on the official `mcp` gem, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design; the gem speaks JSON-RPC, negotiates the protocol version and validates every call's arguments against the tool's schema. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. The server also answers POST JSON-RPC over HTTP, the gem's Streamable HTTP transport in its stateless JSON mode (`mount Poetry::Agent::MCP::HTTP.new => "/mcp"` - this site serves it at /mcp; `allowed_origins:` admits other origins), the same surface for in-page bridges; `Poetry::Agent::MCP::Server#mcp` is the gem's server, open to a host's own tools. With `auth:` (a `Poetry::Agent::MCP::Auth`) the mount is a protected resource under MCP's authorization specification (the MCP Apps guide, Per-user authorization). Editor configuration lives on the Editors page.
+            Poetry's agent surface is a standard stdio MCP server on the official `mcp` gem, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design; the gem speaks JSON-RPC, negotiates the protocol version and validates every call's arguments against the tool's schema. Its twelve tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, `find_icon` answers which icon means a thing, `report_gap` writes up something the library lacked as a link to a prefilled issue (nothing is sent), and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. The server also answers POST JSON-RPC over HTTP, the gem's Streamable HTTP transport in its stateless JSON mode (`mount Poetry::Agent::MCP::HTTP.new => "/mcp"` - this site serves it at /mcp; `allowed_origins:` admits other origins), the same surface for in-page bridges; `Poetry::Agent::MCP::Server#mcp` is the gem's server, open to a host's own tools. With `auth:` (a `Poetry::Agent::MCP::Auth`) the mount is a protected resource under MCP's authorization specification (the MCP Apps guide, Per-user authorization). Editor configuration lives on the Editors page.
           MD
         end
 
@@ -315,6 +315,40 @@ module Poetry
 
         # The recipes guide's mirror: the live projection, so the mirror lists
         # exactly what /r/ serves.
+        # The Evals page's mirror: the same rows as a Markdown table, and
+        # the same limits.
+        def evals(entry)
+          ledger = EvalLedger.read
+          rows = ledger.fetch("runs").map do |run|
+            low, high = run["interval"]
+            checks = run["checks"]
+            passed = checks ? "#{percent(checks.dig("poetry", "rate"))} / #{percent(checks.dig("raw", "rate"))}" : "not stored"
+            "| `#{run["id"]}` | #{run["briefs"]} | #{run["poetry"]} | #{run["raw"]} | #{run["inconclusive"]} | " \
+              "#{percent(run["share"])} (#{percent(low)} to #{percent(high)}) | #{passed} |"
+          end
+          long = ledger["degradation"]
+          <<~MD
+            #{header(entry)}
+
+            Two agents with the same model, prompt and turn budget build each brief: one in an app with Poetry installed (its skills, MCP server and check), one in a plain Tailwind app. A third model sees the brief and both screenshots, not knowing which is which, in both orders, and picks the better. Both results also run the same mechanical checks (an accessible name, real wiring, no raw colors).
+
+            | Run | Briefs | Poetry | Plain Tailwind | Inconclusive | Poetry's share of decided (95% interval) | Checks passed, Poetry / plain |
+            |---|---|---|---|---|---|---|
+            #{rows.join("\n")}
+
+            Each brief is generated once per run, so a count is one draw and the interval is the honest width of the claim. `g-control-1` to `g-control-3` are the same conditions run three times: Poetry was preferred on 1, 6 and 5 of 12. A difference between two rows smaller than that spread is not a finding.
+
+            #{long ? "In a longer conversation (`#{long["id"]}`, #{long["briefs"]} briefs, each edited over eight messages), Poetry's pages passed #{percent(long.dig("pass_rates", "poetry", "p2"))} of the checks at the end against #{percent(long.dig("pass_rates", "raw", "p2"))}, and the judge preferred Poetry on #{long.dig("judged_poetry_wins", "p2")} of #{long["briefs"]}." : ""}
+
+            What this does not show: one model, one judge, light theme, desktop width, briefs written by the library's authors. The harness and every result file are in the repository under `gems/poetry-ui/eval`.
+          MD
+        end
+
+        # A share as a whole percentage, or a dash when there is none.
+        def percent(share)
+          share ? "#{(share * 100).round}%" : "-"
+        end
+
         def recipes(entry)
           sections = Poetry::Ui.recipe_items.summaries.map do |recipe|
             targets = recipe["files"].map { |file| "`#{file["target"]}`" }.join(", ")
@@ -500,7 +534,7 @@ module Poetry
           intro = <<~MD.strip
             #{header(entry)}
 
-            The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with Poetry, `bin/rails g poetry:skill` installs the poetry, poetry-design, and poetry-component skills without touching the network.
+            The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with Poetry, `bin/rails g poetry:skill` installs the poetry, poetry-design, and poetry-component skills without touching the network. In Claude Code with no app yet, the repository is a plugin marketplace carrying the same skills: `/plugin install poetry --marketplace roboruby/poetry` (before 2.1.275: `/plugin marketplace add roboruby/poetry`, then `/plugin install poetry@poetry`).
           MD
           ([ intro ] + sections).join("\n\n") + "\n"
         end

@@ -52,6 +52,16 @@ module Poetry
           Apps.with_request_origin(request.base_url) { endpoint.call(env) }
         end
 
+        # A short name instead of the default, which would print the whole
+        # server once it is built: Rails prints a mounted app's inspect on
+        # its routing-error page, and a catalog's worth of text there is
+        # more than its sanitizer accepts.
+        #
+        # @return [String]
+        def inspect
+          "#<#{self.class.name}>"
+        end
+
         private
 
         # An absent Origin (same-origin fetch, curl, an MCP client) passes;

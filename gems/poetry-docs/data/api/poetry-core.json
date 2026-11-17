@@ -1622,6 +1622,11 @@
           "docstring": "Where ancestor walks stop: declarations above the base component\nclass are nobody's."
         },
         {
+          "name": "DEPRECATION_KEYS",
+          "value": "%i[use since note].freeze",
+          "docstring": "The keys an option's deprecated: Hash may carry."
+        },
+        {
           "name": "DESCRIPTION_LIMIT",
           "value": "500",
           "docstring": "The agent-legibility budget for a tool description."
@@ -2643,7 +2648,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 361
+          "line": 363
         },
         {
           "name": "prop_definitions",
@@ -2786,7 +2791,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 307
+          "line": 309
         },
         {
           "name": "requires_any_surface",
@@ -2818,7 +2823,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 329
+          "line": 331
         },
         {
           "name": "slot_doc",
@@ -2904,7 +2909,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 285
+          "line": 287
         }
       ],
       "constants": [
@@ -2979,7 +2984,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "option",
@@ -3037,10 +3042,14 @@
             {
               "title": "Value format (machine-checkable value contract)",
               "text": "option :name, :symbol, required: true, format: :\"icon-name\""
+            },
+            {
+              "title": "An option on its way out (see {#option_deprecation})",
+              "text": "option :kind, :symbol, deprecated: { use: :variant, since: \"0.2.0\" }"
             }
           ],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 93
+          "line": 99
         },
         {
           "name": "option_attributes",
@@ -3057,7 +3066,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 135
+          "line": 142
         },
         {
           "name": "option_attributes_with_defaults",
@@ -3074,7 +3083,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 113
+          "line": 120
         },
         {
           "name": "option_attributes_with_proc_defaults",
@@ -3091,7 +3100,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 128
+          "line": 135
         },
         {
           "name": "option_attributes_with_static_defaults",
@@ -3108,7 +3117,34 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 120
+          "line": 127
+        },
+        {
+          "name": "option_deprecation",
+          "scope": "class",
+          "group": null,
+          "signature": "option_deprecation(name)",
+          "docstring": "What an option's declaration says about its retirement, or nil.\n`deprecated:` marks an option that still works and should no\nlonger be written: `{ use: :variant }` names the option that\nreplaces it, `since:` the version that retired it, `note:`\nanything else worth saying; a String is a note on its own. The\nmarker changes nothing at render. It reaches the registry, so\n`poetry check` warns wherever the option is written,\n`poetry:rename` rewrites a call whose option was renamed, and\nthe agent surfaces stop offering it.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the attribute name"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{Symbol => String}",
+              "nil"
+            ],
+            "text": "the given keys of use, since and note"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/options.rb",
+          "line": 193
         },
         {
           "name": "option_docs",
@@ -3125,7 +3161,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 143
+          "line": 150
         },
         {
           "name": "option_format",
@@ -3152,7 +3188,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 170
+          "line": 177
         },
         {
           "name": "option_type",
@@ -3179,7 +3215,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 159
+          "line": 166
         },
         {
           "name": "initialized_option_attributes",
@@ -3196,7 +3232,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 254
+          "line": 295
         },
         {
           "name": "option_attribute?",
@@ -3222,7 +3258,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 240
+          "line": 281
         },
         {
           "name": "option_attribute_initialized?",
@@ -3248,7 +3284,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 262
+          "line": 303
         },
         {
           "name": "option_attributes",
@@ -3265,7 +3301,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 247
+          "line": 288
         },
         {
           "name": "option_attributes_status",
@@ -3282,7 +3318,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 269
+          "line": 310
         },
         {
           "name": "options",
@@ -3299,7 +3335,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 278
+          "line": 319
         }
       ],
       "constants": [
@@ -3307,6 +3343,11 @@
           "name": "BASE_COMPONENT_CLASS",
           "value": "Poetry::Core::Component",
           "docstring": "Where ancestor walks stop: declarations above the base component\nclass are nobody's."
+        },
+        {
+          "name": "DEPRECATION_KEYS",
+          "value": "%i[use since note].freeze",
+          "docstring": "The keys an option's deprecated: Hash may carry."
         },
         {
           "name": "RESERVED_OPTION_NAMES",
@@ -5485,7 +5526,78 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 253
+          "line": 263
+        },
+        {
+          "name": "find",
+          "scope": "class",
+          "group": null,
+          "signature": "find(query, library = nil, limit: Finder::LIMIT)",
+          "docstring": "The icons of a set that answer a description, best first: by\nname, by a name the icon used to have, and by the words its set\nfiles it under, when the set ships them (Lucide does).",
+          "params": [
+            {
+              "name": "query",
+              "types": [
+                "String"
+              ],
+              "text": "what the icon should mean (\"delete\",\n\"warning sign\"), or part of its name"
+            },
+            {
+              "name": "library",
+              "types": [
+                "Symbol",
+                "String",
+                "nil"
+              ],
+              "text": "the set's key; nil reads\n`config.icon_library`"
+            },
+            {
+              "name": "limit",
+              "types": [
+                "Integer"
+              ],
+              "text": "the most icons to return"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "each `{ name:, score:, answers:, tags: }`\n(see {Finder#find})"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "Poetry::Core::Icons.find(\"delete\").map { |match| match[:name] }\n# => [\"delete\", \"eraser\", \"trash\", ...]"
+            }
+          ],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 315
+        },
+        {
+          "name": "finder",
+          "scope": "class",
+          "group": null,
+          "signature": "finder(set)",
+          "docstring": "A finder over one set's names, former names and tags.",
+          "params": [
+            {
+              "name": "set",
+              "types": [
+                "Object"
+              ],
+              "text": "an icon set"
+            }
+          ],
+          "return": {
+            "types": [
+              "Finder"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 323
         },
         {
           "name": "not_found",
@@ -5518,7 +5630,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 266
+          "line": 276
         },
         {
           "name": "register",
@@ -5556,7 +5668,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 316
+          "line": 355
         },
         {
           "name": "registry",
@@ -5573,7 +5685,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 294
+          "line": 333
         },
         {
           "name": "set",
@@ -5600,7 +5712,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 327
+          "line": 366
         },
         {
           "name": "suggest",
@@ -5634,7 +5746,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 280
+          "line": 290
         }
       ],
       "constants": [
@@ -5691,7 +5803,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 68
+          "line": 75
         },
         {
           "name": "dir",
@@ -5734,7 +5846,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 105
+          "line": 115
         },
         {
           "name": "include?",
@@ -5760,13 +5872,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 94
+          "line": 104
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {})",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -5798,6 +5910,13 @@
                 "nil"
               ],
               "text": "the credit the icons' license\nrequires, rendered as a comment inside every svg"
+            },
+            {
+              "name": "tags",
+              "types": [
+                "Hash{String => Array<String>}"
+              ],
+              "text": "name => the words the\nicon is filed under, for {Icons.find}"
             }
           ],
           "return": {
@@ -5808,7 +5927,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 80
+          "line": 89
         },
         {
           "name": "names",
@@ -5825,7 +5944,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 119
+          "line": 129
         },
         {
           "name": "svg_attributes",
@@ -5843,6 +5962,23 @@
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
           "line": 56
+        },
+        {
+          "name": "tags",
+          "scope": "instance",
+          "group": null,
+          "signature": "tags",
+          "docstring": "The words each icon is filed under by its makers (\"trash\" under\ndelete and remove), which a search by meaning reads. Empty for a\nset that ships none.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Array<String>}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 68
         }
       ],
       "constants": [
@@ -5850,6 +5986,131 @@
           "name": "NAME_FORMAT",
           "value": "Icons::NAME_FORMAT",
           "docstring": "The kebab-case shape every icon name must match (kept here too:\n`poetry check` reads it as FileSet::NAME_FORMAT)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Icons::Finder",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Answers \"which icon means this\". A name says what an icon draws\n(trash, circle-alert); the words its set files it under say what\nit is used for (delete, warning), and that is how an icon is asked\nfor. The finder ranks a set's icons against a description by all\nthree things it knows: the names, the names they used to have, and\nthose words.\n\nA set without tags is still searched by name, so \"arrow left\"\nfinds arrow-left in any set; only the search by meaning needs them.",
+      "examples": [
+        {
+          "title": "",
+          "text": "finder = Icons::Finder.new(names: set.names, aliases: set.aliases, tags: set.tags)\nfinder.find(\"delete\").first\n# => { name: \"delete\", score: 18, answers: [\"delete\"], tags: [\"backspace\", \"remove\"] }"
+        }
+      ],
+      "file": "lib/poetry/core/icons/finder.rb",
+      "methods": [
+        {
+          "name": "find",
+          "scope": "instance",
+          "group": null,
+          "signature": "find(query, limit: LIMIT)",
+          "docstring": "The icons that answer a description, best first: the ones that\nanswer the most of its words, then the better answers, then the\nplainer name (trash before bookmark-minus for \"delete\"), then\nthe icon that lists the word earliest among its tags, since a\nset lists an icon's main use first.\n\nA word in a name counts for as much of the name as the\ndescription covers: \"warning\" is all of what a warning icon is\nand half of battery-warning, which is a battery.",
+          "params": [
+            {
+              "name": "query",
+              "types": [
+                "String"
+              ],
+              "text": "what the icon should mean, or part of its name"
+            },
+            {
+              "name": "limit",
+              "types": [
+                "Integer"
+              ],
+              "text": "the most icons to return (1 to 50)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "each `{ name:, score:, answers:, tags: }`:\nthe name, its score, the words of the description it answered,\nand the words it is filed under, the ones that answered first"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/finder.rb",
+          "line": 62
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(names:, aliases: {}, tags: {})",
+          "docstring": "A finder over one set: its names, the names they replaced and its tags.",
+          "params": [
+            {
+              "name": "names",
+              "types": [
+                "Enumerable<Symbol, String>"
+              ],
+              "text": "the set's current names"
+            },
+            {
+              "name": "aliases",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "a former name => the name it renders as"
+            },
+            {
+              "name": "tags",
+              "types": [
+                "Hash{String => Array<String>}"
+              ],
+              "text": "a name => the words it is filed under"
+            }
+          ],
+          "return": {
+            "types": [
+              "Finder"
+            ],
+            "text": "a new instance of Finder"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/finder.rb",
+          "line": 35
+        },
+        {
+          "name": "inspect",
+          "scope": "instance",
+          "group": null,
+          "signature": "inspect",
+          "docstring": "A short name: the default would print every icon's words.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/finder.rb",
+          "line": 77
+        }
+      ],
+      "constants": [
+        {
+          "name": "CEILING",
+          "value": "50",
+          "docstring": "The most icons one answer may hold."
+        },
+        {
+          "name": "FILLER",
+          "value": "%w[a an the icon icons for of to with and or in on that this which means meaning is as].freeze",
+          "docstring": "Words in a description that say nothing about the icon."
+        },
+        {
+          "name": "LIMIT",
+          "value": "8",
+          "docstring": "How many icons an answer holds unless told otherwise, and at most."
+        },
+        {
+          "name": "WEIGHTS",
+          "value": "{ name: 6, tag: 4, former: 3 }.freeze",
+          "docstring": "What a word of the description is worth where it is found whole."
         }
       ]
     },
@@ -5876,7 +6137,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 160
+          "line": 170
         },
         {
           "name": "attribution",
@@ -5894,7 +6155,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 167
+          "line": 177
         },
         {
           "name": "fetch",
@@ -5920,7 +6181,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 199
+          "line": 209
         },
         {
           "name": "include?",
@@ -5946,7 +6207,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 190
+          "line": 200
         },
         {
           "name": "initialize",
@@ -5994,7 +6255,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 177
+          "line": 187
         },
         {
           "name": "names",
@@ -6011,7 +6272,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 217
+          "line": 227
         },
         {
           "name": "path",
@@ -6028,7 +6289,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 150
+          "line": 160
         },
         {
           "name": "svg_attributes",
@@ -6045,7 +6306,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 155
+          "line": 165
         }
       ],
       "constants": []

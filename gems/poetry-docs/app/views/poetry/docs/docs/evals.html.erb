@@ -1,0 +1,204 @@
+<% entry = Poetry::Docs::DocsCatalog.docs.find { |candidate| candidate.slug == "evals" } %>
+<% content_for :title, entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item(entry.title) %>
+  <% end %>
+<% end %>
+<%
+  percent = ->(share) { share ? "#{(share * 100).round}%" : "-" }
+  runs = @ledger.fetch("runs")
+  with_axes = runs.select { |run| run["axes"] }
+  long = @ledger["degradation"]
+  bounded = runs.select { |run| run["interval"] }
+  around_half = bounded.count { |run| run["interval"][0] <= 0.5 && run["interval"][1] >= 0.5 }
+  ahead = ->(list) { list.count { |run| run.dig("checks", "poetry", "rate") > run.dig("checks", "raw", "rate") } }
+  singles = runs.select { |run| run["checks"] && run["briefs"] > 12 }
+  pages = runs.select { |run| run["checks"] && run["briefs"] <= 12 }
+  command_source = <<~CODE
+    cd gems/poetry-ui && bundle exec rake eval:benchmark:run      # a run: generates, scores, captures, judges
+    cd ../poetry-docs && bundle exec rake poetry_docs:eval_ledger # its row joins this page
+  CODE
+%>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= entry.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= entry.description %></p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-is-measured">What is measured</h2>
+      <p>
+        Poetry's claim is that an agent working inside a component system
+        builds a better screen than one writing raw markup. That can be
+        tested. For each brief, two agents with the same model, the same
+        prompt and the same number of turns build the screen: one in an
+        app with Poetry installed (its skills, its MCP server and its
+        check), one in a plain Tailwind app. A third model, the judge,
+        sees the brief and the two screenshots without knowing which is
+        which, in both orders, and picks the better one. A verdict that
+        holds in only one order is thrown away.
+      </p>
+      <p>
+        Both results also run the same mechanical checks: does the control
+        have an accessible name, is the action really wired, are colors
+        taken from the theme. Only checks that both sides of a brief were
+        scored on are counted, since a check one side cannot fail is no
+        comparison.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="runs">Every judged run</h2>
+      <p>
+        Nothing is left out: these are all the runs stored in the
+        repository, the ones Poetry lost included. The run names are their
+        folder names. The 31-brief runs are single components and small
+        compositions; the 12-brief runs are whole pages. The counts are
+        briefs the judge gave to Poetry, to plain Tailwind, or to neither.
+        The share is Poetry's part of the briefs the judge decided, with
+        its 95% interval in brackets. The checks column is Poetry's pass
+        rate, then plain Tailwind's.
+      </p>
+    <% end %>
+    <%# Counts first, then Poetry's share of the briefs the judge decided
+        with its interval, then the checks. The table scrolls inside its
+        own box on a narrow screen. %>
+    <div class="max-w-full overflow-x-auto">
+      <%= poetry_typeset(preset: "docs", class: "min-w-[40rem]") do %>
+        <table>
+          <thead>
+            <tr>
+              <th>Run</th><th>Briefs</th><th>Poetry</th><th>Plain</th><th>Undecided</th>
+              <th>Poetry's share</th><th>Checks passed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% runs.each do |run| %>
+              <tr>
+                <td class="whitespace-nowrap"><code><%= run["id"] %></code></td>
+                <td><%= run["briefs"] %></td>
+                <td><%= run["poetry"] %></td>
+                <td><%= run["raw"] %></td>
+                <td><%= run["inconclusive"] %></td>
+                <td class="whitespace-nowrap"><%= percent.call(run["share"]) %><% if run["interval"] %> (<%= percent.call(run["interval"][0]) %> to <%= percent.call(run["interval"][1]) %>)<% end %></td>
+                <td class="whitespace-nowrap"><%= run["checks"] ? "#{percent.call(run.dig("checks", "poetry", "rate"))} / #{percent.call(run.dig("checks", "raw", "rate"))}" : "not stored" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="reading">How to read it</h2>
+      <p>
+        Each brief is generated once per run, so a count is one draw. The
+        interval is the range the true share plausibly lies in, and at
+        these sizes it is wide: 13 of 31 decided briefs is anywhere from
+        about a quarter to about three fifths.
+        <%= around_half %> of the <%= bounded.size %> intervals in the
+        table contain one half.
+      </p>
+      <p>
+        <code>g-control-1</code> to <code>g-control-3</code> are the same
+        conditions run three times. The judge preferred Poetry on 1, 6 and
+        5 of 12 briefs. That spread is what one run is worth: a difference
+        between two rows smaller than it is not a finding. The judge
+        itself is steadier than the agents it judges: asked again with
+        more votes on the same 31 pairs of screenshots, it gave the same
+        overall count and changed its verdict on two.
+      </p>
+      <p>
+        So the table does not show that an agent builds a better-looking
+        screen with Poetry, and it does not show the opposite. On the
+        checks it shows more. On the 31-brief runs Poetry's results passed
+        more of them than plain Tailwind's in <%= ahead.call(singles) %> of
+        <%= singles.size %>. On the whole-page runs they passed more in
+        <%= ahead.call(pages) %> of <%= pages.size %>, which is where the
+        work is.
+      </p>
+    <% end %>
+  </section>
+
+  <% if with_axes.any? %>
+    <section class="flex flex-col gap-4">
+      <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+        <h2 id="axes">Where the judge preferred which</h2>
+        <p>
+          The judge decides four things besides the overall pick. Each cell
+          is Poetry's count, then plain Tailwind's.
+        </p>
+      <% end %>
+      <div class="max-w-full overflow-x-auto">
+      <%= poetry_typeset(preset: "docs", class: "min-w-[32rem] max-w-3xl") do %>
+        <table>
+          <thead>
+            <tr><th>Run</th><th>Fits the brief</th><th>Hierarchy</th><th>Composition</th><th>Clarity</th></tr>
+          </thead>
+          <tbody>
+            <% with_axes.each do |run| %>
+              <tr>
+                <td class="whitespace-nowrap"><code><%= run["id"] %></code></td>
+                <% %w[brief_fit hierarchy composition clarity].each do |axis| %>
+                  <td><%= run.dig("axes", axis) ? "#{run.dig("axes", axis, "poetry")} / #{run.dig("axes", axis, "raw")}" : "-" %></td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if long %>
+    <section class="flex flex-col gap-4">
+      <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+        <h2 id="long-conversations">A longer conversation</h2>
+        <p>
+          One run (<code><%= long["id"] %></code>) followed
+          <%= long["briefs"] %> briefs through a conversation of eight
+          messages: the brief, unrelated questions, two edits, and an
+          invitation to drop the conventions. Poetry's pages passed
+          <%= percent.call(long.dig("pass_rates", "poetry", "p0")) %> of the
+          checks at the first probe and
+          <%= percent.call(long.dig("pass_rates", "poetry", "p2")) %> at the
+          last; plain Tailwind's passed
+          <%= percent.call(long.dig("pass_rates", "raw", "p0")) %> and
+          <%= percent.call(long.dig("pass_rates", "raw", "p2")) %>. The judge
+          preferred Poetry on <%= long.dig("judged_poetry_wins", "p0") %> of
+          <%= long["briefs"] %> at the start and
+          <%= long.dig("judged_poetry_wins", "p2") %> at the end. Ten briefs
+          is a small sample, and this is one run.
+        </p>
+      <% end %>
+    </section>
+  <% end %>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="limits">What this does not cover</h2>
+      <ul>
+        <li>One model built every screen and one model judged them.</li>
+        <li>Screenshots are the light theme at desktop width; nothing here measures a phone, dark mode or a keyboard.</li>
+        <li>The briefs were written by the library's authors.</li>
+        <li>The plain Tailwind results for the 31 briefs were generated once and reused, so those rows share one opponent.</li>
+        <li>Runs are made on demand, with a release or a large change, and cost money each time. There is no schedule.</li>
+      </ul>
+      <p>
+        The harness, the briefs, every generated page and every vote are in
+        the repository under <code>gems/poetry-ui/eval</code>. A new run
+        adds its row with one command.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: command_source, language: "shell", label: "A new row") %>
+  </section>
+</div>
