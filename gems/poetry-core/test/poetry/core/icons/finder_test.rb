@@ -98,6 +98,31 @@ module Poetry
           assert_empty bare.find("garbage")
         end
 
+        def test_a_word_that_is_no_name_gets_the_icons_filed_under_it_or_the_sets_own_note
+          finder = Finder.new(names: NAMES, tags: TAGS, hint: "This set draws no brand marks")
+
+          assert_equal "try :settings", finder.advice(:gear)
+          assert_equal "try :\"circle-alert\", :\"triangle-alert\"", finder.advice("warning")
+          assert_equal "This set draws no brand marks", finder.advice(:github)
+          assert_equal "", Finder.new(names: NAMES).advice(:github)
+        end
+
+        def test_an_unknown_icon_says_what_is_filed_under_the_word_when_no_name_is_close
+          dir = Pathname.new(Dir.mktmpdir)
+          dir.join("trash.svg").write("<path/>")
+          dir.join("layout-dashboard.svg").write("<path/>")
+          set = FileSet.new(dir: dir, tags: { "layout-dashboard" => %w[dashboard panels] }, hint: "No brands here")
+
+          assert_equal "unknown icon :dashboard (not in this set) - try :\"layout-dashboard\"",
+                       assert_raises(IconNotFound) { set.fetch(:dashboard) }.message
+          assert_equal "unknown icon :github (not in this set) - No brands here",
+                       assert_raises(IconNotFound) { set.fetch(:github) }.message
+          assert_equal "unknown icon :trsh (not in this set) - did you mean :trash?",
+                       assert_raises(IconNotFound) { set.fetch(:trsh) }.message
+        ensure
+          FileUtils.rm_rf(dir) if dir
+        end
+
         def test_find_reads_the_registered_set
           dir = Pathname.new(Dir.mktmpdir)
           dir.join("trash.svg").write("<path/>")

@@ -253,16 +253,18 @@ module Poetry
         #   names, so check warns on a renamed icon instead of rejecting it
         # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
         #   words each icon is filed under, which find_icon searches by meaning
+        # @param icon_hint [String, nil] what the active set says it does not draw (brand marks)
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         # rubocop:disable Metrics/ParameterLists
         def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
-                               icon_aliases: nil, icon_tags: nil)
+                               icon_aliases: nil, icon_tags: nil, icon_hint: nil)
           # rubocop:enable Metrics/ParameterLists
           from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills, app_root: app_root,
-                                  recipes: recipes, icon_aliases: icon_aliases, icon_tags: icon_tags)
+                                  recipes: recipes, icon_aliases: icon_aliases, icon_tags: icon_tags,
+                                  icon_hint: icon_hint)
         end
 
         # Several registry roots as one catalog (Registry.merged: later
@@ -279,13 +281,14 @@ module Poetry
         #   names, so check warns on a renamed icon instead of rejecting it
         # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
         #   words each icon is filed under, which find_icon searches by meaning
+        # @param icon_hint [String, nil] what the active set says it does not draw (brand marks)
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         # rubocop:disable Metrics/ParameterLists
         def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
-                                 icon_aliases: nil, icon_tags: nil)
+                                 icon_aliases: nil, icon_tags: nil, icon_hint: nil)
           # rubocop:enable Metrics/ParameterLists
           committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
@@ -304,14 +307,15 @@ module Poetry
           # valid names with contracts of their own, whether or not the
           # registry is committed - no registry lists a helper method.
           host_helpers = app_root ? Poetry::Core::HostComponents.helper_methods(root: app_root) : nil
+          icons = icon_names && Poetry::Core::Icons::Finder.new(names: icon_names, aliases: icon_aliases || {},
+                                                                tags: icon_tags || {}, hint: icon_hint)
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
                                                                         helper_entries: helper_entries,
                                                                         icon_names: icon_names,
                                                                         icon_aliases: icon_aliases,
                                                                         helper_args: committed.helper_args,
-                                                                        host_helpers: host_helpers)
-          icons = icon_names && Poetry::Core::Icons::Finder.new(names: icon_names, aliases: icon_aliases || {},
-                                                                tags: icon_tags || {})
+                                                                        host_helpers: host_helpers,
+                                                                        icon_finder: icons)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
               root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes, icons: icons)
         end
@@ -1033,9 +1037,12 @@ module Poetry
 
           query = arguments["query"].to_s.strip
           matches = @icons.find(query, limit: arguments.fetch("limit", Poetry::Core::Icons::Finder::LIMIT))
-          return "No icon answers #{query.inspect}. #{ICON_HINT}" if matches.empty?
+          return ["No icon answers #{query.inspect}. #{ICON_HINT}", @icons.hint].compact.join(" ") if matches.empty?
 
           lines = matches.map { |match| icon_line(match) }
+          asked = query.downcase.scan(/[a-z0-9]+/)
+          named = matches.any? { |match| match[:name].split("-").intersect?(asked) }
+          lines << @icons.hint if @icons.hint && !named
           example = matches.first[:name]
           ["#{matches.size} icon#{"s" if matches.size > 1} for #{query.inspect}, best first:", *lines,
            "Render one with poetry_icon(name: #{icon_symbol(example)}). A name with a hyphen is a quoted " \

@@ -67,6 +67,12 @@ module Poetry
         # @return [Hash{String => Array<String>}]
         attr_reader :tags
 
+        # What the set says it does not draw, and where that is: one
+        # sentence, added to an unknown-icon error when no name is close.
+        #
+        # @return [String, nil]
+        attr_reader :hint
+
         # The credit a set's license requires on every copy, or nil. The Icon
         # component renders it as an HTML comment inside each svg, so a host
         # serving the icons carries it without doing anything.
@@ -86,9 +92,12 @@ module Poetry
         #   requires, rendered as a comment inside every svg
         # @param tags [Hash{String => Array<String>}] name => the words the
         #   icon is filed under, for {Icons.find}
-        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {})
+        # @param hint [String, nil] what the set does not draw and where that is,
+        #   said when a name is unknown and nothing is close to it
+        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {}, hint: nil)
           @dir = Pathname.new(dir)
           @tags = tags
+          @hint = hint
           @attribution = Icons.comment_safe(attribution)
           @svg_attributes = svg_attributes.freeze
           @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
@@ -116,7 +125,7 @@ module Poetry
           raise IconNotFound.new("invalid icon name #{name.inspect}", name: name) unless valid_name?(name)
 
           current = resolve(name)
-          raise Icons.not_found(name, names) unless path_for(current).exist?
+          raise Icons.not_found(name, names, set: self) unless path_for(current).exist?
 
           @mutex.synchronize do
             @cache[current.to_sym] ||= path_for(current).read.strip
@@ -211,7 +220,7 @@ module Poetry
 
           current = @aliases.fetch(name.to_s, name.to_s)
           offset, length = index[current]
-          raise Icons.not_found(name, names) unless offset
+          raise Icons.not_found(name, names, set: self) unless offset
 
           @mutex.synchronize do
             @cache[current.to_sym] ||= File.open(@path, "rb") do |file|
@@ -272,11 +281,24 @@ module Poetry
         #
         # @param name [Symbol, String] the unknown name
         # @param names [Enumerable] every name the set serves, to suggest from
+        # @param set [Object, nil] the set itself: with it, a name nothing is close to gets the
+        #   icons to try instead, or the set's note on what it does not draw
         # @return [Poetry::Core::IconNotFound]
-        def not_found(name, names)
+        def not_found(name, names, set: nil)
           suggestion = suggest(name, names)
-          hint = suggestion ? " - did you mean #{suggestion.to_sym.inspect}?" : ""
+          hint = suggestion ? " - did you mean #{suggestion.to_sym.inspect}?" : guidance(name, set)
           IconNotFound.new("unknown icon #{name.inspect} (not in this set)#{hint}", name: name, suggestion: suggestion)
+        end
+
+        # What follows "unknown icon" when no name is close: the set's
+        # advice for the word (see {Finder#advice}), or nothing.
+        #
+        # @param name [Symbol, String] the unknown name
+        # @param set [Object, nil] the set that was asked
+        # @return [String]
+        def guidance(name, set)
+          advice = set ? finder(set).advice(name) : ""
+          advice.empty? ? "" : " - #{advice}"
         end
 
         # Did-you-mean for icon names. The reversed-compound form is
@@ -323,7 +345,8 @@ module Poetry
         def finder(set)
           Finder.new(names: set.names,
                      aliases: set.respond_to?(:aliases) ? set.aliases : {},
-                     tags: set.respond_to?(:tags) ? set.tags : {})
+                     tags: set.respond_to?(:tags) ? set.tags : {},
+                     hint: set.respond_to?(:hint) ? set.hint : nil)
         end
 
         # The registered icon sets, library key => set object. Icon gems

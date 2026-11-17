@@ -126,6 +126,15 @@
         name; the search by meaning needs a set that ships its tags, which
         Lucide does.
       </p>
+      <p>
+        Lucide draws no brand marks. A name such as <code>:github</code> is
+        unknown here, and the error, <code>poetry check</code> and
+        <code>find_icon</code> all say where brands are: in the
+        <%= link_to "Simple Icons set", icon_set_path("simple-icons") %>, as
+        <code>poetry_icon(name: :github, library: :simple_icons)</code>. An
+        unknown name that is a meaning, such as <code>:dashboard</code>,
+        is answered with the icons to try instead.
+      </p>
     <% end %>
     <%= poetry_code_block(code: finding_source, language: "bash", label: "Terminal") %>
   </section>

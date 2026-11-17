@@ -18175,6 +18175,18 @@
           "line": 61
         },
         {
+          "name": "icon_hint",
+          "scope": "class",
+          "group": null,
+          "signature": "icon_hint",
+          "docstring": "What Lucide says it does not draw (brand marks), or nil without\npoetry-lucide.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/bundled.rb",
+          "line": 83
+        },
+        {
           "name": "icon_names",
           "scope": "class",
           "group": null,
@@ -18352,7 +18364,7 @@
           "name": "from_registries",
           "scope": "class",
           "group": null,
-          "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil)",
+          "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil, icon_hint: nil)",
           "docstring": "Several registry roots as one catalog (Registry.merged: later\nroots win a path collision, block templates resolve to absolute\npaths): the gems' published registries and, when the app\ncommitted its own with `bin/rails poetry:registry`, the app's -\nits components then describe, check and compose like a gem's.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
@@ -18395,6 +18407,14 @@
               "text": "the active set's names => the\nwords each icon is filed under, which find_icon searches by meaning"
             },
             {
+              "name": "icon_hint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what the active set says it does not draw (brand marks)"
+            },
+            {
               "name": "skills",
               "types": [
                 "Hash{String => #call}"
@@ -18420,13 +18440,13 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 287
+          "line": 290
         },
         {
           "name": "from_registry",
           "scope": "class",
           "group": null,
-          "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil)",
+          "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil, icon_tags: nil, icon_hint: nil)",
           "docstring": "skills: skill name => a zero-arg callable returning the skill's\n{relative path => content} file map (the get_skill tool).\nLazy because the usage skill is generated from the registry on\nfirst fetch - server boot stays instant.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
@@ -18470,6 +18490,14 @@
               "text": "the active set's names => the\nwords each icon is filed under, which find_icon searches by meaning"
             },
             {
+              "name": "icon_hint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what the active set says it does not draw (brand marks)"
+            },
+            {
               "name": "skills",
               "types": [
                 "Hash{String => #call}"
@@ -18495,7 +18523,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 261
+          "line": 262
         },
         {
           "name": "mapped_helpers",
@@ -18515,7 +18543,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 324
+          "line": 328
         },
         {
           "name": "apps",
@@ -18540,7 +18568,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 448
+          "line": 452
         },
         {
           "name": "configuration",
@@ -18552,7 +18580,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 387
+          "line": 391
         },
         {
           "name": "handle",
@@ -18578,7 +18606,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 460
+          "line": 464
         },
         {
           "name": "initialize",
@@ -18655,7 +18683,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 345
+          "line": 349
         },
         {
           "name": "inspect",
@@ -18672,7 +18700,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 421
+          "line": 425
         },
         {
           "name": "mcp",
@@ -18689,7 +18717,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 431
+          "line": 435
         },
         {
           "name": "notify",
@@ -18719,7 +18747,7 @@
             }
           ],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 408
+          "line": 412
         },
         {
           "name": "serve",
@@ -18746,7 +18774,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 470
+          "line": 474
         }
       ],
       "constants": [

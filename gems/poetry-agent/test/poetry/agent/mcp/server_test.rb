@@ -226,6 +226,29 @@ module Poetry
                         "- kind: symbol (DEPRECATED since 0.2.0 - use variant:)"
       end
 
+      def test_find_icon_and_check_say_where_brand_marks_are
+        finder = Poetry::Core::Icons::Finder.new(names: %w[plug trash], tags: { "plug" => %w[integration connect] },
+                                                 hint: "This set draws no brand marks")
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES, icon_names: %w[plug trash],
+                                                            icon_finder: finder)
+        target = MCP::Server.new(entries: ENTRIES, catalog: catalog, icons: finder)
+
+        assert_equal %(No icon answers "github". #{MCP::Server::ICON_HINT} This set draws no brand marks),
+                     call_on(target, "find_icon", "query" => "github")
+        assert_includes call_on(target, "find_icon", "query" => "integration"), "This set draws no brand marks"
+        refute_includes call_on(target, "find_icon", "query" => "plug"), "brand marks"
+        assert_includes call_on(target, "check", "source" => %(<%= poetry_icon(name: :github) %>)),
+                        %(name: "github" is not in the icon set - This set draws no brand marks)
+      end
+
+      def test_the_bundled_server_points_a_brand_at_the_brand_set
+        target = MCP::Bundled.server(app_root: Dir.mktmpdir)
+
+        assert_includes call_on(target, "find_icon", "query" => "github"), "Lucide draws no brand marks"
+        assert_includes call_on(target, "check", "source" => %(<%= poetry_icon(name: :github) %>)),
+                        "library: :simple_icons"
+      end
+
       def test_find_icon_requires_a_query
         result = tool_result(icon_server, "find_icon", "query" => " ")
 

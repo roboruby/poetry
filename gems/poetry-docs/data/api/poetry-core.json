@@ -5526,7 +5526,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 263
+          "line": 272
         },
         {
           "name": "find",
@@ -5572,7 +5572,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 315
+          "line": 337
         },
         {
           "name": "finder",
@@ -5597,13 +5597,47 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 323
+          "line": 345
+        },
+        {
+          "name": "guidance",
+          "scope": "class",
+          "group": null,
+          "signature": "guidance(name, set)",
+          "docstring": "What follows \"unknown icon\" when no name is close: the set's\nadvice for the word (see {Finder#advice}), or nothing.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the unknown name"
+            },
+            {
+              "name": "set",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "the set that was asked"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 299
         },
         {
           "name": "not_found",
           "scope": "class",
           "group": null,
-          "signature": "not_found(name, names)",
+          "signature": "not_found(name, names, set: nil)",
           "docstring": "The error for a well-formed name a set does not have, with a\ndid-you-mean when one is close.",
           "params": [
             {
@@ -5620,6 +5654,14 @@
                 "Enumerable"
               ],
               "text": "every name the set serves, to suggest from"
+            },
+            {
+              "name": "set",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "the set itself: with it, a name nothing is close to gets the\nicons to try instead, or the set's note on what it does not draw"
             }
           ],
           "return": {
@@ -5630,7 +5672,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 276
+          "line": 287
         },
         {
           "name": "register",
@@ -5668,7 +5710,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 355
+          "line": 378
         },
         {
           "name": "registry",
@@ -5685,7 +5727,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 333
+          "line": 356
         },
         {
           "name": "set",
@@ -5712,7 +5754,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 366
+          "line": 389
         },
         {
           "name": "suggest",
@@ -5746,7 +5788,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 290
+          "line": 312
         }
       ],
       "constants": [
@@ -5803,7 +5845,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 75
+          "line": 81
         },
         {
           "name": "dir",
@@ -5846,7 +5888,25 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 115
+          "line": 124
+        },
+        {
+          "name": "hint",
+          "scope": "instance",
+          "group": null,
+          "signature": "hint",
+          "docstring": "What the set says it does not draw, and where that is: one\nsentence, added to an unknown-icon error when no name is close.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 74
         },
         {
           "name": "include?",
@@ -5872,13 +5932,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 104
+          "line": 113
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {})",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil, tags: {}, hint: nil)",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -5917,6 +5977,14 @@
                 "Hash{String => Array<String>}"
               ],
               "text": "name => the words the\nicon is filed under, for {Icons.find}"
+            },
+            {
+              "name": "hint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what the set does not draw and where that is,\nsaid when a name is unknown and nothing is close to it"
             }
           ],
           "return": {
@@ -5927,7 +5995,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 89
+          "line": 97
         },
         {
           "name": "names",
@@ -5944,7 +6012,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 129
+          "line": 138
         },
         {
           "name": "svg_attributes",
@@ -6003,6 +6071,37 @@
       "file": "lib/poetry/core/icons/finder.rb",
       "methods": [
         {
+          "name": "advice",
+          "scope": "instance",
+          "group": null,
+          "signature": "advice(word)",
+          "docstring": "What to say when a word is no icon's name: the icons to try\ninstead (the ones with the word in their name first, then the\nones filed under it), or, when there is none, the set's own note\non what it does not draw. An unknown name is most often a meaning\nwritten as a name (`:dashboard`) or a brand (`:github`), and this\nis the way out.",
+          "params": [
+            {
+              "name": "word",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the name that was asked for"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the advice, empty when there is none"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "finder.advice(:dashboard) # => 'try :\"layout-dashboard\", :gauge, :engine'\nfinder.advice(:github)    # => \"Lucide draws no brand marks ...\""
+            }
+          ],
+          "file": "lib/poetry/core/icons/finder.rb",
+          "line": 94
+        },
+        {
           "name": "find",
           "scope": "instance",
           "group": null,
@@ -6032,13 +6131,31 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/finder.rb",
-          "line": 62
+          "line": 64
+        },
+        {
+          "name": "hint",
+          "scope": "instance",
+          "group": null,
+          "signature": "hint",
+          "docstring": "What the set says about what it does not draw (Lucide: brand\nmarks), or nil.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/finder.rb",
+          "line": 80
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(names:, aliases: {}, tags: {})",
+          "signature": "initialize(names:, aliases: {}, tags: {}, hint: nil)",
           "docstring": "A finder over one set: its names, the names they replaced and its tags.",
           "params": [
             {
@@ -6061,6 +6178,14 @@
                 "Hash{String => Array<String>}"
               ],
               "text": "a name => the words it is filed under"
+            },
+            {
+              "name": "hint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "what the set says it does not draw, and where that is"
             }
           ],
           "return": {
@@ -6071,7 +6196,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/finder.rb",
-          "line": 35
+          "line": 36
         },
         {
           "name": "inspect",
@@ -6088,7 +6213,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/finder.rb",
-          "line": 77
+          "line": 104
         }
       ],
       "constants": [
@@ -6137,7 +6262,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 170
+          "line": 179
         },
         {
           "name": "attribution",
@@ -6155,7 +6280,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 177
+          "line": 186
         },
         {
           "name": "fetch",
@@ -6181,7 +6306,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 209
+          "line": 218
         },
         {
           "name": "include?",
@@ -6207,7 +6332,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 200
+          "line": 209
         },
         {
           "name": "initialize",
@@ -6255,7 +6380,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 187
+          "line": 196
         },
         {
           "name": "names",
@@ -6272,7 +6397,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 227
+          "line": 236
         },
         {
           "name": "path",
@@ -6289,7 +6414,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 160
+          "line": 169
         },
         {
           "name": "svg_attributes",
@@ -6306,7 +6431,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 165
+          "line": 174
         }
       ],
       "constants": []

@@ -49,6 +49,19 @@ class PoetryLucideTest < Minitest::Test
     assert_equal "search", Poetry::Core::Icons.find("search", :lucide).first[:name]
   end
 
+  # Lucide stopped drawing brands, and a brand is what an integrations
+  # page asks for: the error says where brand marks are.
+  def test_a_brand_asked_of_lucide_is_pointed_at_the_brand_set
+    error = assert_raises(Poetry::Core::IconNotFound) { Poetry::Lucide.set.fetch(:github) }
+
+    assert_includes error.message, "unknown icon :github (not in this set) - Lucide draws no brand marks"
+    assert_includes error.message, "poetry_icon(name: :github, library: :simple_icons)"
+    assert_includes assert_raises(Poetry::Core::IconNotFound) { Poetry::Lucide.set.fetch(:dashboard) }.message,
+                    "try :\"layout-dashboard\""
+    assert_equal "unknown icon :trsh (not in this set) - did you mean :trash?",
+                 assert_raises(Poetry::Core::IconNotFound) { Poetry::Lucide.set.fetch(:trsh) }.message
+  end
+
   # Lucide renamed icons upstream; the old names render through aliases.
   def test_renamed_icons_render_through_their_aliases
     aliases = Poetry::Lucide.aliases

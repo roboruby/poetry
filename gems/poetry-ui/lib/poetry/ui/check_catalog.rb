@@ -23,6 +23,9 @@ module Poetry
         rescue Poetry::Core::Error
           nil
         end
+        # The active set's finder: an unknown name nothing is close to is
+        # answered with the icons filed under that word.
+        icon_finder = icon_names && Poetry::Core::Icons.finder(Poetry::Core::Icons.set)
         # Every registered set by key: a call naming its set (library:
         # :tabler) is checked against that set rather than the active one;
         # renamed names render through a set's aliases.
@@ -39,7 +42,8 @@ module Poetry
           icon_names: icon_names,
           host_registry: Poetry::Core::HostComponents.registry(root: root),
           host_helpers: Poetry::Core::HostComponents.helper_methods(root: root),
-          icon_libraries: icon_libraries, icon_aliases: icon_aliases, icon_library_aliases: icon_library_aliases
+          icon_libraries: icon_libraries, icon_aliases: icon_aliases, icon_library_aliases: icon_library_aliases,
+          icon_finder: icon_finder
         )
       end
     end

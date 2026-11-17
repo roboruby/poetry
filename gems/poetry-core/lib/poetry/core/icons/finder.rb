@@ -32,7 +32,9 @@ module Poetry
         # @param names [Enumerable<Symbol, String>] the set's current names
         # @param aliases [Hash{String => String}] a former name => the name it renders as
         # @param tags [Hash{String => Array<String>}] a name => the words it is filed under
-        def initialize(names:, aliases: {}, tags: {})
+        # @param hint [String, nil] what the set says it does not draw, and where that is
+        def initialize(names:, aliases: {}, tags: {}, hint: nil)
+          @hint = hint
           former = aliases.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |(old, current), map|
             map[current.to_s].concat(words(old))
           end
@@ -69,6 +71,31 @@ module Poetry
             [-match[:answers].size, -match[:score], match[:name].count("-"), match.delete(:filed), match[:name]]
           end
           ranked.first(limit.to_i.clamp(1, CEILING))
+        end
+
+        # What the set says about what it does not draw (Lucide: brand
+        # marks), or nil.
+        #
+        # @return [String, nil]
+        attr_reader :hint
+
+        # What to say when a word is no icon's name: the icons to try
+        # instead (the ones with the word in their name first, then the
+        # ones filed under it), or, when there is none, the set's own note
+        # on what it does not draw. An unknown name is most often a meaning
+        # written as a name (`:dashboard`) or a brand (`:github`), and this
+        # is the way out.
+        #
+        # @param word [Symbol, String] the name that was asked for
+        # @return [String] the advice, empty when there is none
+        # @example
+        #   finder.advice(:dashboard) # => 'try :"layout-dashboard", :gauge, :engine'
+        #   finder.advice(:github)    # => "Lucide draws no brand marks ..."
+        def advice(word)
+          asked = words(word)
+          named, filed = find(asked.join(" "), limit: 6).partition { |match| words(match[:name]).intersect?(asked) }
+          picks = (named + filed).first(3).map { |match| match[:name].to_sym.inspect }
+          picks.any? ? "try #{picks.join(", ")}" : hint.to_s
         end
 
         # A short name: the default would print every icon's words.

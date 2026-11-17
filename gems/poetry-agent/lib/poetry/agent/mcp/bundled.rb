@@ -44,7 +44,7 @@ module Poetry
           # the sections.
           Server.from_registries(roots, icon_names: icon_names, helpers: helpers, skills: skills,
                                         app_root: app_root, recipes: recipes, icon_aliases: icon_aliases,
-                                        icon_tags: icon_tags)
+                                        icon_tags: icon_tags, icon_hint: icon_hint)
         end
 
         # The lucide names, or nil for a host without poetry-lucide (check
@@ -74,6 +74,17 @@ module Poetry
 
           set = Poetry::Core::Icons.set(:lucide)
           set.respond_to?(:tags) ? set.tags : nil
+        rescue Poetry::Core::Error
+          nil
+        end
+
+        # What Lucide says it does not draw (brand marks), or nil without
+        # poetry-lucide.
+        def icon_hint
+          return nil unless soft_require("poetry/lucide")
+
+          set = Poetry::Core::Icons.set(:lucide)
+          set.respond_to?(:hint) ? set.hint : nil
         rescue Poetry::Core::Error
           nil
         end

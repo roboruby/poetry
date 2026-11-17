@@ -97,7 +97,7 @@ module Poetry
         # the valid set and their contracts are checked like any other.
         # rubocop:disable Metrics/ParameterLists
         def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil,
-                                 icon_libraries: nil, icon_aliases: nil, icon_library_aliases: nil)
+                                 icon_libraries: nil, icon_aliases: nil, icon_library_aliases: nil, icon_finder: nil)
           # rubocop:enable Metrics/ParameterLists
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
@@ -122,7 +122,8 @@ module Poetry
               internals: internals.uniq.sort,
               icon_libraries: icon_libraries,
               icon_aliases: icon_aliases,
-              icon_library_aliases: icon_library_aliases)
+              icon_library_aliases: icon_library_aliases,
+              icon_finder: icon_finder)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -144,9 +145,10 @@ module Poetry
         # rubocop:disable Metrics/ParameterLists
         def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
                        host_helpers: nil, internals: [], icon_libraries: nil, icon_aliases: nil,
-                       icon_library_aliases: nil)
+                       icon_library_aliases: nil, icon_finder: nil)
           # rubocop:enable Metrics/ParameterLists
           @components = components
+          @icon_finder = icon_finder
           @internals = internals
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
@@ -184,6 +186,17 @@ module Poetry
 
         # Every registered set's names by library key, or nil when unknown.
         attr_reader :icon_libraries
+
+        # What to add to an unknown icon name nothing is close to: the
+        # active set's advice for the word (the icons filed under it, what
+        # the set does not draw), or nothing without a finder.
+        #
+        # @param name [String] the unknown name
+        # @return [String] the advice, led by a dash, or an empty string
+        def icon_advice(name)
+          advice = @icon_finder ? @icon_finder.advice(name) : ""
+          advice.empty? ? "" : " - #{advice}"
+        end
 
         # The renamed-icon map for a library (nil: the active set).
         def icon_aliases_for(library = nil) = library ? @icon_library_aliases.fetch(library, {}) : @icon_aliases
@@ -736,9 +749,11 @@ module Poetry
           # reversed-compound renames (alert-circle -> circle-alert) that
           # edit distance misses every time.
           set = library ? "the #{library} icon set" : "the icon set"
+          suggestion = Icons.suggest(value, names)
+          advice = suggestion || library ? "" : @catalog.icon_advice(value)
           [Finding.new(rule: "unknown-icon", severity: :error,
-                       message: "#{key}: #{value.inspect} is not in #{set}", line: line,
-                       suggestion: Icons.suggest(value, names))]
+                       message: "#{key}: #{value.inspect} is not in #{set}#{advice}", line: line,
+                       suggestion: suggestion, subject: value)]
         end
 
         # An old name the set still renders through an alias: a warning
@@ -1826,12 +1841,14 @@ module Poetry
             findings << Finding.new(rule: "renamed-icon", severity: :warning,
                                     message: "#{owner}: #{raw.inspect} was renamed #{current.to_sym.inspect} " \
                                              "upstream; the old name still renders through an alias",
-                                    line: line, suggestion: current)
+                                    line: line, suggestion: current, subject: raw)
           else
+            suggestion = Icons.suggest(kebab, names)
+            advice = suggestion ? "" : @catalog.icon_advice(kebab)
             findings << Finding.new(rule: "icon-declaration", severity: :warning,
                                     message: "#{owner}: #{raw.inspect} looks like an icon name " \
-                                             "but is not in the icon set",
-                                    line: line, suggestion: Icons.suggest(kebab, names))
+                                             "but is not in the icon set#{advice}",
+                                    line: line, suggestion: suggestion, subject: raw)
           end
         end
       end
@@ -1945,6 +1962,47 @@ module Poetry
           end
         end
 
+        # What a template's own Ruby says that no helper call does. The
+        # template is compiled to Ruby as Rails compiles it (so `<%= helper
+        # do %>` blocks parse), on the template's own lines, and read twice:
+        # for the icon names it declares in its data (`icon: :github` in a
+        # list a loop renders from), as a Ruby file's declarations are, and
+        # for Ruby that cannot compile inside a template's method (a
+        # constant assigned in a scriptlet), which fails every render. A
+        # name a helper call already answered for on that line is left to
+        # it, and a template the parser already refused is not read again.
+        def template_ruby(source, findings)
+          ruby = compiled(source)
+          return [] unless ruby
+
+          answered = findings.filter_map { |finding| [finding.line, finding.subject.to_s] if finding.subject }
+          declared = @declarations.lint(ruby).reject do |finding|
+            answered.include?([finding.line, finding.subject.to_s])
+          end
+          refused = findings.any? { |finding| finding.rule == "parse-error" }
+          declared + (refused ? [] : uncompilable(ruby))
+        rescue StandardError
+          []
+        end
+
+        # The template as the Ruby Rails compiles it to, or nil where Action
+        # View is not loaded (the boot-free tools).
+        def compiled(source)
+          return nil unless defined?(ActionView::Template::Handlers::ERB::Erubi)
+
+          ActionView::Template::Handlers::ERB::Erubi.new(source).src
+        end
+
+        # Ruby that parses on its own and not as the body of the method a
+        # template becomes.
+        def uncompilable(ruby)
+          require "prism"
+          Prism.parse("def __template\n#{ruby}\nend").errors.first(3).map do |error|
+            Finding.new(rule: "parse-error", severity: :error, line: error.location.start_line - 1,
+                        message: "#{error.message} - this Ruby cannot run inside a template, so the page never renders")
+          end
+        end
+
         # The host's importmap pins plus the bundled gems' (their engines
         # add their pins at boot), read once per root (nil without a root
         # or an importmap, so the pin rules stand down).
@@ -1982,6 +2040,7 @@ module Poetry
           # they never flip the exit code); the element rule rides a
           # component's template, and so does the compile tier when the
           # runner was handed one.
+          findings += template_ruby(source, findings)
           findings += @stable_identity.lint(source)
           findings += @tag_helpers.lint(source) if Check.component_template?(path)
           findings += @compile.lint(source, filename: path) if @compile && Compile.html_template?(path)

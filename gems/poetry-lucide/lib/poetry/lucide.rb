@@ -10,6 +10,11 @@ module Poetry
   # upstream commit (see VENDORED_COMMIT) and sanitized at vendor time by
   # script/fetch_icons.rb - render time never parses or sanitizes.
   module Lucide
+    # What an unknown-icon error adds when no name is close: Lucide stopped
+    # drawing brands, and a brand is what an integrations page asks for.
+    HINT = "Lucide draws no brand marks (GitHub and the like): those are in the simple_icons set, " \
+           "from the poetry-simple_icons gem, as poetry_icon(name: :github, library: :simple_icons)"
+
     class << self
       # Gem root (the directory containing lib/ and icons/).
       #
@@ -22,7 +27,7 @@ module Poetry
       #
       # @return [Poetry::Core::Icons::FileSet]
       def set
-        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"), aliases: aliases, tags: tags)
+        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"), aliases: aliases, tags: tags, hint: HINT)
       end
 
       # The words Lucide files each icon under (icons/tags.json, from the

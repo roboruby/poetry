@@ -653,6 +653,85 @@ module Poetry
         end
       end
 
+      ICONS = Check::Catalog.new(
+        { "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash layout-dashboard plug],
+                                            icon_aliases: { "trash-2" => "trash" },
+                                            icon_finder: Icons::Finder.new(
+                                              names: %w[trash layout-dashboard plug],
+                                              tags: { "layout-dashboard" => %w[dashboard] }, hint: "No brands here"
+                                            )
+      )
+
+      def test_an_unknown_icon_nothing_is_close_to_says_what_is_filed_under_it_or_what_the_set_lacks
+        filed = Check.lint(%(<%= poetry_icon(name: :dashboard) %>), catalog: ICONS).sole
+        brand = Check.lint(%(<%= poetry_icon(name: :github) %>), catalog: ICONS).sole
+        typo = Check.lint(%(<%= poetry_icon(name: :trsh) %>), catalog: ICONS).sole
+
+        assert_equal "name: \"dashboard\" is not in the icon set - try :\"layout-dashboard\"", filed.message
+        assert_equal "name: \"github\" is not in the icon set - No brands here", brand.message
+        assert_equal ["name: \"trsh\" is not in the icon set", "trash"], [typo.message, typo.suggestion]
+      end
+
+      def test_icon_names_in_a_templates_own_data_are_read_as_a_ruby_files_are
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "integrations.html.erb")
+          File.write(path, <<~ERB)
+            <% services = [
+                 { name: "GitHub", icon: :github },
+                 { name: "Bin", icon: :"trash-2" },
+                 { name: "Plug", icon: :plug }
+               ] %>
+            <% services.each do |service| %>
+              <%= poetry_icon(name: service[:icon]) %>
+            <% end %>
+            <%= poetry_icon(name: :github) %>
+          ERB
+          found = Check::Runner.new(ICONS).run([path])
+          findings = found.select { |finding| finding.rule.include?("icon") }.sort_by(&:line)
+
+          assert_equal([["icon-declaration", 2], ["renamed-icon", 3], ["unknown-icon", 9]],
+                       findings.map { |finding| [finding.rule, finding.line] })
+          assert_includes findings.first.message, "icon: \"github\" looks like an icon name but is not in the icon set"
+          assert_includes findings.first.message, "No brands here"
+          assert_equal [true], Check::Renames.new(findings).apply.map(&:applied)
+          assert_includes File.read(path), %({ name: "Bin", icon: :trash })
+        end
+      end
+
+      def test_template_data_is_read_through_block_helpers_and_uncompilable_ruby_is_an_error
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "team.html.erb")
+          File.write(path, <<~ERB)
+            <% Member = Struct.new(:name, :icon) %>
+            <% members = [{ name: "Ada", icon: :github }] %>
+            <%= content_tag(:ul) do %>
+              <% members.each do |member| %>
+                <li><%= poetry_icon(name: member[:icon]) %></li>
+              <% end %>
+            <% end %>
+          ERB
+          findings = Check::Runner.new(ICONS).run([path]).select { |finding| finding.rule.match?(/icon|parse/) }
+
+          assert_equal([["parse-error", 1, :error], ["icon-declaration", 2, :warning]],
+                       findings.sort_by(&:line).map { |finding| [finding.rule, finding.line, finding.severity] })
+          refused = findings.find { |finding| finding.rule == "parse-error" }
+
+          assert_includes refused.message, "dynamic constant assignment"
+        end
+      end
+
+      def test_a_name_a_helper_call_already_answered_for_is_not_reported_twice
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "one.html.erb")
+          File.write(path, %(<%= render Thing.new(icon: :github) %>\n) +
+                           %(<%= poetry_icon(name: :github, data: { icon: :github }) %>\n))
+          findings = Check::Runner.new(ICONS).run([path]).sort_by(&:line)
+
+          assert_equal([["icon-declaration", 1], ["unknown-icon", 2]],
+                       findings.map { |finding| [finding.rule, finding.line] })
+        end
+      end
+
       def test_a_renamed_icon_warns_with_its_current_name
         catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash],
                                                                          icon_aliases: { "trash-2" => "trash" })
