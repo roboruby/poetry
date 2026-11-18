@@ -41,7 +41,16 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-lucide, dir: gems/poetry-lucide }
+          - { name: poetry-tabler, dir: gems/poetry-tabler }
+          - { name: poetry-hugeicons, dir: gems/poetry-hugeicons }
+          - { name: poetry-phosphor, dir: gems/poetry-phosphor }
+          - { name: poetry-heroicons, dir: gems/poetry-heroicons }
+          - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
+          - { name: poetry-solar, dir: gems/poetry-solar }
+          - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts, npm: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion, npm: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island, npm: gems/poetry-island }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
           - { name: poetry-agent, dir: gems/poetry-agent }
@@ -57,7 +66,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
@@ -66,7 +75,7 @@ jobs:
         if: matrix.gem.npm
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "24"
+          node-version: "26"
           cache: npm
           cache-dependency-path: ${{ matrix.gem.npm }}/package-lock.json
       - name: Install the package the chain reads
@@ -86,6 +95,8 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-charts, dir: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island }
           - { name: poetry-agent, dir: gems/poetry-agent }
     defaults:
       run:
@@ -96,7 +107,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "24"
+          node-version: "26"
           cache: npm
           cache-dependency-path: ${{ matrix.gem.dir }}/package-lock.json
       - run: npm ci
@@ -123,11 +134,53 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "24"
+          node-version: "26"
       - name: Lint HTML+ERB templates (.herb.yml pins the linter version and rules)
         run: |
           version="$(sed -n 's/^version: //p' .herb.yml)"
           npx --yes "@herb-tools/linter@${version}" ${{ matrix.gem.paths }}
+
+  # The two checks that need a real browser, on the runner's Chrome: axe
+  # (WCAG 2 A and AA) over every preview page in light and dark, and the
+  # shipped system-test testers proven against the live controllers. Both
+  # stay out of the gem's default chain, which has to pass on a machine
+  # with no Chrome; before this job nothing ran them, and both had gone red
+  # unseen. The screenshot goldens stay local: a Linux runner draws text
+  # differently from the machine that records them.
+  browser:
+    name: Browser checks (poetry-ui)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'roboruby/poetry'
+    defaults:
+      run:
+        working-directory: gems/poetry-ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: gems/poetry-ui
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+          cache: npm
+          cache-dependency-path: gems/poetry-core/package-lock.json
+      - name: Install the package the preview pages load
+        working-directory: gems/poetry-core
+        run: npm ci
+      # A contrast ratio at the floor can change sides with the browser's
+      # colour rounding, so the version is in the log beside any finding.
+      - name: The Chrome the checks drive
+        run: google-chrome --version
+      - name: Accessibility walk
+        run: bundle exec rake test:accessibility
+      - name: Tester proofs
+        run: bundle exec rake test:testers
 
   # The suite and the behaviour tier again, in a host that compiles every
   # template through ReActionView: as the engine alone, then with slots in
@@ -155,7 +208,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "4.0"
           bundler-cache: true
@@ -163,7 +216,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "24"
+          node-version: "26"
           cache: npm
           cache-dependency-path: ${{ matrix.gem.npm }}/package-lock.json
       - name: Install the package the behaviour tier reads
@@ -202,7 +255,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "4.0"
           bundler-cache: true
@@ -210,7 +263,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "24"
+          node-version: "26"
           cache: npm
           cache-dependency-path: ${{ matrix.gem.npm }}/package-lock.json
       - name: Install the package the behaviour tier reads
@@ -236,7 +289,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "4.0"
           bundler-cache: true
@@ -254,7 +307,16 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-lucide, dir: gems/poetry-lucide }
+          - { name: poetry-tabler, dir: gems/poetry-tabler }
+          - { name: poetry-hugeicons, dir: gems/poetry-hugeicons }
+          - { name: poetry-phosphor, dir: gems/poetry-phosphor }
+          - { name: poetry-heroicons, dir: gems/poetry-heroicons }
+          - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
+          - { name: poetry-solar, dir: gems/poetry-solar }
+          - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui }
           - { name: poetry-agent, dir: gems/poetry-agent }
@@ -270,7 +332,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -292,17 +354,17 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "4.0"
           bundler-cache: true
           working-directory: gems/poetry-docs
       - name: Install each gem's own bundle (the reference export runs inside it)
         run: |
-          for gem in poetry-core poetry-ui poetry-charts poetry-agent poetry-simple_form poetry-extract; do
+          for gem in poetry-core poetry-ui poetry-charts poetry-motion poetry-island poetry-agent poetry-simple_form poetry-extract; do
             (cd "../$gem" && bundle install --quiet)
           done
-      - name: Regenerate the reference data, the skills, the search index and the stylesheet
+      - name: Regenerate the reference data, the skills, the search index, the vendored CSS and the stylesheet
         run: bundle exec rake poetry_docs:refresh
       - name: Nothing changed
         run: |
@@ -327,21 +389,28 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "4.0"
           bundler-cache: true
           working-directory: tools/releaser
+      - name: Set up Node (the minifier)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+      - name: Install the minifier (esbuild, pinned by its lockfile, no install scripts)
+        working-directory: tools/minifier
+        run: npm ci --ignore-scripts
       - name: Releaser tests
         run: bundle exec rake test
-      - name: Build all nine gems
+      - name: Build every published gem
         run: bundle exec rake build checksums
 
   # One status for branch rules: green only when every job above is.
   all-green:
     name: All green
     if: always() && (github.event_name != 'schedule' || github.repository == 'roboruby/poetry')
-    needs: [ruby, javascript, herb, reactionview, audit, reference-fresh, releaser]
+    needs: [ruby, javascript, herb, browser, reactionview, audit, reference-fresh, releaser]
     runs-on: ubuntu-latest
     steps:
       - name: A job failed or was cancelled

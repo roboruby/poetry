@@ -1,0 +1,539 @@
+{
+  "poetry--motion--animated-list": {
+    "doc": "Animated list: a Turbo Stream that changes the list (append, prepend, remove, replace, update, or a refresh that morphs it) runs as a layout transition, so new items fade in, removed items fade out and the rest slide to their new places. The server renders the list as it is; the stream's own render does the change, and the transition only animates it. Reduced motion and a running Turbo visit apply the change directly.",
+    "targets": [],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 300,
+        "doc": "Milliseconds for each transition."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts wrapping the streams that touch this list.",
+      "disconnect": "Stops wrapping streams."
+    }
+  },
+  "poetry--motion--confetti": {
+    "doc": "Confetti: a burst over the page from the server-rendered, full-viewport canvas - on a click inside the effect (from where the click landed), or once when it connects (trigger \"load\": a success message a Turbo Stream rendered). The canvas-confetti kernel loads on the first burst. Reduced motion, a cache preview and a restore visit burst nothing; teardown and the Turbo cache clear the canvas.",
+    "targets": [
+      "canvas"
+    ],
+    "values": {
+      "trigger": {
+        "type": "String",
+        "default": "click",
+        "doc": "When it bursts: \"click\" or \"load\"."
+      },
+      "count": {
+        "type": "Number",
+        "default": 120,
+        "doc": "How many pieces per burst."
+      },
+      "spread": {
+        "type": "Number",
+        "default": 70,
+        "doc": "The burst's spread, in degrees."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Arms the burst.",
+      "disconnect": "Disarms and clears the canvas."
+    }
+  },
+  "poetry--motion--dock": {
+    "doc": "Dock: the items nearest a fine pointer swell, each by how close it is, and settle back when the pointer leaves - the magnifying launcher. Each item springs its own --dock-scale; the motion stylesheet scales it from the edge the dock sits on, so the layout never reflows. Touch, coarse pointers and reduced motion leave the items still.",
+    "targets": [],
+    "values": {
+      "magnification": {
+        "type": "Number",
+        "default": 1.5,
+        "doc": "The scale of the item right under the pointer."
+      },
+      "distance": {
+        "type": "Number",
+        "default": 120,
+        "doc": "How far, in pixels, the swell reaches from the pointer."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the items follow."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts swelling the items toward the pointer.",
+      "disconnect": "Stops swelling and settles every item."
+    }
+  },
+  "poetry--motion--draggable": {
+    "doc": "Draggable: the content follows a drag, within its parent's box when bounded, and springs home on release unless snap-back is off. Dragging is direct manipulation, so it works under reduced motion; only the spring home is skipped there. The server renders the content in place, which is where teardown puts it back.",
+    "targets": [],
+    "values": {
+      "axis": {
+        "type": "String",
+        "doc": "\"x\" or \"y\" locks the drag to one axis; blank drags freely."
+      },
+      "bounded": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Keeps the drag inside the parent's box."
+      },
+      "snapBack": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Springs home on release; false leaves it where it was dropped."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the return follows."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Makes the content draggable.",
+      "disconnect": "Stops dragging and puts the content back."
+    }
+  },
+  "poetry--motion--globe": {
+    "doc": "Globe: a dotted, turning globe with markers, drawn by the cobe kernel (WebGL) on the server-rendered canvas. It turns through useFrame, so it pauses off screen and in hidden tabs, and reduced motion draws it once, still. The kernel loads when the globe connects; teardown destroys the WebGL context. It follows the page's dark class.",
+    "targets": [
+      "canvas"
+    ],
+    "values": {
+      "markers": {
+        "type": "Array",
+        "default": [],
+        "doc": "[[latitude, longitude], ...] for the markers."
+      },
+      "speed": {
+        "type": "Number",
+        "default": 0.3,
+        "doc": "Radians per second it turns."
+      },
+      "tilt": {
+        "type": "Number",
+        "default": 0.25,
+        "doc": "Its starting tilt toward the viewer, in radians."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Builds the globe and starts it turning.",
+      "disconnect": "Stops turning and releases the WebGL context."
+    }
+  },
+  "poetry--motion--layout-group": {
+    "doc": "Layout group: elements that share a data-layout-id are one thing in different places, an active-tab indicator or a selected-item highlight. When the visible one changes (a class, an attribute or a child changes inside the group), the new one animates from where the old one was to where it is, by translate and scale, and ends at its own style. The group remembers each id's last box relative to itself, so scrolling between changes does not throw the move off.",
+    "targets": [],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 300,
+        "doc": "Milliseconds for each move."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Records the visible boxes and starts watching the group.",
+      "disconnect": "Stops watching and returns the moving elements to their own style."
+    }
+  },
+  "poetry--motion--magnetic": {
+    "doc": "Magnetic: the inner layer leans a few pixels toward a fine pointer over it and springs home when the pointer leaves, through --magnet-x and --magnet-y. The wrapped control never moves its hit area or its focus; only the layer that draws it shifts. Touch and reduced motion leave it still.",
+    "targets": [
+      "layer"
+    ],
+    "values": {
+      "strength": {
+        "type": "Number",
+        "default": 8,
+        "doc": "The farthest the layer moves, in pixels."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the pull follows."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts pulling the layer toward the pointer.",
+      "disconnect": "Stops the pull and puts the layer home."
+    }
+  },
+  "poetry--motion--marquee": {
+    "doc": "Marquee: the loop itself is CSS (the motion stylesheet), so this controller never loads the engine. It owns the pause control: a toggle that holds the loop still, mirrored to data-paused on the marquee and aria-pressed on the button. Hover and focus inside pause it too, in CSS.",
+    "targets": [
+      "pause"
+    ],
+    "values": {
+      "paused": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the loop is held still by the pause control."
+      }
+    },
+    "methods": [
+      "pausedValueChanged",
+      "toggle"
+    ],
+    "events": [],
+    "method_docs": {
+      "pausedValueChanged": "Mirrors the paused state to the marquee and the control.",
+      "toggle": "Pauses a running loop or resumes a paused one."
+    }
+  },
+  "poetry--motion--number-ticker": {
+    "doc": "Number ticker: counts up to a number the server already rendered. The visible digits are aria-hidden; a screen reader reads the final number beside them. The count springs from `from` to `value`, formatted with Intl.NumberFormat, and the server's own text comes back when it lands, at teardown and before Turbo caches the page. Reduced motion, a cache preview and a restore visit show the final number at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "value": {
+        "type": "Number",
+        "doc": "The final number, already rendered by the server."
+      },
+      "from": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Where the count starts."
+      },
+      "locale": {
+        "type": "String",
+        "doc": "The locale for Intl.NumberFormat; the page's when blank."
+      },
+      "format": {
+        "type": "Object",
+        "doc": "Intl.NumberFormat options, as the server formatted the final number."
+      },
+      "spring": {
+        "type": "String",
+        "default": "gentle",
+        "doc": "The spring token the count follows."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When the count starts: \"load\" or \"in_view\"."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds to wait before counting."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false renders the final number with no count."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--parallax": {
+    "doc": "Parallax: the content drifts at its own pace as it passes through the viewport, by --parallax-y. It sits where the server put it when the passage is centered, which is also where teardown, the Turbo cache and reduced motion leave it.",
+    "targets": [],
+    "values": {
+      "distance": {
+        "type": "Number",
+        "default": 80,
+        "doc": "Pixels of drift from entering the viewport to leaving it; negative drifts the other way."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts drifting with the scroll.",
+      "disconnect": "Stops drifting and puts the content back."
+    }
+  },
+  "poetry--motion--particles": {
+    "doc": "Particles: a field of slow-drifting dots on the server-rendered canvas, optionally linked by faint lines when close - the canvas pattern (useCanvas): sized to its box at the pixel ratio, drawn every visible frame, paused off screen and in hidden tabs, and one still frame under reduced motion. The dots take the canvas's text color.",
+    "targets": [
+      "canvas"
+    ],
+    "values": {
+      "count": {
+        "type": "Number",
+        "default": 60,
+        "doc": "How many dots."
+      },
+      "speed": {
+        "type": "Number",
+        "default": 12,
+        "doc": "Drift speed, in pixels per second."
+      },
+      "link": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Pixels within which two dots are linked by a line; 0 links none."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Seeds the field and starts drawing.",
+      "disconnect": "Stops drawing and clears the canvas."
+    }
+  },
+  "poetry--motion--scramble": {
+    "doc": "Scramble: the text decodes from random glyphs into itself, left to right, when it comes into view. The server renders the text, a screen reader reads it once, and the aria-hidden display scrambles; the text comes back when it lands, at teardown and before Turbo caches the page. Spaces stay spaces, so the line keeps its shape. Reduced motion, a cache preview and a restore visit show the text at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 800,
+        "doc": "Milliseconds from the first scramble to the last letter landing."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds before it starts."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When it starts: \"load\" or \"in_view\"."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false shows the text with no scramble."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Scrambles the text when the trigger fires.",
+      "disconnect": "Stops scrambling and shows the text."
+    }
+  },
+  "poetry--motion--scroll-progress": {
+    "doc": "Scroll progress: a bar that fills as the reader scrolls the page, or one element (target-id). The controller writes --scroll-progress (0 to 1); the motion stylesheet scales the bar. It is feedback on the reader's own scrolling, so it keeps following under reduced motion. The bar is decorative; the server renders it empty, and teardown and the Turbo cache empty it again.",
+    "targets": [],
+    "values": {
+      "targetId": {
+        "type": "String",
+        "doc": "The id of the element whose scroll the bar follows; the page when blank."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts following the scroll.",
+      "disconnect": "Stops following and empties the bar."
+    }
+  },
+  "poetry--motion--spotlight-card": {
+    "doc": "Spotlight card: a soft glow follows a fine pointer across the card. The controller writes the pointer's position as --spotlight-x and --spotlight-y and switches --spotlight-opacity on; the motion stylesheet draws the glow. No engine loads. The server renders the card without a glow, and touch, coarse pointers and reduced motion leave it that way.",
+    "targets": [],
+    "values": {},
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts following the pointer.",
+      "disconnect": "Stops following and clears the glow."
+    }
+  },
+  "poetry--motion--swipe-cards": {
+    "doc": "Swipe cards: a stack whose top card drags sideways. Past the threshold it flies off that way, is hidden, and the stack dispatches poetry--motion--swipe-cards:swipe with { direction, card, index } so the host can record the choice; short of it, the card springs back. The arrow keys on the focused stack and the swipeLeft and swipeRight actions do the same without a pointer. When the last card goes, the stack is marked data-empty and dispatches :empty. Reduced motion still drags and dismisses, without the flight.",
+    "targets": [
+      "card"
+    ],
+    "values": {
+      "threshold": {
+        "type": "Number",
+        "default": 100,
+        "doc": "Pixels of drag that commit a swipe."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect",
+      "swipeLeft",
+      "swipeRight"
+    ],
+    "events": [
+      "poetry--motion--swipe-cards:empty",
+      "poetry--motion--swipe-cards:swipe"
+    ],
+    "method_docs": {
+      "connect": "Makes the top card swipeable and listens for the arrow keys.",
+      "disconnect": "Stops listening; the cards keep what was swiped.",
+      "swipeLeft": "Swipes the top card to the left.",
+      "swipeRight": "Swipes the top card to the right."
+    }
+  },
+  "poetry--motion--text-reveal": {
+    "doc": "Text reveal: the words brighten as the text scrolls through the viewport. The server renders every word at full strength; this controller writes one --reveal-progress custom property, and the motion stylesheet turns it into each word's opacity. Removing it, at teardown and before Turbo caches the page, shows the finished text.",
+    "targets": [],
+    "values": {},
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--tilt-card": {
+    "doc": "Tilt card: the inner layer leans toward a fine pointer and springs back flat when it leaves. Two custom properties, --tilt-x and --tilt-y, carry the angles; the motion stylesheet rotates the layer, never the outer element. Touch, coarse pointers and reduced motion leave it flat.",
+    "targets": [
+      "layer"
+    ],
+    "values": {
+      "max": {
+        "type": "Number",
+        "default": 8,
+        "doc": "The largest lean, in degrees."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the lean follows."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false leaves the card flat."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--typewriter": {
+    "doc": "Typewriter: the server renders the whole line, and a screen reader reads it once; the aria-hidden display types it out a character at a time when it comes into view. The full line comes back when it is done, at teardown and before Turbo caches the page. No engine loads. Reduced motion, a cache preview and a restore visit show the line at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "speed": {
+        "type": "Number",
+        "default": 50,
+        "doc": "Milliseconds per character."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds before typing starts."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When typing starts: \"load\" or \"in_view\"."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false shows the line with no typing."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Types the line when the trigger fires.",
+      "disconnect": "Stops typing and shows the whole line."
+    }
+  },
+  "poetry--motion--word-rotate": {
+    "doc": "Word rotate: the words sit stacked in one cell, the first one showing, and the controller moves data-active from word to word; the motion stylesheet slides them. Hover and focus pause it. It stops after its rounds, back on the first word, which is also what a screen reader hears and what teardown, the Turbo cache and reduced motion show.",
+    "targets": [
+      "word"
+    ],
+    "values": {
+      "interval": {
+        "type": "Number",
+        "default": 2500,
+        "doc": "Milliseconds each word shows."
+      },
+      "rounds": {
+        "type": "Number",
+        "default": 1,
+        "doc": "How many times it goes through the words; 0 keeps going."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false leaves the first word showing."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts rotating.",
+      "disconnect": "Stops rotating and shows the first word."
+    }
+  }
+}

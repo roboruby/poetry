@@ -1,0 +1,21 @@
+<%# locals: (id:, role:, text:) %>
+<%# installed by the poetry `screen-chat` recipe - yours to adapt. One
+    row of the transcript, built as the chat block's sample rows are: the
+    person's words in a bubble at the end, the assistant's flowing from
+    the start. The person's words are escaped text. The reply is read as
+    Markdown: poetry_markdown parses it with the Markdown gem in your
+    Gemfile (commonmarker or redcarpet; plain paragraphs without one)
+    and lets no markup through. While a reply is still being written,
+    replace its row with the longer text and pass streaming: true.
+    dom_id: gives the row the id to replace. %>
+<%= poetry_message_scroller_item(id: id, dom_id: id, anchor: role.to_sym == :user, class: "px-4 py-2") do %>
+  <% if role.to_sym == :user %>
+    <%= poetry_message(align: :end) do %>
+      <%= poetry_bubble { text } %>
+    <% end %>
+  <% else %>
+    <%= poetry_message do %>
+      <%= poetry_bubble(variant: :ghost) { poetry_markdown(text: text, heading_level: 3) } %>
+    <% end %>
+  <% end %>
+<% end %>

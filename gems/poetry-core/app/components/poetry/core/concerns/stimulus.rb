@@ -66,6 +66,7 @@ module Poetry
             dsl = Poetry::Core::Stimulus::Declarations::RootDSL.new(name || to_s)
             dsl.instance_exec(&block)
             dsl.elements.each { |element| store_stimulus_element(element) }
+            dsl.behavior_uses.each { |use| record_behavior_use(use) }
           end
 
           # This class's own declarations, element name -> Element.

@@ -16,9 +16,10 @@ module Poetry
                       poetry/ui/attachment poetry/ui/autocomplete poetry/ui/avatar poetry/ui/badge
                       poetry/ui/breadcrumb poetry/ui/bubble
                       poetry/ui/button poetry/ui/button_group poetry/ui/calendar poetry/ui/card poetry/ui/carousel
-                      poetry/ui/checkbox poetry/ui/clipboard_text poetry/ui/code_block
+                      poetry/ui/checkbox poetry/ui/citation poetry/ui/clipboard_text poetry/ui/code_block
                       poetry/ui/collapsible
-                      poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/context_menu
+                      poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/composer
+                      poetry/ui/context_menu
                       poetry/ui/data_table poetry/ui/date_field poetry/ui/date_picker
                       poetry/ui/date_time_field
                       poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
@@ -30,7 +31,8 @@ module Poetry
                       poetry/ui/icon poetry/ui/input poetry/ui/input_group poetry/ui/input_otp poetry/ui/item
                       poetry/ui/kbd
                       poetry/ui/label
-                      poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
+                      poetry/ui/link poetry/ui/markdown poetry/ui/marker poetry/ui/menubar poetry/ui/message
+                      poetry/ui/message_scroller
                       poetry/ui/metadata_list poetry/ui/meter
                       poetry/ui/native_select poetry/ui/navigation_menu poetry/ui/number_field
                       poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/questionnaire
@@ -40,12 +42,13 @@ module Poetry
                       poetry/ui/search_field poetry/ui/select
                       poetry/ui/sensitive_input
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
-                      poetry/ui/spinner poetry/ui/stat
+                      poetry/ui/sources poetry/ui/spinner poetry/ui/stat
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group
                       poetry/ui/textarea poetry/ui/time_field poetry/ui/timeline poetry/ui/toast
                       poetry/ui/toast_trigger
                       poetry/ui/toaster
-                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip poetry/ui/tree
+                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip
+                      poetry/ui/trace poetry/ui/tree
                       poetry/ui/typeset]
 
         assert_equal expected, registry.entries.keys.sort

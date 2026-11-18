@@ -1,0 +1,942 @@
+{
+  "source": "apply/__tests__/default.concurrent.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle concurrent text messages correctly",
+      "line": 30,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "First message content"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Second message content"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "First message content"
+          },
+          {
+            "id": "msg2",
+            "role": "assistant",
+            "content": "Second message content"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces."
+    },
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle concurrent tool calls correctly",
+      "line": 119,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search",
+          "parentMessageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate",
+          "parentMessageId": "msg2"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test search\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"expression\":\"1+1\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test search\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "msg2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool2",
+                "type": "function",
+                "function": {
+                  "name": "calculate",
+                  "arguments": "{\"expression\":\"1+1\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces."
+    },
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle mixed concurrent text messages and tool calls",
+      "line": 217,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "thinking_msg",
+          "role": "assistant"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "search_tool",
+          "toolCallName": "web_search",
+          "parentMessageId": "tool_msg"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "thinking_msg",
+          "delta": "Let me search for that information..."
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "search_tool",
+          "delta": "{\"query\":\"concurrent events\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "status_msg",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "status_msg",
+          "delta": "Processing your request..."
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "thinking_msg"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "search_tool"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "status_msg"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "thinking_msg",
+            "role": "assistant",
+            "content": "Let me search for that information..."
+          },
+          {
+            "id": "tool_msg",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "search_tool",
+                "type": "function",
+                "function": {
+                  "name": "web_search",
+                  "arguments": "{\"query\":\"concurrent events\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "status_msg",
+            "role": "assistant",
+            "content": "Processing your request..."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces."
+    },
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle multiple tool calls on the same parent message",
+      "line": 327,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "parent_msg",
+            "role": "assistant",
+            "content": "I'll help you with multiple tools.",
+            "toolCalls": []
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search",
+          "parentMessageId": "parent_msg"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate",
+          "parentMessageId": "parent_msg"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool3",
+          "toolCallName": "format",
+          "parentMessageId": "parent_msg"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"expression\":\"2*3\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool3",
+          "delta": "{\"format\":\"json\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "parent_msg",
+            "role": "assistant",
+            "content": "I'll help you with multiple tools.",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test\"}"
+                }
+              },
+              {
+                "id": "tool2",
+                "type": "function",
+                "function": {
+                  "name": "calculate",
+                  "arguments": "{\"expression\":\"2*3\"}"
+                }
+              },
+              {
+                "id": "tool3",
+                "type": "function",
+                "function": {
+                  "name": "format",
+                  "arguments": "{\"format\":\"json\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently; /spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test sorts the call ids; the vector pins the start order the reference keeps."
+    },
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle high-frequency concurrent events",
+      "line": 453,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg0",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg3",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg4",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg5",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg6",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg7",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg8",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg9",
+          "role": "assistant"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool0",
+          "toolCallName": "tool_0",
+          "parentMessageId": "tool_msg0"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "tool_1",
+          "parentMessageId": "tool_msg1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "tool_2",
+          "parentMessageId": "tool_msg2"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool3",
+          "toolCallName": "tool_3",
+          "parentMessageId": "tool_msg3"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool4",
+          "toolCallName": "tool_4",
+          "parentMessageId": "tool_msg4"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool5",
+          "toolCallName": "tool_5",
+          "parentMessageId": "tool_msg5"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool6",
+          "toolCallName": "tool_6",
+          "parentMessageId": "tool_msg6"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool7",
+          "toolCallName": "tool_7",
+          "parentMessageId": "tool_msg7"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool8",
+          "toolCallName": "tool_8",
+          "parentMessageId": "tool_msg8"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool9",
+          "toolCallName": "tool_9",
+          "parentMessageId": "tool_msg9"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg0",
+          "delta": "Content for message 0"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Content for message 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Content for message 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg3",
+          "delta": "Content for message 3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg4",
+          "delta": "Content for message 4"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg5",
+          "delta": "Content for message 5"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg6",
+          "delta": "Content for message 6"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg7",
+          "delta": "Content for message 7"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg8",
+          "delta": "Content for message 8"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg9",
+          "delta": "Content for message 9"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool0",
+          "delta": "{\"param0\":\"value0\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"param1\":\"value1\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"param2\":\"value2\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool3",
+          "delta": "{\"param3\":\"value3\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool4",
+          "delta": "{\"param4\":\"value4\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool5",
+          "delta": "{\"param5\":\"value5\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool6",
+          "delta": "{\"param6\":\"value6\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool7",
+          "delta": "{\"param7\":\"value7\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool8",
+          "delta": "{\"param8\":\"value8\"}"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool9",
+          "delta": "{\"param9\":\"value9\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg9"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg8"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg7"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg6"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg5"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg4"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg3"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg0"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool9"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool8"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool7"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool6"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool5"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool4"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool3"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool0"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg0",
+            "role": "assistant",
+            "content": "Content for message 0"
+          },
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "Content for message 1"
+          },
+          {
+            "id": "msg2",
+            "role": "assistant",
+            "content": "Content for message 2"
+          },
+          {
+            "id": "msg3",
+            "role": "assistant",
+            "content": "Content for message 3"
+          },
+          {
+            "id": "msg4",
+            "role": "assistant",
+            "content": "Content for message 4"
+          },
+          {
+            "id": "msg5",
+            "role": "assistant",
+            "content": "Content for message 5"
+          },
+          {
+            "id": "msg6",
+            "role": "assistant",
+            "content": "Content for message 6"
+          },
+          {
+            "id": "msg7",
+            "role": "assistant",
+            "content": "Content for message 7"
+          },
+          {
+            "id": "msg8",
+            "role": "assistant",
+            "content": "Content for message 8"
+          },
+          {
+            "id": "msg9",
+            "role": "assistant",
+            "content": "Content for message 9"
+          },
+          {
+            "id": "tool_msg0",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool0",
+                "type": "function",
+                "function": {
+                  "name": "tool_0",
+                  "arguments": "{\"param0\":\"value0\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "tool_1",
+                  "arguments": "{\"param1\":\"value1\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool2",
+                "type": "function",
+                "function": {
+                  "name": "tool_2",
+                  "arguments": "{\"param2\":\"value2\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg3",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool3",
+                "type": "function",
+                "function": {
+                  "name": "tool_3",
+                  "arguments": "{\"param3\":\"value3\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg4",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool4",
+                "type": "function",
+                "function": {
+                  "name": "tool_4",
+                  "arguments": "{\"param4\":\"value4\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg5",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool5",
+                "type": "function",
+                "function": {
+                  "name": "tool_5",
+                  "arguments": "{\"param5\":\"value5\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg6",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool6",
+                "type": "function",
+                "function": {
+                  "name": "tool_6",
+                  "arguments": "{\"param6\":\"value6\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg7",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool7",
+                "type": "function",
+                "function": {
+                  "name": "tool_7",
+                  "arguments": "{\"param7\":\"value7\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg8",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool8",
+                "type": "function",
+                "function": {
+                  "name": "tool_8",
+                  "arguments": "{\"param8\":\"value8\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool_msg9",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool9",
+                "type": "function",
+                "function": {
+                  "name": "tool_9",
+                  "arguments": "{\"param9\":\"value9\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces."
+    },
+    {
+      "name": "defaultApplyEvents concurrent operations > should handle interleaved content and args updates correctly",
+      "line": 566,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search",
+          "parentMessageId": "tool_msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Searching "
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"que"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "for "
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "ry\":\""
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "information..."
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "test\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "Searching for information..."
+          },
+          {
+            "id": "tool_msg1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: several items may be open at once and close in any order; each assembles independently",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces."
+    }
+  ],
+  "excluded": []
+}

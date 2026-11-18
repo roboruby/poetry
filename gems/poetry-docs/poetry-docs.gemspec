@@ -46,16 +46,27 @@ Gem::Specification.new do |spec|
   spec.require_paths = [ "lib" ]
 
   spec.add_dependency "poetry-agent", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-blode", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-charts", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-core", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-heroicons", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-hugeicons", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-island", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-lucide", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-motion", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-phosphor", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-simple_icons", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-solar", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-tabler", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-ui", "= #{Poetry::Docs::VERSION}"
   # The host's asset and JavaScript pipeline the layouts assume.
   spec.add_dependency "importmap-rails", ">= 2.0"
   spec.add_dependency "propshaft", ">= 1.0"
   spec.add_dependency "stimulus-rails", ">= 1.3"
   spec.add_dependency "turbo-rails", ">= 2.0"
-  # The guides' live examples: the three pagination adapters and the code blocks.
+  # The guides' live examples: the Markdown parser, the three pagination
+  # adapters and the code blocks' highlighter.
+  spec.add_dependency "commonmarker", ">= 1.0"
   spec.add_dependency "kaminari", ">= 1.2"
   spec.add_dependency "pagy", ">= 43.0"
   spec.add_dependency "rouge", ">= 4.0"

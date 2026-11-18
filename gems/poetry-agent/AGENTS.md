@@ -39,11 +39,30 @@ component contract. Two ship:
   root) caps how many tools one page registers. Mutating tools carry
   their safety annotation; the MCP server is read-only.
 - `Poetry::Agent::AGUI` is a CLIENT of AG-UI, never a server (Ruby has
-  two): `Transcript` is the one event fold, `Relay` is view-free (the host
-  renders rows; `append_render` wraps a first appearance in its list item),
-  events may arrive camelCased or snake_cased (`AGUI.field`), and client
-  tool names are the registrar's `poetry.{instance}.{tool}` so the bridge
-  executes them in-page without `modelContext`.
+  two). Every stream goes through one `Pipeline` per run, in the order
+  AG-UI 1.0 fixes: compatibility boundary, middleware, enforcement,
+  chunk expansion, verification. It is strict by default; lenient mode
+  drops and warns, and never runs a damaged call. `Transcript` is the one
+  fold of what a pipeline delivers (camelCase, expanded, verified; a raw
+  chunk or retired THINKING_* event raises). `Relay` is view-free (the
+  host renders rows; `append_render` wraps a first appearance in its list
+  item) and holds a strict pipeline unless given `pipeline: nil` for
+  events `Client#run` already verified. A tool result is a message of
+  its own inside the Transcript (as the protocol has it) but never one of
+  `messages`: its call's part reads the answer, and `ToolResults` pairs
+  results with calls and puts them beside their calls in the next input.
+  Encrypted reasoning never sits in parts. Client tool names are the
+  registrar's `poetry.{instance}.{tool}`, so the bridge executes them
+  in-page without `modelContext`.
+- Enforcement walks `config/agui/contract-1.0.json`, generated from the
+  vendored schema by `rake agui:contract` (rakelib/agui_contract.rb) and
+  checked by `agui:verify` in the default task; never edit it by hand.
+  The schema, per-definition fixtures, conformance corpus, reference
+  vectors and real-producer captures live under `test/fixtures/agui/1.0`
+  (provenance in its README) and never ship. `ConformanceTest`,
+  `VectorsTest` and `ApplyVectorsTest` each keep a `DIVERGENCES` list of
+  what Poetry answers differently on purpose, with the reason; a listed
+  case that starts passing fails the suite, so the lists only shrink.
 - `Poetry::Agent::A2UI::Catalog` follows the v1.0 catalog rules (the ten
   top-level keys, `$defs` = `anyComponent` + `anyFunction`, external refs
   into `common_types.json` only); the content-block heuristic is
@@ -79,10 +98,11 @@ component contract. Two ship:
   the render runs inside `StableId.with_seed`, so two renders are
   byte-identical and morph pairs elements. Repeated instances of one
   class under one A2UI component MUST pass a `suffix:`. Surface updates
-  are `vreplace` with `method="morph"`; the runtime's morph guard keeps
-  local state (tab selection, dialog open state, expanded popups, dirty
-  controls) - extend `LOCAL_STATE` in `stream_actions.js` when a new
-  component slot holds local state.
+  are `vreplace` with `method="morph"`; Poetry's morph guard in core
+  (installed with the core controllers) keeps the local state the reader
+  changed (tab selection, dialog open state, expanded popups, edited
+  controls), and the runtime's own guard keeps an MCP App's frame - there
+  is no per-slot list to extend.
 - `Functions#define` takes `callers:` (`rendererOnly` default); only
   `agentOnly` / `rendererOrAgent` functions answer `callRendererFunction`
   (`Session#responses`).

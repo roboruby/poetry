@@ -1,0 +1,469 @@
+{
+  "source": "chunks/__tests__/opener-agreement.test.ts",
+  "vectors": [
+    {
+      "name": "transformChunks opener agreement > rejects a continuation whose role conflicts with the opener's explicit role",
+      "line": 25,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "role": "user",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "role": "assistant",
+          "delta": "b"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue text message 'msg-1': chunk role 'assistant' does not match the open stream's role 'user'."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks opener agreement > rejects a continuation whose role conflicts with the defaulted assistant role",
+      "line": 36,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "role": "user",
+          "delta": "b"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue text message 'msg-1': chunk role 'user' does not match the open stream's role 'assistant'."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation (including a role the opener established by omission: absent means assistant)",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks opener agreement > rejects a continuation that introduces a name the opener did not carry",
+      "line": 47,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "name": "bob",
+          "delta": "b"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue text message 'msg-1': chunk name 'bob' does not match the open stream's name (absent)."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). A name absent on the opener and present on a continuation is a conflict, not a late addition."
+    },
+    {
+      "name": "transformChunks opener agreement > rejects a continuation whose toolCallName conflicts with the opener's",
+      "line": 58,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "delta": "{"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "delete",
+          "delta": "}"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue tool call 'tc-1': chunk toolCallName 'delete' does not match the open stream's toolCallName 'search'."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks opener agreement > rejects a continuation whose parentMessageId conflicts with the opener's",
+      "line": 69,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1",
+          "delta": "{"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "parentMessageId": "msg-2",
+          "delta": "}"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue tool call 'tc-1': chunk parentMessageId 'msg-2' does not match the open stream's parentMessageId 'msg-1'."
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks opener agreement > accepts a continuation that repeats the opener's fields with identical values",
+      "line": 85,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1",
+          "delta": "{"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1",
+          "delta": "}"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The TS test asserts only the types. parentMessageId msg-1 names no known message; verification does not require one."
+    },
+    {
+      "name": "transformChunks opener agreement > accepts a continuation repeating the assistant role the opener defaulted to",
+      "line": 110,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "role": "assistant",
+          "delta": "b"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation MAY repeat an opener field only with the same value; a conflicting repeat is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The TS test asserts only the types."
+    },
+    {
+      "name": "transformChunks opener agreement > does not treat a chunk opening a new message as a conflicting continuation",
+      "line": 125,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "role": "user",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-2",
+          "role": "assistant",
+          "delta": "b"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a chunk naming a different id opens a new item, and the previous one closes first",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The TS test asserts only the types."
+    },
+    {
+      "name": "transformChunks null attribution preservation > preserves a continuation's null subagentRunId for enforcement to reject",
+      "line": 151,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "b",
+          "subagentRunId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "b"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an absent subagentRunId means the parent agent and MUST NOT be spelled as null",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). DIVERGES from the isolated-stage assertion: the TS test fed transformChunks alone and asserted the second CONTENT keeps subagentRunId: null. On the canonical pipeline the compatibility boundary reads an event-level subagentRunId: null as absent, removes it and warns ('Converting deprecated subagentRunId: null to an absent field', once per run), so the run is ACCEPTED and neither CONTENT carries the key.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    },
+    {
+      "name": "transformChunks null attribution preservation > preserves a metadata-only continuation's null subagentRunId",
+      "line": 172,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "metadata": {
+            "finish": "stop"
+          },
+          "subagentRunId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc-1",
+            "toolCallName": "search"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc-1",
+            "delta": "{}"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc-1",
+            "delta": "",
+            "metadata": {
+              "finish": "stop"
+            }
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a metadata-only continuation is legal and its metadata reaches the item (as a zero-delta content event)",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). DIVERGES from the isolated-stage assertion (null kept on the second ARGS): on the canonical pipeline the compatibility boundary removes the event-level null with a warning first, so the run is accepted and the metadata-only chunk expands to a TOOL_CALL_ARGS with delta \"\" carrying the metadata.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    },
+    {
+      "name": "transformChunks rawEvent-only chunks > carries a first chunk's rawEvent on a zero-delta content event",
+      "line": 200,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "rawEvent": {
+            "provider": "payload"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "",
+            "rawEvent": {
+              "provider": "payload"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#where-middleware-sits: expansion carries rawEvent through intact",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The synthesized START claims no rawEvent; the payload rides a zero-delta CONTENT."
+    }
+  ]
+}

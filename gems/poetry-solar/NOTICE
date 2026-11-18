@@ -1,0 +1,12 @@
+Solar Icon Set
+Created by 480 Design: https://www.figma.com/community/file/1166831539721848736
+Curated SVG files: https://github.com/saoudi-h/solar-icons (commit 571bcc31d0e600033257285c886842b1ce93bb54)
+Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/ (full text in LICENSE-SOLAR.txt)
+
+Modified for Poetry: each SVG reduced to its inner markup (scripts, titles,
+handlers and external references removed), hardcoded colours set to
+currentColor, and the six styles packed into icons/*.tsv.
+
+No warranties are given. The license may not give you all the permissions
+necessary for your intended use.

@@ -8,7 +8,8 @@
 <%
   # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
   generate_source = <<~CODE
-    bin/rails g poetry:editor
+    bin/rails g poetry:editor                          # the editors wired before, or the ones it can find
+    bin/rails g poetry:editor --editor claude cursor   # or name them: claude, cursor, vscode, all, none
   CODE
   mcp_source = <<~CODE
     // .mcp.json (Claude Code) / .cursor/mcp.json (Cursor)
@@ -31,12 +32,10 @@
   CODE
 herb_source = <<~CODE
   # .herb.yml - written by poetry:editor (kept if you already have one)
-  version: 0.11.0
+  version: 0.11.2
   framework: actionview
   linter:
     enabled: true
-    rules:
-      html-no-nested-forms: { enabled: false }   # marcoroth/herb#2708
 CODE
 herb_ci_source = <<~CODE
   npx --yes @herb-tools/linter app          # lint (Node); bundle exec herb lint delegates to it
@@ -69,10 +68,23 @@ CODE
         Poetry is left alone, and a JSONC file Poetry cannot parse is reported,
         never clobbered.
       </p>
+      <p>
+        Only the editors in use are wired. Name them with
+        <code>--editor claude cursor</code> (<code>vscode</code>,
+        <code>all</code> and <code>none</code> are the other words). With no
+        flag the generator wires what it wired before, then what it can see:
+        the agent running it names itself in its shell (Claude Code,
+        Cursor), and an editor in use leaves files of its own in the
+        repository. At a terminal with nothing to go by it asks. The choice
+        is kept in <code>config/poetry_components.yml</code> under
+        <code>editors:</code>, so an upgrade wires the same ones.
+        <code>poetry:install</code> takes the same flag and follows the same
+        order, except that with nothing to go by it wires none and says how.
+      </p>
     <% end %>
     <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Editor</th><th>What it writes</th><th>Gets</th></tr>
         </thead>
@@ -84,7 +96,7 @@ CODE
           <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
           <tr><td>Any Herb-aware editor</td><td><code>.herb.yml</code></td><td>linter + language server config</td></tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 
@@ -93,8 +105,8 @@ CODE
       <h2 id="mcp">The MCP server</h2>
       <p>
         Poetry's agent surface is a standard stdio MCP server
-        (<code>bundle exec poetry-agent</code>, from the poetry-agent gem): boot-free, read-only, no SDK.
-        Its ten tools teach an agent the catalog and gate its work. Call
+        (<code>bundle exec poetry-agent</code>, from the poetry-agent gem): boot-free, read-only, on the official <code>mcp</code> gem.
+        Its twelve tools teach an agent the catalog and gate its work. Call
         <code>compose</code> first, build from primitives, run
         <code>check</code> last, and take a PASS verdict rather than an eyeball.
       </p>
@@ -178,13 +190,13 @@ CODE
     </p>
     <p>
       <code>poetry:editor</code> writes the one config all of it reads,
-      and keeps yours if you have one. One rule starts off: the linter
-      reads a form inside a block helper (<code>form_with</code> inside
-      <code>poetry_card do</code>) as a form nested in another form. It is
-      tracked upstream, and the pinned <code>version</code> means an upgrade
-      never switches rules on behind you. A config written before Herb 0.11
-      switched two more rules off for slot setters; both are fixed upstream
-      and can come back on with the pin.
+      and keeps yours if you have one. Every rule is on, and the pinned
+      <code>version</code> means an upgrade never switches rules on behind
+      you: bump it and re-lint in one change. A config written before Herb
+      0.11.1 switched one rule off, where the linter read a form inside a
+      block helper (<code>form_with</code> inside <code>poetry_card do</code>)
+      as a form nested in another form; that is fixed upstream, and the rule
+      comes back on with the pin.
     </p>
   <% end %>
   <%= poetry_code_block(code: herb_source, language: "yaml", label: ".herb.yml") %>

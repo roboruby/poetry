@@ -56,6 +56,11 @@ module Poetry
       #     end
       #   end
       class Component < Poetry::Core::Component
+        # The layers the JS activates on open: focus held inside, and
+        # Escape or an outside press to close.
+        use_behavior :focus_scope
+        use_behavior :dismissable
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu " \
@@ -89,15 +94,9 @@ module Poetry
               action :slide_adjacent, on: "poetry:menu:edge-navigate"
               action :on_menu_closed, on: "poetry:menu:closed"
             end
-            controller :roving_focus do
-              register
-              # The DELTA vs in-menu roving: horizontal, manageTabindex
-              # TRUE (one tab stop for the whole bar).
-              value :orientation, :horizontal
-              value :manage_tabindex, true
-              value :loop
-              action :keydown, on: :keydown
-            end
+            # The DELTA vs in-menu roving: horizontal, manageTabindex
+            # TRUE (one tab stop for the whole bar).
+            behavior :roving_focus, orientation: :horizontal, manage_tabindex: true, loop: :option
           end
           # Anatomy-rendered wiring (the Menu/Sub classes build via the
           # escape hatch; declared here for the contract).
@@ -107,14 +106,7 @@ module Poetry
               value :open
               value :modal, false
             end
-            controller :popper do
-              register
-              value :side, :bottom
-              value :align, :start
-              value :side_offset, 8
-              value :align_offset, -4
-              value :avoid_collisions, true
-            end
+            behavior :popper, side: :bottom, align: :start, side_offset: 8, align_offset: -4, avoid_collisions: true
           end
           on :trigger do
             controller :menubar do

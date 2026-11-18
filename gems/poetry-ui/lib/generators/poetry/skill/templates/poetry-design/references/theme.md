@@ -46,9 +46,11 @@ installing lyra or sera.
 ## Status color vocabulary
 
 The token set carries `--success`, `--warning`, and `--info` alongside
-`--destructive` (all four AA-managed in both modes). Badges ship soft
-status variants on them. Use the set; never invent status colors from
-palette utilities.
+`--destructive`. The three are fills and tints: as text write
+`text-success`, `text-warning` or `text-info`, which read each role's
+`-strong` companion and hold AA in both modes on the page, on muted and
+on the role's own tint. Badges ship soft status variants on them. Use
+the set; never invent status colors from palette utilities.
 
 ## The DESIGN.md door (brand import/export)
 

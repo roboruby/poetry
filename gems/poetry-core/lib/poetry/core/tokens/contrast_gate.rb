@@ -15,6 +15,12 @@ module Poetry
       # background - 6.5:1); solid dark destructive under white text is 2.9:1
       # and therefore a forbidden pattern, documented here.
       #
+      # A status role (success, warning, info) is gated as text through its
+      # -strong companion, which is what the text-<role> utilities read: on
+      # the page, on muted, and on the role's own tint (10% in light, 20%
+      # in dark, as the themes tint it). The role itself is a fill and a
+      # tint and is not gated as text: light success is 3.67:1 on white.
+      #
       # @example
       #   gate = Poetry::Core::Tokens::ContrastGate.new(Poetry::Core::Tokens.load)
       #   gate.violations # => [] when every locked pair still holds
@@ -61,6 +67,36 @@ module Poetry
           ].freeze
         }.freeze
 
+        # The status roles as text, locked the same way. Kept apart from
+        # LEDGER because LEDGER is also the door a design import is held
+        # at: a status role is poetry's own and an import never maps one,
+        # so an imported background is not refused for how poetry's green
+        # reads on it.
+        STATUS_TEXT = {
+          "light" => [
+            { fg: "success-strong",             bg: "background",      lock: :aa  }, #  5.19
+            { fg: "success-strong",             bg: "muted",           lock: :aa  }, #  4.76
+            { fg: "success-strong", bg: "success", bg_alpha: 0.1, bg_over: "background", lock: :aa }, # 4.60
+            { fg: "warning-strong",             bg: "background",      lock: :aaa }, #  7.19
+            { fg: "warning-strong",             bg: "muted",           lock: :aa  }, #  6.59
+            { fg: "warning-strong", bg: "warning", bg_alpha: 0.1, bg_over: "background", lock: :aa }, # 6.26
+            { fg: "info-strong",                bg: "background",      lock: :aaa }, #  7.56
+            { fg: "info-strong",                bg: "muted",           lock: :aa  }, #  6.93
+            { fg: "info-strong", bg: "info", bg_alpha: 0.1, bg_over: "background", lock: :aa } # 6.54
+          ].freeze,
+          "dark" => [
+            { fg: "success-strong",             bg: "background",      lock: :aaa }, # 10.24
+            { fg: "success-strong",             bg: "muted",           lock: :aaa }, #  7.82
+            { fg: "success-strong", bg: "success", bg_alpha: 0.2, bg_over: "background", lock: :aaa }, # 7.23
+            { fg: "warning-strong",             bg: "background",      lock: :aaa }, # 11.53
+            { fg: "warning-strong",             bg: "muted",           lock: :aaa }, #  8.80
+            { fg: "warning-strong", bg: "warning", bg_alpha: 0.2, bg_over: "background", lock: :aaa }, # 7.80
+            { fg: "info-strong",                bg: "background",      lock: :aaa }, # 10.93
+            { fg: "info-strong",                bg: "muted",           lock: :aaa }, #  8.34
+            { fg: "info-strong", bg: "info", bg_alpha: 0.2, bg_over: "background", lock: :aaa } # 7.46
+          ].freeze
+        }.freeze
+
         # One measured ledger pair: the mode, label, ratio, lock level and verdict.
         Result = Struct.new(:mode, :label, :ratio, :lock, :pass) do
           # The result as one line: mode, label, ratio and the threshold it is held to.
@@ -77,8 +113,10 @@ module Poetry
 
         # Every ledger pair measured. The CI test asserts violations.empty?.
         def results
-          LEDGER.flat_map do |mode, pairs|
-            pairs.map { |spec| measure(mode, spec) }
+          [LEDGER, STATUS_TEXT].flat_map do |ledger|
+            ledger.flat_map do |mode, pairs|
+              pairs.map { |spec| measure(mode, spec) }
+            end
           end
         end
 
@@ -97,6 +135,20 @@ module Poetry
                    .select { |name| name == "foreground" || name.end_with?("-foreground") }
                    .reject { |name| gated.include?(name) }
                    .map { |name| [mode, name] }
+          end
+        end
+
+        # Completeness for the status roles: every role's text-safe
+        # companion must be gated in every mode on the page, on muted and
+        # on the role's own tint. Returns [mode, label] pairs that are missing.
+        def ungated_status_text
+          @tokens.modes.flat_map do |mode|
+            Tokens::POETRY_STATUS_VARS.flat_map do |role|
+              strong = "#{role}#{Tokens::STRONG_SUFFIX}"
+              gated = STATUS_TEXT.fetch(mode, []).select { |spec| spec[:fg] == strong }.map { |spec| spec[:bg] }
+              surfaces = { "on background" => "background", "on muted" => "muted", "on its tint" => role }
+              surfaces.reject { |_, bg| gated.include?(bg) }.map { |label, _| [mode, "#{strong} #{label}"] }
+            end
           end
         end
 

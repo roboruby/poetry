@@ -136,10 +136,13 @@ module Poetry
           "#{instance_id}-description"
         end
 
-        # Attributes for the <dialog> panel.
+        # Attributes for the <dialog> panel. The id derives from the
+        # instance id so a Turbo morph pairs the panel by identity (the
+        # morph guard keeps its open state on that node), never by position.
         # @api private
         def dialog_attributes
           attrs = {
+            "id" => "#{instance_id}-content",
             "class" => css(:content, class: panel_classes),
             **panel_stamps,
             "data-closed" => "",

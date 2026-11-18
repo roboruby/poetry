@@ -109,7 +109,7 @@ native_source = <<~CODE
     <% end %>
   <%= poetry_code_block(code: bridge_source, language: "erb", label: "Unchanged views") %>
   <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-    <table>
+    <div class="overflow-x-auto"><table class="min-w-[36rem]">
       <thead>
         <tr><th>Simple Form type</th><th>Renders as</th></tr>
       </thead>
@@ -134,7 +134,7 @@ native_source = <<~CODE
         <tr><td><code>radio_buttons</code> / <code>check_boxes</code></td><td>the <%= link_to "radio group", component_path("radio-group") %> and the checkbox group with its select-all</td></tr>
         <tr><td><code>rich_text_area</code> / <code>hidden</code> / <code>country</code></td><td>left to Simple Form on purpose: Poetry ships no rich-text editor, a hidden field has nothing to render, and the country list belongs to the country_select gem</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <p>
       The table is <code>Poetry::SimpleForm::COVERAGE</code>, and a parity
       test in the gem fails when a new Poetry form control has no Simple

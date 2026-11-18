@@ -1,0 +1,18 @@
+data: {"type":"RUN_STARTED","threadId":"rb-fe-162943","runId":"a49ff7d5-cf99-4612-a715-d1bb46226d92"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b","delta":"Done: "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b","delta":"I used"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b","delta":"ool re"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b","delta":"sult."}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"8bed2a71-d343-4a33-92bc-c65fc9c63d4b"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-fe-162943","runId":"a49ff7d5-cf99-4612-a715-d1bb46226d92"}
+

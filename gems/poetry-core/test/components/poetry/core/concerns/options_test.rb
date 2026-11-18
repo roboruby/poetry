@@ -329,6 +329,16 @@ module Poetry
           assert_equal :string, BasicComponent.attribute_types["title"].type
           assert_equal "42", BasicComponent.new(title: 42).title
         end
+
+        # An option named after a rendering method would shadow it: a
+        # `capture` option once blanked every block a template captured.
+        def test_an_option_cannot_shadow_a_rendering_method
+          error = assert_raises(ArgumentError) do
+            Class.new(Poetry::Core::Component) { option :capture, :symbol }
+          end
+
+          assert_match(/option :capture would shadow a rendering method/, error.message)
+        end
       end
     end
   end

@@ -1,0 +1,65 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+  - rubocop-yard
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "vendor/**/*"
+    - "node_modules/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  # use_stimulus declaration blocks are the component's wiring contract
+  # (same posture as poetry-ui).
+  AllowedMethods:
+    - use_stimulus
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+    # Rake task bodies are linear scripts (same posture as poetry-ui).
+    - "rakelib/**/*.rake"
+
+# Same posture as poetry-ui: density is reviewed, not counted.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Naming/FileName:
+  # lib/poetry-island.rb is the hyphenated Bundler auto-require entrypoint for
+  # the Poetry::Island namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-island.rb"
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long

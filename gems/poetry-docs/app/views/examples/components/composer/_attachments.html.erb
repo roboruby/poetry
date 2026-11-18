@@ -1,0 +1,19 @@
+<%# Files in a message. attachments: true adds the paperclip, takes a file
+    dropped on the composer or pasted into the field, and shows each one
+    as a chip above the field. The limits refuse a file as it arrives. A
+    message of files alone can be sent, and the chips leave when the
+    server accepts it. The docs server reads each file's name and size
+    for the transcript and keeps nothing. %>
+<div class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <%= poetry_message_scroller(id: "composer-files-thread", class: "h-72 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "composer-files-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Attach an image or a PDF: the paperclip, a drop, or a paste." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_composer(id: "composer-files", placeholder: "Add a note, or send the files alone",
+                      attachments: true, accept: "image/*,.pdf", max_files: 3, max_size: 1.megabyte,
+                      url: composer_demo_messages_path(composer: "composer-files"),
+                      stop_url: composer_demo_stop_path(composer: "composer-files")) %>
+</div>

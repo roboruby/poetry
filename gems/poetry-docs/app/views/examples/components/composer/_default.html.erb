@@ -1,0 +1,19 @@
+<%# A whole turn, live. Send posts the message, and the server answers by
+    drawing Stop in the composer's action slot while a scripted reply
+    streams into the transcript. When the reply ends, or when you press
+    Stop, the server draws Send again. Type while the reply streams: the
+    form is never replaced, so the draft stays. The two endpoints are docs
+    plumbing; in an app they are your messages controller and the job
+    that runs the model. %>
+<div class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <%= poetry_message_scroller(id: "composer-demo-thread", class: "h-72 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "composer-demo-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Send me anything, then try Stop while I answer." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_composer(id: "composer-demo", placeholder: "Write a message",
+                      url: composer_demo_messages_path(composer: "composer-demo"),
+                      stop_url: composer_demo_stop_path(composer: "composer-demo")) %>
+</div>

@@ -22,7 +22,7 @@ const LARGE_STEP_MULTIPLIER = 10
  *    the later index, so stacked thumbs stay separable), the track
  *    box is read ONCE at pointerdown (no per-frame layout), pointermove
  *    projects the value ABSOLUTELY from the pointer position (overshoot
- *    past a neighbor clamps, never swaps), pointerup commits.
+ *    past a neighbor clamps, never swaps), pointerup or pointercancel commits.
  *
  * 3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the
  *    range bounds are DYNAMIC (neighbor-clamped, rewritten on every
@@ -166,7 +166,7 @@ export default class SliderController extends Controller {
   /**
    * The root's pointerdown action: jumps the NEAREST thumb to the pointer
    * (ties to the later index), reads the track box once, and starts the
-   * window-level drag; pointerup commits.
+   * window-level drag; pointerup or pointercancel commits.
    *
    * @param {PointerEvent} event
    */
@@ -194,6 +194,7 @@ export default class SliderController extends Controller {
 
     window.addEventListener("pointermove", this.#onPointermove)
     window.addEventListener("pointerup", this.#onPointerup)
+    window.addEventListener("pointercancel", this.#onPointerup)
 
     event.preventDefault()
 
@@ -208,6 +209,9 @@ export default class SliderController extends Controller {
     if (this.#update(this.#dragIndex, this.#valueAtPointer(event))) this.#gestureChanged = true
   }
 
+  // A cancelled pointer (an OS gesture, a lost touch) ends the drag the
+  // same way a release does: without it the window listeners outlive the
+  // gesture and the thumb follows the next pointer anywhere on the page.
   #onPointerup = () => {
     this.#endGesture({ commit: true })
   }
@@ -215,6 +219,7 @@ export default class SliderController extends Controller {
   #endGesture({ commit }) {
     window.removeEventListener("pointermove", this.#onPointermove)
     window.removeEventListener("pointerup", this.#onPointerup)
+    window.removeEventListener("pointercancel", this.#onPointerup)
 
     if (this.#dragIndex === null) return
 

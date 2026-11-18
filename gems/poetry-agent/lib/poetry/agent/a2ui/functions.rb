@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require "json"
+require "date"
 require "time"
 require "active_support"
 require "active_support/number_helper"
 require_relative "protocol"
+require_relative "dialect"
 
 module Poetry
   module Agent
@@ -26,18 +28,32 @@ module Poetry
 
         # One declared function.
         Definition = Struct.new(:name, :description, :returns, :params, :required, :activation, :callers, :impl,
-                                keyword_init: true)
+                                :schema, keyword_init: true)
 
         # The spec's execution boundaries: who may invoke a function.
         CALLERS = %w[rendererOnly agentOnly rendererOrAgent].freeze
 
-        # The email shape the basic catalog names.
-        EMAIL = /\A[^\s@]+@[^\s@]+\.[^\s@]+\z/
+        # The email shape the basic catalog names: an ASCII local part, a
+        # domain, and a top-level domain of two letters or more.
+        EMAIL = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/
+        # What v1.0's `email` says of an address it refuses.
+        EMAIL_FAILURE = { "valid" => false, "code" => "INVALID_EMAIL",
+                          "message" => "Please enter a valid email address (e.g. user@example.com).",
+                          "severity" => "error" }.freeze
+        # JSON Schema's types, for a declared parameter's `type`.
+        TYPES = { "string" => String, "boolean" => [TrueClass, FalseClass], "number" => Numeric, "array" => Array,
+                  "object" => Hash }.freeze
+
+        # The schemes `openUrl` opens.
+        URL_SCHEMES = %w[http https mailto tel].freeze
         # Currency symbols (and fraction digits) by ISO 4217 code; other
         # codes render as a code prefix.
         CURRENCIES = { "USD" => ["$", 2], "EUR" => ["€", 2], "GBP" => ["£", 2], "JPY" => ["¥", 0],
                        "CNY" => ["CN¥", 2], "INR" => ["₹", 2], "KRW" => ["₩", 0], "BRL" => ["R$", 2],
                        "CAD" => ["CA$", 2], "AUD" => ["A$", 2], "MXN" => ["MX$", 2], "CHF" => ["CHF ", 2] }.freeze
+        # The most fraction digits a formatter shows (a browser's own
+        # limit), so a `decimals` argument cannot ask for a string of any length.
+        MAX_DECIMALS = 100
         # Unicode TR35 date-pattern fields to strftime.
         DATE_FIELDS = { "yyyy" => "%Y", "yy" => "%y", "y" => "%Y", "MMMM" => "%B", "MMM" => "%b", "MM" => "%m",
                         "M" => "%-m", "dd" => "%d", "d" => "%-d", "EEEE" => "%A", "EEE" => "%a", "EE" => "%a",
@@ -52,18 +68,40 @@ module Poetry
           @basic ||= new.tap { |registry| Basic.install(registry) }
         end
 
-        # The boolean reading of a value: a ValidationResult by its
-        # `valid`, strings by content, nil and false as false.
+        # The boolean reading of a value, the protocol's DynamicBoolean
+        # coercion, the same in every version: a boolean as it is, a
+        # ValidationResult as its `valid`, the string `"true"` in any letter
+        # case as true and every other string as false, a number as whether
+        # it is not zero, and nil, a list or any other object as false.
         #
         # @param value [Object]
+        # @param _dialect [Dialect] no longer read: every protocol version coerces alike
         # @return [Boolean]
-        def self.truthy?(value)
+        def self.truthy?(value, _dialect = Dialect::V1_0)
           case value
+          when true, false then value
           when Hash then value["valid"] == true
-          when String then !value.empty? && !%w[false 0].include?(value.downcase)
-          when nil, false then false
-          else true
+          when String then value.casecmp?("true")
+          when Numeric then !value.zero?
+          else false
           end
+        end
+
+        # What a surface's call to an agent's function is told.
+        # @param name [String]
+        # @return [String]
+        def self.agent_only_refusal(name)
+          "Function '#{name}' cannot be called by renderer: its allowedCallers is agentOnly"
+        end
+
+        # A URL `openUrl` would open: a non-empty string whose scheme is one
+        # it allows (http, https, mailto, tel).
+        # @param url [Object]
+        # @return [Boolean]
+        def self.openable?(url)
+          text = url.is_a?(String) ? url.strip : ""
+          scheme = text[/\A([a-zA-Z][a-zA-Z0-9+.-]*):/, 1]
+          !scheme.nil? && URL_SCHEMES.include?(scheme.downcase) && text.match?(/\A\S+\z/)
         end
 
         # A value as a number: numerics as they are, numeric strings parsed, anything else nil.
@@ -85,6 +123,14 @@ module Poetry
           @definitions = {}
         end
 
+        # A copy with definitions of its own, so a host adds functions to the
+        # basic set without changing it.
+        # @param source [Functions] the set copied
+        def initialize_copy(source)
+          super
+          @definitions = source.instance_variable_get(:@definitions).dup
+        end
+
         # Declares a function.
         #
         # @param name [String]
@@ -95,17 +141,80 @@ module Poetry
         # @param activation [Boolean] whether the call needs a user activation
         # @param callers [String] the execution boundary (`rendererOnly` - the default - keeps the
         #   function out of an agent's `callRendererFunction`; `agentOnly` / `rendererOrAgent` admit it)
+        # @param schema [Hash, nil] the whole JSON Schema of the arguments object, where `params` and
+        #   `required` do not say enough (nested objects, `additionalProperties`, defaults)
+        # @yield the function itself; without a block the function is declared and not implemented here,
+        #   so on a v1.0 surface whose session reaches the agent a call to it is the agent's
         # @yieldparam args [Hash{String => Object}] the resolved arguments
         # @yieldparam evaluator [Evaluator] the calling evaluator
         # @return [Functions] self
         # @raise [ArgumentError] for an unknown boundary
         def define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists
-                   callers: "rendererOnly", &impl)
+                   callers: "rendererOnly", schema: nil, &impl)
           raise ArgumentError, "callers must be one of #{CALLERS.join(", ")}" unless CALLERS.include?(callers)
 
           @definitions[name] = Definition.new(name: name, description: description, returns: returns, params: params,
-                                              required: required, activation: activation, callers: callers, impl: impl)
+                                              required: required, activation: activation, callers: callers, impl: impl,
+                                              schema: schema)
           self
+        end
+
+        # Whether the renderer can run a function: it is declared with an implementation.
+        # @param name [String]
+        # @return [Boolean]
+        def implemented?(name)
+          !@definitions[name]&.impl.nil?
+        end
+
+        # A declared function's arguments as the agent is sent them: held to
+        # the declared schema, with its defaults filled in, nested objects'
+        # among them.
+        #
+        # @param name [String]
+        # @param args [Hash{String => Object}] the resolved arguments
+        # @return [Hash{String => Object}]
+        # @raise [Error] when the arguments do not match the schema
+        def parse(name, args)
+          definition = @definitions.fetch(name)
+          schema = definition.schema ||
+                   { "type" => "object", "properties" => definition.params, "required" => definition.required }
+          filled = Functions.with_defaults(schema, args)
+          problem = Functions.schema_problem(schema, filled)
+          raise Error, "Validation failed for function '#{name}': #{problem}" if problem
+
+          filled
+        end
+
+        # A value with a schema's defaults filled in where an object lacks a property that has one.
+        #
+        # @param schema [Object] a JSON Schema
+        # @param value [Object]
+        # @return [Object]
+        def self.with_defaults(schema, value)
+          properties = schema.is_a?(Hash) && schema["properties"]
+          return value unless value.is_a?(Hash) && properties.is_a?(Hash)
+
+          properties.each_with_object(value.dup) do |(name, property), filled|
+            if filled.key?(name)
+              filled[name] = with_defaults(property, filled[name])
+            elsif property.is_a?(Hash) && property.key?("default")
+              filled[name] = JSON.parse(JSON.generate(property["default"]))
+            end
+          end
+        end
+
+        # Why a value does not match a schema, or nil when it does. A schema
+        # the validator cannot compile (a reference it cannot follow) holds
+        # the value to nothing.
+        #
+        # @param schema [Hash] a JSON Schema
+        # @param value [Object]
+        # @return [String, nil]
+        def self.schema_problem(schema, value)
+          uri = "urn:poetry:a2ui:function-arguments"
+          Schema.new(documents: { uri => schema }, root: uri).errors(value).first&.to_s
+        rescue Schema::Error
+          nil
         end
 
         # Whether a declared function may be called by the agent.
@@ -114,6 +223,52 @@ module Poetry
         def agent_callable?(name)
           definition = @definitions[name]
           !definition.nil? && definition.callers != "rendererOnly"
+        end
+
+        # Whether a declared function is the agent's alone: on a v1.0
+        # surface no binding and no action may run it (v0.9 has no such
+        # boundary).
+        # @param name [String]
+        # @param dialect [Dialect] the protocol version of the surface the call is on
+        # @return [Boolean] whether only an agent's `callRendererFunction` may invoke the function
+        def agent_only?(name, dialect = Dialect::V1_0)
+          dialect.v1? && @definitions[name]&.callers == "agentOnly"
+        end
+
+        # What is wrong with a call's arguments before they resolve: a
+        # required one missing, or a literal one of the wrong declared type
+        # (a binding or a call is judged once it resolves); nil when nothing is.
+        # @param name [String]
+        # @param args [Hash{String => Object}] the arguments as written
+        # @param dialect [Dialect]
+        # @return [String, nil]
+        def argument_problem(name, args, dialect)
+          definition = @definitions[name] or return "unknown function #{name.inspect}"
+          missing = missing_arguments(name, args)
+          return "#{name}: missing #{missing.join(", ")}" if missing.any?
+
+          mistyped = definition.params.find do |param, schema|
+            value = args[param]
+            !value.nil? && !dialect.binding?(value) && !dialect.call?(value) && !typed?(value, schema)
+          end
+          "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
+        end
+
+        # The arguments a declared function requires that a call leaves
+        # out; none for a function that is not declared.
+        # @param name [String]
+        # @param args [Object] the arguments as written
+        # @return [Array<String>]
+        def missing_arguments(name, args)
+          definition = @definitions[name] or return []
+          definition.required - (args.is_a?(Hash) ? args.keys : [])
+        end
+
+        # Whether a declared function needs a user's gesture (an agent's call never is one).
+        # @param name [String]
+        # @return [Boolean]
+        def activation?(name)
+          @definitions[name]&.activation == true
         end
 
         # The declared function names.
@@ -141,23 +296,31 @@ module Poetry
           missing = definition.required - args.keys
           raise Error, "#{name}: missing #{missing.join(", ")}" if missing.any?
 
+          mistyped = definition.params.find { |param, schema| !args[param].nil? && !typed?(args[param], schema) }
+          raise Error, "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
+          raise Error, "function #{name.inspect} is declared without an implementation here" unless definition.impl
+
           definition.impl.call(args, evaluator)
         end
 
-        # The catalog document's `functions` section.
+        # The catalog document's `functions` section, in a protocol
+        # version's form: v1.0's validates an `{ "@call", "args" }` call and
+        # carries `returnType`, `allowedCallers` and `requiresUserActivation`
+        # beside it; v0.9's validates `{ "call", "args" }` with the return
+        # type as a const on the call (a validator's is boolean there).
         #
+        # @param dialect [Dialect]
         # @return [Hash{String => Hash}]
-        def schema
+        def schema(dialect = Dialect::V1_0)
           @definitions.transform_values do |definition|
-            call = { "type" => "object",
-                     "properties" => { "call" => { "const" => definition.name },
-                                       "args" => arguments_schema(definition) },
-                     "required" => ["call", *("args" if definition.required.any?)] }
-            document = { "type" => "object", "description" => definition.description,
-                         "returnType" => definition.returns, "allowedCallers" => definition.callers }
-            document["requiresUserActivation"] = true if definition.activation
-            document.merge("allOf" => [{ "$ref" => "#{COMMON_TYPES}FunctionCommon" }, call],
-                           "unevaluatedProperties" => false)
+            required = [dialect.call_key, *("args" if definition.required.any?)]
+            properties = { dialect.call_key => { "const" => definition.name }, "args" => arguments_schema(definition) }
+            next v0_9_entry(definition, properties, required) unless dialect.v1?
+
+            entry = { "type" => "object", "description" => definition.description, "returnType" => definition.returns,
+                      "allowedCallers" => definition.callers }
+            entry["requiresUserActivation"] = true if definition.activation
+            entry.merge("properties" => properties, "required" => required)
           end
         end
 
@@ -170,8 +333,28 @@ module Poetry
 
         private
 
+        # Whether a resolved argument has its parameter's declared type (a
+        # parameter without one takes anything).
+        def typed?(value, schema)
+          type = schema.is_a?(Hash) ? schema["type"] : nil
+          return value.is_a?(Integer) || (value.is_a?(Float) && (value % 1).zero?) if type == "integer"
+          return true unless TYPES.key?(type)
+
+          Array(TYPES[type]).any? { |klass| value.is_a?(klass) }
+        end
+
+        # A v0.9 function entry: the return type a const on the call, a validator's boolean.
+        def v0_9_entry(definition, properties, required)
+          returns = definition.returns == "validationResult" ? "boolean" : definition.returns
+          { "type" => "object", "description" => definition.description,
+            "properties" => properties.merge("returnType" => { "const" => returns }), "required" => required,
+            "unevaluatedProperties" => false }
+        end
+
         # A function's argument schema: its params as properties, the required ones listed.
         def arguments_schema(definition)
+          return definition.schema if definition.schema
+
           schema = { "type" => "object", "properties" => definition.params, "unevaluatedProperties" => false }
           schema["required"] = definition.required if definition.required.any?
           schema
@@ -210,29 +393,31 @@ module Poetry
           # Defines the validation functions: required, regex and the numeric bounds.
           def validators(registry)
             registry.define("required", description: "Checks that the value is not null, undefined, or empty.",
-                                        returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
-              result(present?(args["value"]))
+                                        returns: "validationResult", required: %w[value],
+                                        params: CHECKED) do |args, evaluator|
+              result(present?(args["value"]), evaluator)
             end
             pattern = { "pattern" => { "type" => "string", "description" => "The regular expression." } }
             registry.define("regex", description: "Checks that the value matches a regular expression string.",
                                      returns: "validationResult", required: %w[value pattern],
-                                     params: CHECKED.merge(pattern)) do |args, _|
-              regex(args["value"], args["pattern"])
+                                     params: CHECKED.merge(pattern)) do |args, evaluator|
+              regex(args["value"], args["pattern"], evaluator)
             end
             bounds = { "min" => { "type" => "number", "description" => "The minimum." },
                        "max" => { "type" => "number", "description" => "The maximum." } }
             registry.define("length", description: "Checks string length constraints.", returns: "validationResult",
-                                      required: %w[value], params: CHECKED.merge(bounds)) do |args, _|
-              result(within?(args["value"].to_s.length, args["min"], args["max"]))
+                                      required: %w[value], params: CHECKED.merge(bounds)) do |args, evaluator|
+              result(within?(length_of(args["value"], evaluator), args["min"], args["max"]), evaluator)
             end
             registry.define("numeric", description: "Checks numeric range constraints.", returns: "validationResult",
-                                       required: %w[value], params: CHECKED.merge(bounds)) do |args, _|
+                                       required: %w[value], params: CHECKED.merge(bounds)) do |args, evaluator|
               number = Functions.number(args["value"])
-              result(!number.nil? && within?(number, args["min"], args["max"]))
+              result(!number.nil? && within?(number, args["min"], args["max"]), evaluator)
             end
             registry.define("email", description: "Checks that the value is a valid email address.",
-                                     returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
-              result(args["value"].to_s.match?(EMAIL))
+                                     returns: "validationResult", required: %w[value],
+                                     params: CHECKED) do |args, evaluator|
+              email(args["value"], evaluator)
             end
           end
 
@@ -250,14 +435,14 @@ module Poetry
             amount = { "value" => DYNAMIC.call("Number", "The number.") }
             registry.define("formatNumber", description: "Formats a number with grouping and decimal precision.",
                                             returns: "string", required: %w[value],
-                                            params: amount.merge(grouping)) do |args, _|
-              format_number(args)
+                                            params: amount.merge(grouping)) do |args, evaluator|
+              format_number(args, evaluator)
             end
             money = amount.merge("currency" => DYNAMIC.call("String", "The ISO 4217 code."))
             registry.define("formatCurrency", description: "Formats a number as a currency string.", returns: "string",
                                               required: %w[value currency],
-                                              params: money.merge(grouping)) do |args, _|
-              format_currency(args)
+                                              params: money.merge(grouping)) do |args, evaluator|
+              format_currency(args, evaluator)
             end
             registry.define("formatDate", description: "Formats a timestamp with a Unicode TR35 pattern " \
                                                        "(yyyy-MM-dd, MMM d, HH:mm).",
@@ -273,9 +458,11 @@ module Poetry
                                          returns: "string", required: %w[value other], params: forms) do |args, _|
               pluralize(args)
             end
-            registry.define("openUrl", description: "Opens an http(s) URL; the renderer links to it.", returns: "void",
-                                       activation: true, required: %w[url],
-                                       params: { "url" => { "description" => "The URL to open." } }) do |args, _|
+            registry.define("openUrl",
+                            description: "Opens a URL (http, https, mailto or tel); the renderer links to it.",
+                            returns: "void",
+                            activation: true, required: %w[url],
+                            params: { "url" => { "description" => "The URL to open." } }) do |args, _|
               open_url(args["url"])
             end
           end
@@ -283,33 +470,72 @@ module Poetry
           # Defines the logical functions: and, or and not.
           def combinators(registry)
             registry.define("and", description: "Logical AND of a list of values.", returns: "boolean",
-                                   required: %w[values], params: list) do |args, _|
-              Array(args["values"]).all? { |value| Functions.truthy?(value) }
+                                   required: %w[values], params: list) do |args, evaluator|
+              operands("and", args["values"]).all? { |value| Functions.truthy?(value, dialect_of(evaluator)) }
             end
             registry.define("or", description: "Logical OR of a list of values.", returns: "boolean",
-                                  required: %w[values], params: list) do |args, _|
-              Array(args["values"]).any? { |value| Functions.truthy?(value) }
+                                  required: %w[values], params: list) do |args, evaluator|
+              operands("or", args["values"]).any? { |value| Functions.truthy?(value, dialect_of(evaluator)) }
             end
             registry.define("not", description: "Logical NOT of a value.", returns: "boolean", required: %w[value],
-                                   params: { "value" => DYNAMIC.call("Boolean", "The value.") }) do |args, _|
-              !Functions.truthy?(args["value"])
+                                   params: { "value" => DYNAMIC.call("Boolean", "The value.") }) do |args, evaluator|
+              !Functions.truthy?(args["value"], dialect_of(evaluator))
             end
           end
 
-          # A validation result, with its code when it fails.
+          # A validator's answer in the surface's version: v1.0's
+          # ValidationResult (with its code when it fails), v0.9's boolean.
           # @api private
-          def result(valid, code: nil)
+          def result(valid, evaluator, code: nil)
+            return valid unless dialect_of(evaluator).v1?
+
             code ? { "valid" => valid, "code" => code } : { "valid" => valid }
           end
 
-          # Whether a value is present: not nil, not blank, not empty.
+          # The protocol version a call runs in: its surface's, v1.0's without one.
+          # @api private
+          def dialect_of(evaluator)
+            evaluator.respond_to?(:surface) && evaluator.surface ? evaluator.surface.dialect : Dialect::V1_0
+          end
+
+          # Whether a value is present: not nil, not a blank string, not an
+          # empty list (an object, even an empty one, is present).
           # @api private
           def present?(value)
             return false if value.nil?
             return !value.strip.empty? if value.is_a?(String)
-            return !value.empty? if value.respond_to?(:empty?)
+            return !value.empty? if value.is_a?(Array)
 
             true
+          end
+
+          # The length `length` checks: a list's items, nothing's zero, any
+          # other value's characters as it displays.
+          def length_of(value, evaluator)
+            return value.size if value.is_a?(Array)
+            return 0 if value.nil?
+
+            evaluator.respond_to?(:stringify) ? evaluator.stringify(value).length : value.to_s.length
+          end
+
+          # v1.0's email answer carries its code and message; v0.9's is a boolean.
+          def email(value, evaluator)
+            valid = value.is_a?(String) && value.match?(EMAIL)
+            return valid unless dialect_of(evaluator).v1?
+
+            valid ? { "valid" => true } : EMAIL_FAILURE.dup
+          end
+
+          # A combinator's operands: a list of two or more.
+          def operands(name, values)
+            raise Error, "#{name} requires at least 2 values" unless values.is_a?(Array) && values.size >= 2
+
+            values
+          end
+
+          # A boolean argument with a default: v1.0 reads a ValidationResult as its verdict.
+          def flag(value, evaluator, default:)
+            value.nil? ? default : Functions.truthy?(value, dialect_of(evaluator))
           end
 
           # Whether a number sits inside the optional min and max bounds.
@@ -317,22 +543,24 @@ module Poetry
             (min.nil? || number >= min) && (max.nil? || number <= max)
           end
 
-          # A regex validation with a match timeout; a bad pattern raises.
+          # A regex validation in the A2UI regex dialect ({RegexSubset}), in
+          # every protocol version: a pattern outside the dialect, or one
+          # its safety check refuses, raises; a value past the dialect's
+          # length cap does not match; the engine's time limit stands behind.
           # @api private
-          def regex(value, pattern)
-            expression = Regexp.new(pattern.to_s, timeout: 0.05)
-            result(expression.match?(value.to_s))
+          def regex(value, pattern, evaluator)
+            result(RegexSubset.match?(pattern.to_s, value.to_s), evaluator)
           rescue Regexp::TimeoutError
-            result(false, code: "REGEX_TIMEOUT")
-          rescue RegexpError => e
+            result(false, evaluator, code: "REGEX_TIMEOUT")
+          rescue RegexSubset::Rejected => e
             raise Error, "regex: #{e.message}"
           end
 
           # A number with thousands separators and the requested fraction digits; an empty string for no number.
-          def format_number(args)
+          def format_number(args, evaluator)
             number = Functions.number(args["value"]) or return ""
-            decimals = Functions.number(args["decimals"])
-            delimiter = args["grouping"] == false ? "" : ","
+            decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)
+            delimiter = flag(args["grouping"], evaluator, default: true) ? "," : ""
             if decimals
               ActiveSupport::NumberHelper.number_to_rounded(number, precision: decimals.to_i, delimiter: delimiter,
                                                                     separator: ".")
@@ -343,19 +571,24 @@ module Poetry
           end
 
           # A number as currency: the code's unit and digits, grouping and decimals from the arguments.
-          def format_currency(args)
+          def format_currency(args, evaluator)
             number = Functions.number(args["value"]) or return ""
             code = args["currency"].to_s.upcase
             unit, digits = CURRENCIES.fetch(code, ["#{code} ", 2])
-            decimals = Functions.number(args["decimals"])&.to_i || digits
+            decimals = Functions.number(args["decimals"])&.clamp(0, MAX_DECIMALS)&.to_i || digits
+            delimiter = flag(args["grouping"], evaluator, default: true) ? "," : ""
             ActiveSupport::NumberHelper.number_to_currency(number, unit: unit, precision: decimals, separator: ".",
-                                                                   delimiter: args["grouping"] == false ? "" : ",",
-                                                                   format: "%u%n", negative_format: "-%u%n")
+                                                                   delimiter: delimiter, format: "%u%n",
+                                                                   negative_format: "-%u%n")
           end
 
-          # A time value rendered through a date pattern; an empty string when the value is not a time.
+          # A time value rendered through a date pattern, or as an ISO 8601
+          # UTC instant for the pattern "ISO"; an empty string when the value
+          # is not a time.
           def format_date(value, pattern)
             time = parse_time(value) or return ""
+            return time.utc.iso8601(3) if pattern.to_s == "ISO"
+
             time.strftime(strftime_pattern(pattern.to_s))
           end
 
@@ -372,6 +605,9 @@ module Poetry
           # Time.parse reads; nil when neither does.
           def parse_time_string(text)
             return if text.empty?
+
+            date = text.match(/\A(\d{4})-(\d{2})-(\d{2})/)
+            return if date && !Date.valid_date?(*date.captures.map(&:to_i))
             return Time.utc(*text.split("-").map(&:to_i)) if text.match?(/\A\d{4}-\d{2}-\d{2}\z/)
 
             Time.iso8601(text)
@@ -413,15 +649,17 @@ module Poetry
             "other"
           end
 
-          # The URL to open, which must be http or https.
+          # Opening is the renderer's to do (it links to the URL), so the
+          # call answers nothing; a URL it would not open is an error.
           def open_url(url)
-            text = url.to_s.strip
-            raise Error, "openUrl: only http and https URLs open" unless text.match?(%r{\Ahttps?://\S+\z})
+            return if url.nil? || (url.is_a?(String) && url.strip.empty?)
+            raise Error, "openUrl: only http, https, mailto and tel URLs open" unless Functions.openable?(url)
 
-            text
+            nil
           end
 
-          private_class_method :validators, :formatters, :combinators, :within?, :format_number, :format_currency
+          private_class_method :validators, :formatters, :combinators, :within?, :format_number, :format_currency,
+                               :length_of, :email, :operands, :flag
           private_class_method :format_date, :parse_time, :parse_time_string, :strftime_pattern, :plural_category
           private_class_method :open_url
         end

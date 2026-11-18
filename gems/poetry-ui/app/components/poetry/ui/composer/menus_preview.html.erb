@@ -1,0 +1,19 @@
+<%# Menus open while the word at the caret starts with a trigger. The
+    preview leaves room above the composer, where they open. %>
+<div class="max-w-xl p-4 pt-64">
+  <%= poetry_composer(id: "composer-menus", url: "#", placeholder: "Type @, / or #") do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu| %>
+      <% menu.with_item(value: "ana", label: "Ana Diaz", description: "Design") %>
+      <% menu.with_item(value: "jordan", label: "Jordan Lee", description: "Engineering") %>
+      <% menu.with_item(value: "priya", label: "Priya Shah", description: "Research", keywords: %w[ux interviews]) %>
+    <% end %>
+    <% composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu| %>
+      <% menu.with_item(label: "summarize", description: "Summarize the thread", insert: "/summarize ") %>
+      <% menu.with_item(label: "clear", description: "Start over", run: true) %>
+    <% end %>
+    <% composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]", icon: :file) do |menu| %>
+      <% menu.with_item(value: "doc_1", label: "Q3 plan.pdf") %>
+      <% menu.with_item(value: "doc_2", label: "Roadmap.md") %>
+    <% end %>
+  <% end %>
+</div>

@@ -157,11 +157,261 @@ module Poetry
       end
     end
 
+    # A bundle credits every library inside it: several origins, each with
+    # its own notice.
+    BUNDLE_ITEM = {
+      "name" => "editor-island", "type" => "registry:component",
+      "meta" => {
+        "community" => true,
+        "source" => { "registry" => "@tiptap", "item" => "react", "url" => "https://www.npmjs.com/package/@tiptap/react",
+                      "repository" => "https://github.com/ueberdosis/tiptap", "license" => "MIT",
+                      "copyright" => "Copyright (c) 2025, Tiptap GmbH", "notice" => "MIT License (Tiptap)" },
+        "sources" => [
+          { "registry" => "@tiptap", "item" => "react", "url" => "https://www.npmjs.com/package/@tiptap/react",
+            "repository" => "https://github.com/ueberdosis/tiptap", "license" => "MIT",
+            "copyright" => "Copyright (c) 2025, Tiptap GmbH", "notice" => "MIT License (Tiptap)" },
+          { "registry" => "@react", "item" => "react", "url" => "https://www.npmjs.com/package/react",
+            "repository" => "https://github.com/facebook/react", "license" => "MIT",
+            "copyright" => "Copyright (c) Meta Platforms, Inc. and affiliates.", "notice" => "MIT License (React)" }
+        ]
+      },
+      "files" => [{ "path" => "app/javascript/community/islands/editor.js",
+                    "content" => "export function mount() {}\n" }]
+    }.freeze
+
+    def test_a_bundle_credits_every_origin_in_the_notices_and_lists_them_in_the_manifest
+      prepare_community
+      write_fixture("editor-island", BUNDLE_ITEM)
+
+      output = run_generator %w[@poetry/editor-island]
+
+      assert_match(%r{adapted from @tiptap/react \(MIT\), @react/react \(MIT\)}, output)
+      assert_file "THIRD_PARTY_NOTICES.md" do |notices|
+        assert_equal 1, notices.scan("<!-- poetry:add editor-island -->").size
+        assert_includes notices, "Adapted from @tiptap/react"
+        assert_includes notices, "Adapted from @react/react"
+        assert_includes notices, "MIT License (React)"
+      end
+      assert_file "config/poetry_components.yml" do |manifest|
+        entry = YAML.safe_load(manifest, permitted_classes: [Date]).dig("components", "editor-island")
+
+        assert_nil entry["origin"]
+        assert_equal(%w[@tiptap @react], entry["origins"].map { |origin| origin["registry"] })
+        assert(entry["origins"].none? { |origin| origin.key?("notice") })
+      end
+    end
+
+    MODULE_ITEM = {
+      "name" => "mesh-island", "type" => "registry:component", "meta" => { "community" => true },
+      "files" => [{ "path" => "app/javascript/community/islands/mesh.js",
+                    "content" => "export function mount() {}\n" }]
+    }.freeze
+
+    def test_an_item_with_a_module_under_community_pins_the_directory_once
+      write_fixture("mesh-island", MODULE_ITEM)
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "application"\n))
+
+      run_generator %w[./items/mesh-island.json]
+      run_generator %w[./items/mesh-island.json]
+
+      assert_file "app/javascript/community/islands/mesh.js", /mount/
+      assert_equal 1, File.read(importmap).scan(%(pin_all_from "app/javascript/community", under: "community")).size
+    end
+
+    def test_an_item_without_a_community_module_leaves_the_importmap_alone
+      prepare_remote_fixtures
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "application"\n))
+
+      run_generator %w[./items/fancy-widget.json]
+
+      assert_equal %(pin "application"\n), File.read(importmap)
+    end
+
     def test_an_item_without_a_controller_leaves_the_controllers_manifest_alone
       prepare_remote_fixtures
       run_generator %w[./items/fancy-widget.json]
 
       assert_no_file "config/controllers_manifest.json"
+    end
+    PORT = {
+      "name" => "phone-mockup", "type" => "registry:component",
+      "registryDependencies" => %w[button frame-helper],
+      "meta" => { "community" => true,
+                  "source" => { "registry" => "@acme", "item" => "iphone", "url" => "https://acme.dev/r/iphone",
+                                "repository" => "https://github.com/acme/ui", "license" => "MIT",
+                                "copyright" => "Copyright (c) 2025 Acme",
+                                "notice" => "MIT License\n\nPermission is hereby granted" } },
+      "files" => [{ "path" => "app/components/community/phone_mockup/component.rb",
+                    "content" => "class Community::PhoneMockup::Component < Poetry::Core::Component\nend\n" }]
+    }.freeze
+
+    FRAME = { "name" => "frame-helper", "type" => "registry:lib", "meta" => { "community" => true },
+              "files" => [{ "path" => "app/helpers/community/frame_helper.rb",
+                            "content" => "module Community::FrameHelper\nend\n" }] }.freeze
+
+    def prepare_community(manifest = {})
+      write_fixture("phone-mockup", PORT)
+      write_fixture("frame-helper", FRAME)
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/poetry_components.yml"),
+                 YAML.dump({ "community" => "./items/{name}.json" }.merge(manifest)))
+    end
+
+    def test_an_at_poetry_name_the_gems_do_not_ship_is_a_community_item
+      prepare_community
+      output = run_generator %w[@poetry/phone-mockup]
+
+      assert_file "app/components/community/phone_mockup/component.rb"
+      assert_file "app/helpers/community/frame_helper.rb", /FrameHelper/
+      assert_no_file "app/components/poetry/ui/button/component.rb"
+      assert_match(/phone-mockup: a community item, reviewed and checked in CI, not audited/, output)
+      assert_match(%r{adapted from @acme/iphone \(MIT\)}, output)
+    end
+
+    def test_an_at_poetry_name_the_gems_ship_stays_local
+      prepare_community
+      run_generator %w[@poetry/badge]
+
+      assert_file "app/components/poetry/ui/badge/component.rb"
+    end
+
+    def test_a_ports_origin_lands_in_the_manifest_and_the_notices_once
+      prepare_community("registries" => { "@acme" => "https://acme.dev/r/{name}.json" })
+      run_generator %w[@poetry/phone-mockup]
+      run_generator %w[@poetry/phone-mockup]
+
+      assert_file "config/poetry_components.yml" do |manifest|
+        entry = YAML.safe_load(manifest).dig("components", "phone-mockup")
+
+        assert_equal "@poetry/phone-mockup", entry["source"]
+        assert entry["community"]
+        assert_equal "https://github.com/acme/ui", entry.dig("origin", "repository")
+        assert_nil entry.dig("origin", "notice"), "the license text lives in the notices, not the manifest"
+      end
+      assert_file "THIRD_PARTY_NOTICES.md" do |notices|
+        assert_equal 1, notices.scan("## phone-mockup").size
+        assert_match(%r{Adapted from @acme/iphone \(https://acme.dev/r/iphone\), https://github.com/acme/ui\.}, notices)
+        assert_match(/License: MIT\. Copyright \(c\) 2025 Acme/, notices)
+        assert_match(/Permission is hereby granted/, notices)
+        refute_match(/frame-helper/, notices, "an original community item credits no origin")
+      end
+    end
+
+    # -- the record: version and digests -------------------------------------
+
+    CARD = "app/components/community/note_card/component.rb"
+    STYLE = "app/components/community/note_card/style.rb"
+
+    def note_card(version, body)
+      { "name" => "note-card", "type" => "registry:component",
+        "meta" => { "community" => true, "version" => version },
+        "files" => [{ "path" => CARD, "content" => "# card #{body}\n" },
+                    { "path" => STYLE, "content" => "# style #{body}\n" }] }
+    end
+
+    def digest(content)
+      Poetry::Core::RegistryInstaller.digest(content)
+    end
+
+    def recorded(name)
+      YAML.safe_load_file(File.join(destination_root, "config/poetry_components.yml"),
+                          permitted_classes: [Date]).dig("components", name)
+    end
+
+    def test_the_manifest_records_the_items_version_and_a_digest_of_each_file_written
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      prepare_remote_fixtures
+
+      run_generator %w[@poetry/note-card ./items/fancy-widget.json]
+
+      assert_equal "aaa111", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style one\n") }, recorded("note-card")["files"])
+      widget = recorded("fancy-widget")
+      stylesheet = "app/assets/tailwind/poetry/community/fancy-widget.css"
+
+      assert_nil widget["version"], "an item that states no version records none"
+      assert_equal ["app/components/acme/fancy_widget/component.rb", stylesheet], widget["files"].keys
+      assert_equal digest(File.binread(File.join(destination_root, stylesheet))), widget["files"][stylesheet]
+    end
+
+    def test_a_rerun_that_skips_an_edited_file_keeps_what_the_record_says_it_was_copied_from
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      File.write(File.join(destination_root, CARD), "# customized\n")
+      write_fixture("note-card", note_card("bbb222", "two"))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "# customized\n", File.read(File.join(destination_root, CARD))
+      assert_equal "aaa111", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style one\n") }, recorded("note-card")["files"])
+    end
+
+    def test_a_file_deleted_and_added_again_records_the_item_it_now_comes_from
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      write_fixture("note-card", note_card("bbb222", "two"))
+      FileUtils.rm(File.join(destination_root, STYLE))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "# style two\n", File.read(File.join(destination_root, STYLE))
+      assert_equal({ CARD => digest("# card one\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+      assert_equal "aaa111", recorded("note-card")["version"], "the version moves once every file matches the item"
+
+      FileUtils.rm(File.join(destination_root, CARD))
+      run_generator %w[@poetry/note-card]
+
+      assert_equal "bbb222", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card two\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+    end
+
+    def test_force_takes_the_current_item_and_moves_the_record
+      prepare_community
+      write_fixture("note-card", note_card("aaa111", "one"))
+      run_generator %w[@poetry/note-card]
+      File.write(File.join(destination_root, CARD), "# customized\n")
+      write_fixture("note-card", note_card("bbb222", "two"))
+
+      run_generator %w[@poetry/note-card --force]
+
+      assert_equal "# card two\n", File.read(File.join(destination_root, CARD))
+      assert_equal "bbb222", recorded("note-card")["version"]
+      assert_equal({ CARD => digest("# card two\n"), STYLE => digest("# style two\n") }, recorded("note-card")["files"])
+    end
+
+    def test_a_record_from_before_digests_gains_them_only_for_files_that_match_the_item
+      prepare_community("components" => { "note-card" => { "source" => "@poetry/note-card", "community" => true } })
+      write_fixture("note-card", note_card("bbb222", "two"))
+      FileUtils.mkdir_p(File.join(destination_root, File.dirname(CARD)))
+      File.write(File.join(destination_root, CARD), "# card one\n")
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal({ "source" => "@poetry/note-card", "community" => true,
+                     "files" => { STYLE => digest("# style two\n") } }, recorded("note-card"))
+    end
+
+    def test_a_name_another_source_installed_keeps_its_record
+      prepare_community("components" => { "note-card" => { "version" => "0.1.0" } })
+      write_fixture("note-card", note_card("aaa111", "one"))
+
+      run_generator %w[@poetry/note-card]
+
+      assert_equal({ "version" => "0.1.0" }, recorded("note-card"))
+    end
+
+    def test_an_unknown_bare_name_points_at_the_community_address
+      error = assert_raises(ArgumentError) { run_generator %w[phone-mockup] }
+
+      assert_match(%r{add it as @poetry/phone-mockup}, error.message)
     end
   end
 end

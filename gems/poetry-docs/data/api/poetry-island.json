@@ -1,0 +1,154 @@
+{
+  "poetry_version": "0.1.13",
+  "gem": "poetry-island",
+  "objects": [
+    {
+      "path": "Poetry::Island",
+      "type": "module",
+      "superclass": null,
+      "docstring": "poetry-island: a bounded client mount inside server-rendered HTML, the\none place in a Poetry page where the client owns the state. The server\nrenders a shell; the island's module, any file the importmap serves\nthat exports mount(element, props), mounts beside it on connect and\nunmounts on disconnect. One controller handles the Turbo lifecycle for\nevery island: a morph refresh keeps the island and hands it the new\nprops, a cached snapshot's dead root is cleared, a preview shows the\nshell, a failed import leaves the shell. State that must outlive the\npage leaves through a form field rendered inside the island.",
+      "examples": [],
+      "file": "lib/poetry/island.rb",
+      "methods": [
+        {
+          "name": "registry",
+          "scope": "class",
+          "group": null,
+          "signature": "registry",
+          "docstring": "The agent-surface registry (the poetry-motion pattern):\nconfig/component_registry.yml, generated from source and drift-gated.",
+          "params": [],
+          "return": {
+            "types": [
+              "Poetry::Core::Registry"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/island.rb",
+          "line": 32
+        },
+        {
+          "name": "registry_helper_args",
+          "scope": "class",
+          "group": null,
+          "signature": "registry_helper_args",
+          "docstring": "Each poetry_* helper's positional arity, read from its signature.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Integer}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/island.rb",
+          "line": 40
+        },
+        {
+          "name": "root",
+          "scope": "class",
+          "group": null,
+          "signature": "root",
+          "docstring": "The gem root.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/island.rb",
+          "line": 24
+        }
+      ],
+      "constants": [
+        {
+          "name": "VERSION",
+          "value": "\"0.1.13\"",
+          "docstring": "The gem version."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Island::ComponentsHelper",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The view helper for poetry-island, included into every view by the\nengine.",
+      "examples": [],
+      "file": "app/helpers/poetry/island/components_helper.rb",
+      "methods": [
+        {
+          "name": "poetry_island",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_island(**, &)",
+          "docstring": "A bounded client mount inside server-rendered HTML.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/island/components_helper.rb",
+          "line": 9
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Island::Engine",
+      "type": "class",
+      "superclass": "Rails::Engine",
+      "docstring": "The Rails engine: component autoload paths, the controllers manifest,\npreviews, asset paths and the importmap pins. Loading the gem is the\nonly integration step besides `poetry:install`, which registers the\ncontroller and pins the app's own islands directory.",
+      "examples": [
+        {
+          "title": "Install via the host Gemfile",
+          "text": "gem \"poetry-island\""
+        }
+      ],
+      "file": "lib/poetry/island/engine.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Island::Island::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A bounded client mount inside server-rendered HTML: the one place in\na Poetry page where the client owns the state, for a widget that\nchanges it many times a second (an editor, a canvas, a map, a 3D\nscene). The block is the shell, what the page shows before the\nmodule mounts and whenever it cannot. The module, an importmap\nspecifier exporting mount(element, props), mounts beside the shell\nwhen the island connects and unmounts when it disconnects; a morph\nrefresh keeps the island and hands it the server's new props. State\nthat must outlive the page leaves through the form: name: renders a\nhidden input inside the island for the module to write to.",
+      "examples": [
+        {
+          "title": "A map that paints the shell's box",
+          "text": "<%= poetry_island(import: \"islands/map\", props: { center: [lat, lng] }, class: \"h-80\") do %>\n  <%= image_tag \"office-map.png\", alt: \"The office, on a map\" %>\n<% end %>"
+        },
+        {
+          "title": "An editor that takes the shell's place and submits with the form",
+          "text": "<%= poetry_island(import: \"islands/editor\", mode: :flow, name: \"post[body]\", value: @post.body) do %>\n  <%= sanitize(@post.body) %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/island/island/component.rb",
+      "methods": [
+        {
+          "name": "before_render",
+          "scope": "instance",
+          "group": null,
+          "signature": "before_render",
+          "docstring": "",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/island/island/component.rb",
+          "line": 75
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Island::Island::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The island's classes: a positioned box for the root a fill island\npaints, and a shell that steps aside once the island is up (the\ncontroller marks the island data-island-mounted), keeping its box\nunder a fill island and leaving the flow under a flow one.",
+      "examples": [],
+      "file": "app/components/poetry/island/island/style.rb",
+      "methods": [],
+      "constants": []
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Motion
+    # The view helpers for poetry-motion's effects, included into every
+    # view by the engine.
+    module ComponentsHelper
+      # A decorative CSS background behind the block's content.
+      def poetry_background(**, &) = render(Poetry::Motion::Background::Component.new(**), &)
+
+      # A burst of confetti from a click, or once on render.
+      def poetry_confetti(**, &) = render(Poetry::Motion::Confetti::Component.new(**), &)
+
+      # Content you can pick up and move.
+      def poetry_draggable(**, &) = render(Poetry::Motion::Draggable::Component.new(**), &)
+
+      # A dotted, turning globe with markers.
+      def poetry_globe(**) = render(Poetry::Motion::Globe::Component.new(**))
+
+      # A list whose Turbo Stream changes animate.
+      def poetry_animated_list(**, &) = render(Poetry::Motion::AnimatedList::Component.new(**), &)
+
+      # A region whose data-layout-id elements move between places.
+      def poetry_layout_group(**, &) = render(Poetry::Motion::LayoutGroup::Component.new(**), &)
+
+      # An element a Turbo visit morphs between two pages.
+      def poetry_shared_element(**, &) = render(Poetry::Motion::SharedElement::Component.new(**), &)
+
+      # A row of items that swell toward the pointer.
+      def poetry_dock(**, &) = render(Poetry::Motion::Dock::Component.new(**), &)
+
+      # A wrapper that pulls its control toward the pointer.
+      def poetry_magnetic(**, &) = render(Poetry::Motion::Magnetic::Component.new(**), &)
+
+      # A surface with a glow that follows the pointer.
+      def poetry_spotlight_card(**, &) = render(Poetry::Motion::SpotlightCard::Component.new(**), &)
+
+      # Text that decodes from random glyphs into itself.
+      def poetry_scramble(text = nil, **) = render(Poetry::Motion::Scramble::Component.new(text, **))
+
+      # A line typed out a character at a time.
+      def poetry_typewriter(text = nil, **) = render(Poetry::Motion::Typewriter::Component.new(text, **))
+
+      # A word that turns over into the next, in place.
+      def poetry_word_rotate(**) = render(Poetry::Motion::WordRotate::Component.new(**))
+
+      # A field of drifting dots behind the block's content.
+      def poetry_particles(**, &) = render(Poetry::Motion::Particles::Component.new(**), &)
+
+      # Content that drifts at its own pace as it scrolls by.
+      def poetry_parallax(**, &) = render(Poetry::Motion::Parallax::Component.new(**), &)
+
+      # A bar that fills as the reader scrolls.
+      def poetry_scroll_progress(**) = render(Poetry::Motion::ScrollProgress::Component.new(**))
+
+      # A stack of cards to swipe through, one decision each.
+      def poetry_swipe_cards(**, &) = render(Poetry::Motion::SwipeCards::Component.new(**), &)
+
+      # A looping marquee of the block's items.
+      def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)
+
+      # A passage whose words brighten as it scrolls into view.
+      def poetry_text_reveal(text = nil, **) = render(Poetry::Motion::TextReveal::Component.new(text, **))
+
+      # A number that counts up to its value.
+      def poetry_number_ticker(**) = render(Poetry::Motion::NumberTicker::Component.new(**))
+
+      # A surface that leans toward the pointer.
+      def poetry_tilt_card(**, &) = render(Poetry::Motion::TiltCard::Component.new(**), &)
+    end
+  end
+end

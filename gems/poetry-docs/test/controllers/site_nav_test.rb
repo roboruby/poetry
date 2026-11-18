@@ -16,14 +16,22 @@ class SiteNavTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the docs header has one panel, Resources: the sidebar holds the guides and the galleries" do
+    get introduction_path
+
+    triggers = css_select("header [data-slot=navigation-menu-trigger]").map { |trigger| trigger.text.strip }
+    assert_equal [ "Resources" ], triggers
+    assert_select "[data-slot=sidebar-menu-button][href=?]", introduction_path, minimum: 1
+    assert_select "[data-sidebar-sections-section-param=?]", "Get Started", 1
+  end
+
   test "the docs header's section links open their sidebar section on arrival" do
     get introduction_path
 
     openers = css_select(%(header [data-controller="sidebar-sections"][data-action="click->sidebar-sections#open"]))
     assert_equal 1, openers.size
     links = JSON.parse(openers.first["data-sidebar-sections-links-value"])
-    assert_equal({ "/components/button" => "Components", "/charts/area" => "Charts",
-                   "/agent-skills" => "AI Native", "/mcp-server" => "AI Native" }, links)
+    assert_equal({ "/agent-skills" => "AI Native", "/mcp-server" => "AI Native" }, links)
     links.each_key { |href| assert_select "header [data-controller='sidebar-sections'] a[href=?]", href, minimum: 1 }
     links.each_value { |title| assert_select "[data-sidebar-sections-section-param=?]", title, 1 }
 

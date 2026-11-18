@@ -11,7 +11,8 @@ def poetry_ui_template_classes_text
   # Component templates + the block templates: a block's
   # consumer utilities (group-has-*/sidebar-wrapper etc.) must reach host
   # safelists and the dummy's compiled build like any other gem markup.
-  scans = ["app/components/**/*.html.erb", "lib/generators/poetry/block/templates/*.html.erb"].map do |glob|
+  scans = ["app/components/**/*.html.erb", "lib/generators/poetry/block/templates/*.html.erb",
+           "app/views/poetry/ui/**/*.html.erb"].map do |glob|
     Poetry::Core::CSS::TemplateClasses.scan(root: Poetry::Ui.root, glob: glob)
   end
   abort scans.flat_map(&:errors).join("\n") unless scans.all? { |scan| scan.errors.empty? }
@@ -160,6 +161,20 @@ def poetry_ui_vendored_var_reads
   Dir[Poetry::Core.root.join("vendor/**/*.css").to_s].flat_map do |file|
     File.read(file).scan(Poetry::Core::CSS::VarCoverage::READ).flatten
   end.uniq
+end
+
+# The whole rule block (nested blocks included) of the first selector
+# containing marker in a compiled stylesheet, or nil.
+def poetry_css_rule_block(css, marker)
+  start = css.index(marker) or return nil
+  open = css.index("{", start) or return nil
+  depth = 0
+  css[open..].each_char.with_index(open) do |char, index|
+    depth += 1 if char == "{"
+    depth -= 1 if char == "}"
+    return css[start..index] if depth.zero?
+  end
+  nil
 end
 
 namespace :css do
@@ -369,8 +384,12 @@ namespace :css do
     require "tailwindcss/ruby"
     require "tmpdir"
 
+    # The variant form is Attachment's own: the kill must ride the utility
+    # into its variants, not only match a bare .shimmer class.
+    variant = "group-data-[upload-state=uploading]/attachment:shimmer"
+
     compiled = Dir.mktmpdir("poetry-motion-probe") do |dir|
-      File.write(File.join(dir, "probe.txt"), "shimmer\n")
+      File.write(File.join(dir, "probe.txt"), "shimmer #{variant}\n")
       File.write(File.join(dir, "entry.css"), <<~CSS)
         @import "tailwindcss";
         @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
@@ -391,6 +410,12 @@ namespace :css do
             "compile - check the vendor import chain / minifier settings"
     end
 
-    puts "reduced-motion contract verified in the compiled artifact (shimmer kill present)"
+    variant_rule = poetry_css_rule_block(compiled, "attachment\\:shimmer")
+    unless variant_rule&.match?(/prefers-reduced-motion: reduce\)\s*\{[^}]*animation:\s*none/m)
+      abort "reduced-motion probe FAILED: #{variant} compiled without its reduced-motion kill - " \
+            "the vendored shadcn tailwind.css predates the variant fix (shadcn #12061)"
+    end
+
+    puts "reduced-motion contract verified in the compiled artifact (shimmer kill present, variants included)"
   end
 end

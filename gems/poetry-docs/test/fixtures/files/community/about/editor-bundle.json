@@ -1,0 +1,53 @@
+{
+  "name": "editor-bundle",
+  "type": "registry:component",
+  "title": "Editor bundle",
+  "description": "A rich text editor carried as one module.",
+  "registryDependencies": [],
+  "dependencies": [
+    "poetry-island"
+  ],
+  "files": [
+    {
+      "path": "app/components/community/editor_bundle/component.rb",
+      "target": "app/components/community/editor_bundle/component.rb"
+    },
+    {
+      "path": "app/javascript/community/islands/editor.js",
+      "target": "app/javascript/community/islands/editor.js"
+    }
+  ],
+  "meta": {
+    "community": true,
+    "source": {
+      "registry": "@tiptap",
+      "item": "react",
+      "url": "https://www.npmjs.com/package/@tiptap/react",
+      "repository": "https://github.com/ueberdosis/tiptap",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025, Tiptap GmbH",
+      "notice": "MIT License (Tiptap)"
+    },
+    "sources": [
+      {
+        "registry": "@tiptap",
+        "item": "react",
+        "url": "https://www.npmjs.com/package/@tiptap/react",
+        "repository": "https://github.com/ueberdosis/tiptap",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2025, Tiptap GmbH",
+        "notice": "MIT License (Tiptap)"
+      },
+      {
+        "registry": "@react",
+        "item": "react",
+        "url": "javascript:alert(1)",
+        "repository": "https://github.com/facebook/react",
+        "license": "MIT",
+        "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates.",
+        "notice": "MIT License (React)"
+      }
+    ],
+    "version": "d64668e2da5d"
+  }
+}

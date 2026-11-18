@@ -1,5 +1,5 @@
 <%# The app shell: a grouped nav column + a page inset with the trigger. %>
-<% open = local_assigns.fetch(:open, true) %>
+<%# locals: (collapsible:, open: true, component: nil, container_class: nil, error: nil) %>
 <div class="h-96 overflow-hidden rounded-lg border">
   <%= poetry_sidebar(collapsible: collapsible, open: open) do |shell| %>
     <% shell.with_nav do %>

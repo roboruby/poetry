@@ -22,7 +22,7 @@
       } catch {}
     </script>
     <link rel="icon" href="<%= image_path("poetry_docs/icon.svg") %>" type="image/svg+xml">
-    <%= stylesheet_link_tag "poetry_docs" %>
+    <%= stylesheet_link_tag Poetry::Docs.config.stylesheet %>
     <%= javascript_importmap_tags "poetry_docs/application" %>
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">

@@ -1,0 +1,401 @@
+<%# The composer's contract with the server: who holds the running state,
+    how it reaches the page, and what Stop asks for. The examples below
+    run it against a scripted reply. %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  view_source = <<~CODE
+    #{o}# app/views/chats/show.html.erb #{e}
+    #{o}= turbo_stream_from @chat #{e}
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content",
+                        status: @chat.composer_status, stop_url: stop_chat_path(@chat)) #{e}
+
+    #{o}# app/views/chats/_composer_action.html.erb - the slot alone, for a stream #{e}
+    #{o}= poetry_composer_action(id: "composer", status: chat.composer_status) #{e}
+  CODE
+  model_source = <<~CODE
+    # app/models/chat.rb
+    class Chat < ApplicationRecord
+      acts_as_chat
+
+      # A turn whose process died stops counting as running after this long,
+      # so the composer cannot stay on Stop for ever.
+      TURN_CEILING = 10.minutes
+
+      def responding?
+        responding_since.present? && responding_since > TURN_CEILING.ago
+      end
+
+      # A cancellation left over from the last turn would stop this one at its first checkpoint.
+      def begin_turn! = update_columns(responding_since: Time.current, cancelled: false)
+
+      def end_turn! = update_columns(responding_since: nil)
+
+      # Another process sets the cancellation, so it is read fresh.
+      def composer_status
+        return :idle unless responding?
+
+        self.class.uncached { self.class.where(id: id).pick(:cancelled) } ? :stopping : :running
+      end
+
+      # One ordered channel carries every change of status.
+      def broadcast_composer_action
+        broadcast_replace_to self, target: "composer-action",
+                                   partial: "chats/composer_action", locals: { chat: self }
+      end
+    end
+  CODE
+  controller_source = <<~CODE
+    # config/routes.rb
+    resources :chats do
+      resources :messages, only: :create
+      post :stop, on: :member
+    end
+
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+      return head(:unprocessable_entity) if content.empty?
+      return head(:conflict) if chat.responding? # a reply is running: the field keeps its text
+
+      chat.begin_turn!
+      chat.broadcast_composer_action              # Stop
+      ChatResponseJob.perform_later(chat, content)
+      head :no_content                            # accepted: the sent text leaves the field
+    end
+
+    # app/controllers/chats_controller.rb
+    def stop
+      chat = Chat.find(params[:id])
+      chat.cancel if chat.responding?             # RubyLLM stores it; the job reads it in any process
+      chat.broadcast_composer_action              # Stop, busy
+      head :no_content
+    end
+  CODE
+  attachments_view_source = <<~CODE
+    #{o}# app/views/chats/show.html.erb #{e}
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content",
+                        status: @chat.composer_status, stop_url: stop_chat_path(@chat),
+                        attachments: true, direct_upload: true,
+                        accept: "image/*,.pdf", max_files: 5, max_size: 10.megabytes) #{e}
+  CODE
+  attachments_server_source = <<~CODE
+    # app/models/message.rb
+    class Message < ApplicationRecord
+      acts_as_message
+      has_many_attached :attachments
+    end
+
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+      files = Array(params[:attachments]).compact_blank   # signed ids, with direct_upload: true
+      return head(:unprocessable_entity) if content.empty? && files.empty?
+      return head(:conflict) if chat.responding?
+
+      chat.begin_turn!
+      chat.broadcast_composer_action
+      ChatResponseJob.perform_later(chat, content, files)
+      head :no_content                                    # accepted: the text and the chips leave
+    end
+
+    # app/jobs/chat_response_job.rb
+    def perform(chat, content, files = [])
+      blobs = files.map { |id| ActiveStorage::Blob.find_signed!(id) }
+      # Check each blob's content_type and byte_size here: the composer's limits are a courtesy.
+      chat.ask(content, with: blobs) do |chunk|
+        # update the reply's row here
+      end
+    end
+  CODE
+  menus_view_source = <<~CODE
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), name: "content") do |composer| #{e}
+      #{o} composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu| #{e}
+        #{o} @chat.members.each do |member| #{e}
+          #{o} menu.with_item(value: member.handle, label: member.name, description: member.team) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+      #{o} composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]", icon: :file) do |menu| #{e}
+        #{o} @chat.documents.each do |document| #{e}
+          #{o} menu.with_item(value: document.to_sgid.to_s, label: document.title) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+      #{o} composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu| #{e}
+        #{o} menu.with_item(label: "summarize", description: "Summarize the thread", insert: "/summarize ") #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+  menus_server_source = <<~CODE
+    # app/controllers/messages_controller.rb
+    def create
+      chat = Chat.find(params[:chat_id])
+      content = params[:content].to_s.strip
+
+      # "@ana" is text: look the handle up among the people this chat may mention.
+      handles = content.scan(/(?<!\\S)@([\\w.-]+)/).flatten
+      mentioned = chat.members.where(handle: handles)
+
+      # A chip posted a signed id: resolve it, and keep only what this chat may see.
+      documents = GlobalID::Locator.locate_many_signed(Array(params[:context]).compact_blank, only: Document)
+      documents &= chat.documents
+
+      # A command is the message's first word.
+      command, rest = content.match(%r{\\A/(\\w+)\\s*(.*)\\z}m)&.captures
+      # ...
+    end
+  CODE
+  server_menu_source = <<~CODE
+    #{o}# The composer: no person is rendered with the page. #{e}
+    #{o} composer.with_menu(trigger: "@", label: "People", icon: :user, src: mentions_chat_path(@chat)) #{e}
+
+    #{o}# app/views/chats/mentions.html.erb #{e}
+    #{o}= poetry_composer_menu_options(icon: :user) do |menu| #{e}
+      #{o} @people.each do |person| #{e}
+        #{o} menu.with_item(value: person.handle, label: person.name, description: person.team) #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+  server_menu_controller_source = <<~CODE
+    # app/controllers/chats_controller.rb
+    def mentions
+      chat = Current.user.chats.find(params[:id])
+      # Only people this chat may mention, a handful of rows, in your order.
+      @people = chat.members.search(params[:q]).limit(8)
+      render layout: false
+    end
+  CODE
+  prompts_source = <<~CODE
+    #{o}= poetry_composer_prompt(composer: "composer", text: "Summarize the open pull requests") #{e}
+    #{o}= poetry_composer_prompt(composer: "composer", text: "Compare ", submit: false) { "Compare two things…" } #{e}
+
+    #{o}= poetry_composer(id: "composer", url: chat_messages_path(@chat), autofocus: true) #{e}
+  CODE
+  job_source = <<~CODE
+    # app/jobs/chat_response_job.rb
+    class ChatResponseJob < ApplicationJob
+      def perform(chat, content)
+        text = +""
+        chat.ask(content) do |chunk|
+          text << chunk.content.to_s
+          # update the reply's row here
+        end
+      rescue RubyLLM::CancelledError
+        # Stop was pressed. RubyLLM discards the unfinished reply's record,
+        # so save `text` yourself if the transcript should keep it.
+      ensure
+        chat.end_turn!
+        chat.broadcast_composer_action            # Send
+      end
+    end
+  CODE
+%>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="state">The server holds the state</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A composer is in one of three states: <code class="text-foreground">:idle</code> shows Send,
+    <code class="text-foreground">:running</code> shows Stop, and
+    <code class="text-foreground">:stopping</code> shows Stop busy and disabled. Your app knows which,
+    so render <code class="text-foreground">status:</code> from your own record of the reply. When the
+    status changes, redraw the action slot alone:
+    <code class="text-foreground">poetry_composer_action</code> renders the element with the DOM id
+    <code class="text-foreground">"&lt;id&gt;-action"</code>, and a Turbo Stream replaces it.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The form and the field are never replaced, so what a person types while a reply streams is still
+    there when it ends. The controller keeps no copy of the state. A Stop button on the page is the
+    whole fact that a reply is running: while one is there, Enter sends nothing.
+  </p>
+  <%= poetry_code_block(code: view_source, language: "erb", label: "The page and the slot") %>
+  <p class="max-w-2xl text-muted-foreground">
+    What the server answers decides what happens to the text. Any success clears the sent text from
+    the field and keeps whatever was typed after it. Any other answer, such as
+    <code class="text-foreground">409</code> or <code class="text-foreground">422</code>, leaves the
+    field as it was.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    For the screen around a composer, start from the
+    <%= link_to "chat block", block_path("chat"), class: "text-foreground underline underline-offset-4" %>:
+    a panel, a transcript, a welcome with suggested prompts, and a composer wired to two addresses.
+    <code class="text-foreground">bin/rails g poetry:block chat</code> copies it into your app. Two
+    <%= link_to "recipes", recipes_path, class: "text-foreground underline underline-offset-4" %>
+    add the server half: <code class="text-foreground">screen-chat</code> is a controller with a
+    stand-in where your model goes, and <code class="text-foreground">screen-chat-ruby-llm</code> is
+    the whole turn on RubyLLM: the reply streamed as Markdown, Stop, the sources a reply cites, a
+    thumb up or down on it, and a test of the job that needs no network.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="ordering">One channel, or a version</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A change of status can reach the page two ways: in the answer to the form, and in a broadcast.
+    The two travel separately and can arrive in either order. When the form's answer says running
+    and lands after the broadcast that says idle, the composer shows Stop for a reply that has
+    already ended.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Follow one of two rules. Send every change by broadcast and answer the form with
+    <code class="text-foreground">head :no_content</code>, as the recipe below does. Or pass
+    <code class="text-foreground">version:</code>, a number that only rises, with every render of the
+    slot, and replace it with a stream action that ignores an older number. The
+    <code class="text-foreground">vreplace</code> action in
+    <%= poetry_link(href: "/ag-ui") { "poetry-agent" } %> is one, and the examples on this page use it
+    with the clock as the number.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="stop">Stopping a RubyLLM reply</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Stop is a button that posts to <code class="text-foreground">stop_url:</code> through a small form
+    of its own, so the draft is never sent with it. What the endpoint does is yours. With RubyLLM 2 it
+    is one line: <code class="text-foreground">chat.cancel</code> stores the request on the chat, the
+    job that runs the model reads it from any process, and the reply ends with
+    <code class="text-foreground">RubyLLM::CancelledError</code> at the next chunk or before the next
+    tool call. The chat needs one column of its own for this recipe,
+    <code class="text-foreground">responding_since</code>, a datetime.
+  </p>
+  <%= poetry_code_block(code: model_source, language: "ruby", label: "The chat") %>
+  <%= poetry_code_block(code: controller_source, language: "ruby", label: "Send and Stop") %>
+  <%= poetry_code_block(code: job_source, language: "ruby", label: "The job") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Two things to keep. Clear the cancellation when a turn is accepted and cancel only while one is
+    running, or a late press of Stop ends the next reply instead. And refuse a message on the server
+    while a reply runs: the composer already holds it back, but a second tab or a script will not.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="files">Files in a message</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">attachments: true</code> makes files part of the message. A paperclip
+    opens the file picker, a file dropped on the composer or pasted into the field lands in it, and each
+    file shows as a chip above the field with a button that removes it.
+    <code class="text-foreground">accept:</code>, <code class="text-foreground">max_size:</code> and
+    <code class="text-foreground">max_files:</code> refuse a file as it arrives and say why under the
+    field. They are a courtesy to the person choosing: check the files again on the server.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The files arrive under <code class="text-foreground">params[:attachments]</code>, or the key you
+    give as <code class="text-foreground">attachments_name:</code>. A message of files alone can be
+    sent, so accept one whose text is blank. When the server accepts the message, the chips that went
+    with it leave the composer and a file added since stays. When it refuses, they all stay.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    With <code class="text-foreground">direct_upload: true</code> the files go straight to storage
+    through Active Storage and the message posts their signed ids, which a job can take. They upload as
+    the message is sent, or with <code class="text-foreground">upload: :immediate</code> as each one
+    lands, with progress, retry and remove on its chip; sending waits until they finish. Without direct
+    uploads the form posts the files themselves, so attach them to a record before a job needs them.
+    RubyLLM takes blobs and uploaded files alike through
+    <code class="text-foreground">with:</code>, and keeps them on a message that
+    <code class="text-foreground">has_many_attached :attachments</code>.
+  </p>
+  <%= poetry_code_block(code: attachments_view_source, language: "erb", label: "The composer") %>
+  <%= poetry_code_block(code: attachments_server_source, language: "ruby", label: "The server") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="mentions">Mentions and commands</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">with_menu</code> adds a list that opens over the composer while the
+    word being typed starts with its trigger: people behind <code class="text-foreground">@</code>,
+    commands behind <code class="text-foreground">/</code>. You render the options, and the composer
+    filters them as the word grows, with the closest match first. The arrows move the highlight, Enter
+    and Tab choose, and Escape closes the list for that word. While a list is open, Enter chooses and
+    does not send.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    What reaches the server stays plain, and the menu says which of two forms it takes. A text menu
+    leaves <code class="text-foreground">@ana</code> in the message: the trigger and the option's
+    <code class="text-foreground">value:</code>, or the option's own
+    <code class="text-foreground">insert:</code>. Use it when the value is a handle a person could have
+    typed. A chip menu, <code class="text-foreground">inserts: :chip</code>, takes the typed word out,
+    shows a chip above the field and posts the value in a hidden field under
+    <code class="text-foreground">name:</code>. Use it for a file, a record or a tool, where the
+    reference is context for the whole message and its id means nothing to a reader. There is no
+    bracket or directive syntax to parse, and nothing in the text a person can half-edit.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Either way, treat what arrives as a claim. The page offered a list, but a request can name
+    anything: look a handle up among the people the chat may mention, and resolve a posted id among the
+    records it may see. A signed global id keeps the value from being guessed.
+  </p>
+  <%= poetry_code_block(code: menus_view_source, language: "erb", label: "Three menus") %>
+  <%= poetry_code_block(code: menus_server_source, language: "ruby", label: "Reading them") %>
+  <h3 class="font-medium" id="server-fed-menus">A menu the server feeds</h3>
+  <p class="max-w-2xl text-muted-foreground">
+    A menu too large to render with the page, such as a company directory, takes
+    <code class="text-foreground">src:</code>. The composer asks that address about the word being
+    typed, <code class="text-foreground">?q=ma</code>, a moment after the typing pauses, and shows what
+    comes back as it came. You decide what matches and in what order, so a match on a team or an
+    address the page never holds works. The view there answers with
+    <code class="text-foreground">poetry_composer_menu_options</code>, which takes the same
+    <code class="text-foreground">with_item</code> a menu does. <code class="text-foreground">param:</code>
+    names a query key other than <code class="text-foreground">q</code>.
+  </p>
+  <%= poetry_code_block(code: server_menu_source, language: "erb", label: "The menu and its answer") %>
+  <%= poetry_code_block(code: server_menu_controller_source, language: "ruby", label: "The search") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Options you render in the menu itself show for the bare trigger with no request, which suits a
+    short list of recent people; the first letter asks the server. While an answer is on its way, a
+    longer word narrows the options already shown, and a newer word drops the request for an older
+    one. Turbo carries the request, so the page needs Turbo, and the answer is the frame the helper
+    renders. An answer that fails leaves the list as it was, and the composer keeps Turbo from putting
+    an error page in its place. While a word waits for its first answer no list is open, so Enter
+    sends the message with the word as it was typed.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Scope the search as you would any other: to the people this person may mention, and to a handful
+    of rows. The menu carries <code class="text-foreground">data-loading</code> while a word waits for
+    its answer, for a style of your own.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    A command menu usually opens only on the first word,
+    <code class="text-foreground">at: :start</code>, so a path in the middle of a sentence does not
+    open it. An option with <code class="text-foreground">run: true</code> writes nothing: the typed
+    word is taken out and the choice is reported to the page as a
+    <code class="text-foreground">poetry:composer-menu:choose</code> event, for something that should
+    happen at once, such as clearing the conversation. The same event follows every choice.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The field is a native textarea throughout, so dictation, spell checking and input methods behave as
+    they do anywhere else. It names the open list and the highlighted option to assistive technology,
+    and a live region says how many suggestions there are. This arrangement passes the automated
+    accessibility checks; it has not yet been tested by a person using VoiceOver or NVDA.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="suggested-prompts">Suggested prompts</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    The chips under an empty conversation, a quick reply, a "try again":
+    <code class="text-foreground">poetry_composer_prompt</code> is a button anywhere on the page that
+    names a composer by id. Pressed, the composer writes the prompt's text in place of the draft and
+    sends it, through the same gate a typed message passes, so nothing goes while a reply is running
+    and a draft is never traded for a prompt that could not go.
+    <code class="text-foreground">submit: false</code> only writes the text and puts the caret after
+    it, for a prompt the person finishes. It is a Poetry Button and takes a Button's
+    <code class="text-foreground">variant:</code> and <code class="text-foreground">size:</code>; a
+    block gives a label other than the text.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">autofocus: true</code> on the composer puts the caret in the field
+    when the page opens, for a page that is the conversation.
+  </p>
+  <%= poetry_code_block(code: prompts_source, language: "erb", label: "Two prompts and their composer") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="keys">Keys</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Enter sends and Shift+Enter starts a new line. Cmd+Enter and Ctrl+Enter always send. With
+    <code class="text-foreground">submit_on_enter: false</code> a bare Enter is a new line, which suits
+    longer writing. An Enter that confirms a choice in an input method, as when typing Japanese or
+    Chinese, never sends. The field grows with its content up to a ceiling and scrolls after that.
+  </p>
+</section>

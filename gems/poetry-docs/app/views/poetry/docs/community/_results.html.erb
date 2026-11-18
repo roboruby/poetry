@@ -1,0 +1,98 @@
+<%# The list a search and its filters leave: how many, the filters in
+    force with a way out of each, the order, the items, and a pager where
+    the browser gives its list in pages (it answers `page` and `pages`).
+    Locals: browse, path, heading, lead, item_path (a callable from an
+    item to its page; the engine's by default), above (optional: what a
+    host shows between the filters in force and the items), noun (what
+    the list holds, "items" unless a host's list holds something else),
+    card (optional: a callable from an entry to its card, where a host's
+    entries are not items), empty (optional: what the page says where
+    there is nothing at all to list). A filter that sits in the heading
+    (Facet#heading) is drawn beside the order: "All", then its choices. %>
+<%# locals: (browse:, path:, heading:, lead: nil, item_path: nil, above: nil, noun: nil, card: nil, empty: "This site serves no community registry, so there is nothing to install from here.") %>
+<%# Two defaults, kept from the first version: the count calls them items and the pager calls them components; a host that passes noun: names both. %>
+<% pager_noun = noun || "components" %>
+<% noun ||= "items" %>
+<% address = ->(params) { query = params.to_query; query.empty? ? path : "#{path}?#{query}" } %>
+<% link = ->(changes) { address.call(browse.params_for(changes)) } %>
+<% item_path ||= ->(item) { poetry_docs.community_item_path(item.name) } %>
+<div class="flex flex-col gap-6" data-community-results>
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= heading %></h1>
+    <% if lead %><p class="max-w-2xl text-muted-foreground"><%= lead %></p><% end %>
+  </header>
+
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+    <%# On a phone the filters are in the sidebar's drawer; this opens it. %>
+    <% if content_for?(:community_sidebar) %>
+      <%= poetry_button(variant: :outline, size: :sm, class: "md:hidden",
+                        data: { community_filters_toggle: true,
+                                action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) }) do %>
+        <%= poetry_icon(name: :"sliders-horizontal") %> Filters<%= " (#{browse.choices.size})" if browse.choices.any? %>
+      <% end %>
+    <% end %>
+    <h2 id="items" class="text-sm font-medium" data-community-count>
+      <%= browse.narrowed? ? "#{browse.count} of #{browse.total}" : browse.total %>
+      <%= browse.total == 1 ? noun.singularize : noun %>
+    </h2>
+    <% if browse.narrowed? %>
+      <ul class="flex flex-wrap items-center gap-2" aria-label="Filters in force">
+        <% if browse.query %>
+          <li><%= link_to link.call("q" => nil), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
+            &ldquo;<%= browse.query %>&rdquo; <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Clear the search</span>
+          <% end %></li>
+        <% end %>
+        <% browse.choices.each do |choice| %>
+          <li><%= link_to address.call(browse.toggled(choice.param, choice.value)), rel: "nofollow", class: "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent" do %>
+            <%= choice.label %> <%= poetry_icon(name: :x, class: "size-3") %><span class="sr-only">Remove this filter</span>
+          <% end %></li>
+        <% end %>
+        <li><%= link_to "Clear all", path, class: "text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground" %></li>
+      </ul>
+    <% end %>
+    <div class="ml-auto flex flex-wrap items-center gap-x-6 gap-y-2">
+    <% browse.facets.select(&:heading).each do |facet| %>
+      <p class="flex items-center gap-2 text-xs text-muted-foreground" data-heading-filter="<%= facet.param %>">
+        <%= facet.label %>:
+        <% none = facet.options.none?(&:selected) %>
+        <%= link_to "All", link.call(facet.param => nil), rel: "nofollow", aria: { current: ("true" if none) },
+                    class: (none ? "font-medium text-foreground" : "underline-offset-4 hover:underline") %>
+        <% facet.options.each do |option| %>
+          <%= link_to address.call(browse.toggled(facet.param, option.value)), rel: "nofollow", aria: { current: ("true" if option.selected) },
+                      class: (option.selected ? "font-medium text-foreground" : "underline-offset-4 hover:underline") do %>
+            <%= option.label %> <span class="tabular-nums opacity-70"><%= option.count %></span>
+          <% end %>
+        <% end %>
+      </p>
+    <% end %>
+    <p class="flex items-center gap-2 text-xs text-muted-foreground">
+      Sort:
+      <% browse.sorts.each do |key, label| %>
+        <%= link_to label, link.call("sort" => (key == browse.sorts.keys.first ? nil : key)), rel: "nofollow",
+                    aria: { current: ("true" if browse.sort == key) },
+                    class: (browse.sort == key ? "font-medium text-foreground" : "underline-offset-4 hover:underline") %>
+      <% end %>
+    </p>
+    </div>
+  </div>
+
+  <%= above %>
+
+  <% if browse.items.any? %>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <% browse.items.each do |item| %>
+        <%= card ? card.call(item) : render("poetry/docs/community/card", item: item, href: item_path.call(item)) %>
+      <% end %>
+    </div>
+    <% if browse.respond_to?(:pages) && browse.pages > 1 %>
+      <%= poetry_pagination(current: browse.page, total: browse.pages, label: "Pages of #{pager_noun}",
+                            path: ->(page) { link.call("page" => (page unless page == 1)) }) %>
+    <% end %>
+  <% elsif browse.total.zero? %>
+    <p class="max-w-2xl text-muted-foreground"><%= empty %></p>
+  <% else %>
+    <p class="max-w-2xl text-muted-foreground">
+      Nothing matches. <%= link_to "Clear the search and the filters", path, class: "text-foreground underline underline-offset-4" %>.
+    </p>
+  <% end %>
+</div>

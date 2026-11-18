@@ -58,6 +58,14 @@ module Poetry
         renders_one :title, doc: "The file name line. User content - never mark it html_safe."
         renders_one :description, doc: "Muted metadata under the title (size, type); in the error state, the " \
                                        "failure explanation."
+        renders_one :progress,
+                    doc: "An upload's progress under the title: the Progress component, slim, its caption for " \
+                         "screen readers only. The uploader moves it; render it with the value you know.",
+                    renders: lambda { |label:, value: 0, **options|
+                      data = { slot: "attachment-progress" }.merge(options.delete(:data) || {})
+                      Progress::Component.new(value: value, label: label, show_value: false, data: data,
+                                              class: css(:progress), **options)
+                    }
         renders_many :actions,
                      doc: "Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires " \
                           "label:.",
@@ -110,6 +118,8 @@ module Poetry
                                    "either slot is set"
         part "attachment-title", "The file name line (title slot; user content, never html_safe)"
         part "attachment-description", "Muted metadata / failure copy under the title"
+        part "attachment-progress", "The upload's progress bar under the title (the progress slot: a slim " \
+                                    "Progress whose caption is read, not shown)"
         part "attachment-actions", "Row of with_action poetry Buttons"
         part "attachment-trigger", "The whole-chip control (with_trigger: a button or tag: :a " \
                                    "anchor) - wraps the picker/download affordance"

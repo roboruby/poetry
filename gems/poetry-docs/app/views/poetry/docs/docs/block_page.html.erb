@@ -48,6 +48,10 @@
              # the clipping box (--available-height), so a bar-hugging
              # preview truncates them after one row.
              "min-h-[26rem] max-h-[36rem] overflow-auto rounded-lg border p-8"
+           when "chat"
+             # The chat panel has a height and a scroller of its own: a
+             # capped, scrolling preview box would put one scroller in another.
+             "rounded-lg border"
            else
              "max-h-[36rem] overflow-auto rounded-lg border p-8"
            end %>
@@ -55,15 +59,17 @@
             scopes those navigations to the preview, so clicking Continue
             re-renders the block in place instead of reloading the page
             to the top - the same embedding a host app would use. %>
-        <% if @entry.slug == "stepper" %>
-          <%= turbo_frame_tag "stepper-preview" do %>
+        <%# The chat block's "New chat" is such a link too (?new opens it
+            on its welcome), so its preview sits in a frame as well. %>
+        <% if %w[stepper chat].include?(@entry.slug) %>
+          <%= turbo_frame_tag "#{@entry.slug}-preview" do %>
             <div class="<%= preview_classes %>">
-              <%= render inline: @source %>
+              <%= render inline: @source, locals: block_preview_locals(@entry.slug) %>
             </div>
           <% end %>
         <% else %>
           <div class="<%= preview_classes %>">
-            <%= render inline: @source %>
+            <%= render inline: @source, locals: block_preview_locals(@entry.slug) %>
           </div>
         <% end %>
       <% end %>

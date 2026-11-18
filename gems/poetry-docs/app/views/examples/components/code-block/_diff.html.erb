@@ -1,0 +1,16 @@
+<%# diff: true reads a unified diff. A leading + or - tints the line and the
+    theme draws the marker; the rest highlights in language:, and copy keeps
+    the markers. %>
+<% patch = <<~DIFF
+   class Invoice < ApplicationRecord
+  -  scope :settled, -> { where(status: "settled") }
+  +  scope :settled, -> { where(status: :settled) }
+  +  scope :overdue, -> { where(due_on: ...Date.current) }
+   end
+DIFF
+%>
+<div class="w-full max-w-xl">
+  <%= poetry_code_block(code: patch, language: "ruby", diff: true) do |block| %>
+    <% block.with_title { "app/models/invoice.rb" } %>
+  <% end %>
+</div>

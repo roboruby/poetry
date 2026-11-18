@@ -41,10 +41,7 @@ module Poetry
               register
               value :open_on_focus, "false", if: -> { !open_on_focus }
             end
-            controller :popper do
-              register
-              value :side_offset
-            end
+            behavior :popper, side_offset: :option
           end
           on :input do
             controller :autocomplete do

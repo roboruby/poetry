@@ -8,6 +8,11 @@
 AllValidators:
   YardOptions:
     - --no-private
+  # The recipes are files a host receives and owns: two of them may
+  # name the same controller, and none is this gem's API. The doc build
+  # leaves them out already (.yardopts).
+  Exclude:
+    - "lib/generators/poetry/recipes/**/*"
 Documentation/UndocumentedObjects:
   Enabled: false
 Documentation/MissingReturn:

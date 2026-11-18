@@ -231,17 +231,21 @@ module Poetry
             @version = 0
           end
 
-          # Streams a text or reasoning part a few words at a time, one frame per chunk.
+          # Streams a text or reasoning part a few words at a time, one frame
+          # per chunk. The part is state: :streaming until its last chunk's
+          # frame, which carries it :done.
           #
           # @param part [Hash] the part, with its text and optional delay_ms
           def stream_text(part)
             chunks = part[:text].split(/(?<=\S)\s+/).each_slice(Script::TEXT_CHUNK_WORDS).map { |w| w.join(" ") }
             delay = part.fetch(:delay_ms, Script::DEFAULT_TEXT_DELAY_MS) || Script::DEFAULT_TEXT_DELAY_MS
-            @acc << part.merge(text: "")
-            chunks.each do |chunk|
-              amend(text: [@acc[-1][:text], chunk].reject(&:empty?).join(" "))
+            @acc << part.merge(text: "", state: :streaming)
+            chunks.each_with_index do |chunk, index|
+              amend(text: [@acc[-1][:text], chunk].reject(&:empty?).join(" "),
+                    state: index == chunks.length - 1 ? :done : :streaming)
               push(delay)
             end
+            amend(state: :done) if chunks.empty?
           end
 
           # Streams a tool part: loading, then awaiting approval when it asks

@@ -2,7 +2,8 @@
 
 The default Poetry icon set: Lucide's SVGs vendored at a pinned
 upstream commit, sanitized at vendor time, registered with poetry-core's
-icon registry. 1,745 icons under `icons/` (plus the manifest recording the
+icon registry. 1,890 icons under `icons/`, plus `aliases.json` (the 264
+names Lucide renamed, each to its current name) and the manifest recording the
 pinned commit).
 
 ## Gates

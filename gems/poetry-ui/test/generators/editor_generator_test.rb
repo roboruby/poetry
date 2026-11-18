@@ -15,6 +15,86 @@ module Poetry
     tests Poetry::EditorGenerator
     destination File.expand_path("../tmp/editor-dest", __dir__)
     setup :prepare_destination
+    # The generator reads the shell for the agent that runs it; a test run
+    # has to see the same nothing wherever it is run from.
+    setup { Poetry::Generators::EditorChoice.environment = {} }
+    teardown { Poetry::Generators::EditorChoice.environment = nil }
+
+    def manifest
+      YAML.safe_load_file(File.join(destination_root, "config/poetry_components.yml"))
+    end
+
+    def test_named_editors_are_the_only_ones_wired_and_are_remembered
+      output = run_generator %w[--editor cursor]
+
+      assert_file ".cursor/mcp.json"
+      assert_file ".cursor/hooks.json"
+      assert_file "bin/poetry-check-hook"
+      assert_no_file ".mcp.json"
+      assert_no_file ".claude/settings.json"
+      assert_no_file ".vscode/mcp.json"
+      assert_no_file ".vscode/poetry.code-snippets"
+      assert_file ".herb.yml"
+      assert_includes output, "cursor (--editor)"
+      assert_equal %w[cursor], manifest["editors"]
+    end
+
+    def test_a_later_run_wires_what_was_remembered_and_nothing_else
+      run_generator %w[--editor vscode]
+      output = run_generator
+
+      assert_includes output, "vscode (remembered in config/poetry_components.yml)"
+      assert_file ".vscode/mcp.json"
+      assert_no_file ".mcp.json"
+      assert_no_file "bin/poetry-check-hook"
+    end
+
+    def test_the_agent_running_the_generator_and_an_editors_own_files_are_found
+      Poetry::Generators::EditorChoice.environment = { "CLAUDECODE" => "1" }
+      FileUtils.mkdir_p(File.join(destination_root, ".vscode"))
+      FileUtils.mkdir_p(File.join(destination_root, ".claude/skills/poetry"))
+      output = run_generator
+
+      assert_includes output, "claude, vscode (found: claude by CLAUDECODE, vscode by .vscode)"
+      assert_file ".mcp.json"
+      assert_file ".claude/settings.json"
+      assert_file ".vscode/mcp.json"
+      assert_no_file ".cursor/mcp.json"
+      assert_equal %w[claude vscode], manifest["editors"]
+    end
+
+    def test_poetrys_own_skills_folder_is_not_a_sign_of_claude_code
+      FileUtils.mkdir_p(File.join(destination_root, ".claude/skills/poetry"))
+      FileUtils.mkdir_p(File.join(destination_root, ".cursor"))
+      output = run_generator
+
+      assert_includes output, "cursor (found: cursor by .cursor)"
+      assert_no_file ".mcp.json"
+    end
+
+    def test_none_wires_no_editor_and_an_unknown_name_is_refused_with_the_names
+      output = run_generator %w[--editor none]
+
+      assert_includes output, "none (--editor)"
+      assert_no_file ".mcp.json"
+      assert_no_file ".cursor/mcp.json"
+      assert_no_file ".vscode/mcp.json"
+      assert_no_file "bin/poetry-check-hook"
+      assert_equal [], manifest["editors"]
+      assert_includes capture(:stderr) {
+        run_generator %w[--editor emacs]
+      }.to_s + run_generator(%w[--editor emacs]).to_s,
+                      "no editor called emacs - choose from claude, cursor, vscode, all or none"
+    end
+
+    def test_the_choice_joins_a_manifest_that_already_holds_components
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/poetry_components.yml"),
+                 "components:\n  button:\n    version: 1\n")
+      run_generator %w[--editor claude,cursor]
+
+      assert_equal({ "components" => { "button" => { "version" => 1 } }, "editors" => %w[claude cursor] }, manifest)
+    end
 
     def read_json(relative)
       JSON.parse(File.read(File.join(destination_root, relative)))
@@ -40,8 +120,7 @@ module Poetry
 
       assert_equal "actionview", config["framework"]
       assert_match(/\A\d+\.\d+\.\d+\z/, config["version"].to_s, "the linter version is pinned")
-      assert_equal({ "html-no-nested-forms" => { "enabled" => false } }, config.dig("linter", "rules"),
-                   "one rule starts off, the one that misreads a form inside a block helper")
+      assert_equal({ "enabled" => true }, config["linter"], "every rule is on: the pin alone decides the set")
 
       File.write(File.join(destination_root, ".herb.yml"), "version: 0.9.0\n")
       output = run_generator

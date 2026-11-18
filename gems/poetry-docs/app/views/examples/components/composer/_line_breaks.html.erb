@@ -1,0 +1,10 @@
+<%# submit_on_enter: false makes Enter a line break, for longer writing.
+    Cmd+Enter or Ctrl+Enter sends, and so does the button. input_class:
+    reaches the field: min-h-24 opens it taller, and it still grows with
+    its content. %>
+<div class="mx-auto w-full max-w-md">
+  <%= poetry_composer(id: "composer-lines", submit_on_enter: false, input_class: "min-h-24",
+                      placeholder: "Write a longer note",
+                      url: composer_demo_messages_path(composer: "composer-lines"),
+                      stop_url: composer_demo_stop_path(composer: "composer-lines")) %>
+</div>

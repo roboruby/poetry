@@ -17,7 +17,12 @@ module Poetry
         # pins the panel to the DOCUMENT origin (it then scrolls off-screen
         # when opened below the fold). Letting position fall through to the
         # UA `:modal` rule keeps it viewport-fixed and centered.
-        element :content, "cn-dialog-content m-auto open:grid"
+        # content-start: the panel is a fit-content grid under the UA's
+        # modal max-height, and WebKit before its April 2026 fix (bug
+        # 260461) stretched the auto rows into that max-height, opening
+        # the dialog at full height with the body floating mid-panel. The
+        # rows stay at content size; a no-op where there is no free space.
+        element :content, "cn-dialog-content m-auto open:grid content-start"
 
         element :header, "cn-dialog-header flex flex-col"
         element :title, "cn-dialog-title"

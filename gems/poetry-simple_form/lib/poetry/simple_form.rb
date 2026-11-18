@@ -58,8 +58,11 @@ module Poetry
     }.freeze
 
     # Form-facing poetry components deliberately not reachable through a
-    # simple_form type, with the reason (empty today; the gate reads it).
-    BRIDGE_EXEMPT = {}.freeze
+    # simple_form type, with the reason (the gate reads it).
+    BRIDGE_EXEMPT = {
+      composer: "a chat message form of its own, with its field, its tools and its Send: never a field inside " \
+                "a simple_form form"
+    }.freeze
 
     # Install the bridge: map every type in INPUTS and make the flat poetry
     # wrapper the default (the Field owns its chrome, so the wrapper

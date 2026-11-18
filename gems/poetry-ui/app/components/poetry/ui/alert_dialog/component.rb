@@ -176,6 +176,7 @@ module Poetry
         # @api private
         def dialog_attributes
           attrs = {
+            "id" => "#{instance_id}-content",
             "class" => css(:content, class: content_class),
             # Explicit role: overrides the implicit dialog role (aria-modal
             # still comes from showModal).

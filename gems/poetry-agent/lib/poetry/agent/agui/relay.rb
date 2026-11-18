@@ -40,27 +40,63 @@ module Poetry
         #   item); defaults to `render`
         # @param morph [Boolean] update a row by morphing it (the stream's
         #   `method="morph"`) instead of replacing the element
+        # @param remove_targets [#call, nil] `(id) -> String` a CSS selector for what a
+        #   message the transcript dropped (a snapshot renamed or left it out) takes
+        #   off the page - the list wrapper around its row; defaults to the row itself
+        # @param pipeline [Pipeline, nil] what raw events pass through before the
+        #   transcript (a strict {Pipeline} by default); nil when the events arrive
+        #   verified already, from {Client#run}
         def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" }, # rubocop:disable Metrics/ParameterLists
-                       action: "vreplace", append_render: nil, morph: false)
+                       action: "vreplace", append_render: nil, morph: false, remove_targets: nil,
+                       pipeline: Pipeline.new)
           @transcript = transcript
+          @pipeline = pipeline
           @render = render
           @append_render = append_render || render
           @container = container
           @target = target
           @action = action
           @morph = morph
+          @remove_targets = remove_targets
           @seen = {}
         end
 
         # Applies an event and answers the Turbo Streams it produced: an
         # append for a message's first appearance (when a container is
-        # set), then the update action for every change.
+        # set), the update action for every change, a removal for a row a
+        # snapshot dropped. The event goes through the relay's pipeline first.
         #
-        # @param event [Hash]
+        # @param event [Hash] a raw wire event (a verified one when the relay has no pipeline)
         # @return [Array<String>]
+        # @raise [ProtocolError] for a stream the pipeline rejects
         def apply(event)
-          @transcript.apply(event).filter_map { |id| stream_for(id) }
+          events = @pipeline ? @pipeline.push(event) : [event]
+          events.flat_map { |verified| @transcript.apply(verified) }.uniq.filter_map { |id| stream_for(id) }
+        rescue ProtocolError => e
+          # What preceded the failure was delivered: the transcript holds it,
+          # so a page re-rendered from the transcript shows it.
+          e.events.each { |verified| @transcript.apply(verified) }
+          raise
         end
+
+        # The end of the stream: closes the pipeline, which synthesizes nothing.
+        # A run the stream broke off in is truncated ({Transcript#truncate}), so
+        # its rows stop reading as running.
+        #
+        # @return [Array<String>] the streams that re-render what the truncation closed
+        def finish
+          return [] unless @pipeline
+
+          @pipeline.finish
+          return [] unless @pipeline.truncated?
+
+          @transcript.truncate.filter_map { |id| stream_for(id) }
+        end
+
+        # The pipeline raw events pass through, nil when they arrive verified.
+        #
+        # @return [Pipeline, nil]
+        attr_reader :pipeline
 
         # Marks message ids the page already renders, so their next change
         # is an update rather than an append (server-rendered history).
@@ -72,13 +108,14 @@ module Poetry
           self
         end
 
-        # The stream for one message id (nil when the message is unknown).
+        # The stream for one message id: an append or an update, a removal when
+        # the transcript dropped a message the page shows, nil when it is unknown.
         #
         # @param id [String]
         # @return [String, nil]
         def stream_for(id)
           message = @transcript.message(id)
-          return nil unless message
+          return removal(id) unless message
 
           first = !@seen[id]
           @seen[id] = true
@@ -88,20 +125,49 @@ module Poetry
                             method: @morph ? "morph" : nil)
         end
 
-        # Bridge elements for every pending client tool call.
+        # Bridge elements for every pending client tool call. A call to a tool
+        # declared to ask first (`client_tools: [{ name:, confirm: true }]`)
+        # waits inside the host's approval prompt: its Approve control carries
+        # `data-action="poetry--agent--agui-client-tool#approve"` and its Deny
+        # control `...#deny`. Deny posts `{ toolCallId, name, declined: true }`;
+        # answer it with {Transcript#decline_client_tool}.
         #
         # @param continue_url [String] where the browser POSTs `{ toolCallId, name, content, error }`
         # @param container [String] the element the bridge elements append to
+        # @param approval [#call, nil] `(pending) -> String` the prompt HTML for a call that asks first
         # @return [Array<String>]
-        def client_tool_streams(continue_url:, container: @container)
+        # @raise [ArgumentError] when a call asks first and no approval renderer is given
+        def client_tool_streams(continue_url:, container: @container, approval: nil)
           @transcript.pending_client_tools.map do |pending|
             call = { "toolCallId" => pending[:tool_call_id], "name" => pending[:name], "args" => pending[:input] || {} }
+            if pending[:confirm] && approval.nil?
+              raise ArgumentError,
+                    "#{pending[:name]} asks the user first: pass client_tool_streams an approval: renderer"
+            end
+
             id = TurboStream.escape(pending[:tool_call_id])
-            element = "<div id=\"agui-client-tool-#{id}\" hidden data-controller=\"#{CLIENT_TOOL_CONTROLLER}\" " \
-                      "data-#{CLIENT_TOOL_CONTROLLER}-call-value=\"#{TurboStream.escape(JSON.generate(call))}\" " \
-                      "data-#{CLIENT_TOOL_CONTROLLER}-url-value=\"#{TurboStream.escape(continue_url)}\"></div>"
+            attributes = "id=\"agui-client-tool-#{id}\" data-controller=\"#{CLIENT_TOOL_CONTROLLER}\" " \
+                         "data-#{CLIENT_TOOL_CONTROLLER}-call-value=\"#{TurboStream.escape(JSON.generate(call))}\" " \
+                         "data-#{CLIENT_TOOL_CONTROLLER}-url-value=\"#{TurboStream.escape(continue_url)}\""
+            element = if pending[:confirm]
+                        confirm = "data-#{CLIENT_TOOL_CONTROLLER}-confirm-value=\"true\""
+                        "<div #{attributes} #{confirm}>#{approval.call(pending)}</div>"
+                      else
+                        "<div #{attributes} hidden></div>"
+                      end
             TurboStream.append(container, element)
           end
+        end
+
+        private
+
+        # The stream that takes a dropped message's row off the page, once.
+        def removal(id)
+          return nil unless @seen.delete(id)
+
+          return TurboStream.remove_all(@remove_targets.call(id)) if @remove_targets
+
+          TurboStream.remove(@target.call(Transcript::Message.new(id: id)))
         end
       end
     end

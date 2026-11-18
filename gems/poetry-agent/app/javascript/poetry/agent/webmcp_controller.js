@@ -132,6 +132,7 @@ export default class extends Controller {
       }
       if (tool.title) definition.title = tool.title
       if (tool.inputSchema) definition.inputSchema = tool.inputSchema
+      if (tool.outputSchema) definition.outputSchema = tool.outputSchema
 
       entry.names.push(name)
       pending.push(registerTool(definition, { signal: controller.signal }).catch((error) => {
@@ -176,6 +177,16 @@ export default class extends Controller {
     this.dispatch("unregistered", { prefix: "poetry:webmcp", detail: { name: this.nameValue, tools: entry.names } })
   }
 
+  /**
+   * Runs one of this element's tools for the browser: finds the controller
+   * and method its `executes` names, checks the arguments against the input
+   * schema, calls the method with them in the schema's order, and hands back
+   * what it returned.
+   *
+   * @param {Object} tool the registered tool, with its executes and inputSchema
+   * @param {Object} args the arguments the agent passed, keyed by parameter name
+   * @returns {Promise<*>} the method's serializable result, a done line, or an "Error:" line
+   */
   async #execute(tool, args) {
     const [identifier, method] = String(tool.executes).split("#")
     const target = this.application.getControllerForElementAndIdentifier(this.element, identifier)

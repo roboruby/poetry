@@ -1,0 +1,19 @@
+{
+  "name": "quote-wall",
+  "type": "registry:block",
+  "title": "Quote wall",
+  "description": "Three customer quotes in a row.",
+  "registryDependencies": [],
+  "dependencies": [],
+  "files": [
+    {
+      "path": "app/views/blocks/_quote_wall.html.erb",
+      "target": "app/views/blocks/_quote_wall.html.erb"
+    }
+  ],
+  "meta": {
+    "community": true,
+    "version": "0f1e2d3c4b5a",
+    "demo": "<%= render \"blocks/quote_wall\" %>"
+  }
+}

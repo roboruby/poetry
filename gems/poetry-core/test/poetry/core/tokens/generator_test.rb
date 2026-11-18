@@ -18,6 +18,15 @@ module Poetry
           assert_includes css, "DO NOT EDIT"
         end
 
+        def test_tokens_css_derives_each_status_roles_text_safe_companion
+          light, dark = Generator.new.tokens_css.split(".dark {")
+
+          Tokens::POETRY_STATUS_VARS.each do |role|
+            assert_includes light, "  --#{role}-strong: oklch(from var(--#{role}) calc(l * 0.85) c h);"
+            assert_includes dark, "  --#{role}-strong: var(--#{role});"
+          end
+        end
+
         def test_tailwind_theme_css_maps_every_color_var
           css = Generator.new.tailwind_theme_css
 
@@ -30,6 +39,17 @@ module Poetry
           Tokens::SHADCN_V4_COMPAT_VARS.each do |name|
             assert_includes css, "  --color-#{name}: var(--#{name});"
           end
+        end
+
+        def test_tailwind_theme_css_points_the_status_text_utilities_at_the_companions
+          css = Generator.new.tailwind_theme_css
+
+          Tokens::POETRY_STATUS_VARS.each do |role|
+            assert_includes css, "  --color-#{role}: var(--#{role});", "bg-, border- and ring-#{role} keep the role"
+            assert_includes css, "  --color-#{role}-strong: var(--#{role}-strong);"
+            assert_includes css, "  --text-color-#{role}: var(--#{role}-strong);"
+          end
+          refute_includes css, "--text-color-destructive", "destructive is the source's and is left as it is"
         end
 
         def test_design_md_front_matter_carries_tokens_policy_and_parity

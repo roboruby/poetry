@@ -39,6 +39,7 @@
   CODE
   add_source = <<~CODE
     bin/rails g poetry:add button             # copy the gem's source into app/components
+    bin/rails g poetry:add @poetry/<name>     # a community item from poetryui.com
     bin/rails g poetry:add @acme/fancy-chart  # install from a configured registry
     bin/rails g poetry:diff                   # read-only drift report for your copies
   CODE
@@ -205,6 +206,28 @@
         names the controller loads. Commit the manifest, and restart a
         running server: the manifest is read at boot.
       </p>
+      <p>
+        An <code>@poetry</code> name the gems do not ship is a
+        <%= link_to "community item", community_path %>:
+        <code>poetry:add</code> fetches it from this site, where every
+        one was reviewed and passed CI. Reviewed is not audited; read what
+        you install. A community item adapted from another registry names its
+        origin, license and copyright in <code>config/poetry_components.yml</code>,
+        and adds that license to your <code>THIRD_PARTY_NOTICES.md</code>.
+        A <code>community:</code> URL template in the same file points the
+        fallback at a mirror.
+      </p>
+      <p>
+        An item from a registry is recorded with the version it states and
+        a SHA-256 digest of each file <code>poetry:add</code> wrote, under
+        <code>version:</code> and <code>files:</code>: what your copy
+        started from, whatever you change later. <code>poetry:diff</code>
+        reports each file against that record and against the registry's
+        item now, and <code>poetry:update</code> replaces the files you
+        have not edited and keeps the ones you have;
+        <%= link_to "Updating community items", community_updates_path %>
+        has the detail. The record moves with the files.
+      </p>
     <% end %>
   </section>
 
@@ -212,7 +235,7 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="blocks">Blocks and recipes</h2>
       <p>
-        Above the components sit eight blocks, full page sections composed
+        Above the components sit nine blocks, full page sections composed
         from the catalog and installed as editable starting points:
         <%= link_to "app-shell", block_path("app-shell") %>,
         <%= link_to "data-index", block_path("data-index") %>,
@@ -220,11 +243,12 @@
         <%= link_to "section-card", block_path("section-card") %>,
         <%= link_to "destructive-panel", block_path("destructive-panel") %>,
         <%= link_to "stepper", block_path("stepper") %>,
-        <%= link_to "action-bar", block_path("action-bar") %>, and
-        <%= link_to "top-nav", block_path("top-nav") %>.
+        <%= link_to "action-bar", block_path("action-bar") %>,
+        <%= link_to "top-nav", block_path("top-nav") %>, and
+        <%= link_to "chat", block_path("chat") %>.
         <%= link_to "Recipes", recipes_path %> go one step further:
-        multi-file slices like a working data-index screen with its
-        controller and system test, plus the scaffold template set that
+        multi-file slices like a working data-index screen or a chat
+        screen with its controller and tests, plus the scaffold template set that
         makes <code>rails g scaffold</code> itself produce Poetry-composed
         views.
       </p>
@@ -238,7 +262,7 @@
         poetry-ui treats coding agents as first-class users. The gem
         serves <code>/poetry/llms.txt</code> and
         <code>/poetry/llms-full.txt</code> from its engine, ships the
-        <code>poetry</code> MCP server with ten tools projected from the
+        <code>poetry</code> MCP server with twelve tools projected from the
         committed registry, installs the <code>poetry</code>,
         <code>poetry-design</code>, and <code>poetry-component</code>
         skills plus an <code>AGENTS.md</code> section, and provides the
@@ -250,7 +274,7 @@
       <p>
         The <%= link_to "agent guide", agent_path %> maps the whole
         surface, the <%= link_to "MCP guide", mcp_path %> documents the
-        ten tools, and the <%= link_to "editors guide", editors_path %>
+        twelve tools, and the <%= link_to "editors guide", editors_path %>
         wires it into your editor with one generator.
       </p>
     <% end %>

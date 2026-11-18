@@ -1,0 +1,1151 @@
+{
+  "source": "probe: not a TS test (reference data model, confirmed by oracle-a)",
+  "vectors": [
+    {
+      "name": "encrypted value on a streamed tool call, sent after TOOL_CALL_END, returns in the next input",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "c1",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "c1",
+          "encryptedValue": "E1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "c1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "E1"
+              }
+            ]
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "c1",
+              "role": "assistant",
+              "toolCalls": [
+                {
+                  "id": "c1",
+                  "type": "function",
+                  "function": {
+                    "name": "f",
+                    "arguments": "{}"
+                  },
+                  "encryptedValue": "E1"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Probe, not from a TS test. The value lives on ToolCall.encryptedValue, not on the assistant message."
+    },
+    {
+      "name": "encrypted value on an assistant text message returns in the next input",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "m1",
+          "encryptedValue": "E2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "hi",
+            "encryptedValue": "E2"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "hi",
+              "encryptedValue": "E2"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "encrypted value on a reasoning message returns in the next input, reasoning message included",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "think"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "E3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "think",
+            "encryptedValue": "E3"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "think",
+              "encryptedValue": "E3"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input",
+      "notes": "Probe, not from a TS test. The reference sends reasoning messages back in run input."
+    },
+    {
+      "name": "encrypted value on a user message held from history is stored on it",
+      "line": 0,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "q"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "u1",
+          "encryptedValue": "E4"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u1",
+            "role": "user",
+            "content": "q",
+            "encryptedValue": "E4"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": "q",
+              "encryptedValue": "E4"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input (BaseMessage carries encryptedValue, so every non-activity role can hold one)",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "a MESSAGES_SNAPSHOT restating a message drops the encrypted value the snapshot omits",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "m1",
+          "encryptedValue": "E5"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "hi"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "hi",
+            "encryptedValue": "$absent"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "hi",
+              "encryptedValue": "$absent"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a MESSAGES_SNAPSHOT restating the message replaces it wholesale, encryptedValue included",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "an encrypted value naming an unknown entity creates nothing and draws no warning",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "ghost",
+          "encryptedValue": "E6"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "ghost-call",
+          "encryptedValue": "E7"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "nextInput": {
+          "messages": []
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#error-handling: an encrypted value whose entityId names nothing the consumer knows SHOULD warn, MAY be dropped, MUST NOT fail the run",
+      "noWarnings": true,
+      "notes": "Probe, not from a TS test. The reference is silent here, though the spec says a consumer SHOULD warn; noWarnings records the reference's behaviour, it is not a requirement on Poetry."
+    },
+    {
+      "name": "TOOL_CALL_RESULT metadata[\"ag-ui:tool-result\"].error rides as metadata; the tool message gets no error field",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "r1",
+          "toolCallId": "c1",
+          "content": "boom",
+          "metadata": {
+            "ag-ui:tool-result": {
+              "error": "failed"
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "c1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": ""
+                }
+              }
+            ]
+          },
+          {
+            "id": "r1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "boom",
+            "metadata": {
+              "ag-ui:tool-result": {
+                "error": "failed"
+              }
+            },
+            "error": "$absent"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "c1",
+              "role": "assistant"
+            },
+            {
+              "id": "r1",
+              "role": "tool",
+              "metadata": {
+                "ag-ui:tool-result": {
+                  "error": "failed"
+                }
+              },
+              "error": "$absent"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: TOOL_CALL_RESULT merges into the tool message it creates",
+      "notes": "Probe, not from a TS test. The key is the mcp-apps middleware's convention (middlewares/mcp-apps-middleware/src/index.ts), not a spec rule; the reducer gives it no meaning and ToolMessage.error stays unset."
+    },
+    {
+      "name": "RUN_FINISHED success: result and named pendingToolCallIds reach the run; usage is not kept",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test",
+          "result": {
+            "ok": true
+          },
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": [
+              "c1"
+            ]
+          },
+          "usage": [
+            {
+              "provider": "p",
+              "model": "m",
+              "inputTokens": 3,
+              "outputTokens": 4
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "runs": [
+          {
+            "runId": "test",
+            "outcome": "success",
+            "result": {
+              "ok": true
+            },
+            "pendingToolCallIds": [
+              "c1"
+            ],
+            "usage": "$absent"
+          }
+        ],
+        "pendingInterrupts": []
+      },
+      "spec": "/spec/1.0/events/lifecycle#run_finished: result carries the run's return value; usage reports token usage",
+      "notes": "Probe, not from a TS test. `runs` is the onRunFinishedEvent payload; the agent keeps only `result` (runAgent's return) and pendingInterrupts. usage exists only on the event."
+    },
+    {
+      "name": "RUN_FINISHED without pendingToolCallIds: the pending list is derived from unanswered calls of this run",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c2",
+          "toolCallName": "g"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c2"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "r2",
+          "toolCallId": "c2",
+          "content": "ok"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "runs": [
+          {
+            "runId": "test",
+            "outcome": "success",
+            "pendingToolCallIds": [
+              "c1"
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#frontend-tools: when the list is absent or empty, a consumer derives it: every call the run started that received no result",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "RUN_FINISHED with an empty pendingToolCallIds still derives the list",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test",
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": []
+          }
+        }
+      ],
+      "expect": {
+        "runs": [
+          {
+            "runId": "test",
+            "outcome": "success",
+            "pendingToolCallIds": [
+              "c1"
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#frontend-tools: when the list is absent or empty, a consumer derives it from the stream",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "RUN_FINISHED cancelled: no result is kept even when one is sent; interrupts clear",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test",
+          "outcome": {
+            "type": "cancelled"
+          },
+          "result": {
+            "partial": true
+          }
+        }
+      ],
+      "expect": {
+        "runs": [
+          {
+            "runId": "test",
+            "outcome": "cancelled",
+            "result": "$absent",
+            "pendingToolCallIds": "$absent"
+          }
+        ],
+        "pendingInterrupts": []
+      },
+      "spec": "/spec/1.0/events/lifecycle#cancelled-runs: a cancelled run has no return value (result SHOULD be absent) and waits for nothing",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "RUN_FINISHED interrupt: the interrupts become the agent's pending interrupts",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test",
+          "outcome": {
+            "type": "interrupt",
+            "interrupts": [
+              {
+                "id": "i1",
+                "reason": "approval",
+                "subagentRunId": "s1"
+              }
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "runs": [
+          {
+            "runId": "test",
+            "outcome": "interrupt",
+            "interrupts": [
+              {
+                "id": "i1",
+                "reason": "approval",
+                "subagentRunId": "s1"
+              }
+            ]
+          }
+        ],
+        "pendingInterrupts": [
+          {
+            "id": "i1",
+            "reason": "approval",
+            "subagentRunId": "s1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/interrupt-resume; /spec/1.0/events/subagents#termination: interrupts MAY be attributed",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "RUN_ERROR mid-message keeps what was delivered",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "partial"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "boom",
+          "code": "E"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "partial"
+          }
+        ],
+        "runs": [
+          {
+            "runId": "test",
+            "error": {
+              "message": "boom",
+              "code": "E"
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#cancelled-runs: everything the run delivered before the stop remains delivered, as after RUN_ERROR",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "subagent lifecycle leaves only the tags on what the invocation built; SUBAGENT_FINISHED result is not kept",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "R",
+          "description": "d"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "x"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c1",
+          "toolCallName": "f",
+          "parentMessageId": "m1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "t1",
+          "toolCallId": "c1",
+          "content": "ok",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "result": {
+            "answer": 42
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "x",
+            "subagentRunId": "s1",
+            "toolCalls": [
+              {
+                "id": "c1",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": ""
+                },
+                "subagentRunId": "$absent"
+              }
+            ]
+          },
+          {
+            "id": "t1",
+            "role": "tool",
+            "toolCallId": "c1",
+            "content": "ok",
+            "subagentRunId": "s1"
+          }
+        ],
+        "state": {},
+        "nextInput": {
+          "messages": [
+            {
+              "id": "m1",
+              "subagentRunId": "s1"
+            },
+            {
+              "id": "t1",
+              "subagentRunId": "s1"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent; /spec/1.0/events/subagents#lifecycle: SUBAGENT_STARTED announces an invocation and SUBAGENT_FINISHED or SUBAGENT_ERROR closes it; neither builds a message",
+      "notes": "Probe, not from a TS test. No invocation record (name, description, result, outcome) survives; ToolCall carries no subagentRunId of its own (it inherits the message's)."
+    },
+    {
+      "name": "held history returns in the next input unchanged: name, encryptedValue, metadata, subagentRunId, empty content, tool error",
+      "line": 0,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "q",
+            "name": "matt",
+            "encryptedValue": "EU",
+            "metadata": {
+              "k": 1
+            }
+          },
+          {
+            "id": "a",
+            "role": "assistant",
+            "content": "",
+            "subagentRunId": "s1",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "EC",
+                "metadata": {
+                  "m": 2
+                }
+              }
+            ]
+          },
+          {
+            "id": "t",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "r",
+            "error": "bad",
+            "metadata": {
+              "x": 1
+            }
+          },
+          {
+            "id": "r",
+            "role": "reasoning",
+            "content": "why",
+            "encryptedValue": "ER"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "q",
+            "name": "matt",
+            "encryptedValue": "EU",
+            "metadata": {
+              "k": 1
+            }
+          },
+          {
+            "id": "a",
+            "role": "assistant",
+            "content": "",
+            "subagentRunId": "s1",
+            "toolCalls": [
+              {
+                "id": "c",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": "{}"
+                },
+                "encryptedValue": "EC",
+                "metadata": {
+                  "m": 2
+                }
+              }
+            ]
+          },
+          {
+            "id": "t",
+            "role": "tool",
+            "toolCallId": "c",
+            "content": "r",
+            "error": "bad",
+            "metadata": {
+              "x": 1
+            }
+          },
+          {
+            "id": "r",
+            "role": "reasoning",
+            "content": "why",
+            "encryptedValue": "ER"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "q",
+              "name": "matt",
+              "encryptedValue": "EU",
+              "metadata": {
+                "k": 1
+              }
+            },
+            {
+              "id": "a",
+              "role": "assistant",
+              "content": "",
+              "subagentRunId": "s1",
+              "toolCalls": [
+                {
+                  "id": "c",
+                  "type": "function",
+                  "function": {
+                    "name": "f",
+                    "arguments": "{}"
+                  },
+                  "encryptedValue": "EC",
+                  "metadata": {
+                    "m": 2
+                  }
+                }
+              ]
+            },
+            {
+              "id": "t",
+              "role": "tool",
+              "toolCallId": "c",
+              "content": "r",
+              "error": "bad",
+              "metadata": {
+                "x": 1
+              }
+            },
+            {
+              "id": "r",
+              "role": "reasoning",
+              "content": "why",
+              "encryptedValue": "ER"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value: a consumer MUST store the value with the message or tool call it names and return it unmodified in later run input; /spec/1.0/events/state#cross-run-behaviour: messages accumulate across runs and the next input carries them back",
+      "notes": "Probe, not from a TS test. An empty run over held history. ToolMessage keeps content and error as separate fields."
+    },
+    {
+      "name": "an orphan tool message in history (its call is not held) is kept and returned",
+      "line": 0,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "q"
+          },
+          {
+            "id": "t9",
+            "role": "tool",
+            "toolCallId": "gone",
+            "content": "late"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "u",
+            "role": "user",
+            "content": "q"
+          },
+          {
+            "id": "t9",
+            "role": "tool",
+            "toolCallId": "gone",
+            "content": "late"
+          }
+        ],
+        "nextInput": {
+          "messages": [
+            {
+              "id": "u",
+              "role": "user",
+              "content": "q"
+            },
+            {
+              "id": "t9",
+              "role": "tool",
+              "toolCallId": "gone",
+              "content": "late"
+            }
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/state#cross-run-behaviour: messages accumulate across runs and the next input carries them back",
+      "notes": "Probe, not from a TS test."
+    },
+    {
+      "name": "SUBAGENT_ERROR ends the invocation, not the run: later parent messages are untagged",
+      "line": 0,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "R"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "sub failed"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m2",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m2",
+          "delta": "recovered"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "",
+            "subagentRunId": "s1"
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "recovered",
+            "subagentRunId": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: SUBAGENT_ERROR ends the invocation, not the run",
+      "notes": "Probe, not from a TS test. The SUBAGENT_ERROR message is kept nowhere."
+    }
+  ],
+  "excluded": []
+}

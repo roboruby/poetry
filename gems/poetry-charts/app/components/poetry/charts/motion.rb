@@ -23,9 +23,7 @@ module Poetry
         # declares (include order IS emission order: tooltip, motion, then
         # live/window).
         base.use_stimulus do
-          on :frame do
-            controller(CONTROLLER, if: :animate?) { register }
-          end
+          on(:frame) { behavior :entrance_animation }
         end
       end
 

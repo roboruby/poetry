@@ -1,0 +1,21 @@
+<%# One item of the list: its screenshot, its name, what it is and where
+    it came from. Locals: item, href (its own page). %>
+<article class="group relative flex flex-col overflow-hidden rounded-xl border bg-card" data-community-card="<%= item.name %>">
+  <div class="aspect-video overflow-hidden border-b bg-white">
+    <% if (shot = item.screenshot) %>
+      <%= image_tag poetry_docs.registry_community_screenshot_path(file: File.basename(shot["path"])),
+                    alt: "", loading: "lazy", width: shot["width"].to_i / 2, height: shot["height"].to_i / 2,
+                    class: "size-full object-contain" %>
+    <% end %>
+  </div>
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <h3 class="text-sm font-medium leading-snug">
+      <%= link_to item.title, href, class: "after:absolute after:inset-0 group-hover:underline group-hover:underline-offset-4" %>
+    </h3>
+    <p class="line-clamp-2 text-sm text-muted-foreground"><%= item.description %></p>
+    <div class="mt-auto flex flex-wrap items-center gap-2 pt-1">
+      <%= poetry_badge(variant: :outline) { item.kind } %>
+      <span class="truncate text-xs text-muted-foreground"><%= item.library ? "@#{item.library}" : "Made for Poetry" %></span>
+    </div>
+  </div>
+</article>

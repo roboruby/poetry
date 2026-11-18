@@ -18,7 +18,8 @@ module Poetry
           "tools" => [{ "name" => "set_value", "description" => "Activate the tab whose value matches.",
                         "inputSchema" => { "type" => "object", "properties" => { "value" => { "type" => "string" } },
                                            "required" => ["value"] },
-                        "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                        "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false,
+                                           "consequentialHint" => false, "debugging" => false },
                         "executes" => "poetry--core--tabs#setValue" }]
         },
         "poetry/ui/button" => {
@@ -103,9 +104,13 @@ module Poetry
       end
 
       def call_on(target, name, arguments = {})
-        response = target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
-                                 "params" => { "name" => name, "arguments" => arguments })
-        response.dig("result", "content", 0, "text")
+        tool_result(target, name, arguments).dig("content", 0, "text")
+      end
+
+      # The result of one tools/call, as the gem answers it.
+      def tool_result(target, name, arguments = {})
+        target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
+                      "params" => { "name" => name, "arguments" => arguments })["result"]
       end
 
       # --- protocol ---
@@ -120,19 +125,189 @@ module Poetry
       end
 
       def test_initialize_advertises_protocol_and_server_info
-        result = server.handle("id" => 1, "method" => "initialize")["result"]
+        params = { "protocolVersion" => MCP::PROTOCOL_VERSION, "capabilities" => {},
+                   "clientInfo" => { "name" => "test", "version" => "0" } }
+        result = server.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)["result"]
 
         assert_equal MCP::PROTOCOL_VERSION, result["protocolVersion"]
         assert_equal "poetry-agent", result.dig("serverInfo", "name")
         assert result.dig("capabilities", "tools")
       end
 
+      ICON_TAGS = { "trash" => %w[garbage delete remove], "circle-alert" => %w[warning error],
+                    "x" => %w[cancel close delete] }.freeze
+
+      def icon_server
+        finder = Poetry::Core::Icons::Finder.new(names: %w[circle-alert trash triangle-alert x],
+                                                 aliases: { "alert-circle" => "circle-alert" }, tags: ICON_TAGS)
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES)
+        MCP::Server.new(entries: ENTRIES, catalog: catalog, icons: finder)
+      end
+
+      def test_find_icon_answers_a_meaning_with_names_best_first
+        text = call_on(icon_server, "find_icon", "query" => "delete")
+
+        assert_equal <<~TEXT.chomp, text
+          2 icons for "delete", best first:
+          - trash (filed under: delete, garbage, remove)
+          - x (filed under: delete, cancel, close)
+          Render one with poetry_icon(name: :trash). A name with a hyphen is a quoted symbol, as in poetry_icon(name: :"circle-alert").
+        TEXT
+      end
+
+      def test_find_icon_writes_a_hyphenated_name_as_a_quoted_symbol_and_keeps_the_limit
+        text = call_on(icon_server, "find_icon", "query" => "alert", "limit" => 1)
+
+        assert_includes text, %(1 icon for "alert", best first:)
+        assert_includes text, "- circle-alert (filed under: warning, error)"
+        assert_includes text, %(poetry_icon(name: :"circle-alert"))
+        refute_includes text, "triangle-alert"
+      end
+
+      def test_find_icon_says_so_when_nothing_answers_or_no_set_is_bundled
+        nothing = call_on(icon_server, "find_icon", "query" => "zeppelin")
+
+        assert_includes nothing, %(No icon answers "zeppelin".)
+        assert_includes nothing, "one or two plain words"
+        assert_includes call("find_icon", "query" => "delete"), "this bundle has no icon set to search"
+      end
+
+      def test_the_server_and_its_finder_print_short
+        assert_equal "#<Poetry::Agent::MCP::Server 12 tools, #{ENTRIES.size} components>", icon_server.inspect
+        assert_equal "#<Poetry::Core::Icons::Finder 4 icons>", icon_server.instance_variable_get(:@icons).inspect
+      end
+
+      def test_report_gap_answers_with_a_link_and_sends_nothing
+        text = call("report_gap", "summary" => "Badge has no warning variant", "kind" => "variant",
+                                  "component" => "badge", "wanted" => "An amber badge for a late order.",
+                                  "workaround" => "Used the outline badge with a class.")
+        link = text.lines[1].chomp
+        query = URI.decode_www_form(URI(link).query).to_h
+
+        assert_equal "Nothing was sent. To report this, open the link and press Submit:", text.lines.first.chomp
+        assert_equal "https://github.com/roboruby/poetry/issues/new", link.split("?").first
+        assert_equal "Gap: Badge has no warning variant", query["title"]
+        assert_includes query["body"], "**Kind:** variant"
+        assert_includes query["body"], "**Component:** badge"
+        assert_includes query["body"], "**What was done instead:** Used the outline badge with a class."
+        assert_includes query["body"], "Reported through poetry-agent #{Poetry::Agent::VERSION}."
+        assert_equal "gap", query["labels"]
+      end
+
+      def test_report_gap_requires_a_summary_and_reads_an_unknown_kind_as_other
+        missing = tool_result(server, "report_gap", "summary" => "")
+
+        assert missing["isError"]
+        assert_includes call("report_gap", "summary" => "No timeline component"), "**Kind:** other"
+      end
+
+      def test_every_request_is_an_event_naming_the_tool_and_leaving_its_arguments_out
+        events = []
+        subscriber = ActiveSupport::Notifications.subscribe("request.poetry_agent") { |event| events << event.payload }
+        call("describe_component", "name" => "button")
+        call("check", "source" => %(<%= poetry_button { "Save" } %>))
+        server.handle("jsonrpc" => "2.0", "id" => 9, "method" => "tools/list")
+
+        assert_equal(%w[describe_component check], events.filter_map { |payload| payload[:tool] })
+        assert_equal(%w[tools/call tools/call tools/list], events.map { |payload| payload[:method] })
+        assert(events.none? { |payload| payload.key?(:tool_arguments) || payload.to_s.include?("poetry_button") })
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      def test_a_deprecated_option_is_marked_in_a_components_contract
+        entries = ENTRIES.merge("poetry/ui/button" => ENTRIES.fetch("poetry/ui/button").merge(
+          "options" => [{ "name" => "kind", "type" => "symbol",
+                          "deprecated" => { "use" => "variant", "since" => "0.2.0" } }]
+        ))
+        target = MCP::Server.new(entries: entries, catalog: Poetry::Core::Check::Catalog.new(entries))
+
+        assert_includes call_on(target, "describe_component", "name" => "button"),
+                        "- kind: symbol (DEPRECATED since 0.2.0 - use variant:)"
+      end
+
+      def test_find_icon_and_check_say_where_brand_marks_are
+        finder = Poetry::Core::Icons::Finder.new(names: %w[plug trash], tags: { "plug" => %w[integration connect] },
+                                                 hint: "This set draws no brand marks")
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES, icon_names: %w[plug trash],
+                                                            icon_finder: finder)
+        target = MCP::Server.new(entries: ENTRIES, catalog: catalog, icons: finder)
+
+        assert_equal %(No icon answers "github". #{MCP::Server::ICON_HINT} This set draws no brand marks),
+                     call_on(target, "find_icon", "query" => "github")
+        assert_includes call_on(target, "find_icon", "query" => "integration"), "This set draws no brand marks"
+        refute_includes call_on(target, "find_icon", "query" => "plug"), "brand marks"
+        assert_includes call_on(target, "check", "source" => %(<%= poetry_icon(name: :github) %>)),
+                        %(name: "github" is not in the icon set - This set draws no brand marks)
+      end
+
+      def test_the_bundled_server_points_a_brand_at_the_brand_set
+        target = MCP::Bundled.server(app_root: Dir.mktmpdir)
+
+        assert_includes call_on(target, "find_icon", "query" => "github"), "Lucide draws no brand marks"
+        assert_includes call_on(target, "check", "source" => %(<%= poetry_icon(name: :github) %>)),
+                        "library: :simple_icons"
+      end
+
+      def app_server(root)
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES,
+                                                            icon_names: %w[circle-alert triangle-alert])
+        MCP::Server.new(entries: ENTRIES, catalog: catalog, app_root: root)
+      end
+
+      def test_check_reads_a_template_by_its_path_and_reports_under_file_and_line
+        Dir.mktmpdir do |root|
+          FileUtils.mkdir_p(File.join(root, "app/views/orders"))
+          File.write(File.join(root, "app/views/orders/index.html.erb"),
+                     %(<h1>Orders</h1>\n<%= poetry_buton { "Save" } %>\n))
+          File.write(File.join(root, "app/views/orders/show.html.erb"), %(<%= poetry_button { "Save" } %>\n))
+          target = app_server(root)
+
+          one = call_on(target, "check", "path" => "app/views/orders/index.html.erb")
+          both = call_on(target, "check", "paths" => %w[app/views/orders/index.html.erb app/views/orders/show.html.erb])
+
+          assert_match(%r{\AFAIL - 1 error\(s\), 0 warning\(s\)\n- \[error\] app/views/orders/index\.html\.erb:2: },
+                       one)
+          assert_equal one, both, "a clean file adds nothing"
+          assert_equal "PASS - 0 error(s), 0 warning(s)",
+                       call_on(target, "check", "path" => "app/views/orders/show.html.erb")
+        end
+      end
+
+      def test_check_reads_nothing_outside_the_app_and_says_what_it_needs
+        Dir.mktmpdir do |root|
+          target = app_server(root)
+
+          assert_includes call_on(target, "check", "path" => "../../etc/passwd"), "is outside the app"
+          assert_includes call_on(target, "check", "path" => "/etc/passwd"), "is outside the app"
+          assert_includes call_on(target, "check", "path" => "app/views/none.html.erb"), "no such file in the app"
+          assert_includes call_on(target, "check"), "missing required argument source, path or paths"
+          assert tool_result(target, "check", "path" => " ")["isError"]
+          assert_includes call("check", "path" => "app/views/x.html.erb"), "this server has no app to read files from"
+          assert_match(/\AFAIL - 1 error/, call_on(target, "check", "source" => %(<%= poetry_buton { "x" } %>)))
+        end
+      end
+
+      def test_find_icon_requires_a_query
+        result = tool_result(icon_server, "find_icon", "query" => " ")
+
+        assert result["isError"]
+        assert_includes result.dig("content", 0, "text"), "find_icon: missing required argument query"
+      end
+
+      def test_the_bundled_server_searches_lucide_by_meaning
+        text = call_on(MCP::Bundled.server(app_root: Dir.mktmpdir), "find_icon", "query" => "delete", "limit" => 6)
+
+        assert_includes text, "- trash (filed under: delete"
+        assert_includes text, "- delete"
+      end
+
       def test_tools_list_advertises_the_read_only_tools_compose_first
-        tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
+        tools = server.handle("jsonrpc" => "2.0", "id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
         assert_equal %w[compose build_page list_components describe_component check list_blocks
-                        describe_block list_recipes get_skill guidance], names
+                        describe_block list_recipes find_icon get_skill guidance report_gap], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 
@@ -376,15 +551,50 @@ module Poetry
       end
 
       def test_build_page_rejects_an_unknown_step
-        assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "no such step"
+        assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "not one of"
+      end
+
+      def test_apps_join_the_roster_as_resources_with_the_extension_declared
+        renderer = Object.new.tap { |fake| fake.define_singleton_method(:render) { |**| "<html>" } }
+        document = Apps::Document.new(uri: "ui://poetry/plans", name: "plans", template: "apps/plans",
+                                      origin: "https://docs.example", renderer: renderer)
+        target = server.apps(document)
+        target.mcp.define_tool(name: "show_plans", meta: document.tool_meta) do |**|
+          Apps.result(text: "Plans", fragments: [Apps.fragment("plans", "<p>Pro</p>")]).to_response
+        end
+        params = { "protocolVersion" => MCP::PROTOCOL_VERSION, "capabilities" => {},
+                   "clientInfo" => { "name" => "test", "version" => "0" } }
+        capabilities = target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)
+                             .dig("result", "capabilities")
+
+        assert capabilities.key?("resources")
+        assert_equal({ "mimeTypes" => [Apps::Document::MIME_TYPE] },
+                     capabilities.dig("extensions", "io.modelcontextprotocol/ui"))
+        resources = target.handle("jsonrpc" => "2.0", "id" => 2, "method" => "resources/list").dig("result",
+                                                                                                   "resources")
+
+        assert_equal(["ui://poetry/plans"], resources.map { |resource| resource["uri"] })
+        read = target.handle("jsonrpc" => "2.0", "id" => 3, "method" => "resources/read",
+                             "params" => { "uri" => "ui://poetry/plans" }).dig("result", "contents", 0)
+
+        assert_equal "<html>", read["text"]
+        assert_equal ["https://docs.example"], read.dig("_meta", "ui", "csp", "resourceDomains")
+        result = tool_result(target, "show_plans", {})
+
+        assert_equal "<p>Pro</p>", result.dig("_meta", "poetry", "fragments", 0, "html")
+        assert_includes target.handle("jsonrpc" => "2.0", "id" => 4, "method" => "tools/list").dig("result", "tools")
+                              .map { |tool| tool["name"] }, "show_plans"
+        assert_raises(ArgumentError) { target.apps(document) }
+        refute server.handle("jsonrpc" => "2.0", "id" => 1, "method" => "initialize", "params" => params)
+                     .dig("result", "capabilities").key?("resources"), "a server without apps declares tools alone"
       end
 
       def test_a_notification_gets_no_reply
-        assert_nil server.handle("method" => "notifications/initialized")
+        assert_nil server.handle("jsonrpc" => "2.0", "method" => "notifications/initialized")
       end
 
       def test_an_unknown_method_is_a_json_rpc_error
-        response = server.handle("id" => 9, "method" => "nonsense")
+        response = server.handle("jsonrpc" => "2.0", "id" => 9, "method" => "nonsense")
 
         assert_equal(-32_601, response.dig("error", "code"))
       end
@@ -533,13 +743,15 @@ module Poetry
 
       def test_a_tool_called_without_a_required_argument_errors_instead_of_passing
         with_blocks_server do |server|
-          result = server.send(:call_tool, { "name" => "check", "arguments" => { "erb" => "<%= poetry_nope %>" } })
+          result = tool_result(server, "check", "erb" => "<%= poetry_nope %>")
 
           assert result["isError"], "a wrong key is not an empty source that passes"
-          assert_includes result["content"].first["text"], "missing required argument source"
-          blank = server.send(:call_tool, { "name" => "describe_component", "arguments" => { "name" => "  " } })
+          assert_match(/missing required argument/i, result["content"].first["text"])
+          assert_includes result["content"].first["text"], "source"
+          blank = tool_result(server, "describe_component", "name" => "  ")
 
           assert blank["isError"]
+          assert_includes blank["content"].first["text"], "missing required argument name"
           assert_includes call_on(server, "check", "source" => "<%= poetry_nope %>"), "FAIL"
         end
       end
@@ -697,7 +909,7 @@ module Poetry
       # --- stdio framing ---
 
       def test_serve_reads_ndjson_and_writes_replies
-        input = StringIO.new(%({"id":1,"method":"tools/list"}\n\n))
+        input = StringIO.new(%({"jsonrpc":"2.0","id":1,"method":"tools/list"}\n\n))
         output = StringIO.new
         server.serve(input: input, output: output)
 
@@ -705,11 +917,11 @@ module Poetry
       end
 
       def test_serve_survives_a_malformed_line
-        input = StringIO.new(%(not json\n{"id":1,"method":"tools/list"}\n))
+        input = StringIO.new(%(not json\n{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n))
         output = StringIO.new
         server.serve(input: input, output: output)
 
-        assert_includes output.string, "parse error" # the bad line
+        assert_includes output.string, "Parse error" # the bad line
         assert_includes output.string, "list_components" # the loop kept going
       end
     end

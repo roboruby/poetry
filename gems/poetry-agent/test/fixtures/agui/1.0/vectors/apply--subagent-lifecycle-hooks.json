@@ -1,0 +1,102 @@
+{
+  "source": "apply/__tests__/subagent-lifecycle-hooks.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with subagent lifecycle events > should invoke onSubagentStartedEvent, onSubagentErrorEvent, and onSubagentFinishedEvent hooks",
+      "line": 25,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "R"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "x"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "no active subagent found with ID 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MUST NOT reuse the id of an invocation that has already finished in this run (a second terminal)",
+      "notes": "Wrapped: RUN_STARTED prepended. Hook test whose stream is itself non-conformant: SUBAGENT_ERROR already closed s1, so the reference's own verifier rejects the SUBAGENT_FINISHED that follows (the reducer-only test never runs verification). The hook calls are TS-only; the [error then finish split] variants state what apply keeps from each lifecycle event on a conformant stream."
+    },
+    {
+      "name": "defaultApplyEvents with subagent lifecycle events > should invoke onSubagentStartedEvent, onSubagentErrorEvent, and onSubagentFinishedEvent hooks [started + error]",
+      "line": 25,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "R"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "x"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "state": {}
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: SUBAGENT_STARTED announces an invocation and SUBAGENT_FINISHED or SUBAGENT_ERROR closes it; neither builds a message",
+      "notes": "Adapted: the stream split into two conformant invocations. Apply keeps nothing from SUBAGENT_STARTED or SUBAGENT_ERROR: no message, no state, no invocation record (only subscribers see them)."
+    },
+    {
+      "name": "defaultApplyEvents with subagent lifecycle events > should invoke onSubagentStartedEvent, onSubagentErrorEvent, and onSubagentFinishedEvent hooks [started + finished]",
+      "line": 25,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "R"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "state": {}
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: SUBAGENT_STARTED announces an invocation and SUBAGENT_FINISHED or SUBAGENT_ERROR closes it; neither builds a message",
+      "notes": "Adapted, as above: apply keeps nothing from SUBAGENT_FINISHED."
+    }
+  ],
+  "excluded": []
+}

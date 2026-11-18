@@ -1,6 +1,6 @@
 # AGENTS.md — poetry-ui
 
-The component gem: the 88-component shadcn-parity catalog on ViewComponent +
+The component gem: the 93-component shadcn-parity catalog on ViewComponent +
 Stimulus (machinery from poetry-core), themed by the cn-* layer — nine complete
 visual fragments under `themes/`.
 
@@ -28,7 +28,12 @@ visual fragments under `themes/`.
   an app on the next framework defaults does. It needs the network. CI
   runs it as a job that reports and never blocks. A test here never reads
   the Rails it happens to be loaded on: it runs on both.
-- `bundle exec rake test:accessibility` — axe over every preview page.
+- `bundle exec rake test:accessibility` — axe over every preview page,
+  light then dark (Chrome). It and `test:testers` stay out of the default
+  chain; CI runs both in its `browser` job, which counts toward All green.
+  The known-violation list in `rakelib/browser.rake` is empty: a contrast
+  finding is closed in the component, as a recorded deviation, and a hold
+  within a few hundredths of 4.5:1 is not a hold.
 - `bundle exec rake test:visual` — screenshot goldens for the default
   theme; `POETRY_THEME=<t>` walks a ported theme; `test:visual:all` walks
   all nine (Chrome, ~5 minutes per theme, one at a time). The differ passes
@@ -42,8 +47,17 @@ visual fragments under `themes/`.
   is more than 2px larger than its box (an unsized icon falls back to
   24px). The dialog family is shot opened as well as closed.
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
-  (`POETRY_CHECK_DESIGN=1` adds the 23 design-slop rules); `design:lint`
+  (`POETRY_CHECK_DESIGN=1` adds the 27 design-slop rules); `design:lint`
   runs design-slop over the gem's own templates and previews.
+- `bin/rails poetry:audit` (in a host) — the consumer-app audit
+  (`Poetry::Ui::Audit` over `Poetry::Core::Audit`'s analyzers): components
+  and declared axes used, raw colors, off-scale lengths, font sizes, icons,
+  the check's and the design tier's findings, partials nothing renders
+  (Herb's render analyzer), routes, pages and flow edges with unresolved
+  targets recorded by kind. Writes `.poetry/audit/{summary,inventory,health,
+  flows}.json` and `report.html` (Poetry components rendered through the
+  app's own controller, the compiled stylesheet inlined); the report
+  template under `app/views/poetry/ui/` is in the safelist scan.
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the
   card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm
@@ -94,7 +108,7 @@ all nine themes).
   + committed results (judged); `eval/README.md` is the doctrine.
 - `lib/generators/poetry/` — the install surface (installer, per-adapter
   generators, the AGENTS/skills sections) and `block/templates/*.html.erb`,
-  the canonical source of the eight blocks (docs previews render these
+  the canonical source of the nine blocks (docs previews render these
   files per request).
 - `lib/poetry/ui/recipes.rb` — the recipes channel roster: registry
   items projected LIVE from gem-shipped sources
@@ -109,7 +123,8 @@ all nine themes).
   also `poetry_combobox`, `poetry_dropdown_menu`, `poetry_dialog`). Write consumer
   tests THROUGH the testers, never with hand-rolled click sequences — they
   assert on the data-open/aria contract, and `bundle exec rake test:testers`
-  proves them against the live preview pages (browser-gated, like visual/axe).
+  proves them against the live preview pages (it needs Chrome, like the
+  axe walk and the goldens; CI's `browser` job runs it).
 
 ## Component conventions
 

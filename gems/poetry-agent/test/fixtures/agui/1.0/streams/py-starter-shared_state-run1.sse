@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"thread-shared_state","runId":"b944439b-7d55-4a56-acb7-f8726e5b1392","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{"recipe":{"skill_level":"Advanced","special_preferences":["Low Carb","Spicy"],"cooking_time":"15 min","ingredients":[{"icon":"🍗","name":"chicken breast","amount":"1"},{"icon":"🌶️","name":"chili powder","amount":"1 tsp"},{"icon":"🧂","name":"Salt","amount":"a pinch"},{"icon":"🥬","name":"Lettuce leaves","amount":"handful"}],"instructions":["Season chicken with chili powder and salt.","Sear until fully cooked.","Slice and wrap in lettuce."]}}}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-shared_state","runId":"b944439b-7d55-4a56-acb7-f8726e5b1392"}
+

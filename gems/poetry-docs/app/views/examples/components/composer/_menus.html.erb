@@ -1,0 +1,34 @@
+<%# Menus. Type @ for people, # for files, or / as the first character
+    for commands. The list filters as you type; the arrows move, Enter
+    and Tab choose, Escape closes. A person becomes plain text in the
+    message ("@ana"), a file becomes a chip with a hidden field, and a
+    command writes its text at the start. The docs server shows what it
+    received: the text as it was sent, and a chip for each file value. %>
+<div class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <%= poetry_message_scroller(id: "composer-menus-thread", class: "h-72 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "composer-menus-hello", class: "px-4 py-2") do %>
+      <%= poetry_message do %>
+        <%= poetry_bubble(variant: :muted) { "Type @ for a person, # for a file, or / first for a command." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_composer(id: "composer-menus", placeholder: "Mention someone with @",
+                      url: composer_demo_messages_path(composer: "composer-menus"),
+                      stop_url: composer_demo_stop_path(composer: "composer-menus")) do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user) do |menu| %>
+      <% menu.with_item(value: "ana", label: "Ana Diaz", description: "Design") %>
+      <% menu.with_item(value: "jordan", label: "Jordan Lee", description: "Engineering") %>
+      <% menu.with_item(value: "priya", label: "Priya Shah", description: "Research", keywords: %w[ux interviews]) %>
+      <% menu.with_item(value: "sam", label: "Sam Okafor", description: "Support") %>
+    <% end %>
+    <% composer.with_menu(trigger: "#", label: "Files", inserts: :chip, name: "context[]", icon: :file) do |menu| %>
+      <% menu.with_item(value: "q3-plan", label: "Q3 plan.pdf") %>
+      <% menu.with_item(value: "roadmap", label: "Roadmap.md") %>
+      <% menu.with_item(value: "interview-notes", label: "Interview notes.md") %>
+    <% end %>
+    <% composer.with_menu(trigger: "/", label: "Commands", at: :start) do |menu| %>
+      <% menu.with_item(label: "summarize", description: "Summarize the thread", insert: "/summarize ") %>
+      <% menu.with_item(label: "translate", description: "Translate the last reply", insert: "/translate ") %>
+    <% end %>
+  <% end %>
+</div>

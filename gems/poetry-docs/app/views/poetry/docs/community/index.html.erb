@@ -1,0 +1,16 @@
+<% content_for :title, @entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Community") %>
+  <% end %>
+<% end %>
+<% content_for :community_sidebar do %>
+  <%= render "poetry/docs/community/filters", browse: @browse, path: community_path %>
+<% end %>
+
+<div class="flex flex-col gap-8">
+  <%= render "poetry/docs/community/results", browse: @browse, path: community_path,
+             heading: @entry.title, lead: @entry.description %>
+
+  <%= render "poetry/docs/community/install_note" %>
+</div>

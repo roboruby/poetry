@@ -24,20 +24,32 @@ module Poetry
           # The catalog id this binding answers to.
           # @return [String]
           attr_reader :id
+          # The protocol version the catalog is built for.
+          # @return [Dialect]
+          attr_reader :dialect
 
           # A native binding over registry entries, answering to a catalog id.
           # @param entries [Hash{String => Hash}, nil] registry entries by path
           #   (the poetry-ui registry when nil)
           # @param id [String] the catalog id this binding answers to
-          def initialize(entries: nil, id: Catalog::DEFAULT_ID)
+          # @param dialect [Dialect] the protocol version the catalog is built for
+          def initialize(entries: nil, id: Catalog::DEFAULT_ID, dialect: Dialect::V1_0)
             @entries = entries
             @id = id
+            @dialect = dialect
           end
 
           # The function set Poetry's catalog declares: the basic one.
           # @return [Functions] the function set Poetry's catalog declares (the basic one)
           def functions
             Functions.basic
+          end
+
+          # The catalog document the binding renders, Poetry's catalog in the
+          # binding's version (strict validation reads it).
+          # @return [Hash]
+          def document
+            @document ||= Catalog.new(entries: entries, catalog_id: id, v0_9_id: id).to_h(version: dialect.version)
           end
 
           # The registry entries by path, loaded on first use.
@@ -57,28 +69,34 @@ module Poetry
           # @param component [Hash]
           # @return [Array<Object>]
           def references(component)
+            reference_fields(component).map(&:last)
+          end
+
+          # The child references with the field each sits in, for what names a reference in a message.
+          # @param component [Hash]
+          # @return [Array<Array(String, Object)>]
+          def reference_fields(component)
             _path, entry = lookup(component)
-            references = [component["child"], component["children"]]
-            Array(entry && entry["slots"]).each { |slot| references << component[slot["name"]] }
-            references.compact
+            names = %w[child children] + Array(entry && entry["slots"]).map { |slot| slot["name"] }
+            names.filter_map { |name| [name, component[name]] unless component[name].nil? }
           end
 
           # The bound inputs of a component: each bound option's path with its kind.
           # @param component [Hash]
           # @param scope [String, nil]
+          # @param dialect [Dialect] the surface's protocol version
           # @return [Array<Hash>] `{ path:, kind: }` for each bound option
-          def inputs(component, scope)
+          def inputs(component, scope, dialect)
             _path, entry = lookup(component)
             return [] unless entry
 
             BOUND_OPTIONS.filter_map do |name|
-              value = component[name]
-              next unless value.is_a?(Hash) && value["path"].is_a?(String)
+              path = dialect.path(component[name]) or next
 
               option = Array(entry["options"]).find { |candidate| candidate["name"] == name }
               next unless option
 
-              { path: Pointer.absolute(value["path"], scope), kind: KINDS.fetch(option["type"].to_s, :string) }
+              { path: Pointer.absolute(path, scope), kind: KINDS.fetch(option["type"].to_s, :string) }
             end
           end
 
@@ -129,10 +147,10 @@ module Poetry
             attributes[:id] = renderer.stable_key if option_required?(entry, "id") && !attributes.key?(:id)
             bound = BOUND_OPTIONS.find { |name| renderer.surface.binding?(component[name]) }
             if bound && option_names.include?("name") && !component.key?("name")
-              attributes[:name] = renderer.input_name(component[bound]["path"], scope)
+              attributes[:name] = renderer.input_name(renderer.surface.binding_path(component[bound]), scope)
             end
-            label = renderer.aria_label(component, scope)
-            attributes[:aria] = { label: label } if label
+            aria = renderer.aria(component, scope)
+            attributes[:aria] = aria if aria.any?
             attributes.merge!(action_attributes(component, scope, renderer)) if component["action"].is_a?(Hash)
             if bound || component["action"]
               attributes[:data] = (attributes[:data] || {}).merge(a2ui_key: renderer.current_key)
@@ -143,11 +161,17 @@ module Poetry
           # The attributes for a component's action: a submit, a link for openUrl, or nothing.
           def action_attributes(component, scope, renderer)
             action = component["action"]
-            return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
+            if renderer.surface.event_of(component)
+              if renderer.surface.shorthand?(action)
+                renderer.warn("#{component["component"]} #{component["id"].inspect}: an action without `event` " \
+                              "(the v0.9 docs' shorthand) is read as one")
+              end
+              return renderer.submit_attributes(component, scope)
+            end
 
             call = action["functionCall"]
-            if call.is_a?(Hash) && call["call"] == "openUrl"
-              url = renderer.call_function("openUrl", call["args"], scope)
+            if renderer.surface.dialect.call_name(call) == "openUrl"
+              url = renderer.link_target(call, scope)
               return { href: url } if url
             else
               renderer.warn("#{component["component"]} #{component["id"].inspect}: unsupported local action")

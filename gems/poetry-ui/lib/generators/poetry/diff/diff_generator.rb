@@ -2,6 +2,7 @@
 
 require "rails/generators"
 require "yaml"
+require_relative "../registry_planning"
 
 module Poetry
   # `rails g poetry:diff` - the copy-in upgrade report. poetry's
@@ -14,11 +15,20 @@ module Poetry
   # Read-only by contract - it prints, it never writes; `poetry:add`
   # re-run is the (skip-if-exists) way to pick up newly-shipped files.
   #
+  # An item installed from a registry is reported against its install
+  # record (the digest of each file as it was written) and against the
+  # registry's item now, so the report tells an edit made here from a
+  # change made there; `poetry:update` takes the second. `--offline`
+  # leaves the registry unasked and reports the edits alone.
+  #
   # @example
   #   bin/rails g poetry:diff
   class DiffGenerator < Rails::Generators::Base
-    # The copy-in provenance manifest poetry:add records into.
-    MANIFEST = "config/poetry_components.yml"
+    include RegistryPlanning
+
+    class_option :offline, type: :boolean, default: false,
+                           desc: "Do not ask a registry for an item's current version; report local edits only"
+
     # Where component copy-ins land in the host app.
     COMPONENT_ROOT = "app/components/poetry/ui"
     # Where block copy-ins land in the host app.
@@ -32,7 +42,7 @@ module Poetry
     # Step: reports drift for every manifest-recorded component copy-in.
     # @api private
     def report_components
-      entries = manifest_components
+      entries = manifest_config["components"].is_a?(Hash) ? manifest_config["components"] : {}
       if entries.empty?
         say "no copy-ins recorded in #{MANIFEST} - nothing to diff"
       else
@@ -43,7 +53,10 @@ module Poetry
     # Step: reports how copied blocks differ from the gem templates.
     # @api private
     def report_blocks
+      # A block a registry item wrote is that item's file, reported above.
+      installed = registry_records.each_value.flat_map { |record| (record["files"] || {}).keys }
       copied = Dir[File.join(destination_root, BLOCKS_ROOT, "_*.html.erb")]
+               .reject { |path| installed.include?(path.delete_prefix("#{destination_root}/")) }
       return if copied.empty?
 
       say "blocks are app-owned starting points - differing from the gem is normal, not drift:"
@@ -98,10 +111,42 @@ module Poetry
       changes
     end
 
-    # Reports a remote-installed component.
+    # Reports an item installed from a registry: against its record, and
+    # against the registry's item now unless told not to ask.
     def report_remote(name, record)
-      say_status :remote, "#{name} - installed from #{record["source"]}; re-run " \
-                          "`bin/rails g poetry:add #{record["source"]}` to compare (skip-if-exists)", :cyan
+      header = "#{name} - installed from #{record["source"]}#{" at #{record["version"]}" if record["version"]}"
+      unless record["files"].is_a?(Hash)
+        say_status :remote, "#{header}, with no file digests on record (installed before they were kept); " \
+                            "`bin/rails g poetry:add #{record["source"]}` records them", :cyan
+        return
+      end
+
+      current = options[:offline] ? nil : asked(name, record)
+      drift = drift_of(record, current)
+      report_drift(name, header, drift, current)
+      drift.changes.each { |target, state| say "    #{target}: #{Poetry::Core::RegistryDrift::STATES.fetch(state)}" }
+    end
+
+    # The registry's item now, or nil with a line saying why not.
+    def asked(name, record)
+      current_item(name, record).first
+    rescue Poetry::Core::RegistryClient::Error, ArgumentError => e
+      say_status :remote, "#{name} - could not ask #{record["source"]}: #{e.message}", :yellow
+      nil
+    end
+
+    # The one line that says where the item stands.
+    def report_drift(name, header, drift, current)
+      if drift.update?
+        say_status :update, "#{header}; the registry has #{current["version"] || "another form of it"}: " \
+                            "`bin/rails g poetry:update #{name}` takes what you have not edited", :yellow
+      elsif drift.changes.any?
+        say_status :edited,
+                   "#{header}: #{drift.asked? ? "the registry has nothing newer" : "the registry was not asked"}", :cyan
+      else
+        registry = drift.asked? ? ", and the registry has nothing newer" : " (the registry was not asked)"
+        say_status :same, "#{header}: every file as installed#{registry}", :green
+      end
     end
 
     # Reports one copied block against the catalog.
@@ -121,15 +166,6 @@ module Poetry
         say_status :edited, "#{name} - differs from the gem's current template " \
                             "(reference: #{entry.fetch("template")})", :cyan
       end
-    end
-
-    # The components section of the manifest, empty when absent. The
-    # overrides ledger beside it writes `created:` as a bare YAML date,
-    # so the load permits Date (the design task does the same).
-    def manifest_components
-      path = File.join(destination_root, MANIFEST)
-      config = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
-      config.is_a?(Hash) && config["components"].is_a?(Hash) ? config["components"] : {}
     end
 
     # The block catalog from the committed registry.

@@ -45,7 +45,7 @@ class SurfaceTest < Minitest::Test
 
     assert_equal 1, errors.length
     assert_equal "/components/a", errors.first[:path]
-    assert_match(/circular reference: root -> a -> b -> a/, errors.first[:message])
+    assert_equal "Circular reference detected involving component 'a': root -> a -> b -> a", errors.first[:message]
   end
 
   def test_data_updates_follow_upsert_semantics
@@ -65,22 +65,26 @@ class SurfaceTest < Minitest::Test
 
     s.update_data("/", "not an object")
 
-    assert_empty s.data
+    assert_equal "not an object", s.data, "a primitive root is kept, as the spec says"
+    assert_raises(Poetry::Agent::A2UI::Pointer::Error) { s.update_data("/a", 1) }
+    s.update_data("/", nil)
+
+    assert_empty s.data, "a null root is an empty model"
   end
 
   def test_resolve_and_text_follow_the_conversion_rules
     s = surface(data: { "name" => "Ada", "n" => 3, "ok" => true, "list" => [1], "obj" => { "a" => 1 },
                         "users" => [{ "name" => "Grace" }] })
 
-    assert_equal "Ada", s.resolve({ "path" => "/name" })
+    assert_equal "Ada", s.resolve({ "@path" => "/name" })
     assert_equal "literal", s.resolve("literal")
-    assert_nil s.resolve({ "call" => "formatString", "args" => {} })
-    assert_equal "Grace", s.resolve({ "path" => "name" }, "/users/0")
-    assert_equal "3", s.text({ "path" => "/n" })
-    assert_equal "true", s.text({ "path" => "/ok" })
-    assert_equal "", s.text({ "path" => "/missing" })
-    assert_equal "[1]", s.text({ "path" => "/list" })
-    assert_equal '{"a":1}', s.text({ "path" => "/obj" })
+    assert_nil s.resolve({ "@call" => "formatString", "args" => {} })
+    assert_equal "Grace", s.resolve({ "@path" => "name" }, "/users/0")
+    assert_equal "3", s.text({ "@path" => "/n" })
+    assert_equal "true", s.text({ "@path" => "/ok" })
+    assert_equal "", s.text({ "@path" => "/missing" })
+    assert_equal "[1]", s.text({ "@path" => "/list" })
+    assert_equal '{"a":1}', s.text({ "@path" => "/obj" })
   end
 
   def test_expand_handles_ids_lists_and_templates
@@ -90,7 +94,7 @@ class SurfaceTest < Minitest::Test
     assert_equal [["a", "/x"], ["b", "/x"]], s.expand(%w[a b], "/x")
     assert_equal [["tpl", "/tracks/0"], ["tpl", "/tracks/1"]], s.expand({ "componentId" => "tpl", "path" => "/tracks" })
     assert_empty s.expand({ "componentId" => "tpl", "path" => "/nope" })
-    assert_empty s.expand({ "path" => "/tracks" })
+    assert_empty s.expand({ "@path" => "/tracks" })
     assert_empty s.expand(nil)
   end
 
@@ -100,7 +104,7 @@ class SurfaceTest < Minitest::Test
                                "children" => { "componentId" => "row", "path" => "/items" } },
                              { "id" => "row", "component" => "Column", "children" => ["qty"] },
                              { "id" => "qty", "component" => "TextField", "label" => "Qty", "variant" => "number",
-                               "value" => { "path" => "qty" } }])
+                               "value" => { "@path" => "qty" } }])
     order = []
     s.walk { |component, scope| order << [component["id"], scope] }
 
@@ -121,32 +125,32 @@ class SurfaceTest < Minitest::Test
     s = surface(data: { "rows" => [{ "qty" => 1 }], "email" => "" },
                 components: [{ "id" => "root", "component" => "Column", "children" => %w[email list go] },
                              { "id" => "email", "component" => "TextField", "label" => "E",
-                               "value" => { "path" => "/email" },
-                               "checks" => [{ "condition" => { "call" => "email",
-                                                               "args" => { "value" => { "path" => "/email" } } },
+                               "value" => { "@path" => "/email" },
+                               "checks" => [{ "condition" => { "@call" => "email",
+                                                               "args" => { "value" => { "@path" => "/email" } } },
                                               "message" => "Bad" }] },
                              { "id" => "list", "component" => "List",
                                "children" => { "componentId" => "row", "path" => "/rows" } },
                              { "id" => "row", "component" => "TextField", "label" => "Q", "variant" => "number",
-                               "value" => { "path" => "qty" },
-                               "checks" => [{ "condition" => { "call" => "numeric",
-                                                               "args" => { "value" => { "path" => "qty" },
+                               "value" => { "@path" => "qty" },
+                               "checks" => [{ "condition" => { "@call" => "numeric",
+                                                               "args" => { "value" => { "@path" => "qty" },
                                                                            "min" => 1 } } }] },
                              { "id" => "go", "component" => "Button", "child" => "email",
                                "action" => { "event" => { "name" => "go" } },
                                "checks" => [{ "condition" => {
-                                 "call" => "and",
-                                 "args" => { "values" => [{ "call" => "required",
-                                                            "args" => { "value" => { "path" => "/email" } } }] }
+                                 "@call" => "and",
+                                 "args" => { "values" => [{ "@call" => "required",
+                                                            "args" => { "value" => { "@path" => "/email" } } }] }
                                } }] }])
     program = s.program
 
     assert_equal %w[email row@/rows/0 go], program["checks"].keys
     assert_equal "input", program["checks"]["email"]["kind"]
     assert_equal "button", program["checks"]["go"]["kind"]
-    assert_equal({ "path" => "/rows/0/qty" },
+    assert_equal({ "@path" => "/rows/0/qty" },
                  program["checks"]["row@/rows/0"]["rules"].first.dig("condition", "args", "value"))
-    assert_equal({ "path" => "/email" },
+    assert_equal({ "@path" => "/email" },
                  program["checks"]["go"]["rules"].first.dig("condition", "args", "values", 0, "args", "value"))
     assert_equal({ "/email" => "string", "/rows/0/qty" => "number" }, program["inputs"])
     assert_equal s.data, program["model"]
@@ -161,5 +165,17 @@ class SurfaceTest < Minitest::Test
     assert_equal 1, snapshot["version"]
     assert_equal({ "a" => 1 }, snapshot["dataModel"])
     assert_equal(["root"], snapshot["components"].map { |component| component["id"] })
+  end
+
+  def test_a_surface_refuses_a_catalog_built_for_another_version
+    legacy = A2UI::Catalogs::Basic.new(dialect: A2UI::Dialect::V0_9)
+    error = assert_raises(ArgumentError) do
+      A2UI::Surface.new(id: "s", catalog: A2UI::Catalogs::Basic.new, catalog_id: "basic",
+                        catalogs: { "basic" => A2UI::Catalogs::Basic.new, "old" => legacy })
+    end
+
+    assert_equal "Protocol version mismatch: cannot mix catalog 'old' (v0.9) with surface version 1.0.", error.message
+    assert A2UI::Surface.new(id: "s", catalog: legacy, catalog_id: "old", dialect: A2UI::Dialect::V0_9_1),
+           "v0.9.1 reads v0.9"
   end
 end

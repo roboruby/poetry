@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require "rails/generators"
+require "yaml"
+require "date"
 require_relative "../agents_section"
 require_relative "../skills_section"
+require_relative "../editor_choice"
 
 module Poetry
   # `rails g poetry:install` - wires poetry into a host app:
@@ -35,12 +38,15 @@ module Poetry
   # safelist pass picks the chart dictionaries up on its own; what a host
   # still needs by hand is the motion stylesheet in the Tailwind entry and
   # the Stimulus registration, and that is exactly what the flag does).
+  # `--motion` does the same for poetry-motion: its tokens stylesheet and
+  # the controller registration, which installs the motion policy.
   #
   # @example
   #   bin/rails g poetry:install --theme vega
   class InstallGenerator < Rails::Generators::Base
     include Generators::AgentsSection
     include Generators::SkillsSection
+    include Generators::EditorChoice
 
     # The host's Tailwind entry stylesheet (import/@source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
@@ -58,6 +64,19 @@ module Poetry
 
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
+    class_option :motion, type: :boolean, default: false,
+                          desc: %(Also wire poetry-motion (requires gem "poetry-motion" in the bundle))
+    # --skip-ci: leave the app's tests and its CI as they are. Without it
+    # the install writes one test that holds the suite to `poetry:check`
+    # and, where the app has config/ci.rb, one step that runs it. Said
+    # once and remembered (`ci:` in the manifest), like the theme.
+    class_option :skip_ci, type: :boolean, default: nil,
+                           desc: "Skip the test that holds the suite to poetry:check, and its config/ci.rb step"
+    # --editor: the editors to wire the MCP server and the check-on-edit
+    # hook into. Never assumed: see Generators::EditorChoice.
+    class_option :editor, type: :array, default: nil,
+                          desc: "Editors to wire (claude, cursor, vscode, all, none). Without it: the ones wired " \
+                                "before, else the ones found, else none"
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
     # --no-preflight: the host imports Tailwind without preflight (its own
@@ -71,6 +90,44 @@ module Poetry
                              desc: "Pass --no-preflight when your Tailwind entry omits preflight: vendors poetry's " \
                                    "reset floor (poetry/reset.css) so the components keep their normalizations"
 
+    # The step config/ci.rb gains.
+    CI_STEP = %(step "Poetry: check", "bin/rails poetry:check")
+    # The test a Minitest app gains. It skips, and says why, in an app
+    # whose test group has no herb (an install from before this test).
+    CHECK_TEST = <<~RUBY
+      require "test_helper"
+
+      # Written by poetry:install - this file is yours. It holds the suite to
+      # `bin/rails poetry:check`: a component call that cannot render (an
+      # unknown option, a missing slot, an icon the set does not have) fails
+      # here, whoever or whatever made the change. Delete it to opt out.
+      class PoetryCheckTest < ActiveSupport::TestCase
+        test "the app's templates pass poetry check" do
+          skip "add herb to the Gemfile's test group to check templates here" unless Poetry::Core::CSS::TemplateClasses.available?
+
+          errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)
+
+          assert_empty errors.map(&:to_s), "bin/rails poetry:check lists these with their fixes"
+        end
+      end
+    RUBY
+    # The same test for an RSpec app.
+    CHECK_SPEC = <<~RUBY
+      require "rails_helper"
+
+      # Written by poetry:install - this file is yours. It holds the suite to
+      # `bin/rails poetry:check`: a component call that cannot render fails
+      # here, whoever or whatever made the change. Delete it to opt out.
+      RSpec.describe "poetry check" do
+        it "passes for the app's templates" do
+          skip "add herb to the Gemfile's test group to check templates here" unless Poetry::Core::CSS::TemplateClasses.available?
+
+          errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)
+
+          expect(errors.map(&:to_s)).to be_empty, "bin/rails poetry:check lists these with their fixes"
+        end
+      end
+    RUBY
     # A Gemfile line declaring herb, in any quoting, at any indentation
     # (a `group :development do` block included).
     HERB_GEM_LINE = /^\s*gem\s+["']herb["']/
@@ -176,6 +233,15 @@ module Poetry
 
       raise Thor::Error, "--charts needs poetry-charts in the bundle - add " \
                          '`gem "poetry-charts"` to the Gemfile, bundle, and re-run'
+    end
+
+    # The same fail-fast for --motion.
+    # @api private
+    def verify_motion_gem
+      return if !options[:motion] || motion_available?
+
+      raise Thor::Error, "--motion needs poetry-motion in the bundle - add " \
+                         '`gem "poetry-motion"` to the Gemfile, bundle, and re-run'
     end
 
     # Same fail-fast for --theme: an unknown name (or one poetry-charts
@@ -314,6 +380,29 @@ module Poetry
       register_agent_runtime(index)
     end
 
+    # Direct uploads: FileInput's upload modes load @rails/activestorage
+    # through the importmap, and Rails' own submit-time flow needs
+    # ActiveStorage.start() - the two lines Active Storage's install leaves
+    # to the app. Only when Active Storage is in the app; idempotent.
+    # @api private
+    def wire_active_storage
+      return unless active_storage_available?
+
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        pinned = File.read(File.join(destination_root, importmap)).match?(%r{pin\s+["']@rails/activestorage["']})
+        append_to_file importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve @rails/activestorage from your bundler for FileInput's " \
+                          "direct uploads", :yellow
+      end
+      entry = "app/javascript/application.js"
+      return unless File.exist?(File.join(destination_root, entry))
+      return if File.read(File.join(destination_root, entry)).include?("@rails/activestorage")
+
+      append_to_file entry, %(import * as ActiveStorage from "@rails/activestorage"\nActiveStorage.start()\n)
+    end
+
     # --charts: the two host-side wires the charts engine cannot do itself.
     # The motion stylesheet is COPIED (tailwindcss-rails compiles standalone;
     # a gem-path @import would not resolve) - vendored artifact, force like
@@ -352,6 +441,64 @@ module Poetry
       JS
     end
 
+    # --motion: the tokens stylesheet, copied and imported like charts.css,
+    # and the controller registration, which installs the motion policy. The
+    # engine's pins (the animation engine without preload) come from the gem.
+    # @api private
+    def wire_motion
+      return unless motion?
+
+      unless motion_available? && Poetry::Motion.respond_to?(:root)
+        say_status :note, "poetry/motion.css is installed but poetry-motion is not in the bundle - " \
+                          "the motion files were not refreshed (add the gem, or delete the file)", :yellow
+        return
+      end
+
+      create_file "app/assets/tailwind/poetry/motion.css",
+                  Poetry::Motion.root.join("app/assets/stylesheets/poetry-motion.css").read, force: true
+      inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/motion.css";))
+
+      index = "app/javascript/controllers/index.js"
+      unless File.exist?(File.join(destination_root, index))
+        say_status :note, "no #{index} - register the motion controllers yourself: " \
+                          "registerPoetryMotionControllers(application) from \"@poetry/motion\"", :yellow
+        return
+      end
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryMotionControllers } from "@poetry/motion"
+        registerPoetryMotionControllers(application)
+      JS
+    end
+
+    # poetry-island, when bundled: the island controller registered beside
+    # core's, and the app's own islands directory pinned as islands/*, so
+    # app/javascript/islands/map.js is `import: "islands/map"`. Idempotent.
+    # @api private
+    def wire_island
+      return unless island_available?
+
+      index = "app/javascript/controllers/index.js"
+      if File.exist?(File.join(destination_root, index))
+        inject_unless_present(index, <<~JS.strip)
+          import { registerPoetryIslandControllers } from "@poetry/island"
+          registerPoetryIslandControllers(application)
+        JS
+      else
+        say_status :note, "no #{index} - register the island controller yourself: " \
+                          "registerPoetryIslandControllers(application) from \"@poetry/island\"", :yellow
+      end
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        source = File.read(File.join(destination_root, importmap))
+        pinned = source.match?(%r{pin_all_from\s+["']app/javascript/islands["']})
+        append_to_file importmap, %(pin_all_from "app/javascript/islands", under: "islands"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve your islands from your bundler and name them with import:", :yellow
+      end
+      create_file "app/javascript/islands/.keep", "", skip: true
+    end
+
     # poetry-agent's stylesheet (the WebMCP agent-focus states) rides along
     # when the gem is bundled: vendored like charts.css, imported into
     # layer(base) beside the theme. Hosts without the gem carry neither the
@@ -387,7 +534,12 @@ module Poetry
         return
       end
 
-      gem "herb", group: :development, comment: "poetry:check parses ERB with herb (development only)"
+      if check_in_ci?
+        gem "herb", group: %i[development test],
+                    comment: "poetry:check parses ERB with herb; the test group holds the suite to it"
+      else
+        gem "herb", group: :development, comment: "poetry:check parses ERB with herb (development only)"
+      end
       if options[:skip_bundle]
         say_status :note, "run `bundle install` to fetch herb before `bin/rails poetry:check`", :cyan
       else
@@ -421,6 +573,69 @@ module Poetry
       apply_poetry_skills
     end
 
+    # The editors in use get the MCP server and the hook that runs check
+    # on every template an agent edits. Which editors is never assumed
+    # (Generators::EditorChoice): with none named, remembered or found,
+    # nothing is written and one line says how.
+    # @api private
+    def wire_editors
+      chosen = editor_choice(otherwise: [])
+      if chosen.empty?
+        say_status :note, "no editor wired - `bin/rails g poetry:editor --editor claude` (or cursor, vscode) adds " \
+                          "the MCP server and the check-on-edit hook", :cyan
+      else
+        Rails::Generators.invoke("poetry:editor", ["--editor", *chosen], behavior: behavior,
+                                                                         destination_root: destination_root)
+      end
+    end
+
+    # One test that holds the app's suite to `poetry:check`: whoever, or
+    # whatever, runs the tests is told about a template that cannot
+    # render, in any editor and in CI. The file is the app's from then on
+    # (never rewritten; delete it and pass --skip-ci to keep it gone).
+    # @api private
+    def write_check_test
+      return unless check_in_ci?
+
+      if File.directory?(File.join(destination_root, "spec")) && !File.directory?(File.join(destination_root, "test"))
+        seed_file "spec/poetry_check_spec.rb", CHECK_SPEC
+      else
+        seed_file "test/poetry_check_test.rb", CHECK_TEST
+      end
+    end
+
+    # Rails 8.1's config/ci.rb gets the check as a step of its own, ahead
+    # of the tests, when the app has the file and the step is not there.
+    # @api private
+    def add_ci_step
+      path = File.join(destination_root, "config/ci.rb")
+      return unless check_in_ci? && File.exist?(path)
+      if File.read(path).include?("poetry:check")
+        return say_status(:skip, "config/ci.rb already runs poetry:check",
+                          :cyan)
+      end
+
+      anchor = File.read(path)[/^[ \t]*step "Tests: Rails".*\n/]
+      if anchor
+        inject_into_file "config/ci.rb", "#{anchor[/\A[ \t]*/]}#{CI_STEP}\n", before: anchor
+      else
+        say_status :note, %(add `#{CI_STEP}` to config/ci.rb (no "Tests: Rails" step to place it by)), :cyan
+      end
+    end
+
+    # `poetry:audit` writes its files under .poetry/audit/, regenerated on
+    # every run and disposable - ignored once, like any built artifact.
+    # @api private
+    def ignore_audit_folder
+      line = "#{Poetry::Ui::Audit::OUTPUT}/"
+      gitignore = File.join(destination_root, ".gitignore")
+      if File.exist?(gitignore)
+        append_to_file ".gitignore", "#{line}\n" unless File.read(gitignore).lines.map(&:strip).include?(line)
+      else
+        create_file ".gitignore", "#{line}\n"
+      end
+    end
+
     # Dark mode is one layout line, but nothing else in the install touches
     # the layout - without the pointer the theme never applies before first
     # paint and hosts rediscover the flash-of-light-mode pothole.
@@ -441,6 +656,17 @@ module Poetry
                         "<head> before using poetry_optimistic_form (the Optimistic Forms guide)", :cyan
     end
 
+    # The cold start for an assistant that has none of this in front of it
+    # yet (a hosted agent, a teammate's editor before the skills landed):
+    # the prompt names the surfaces the install just wrote and ends on
+    # check, and the clipboard is one pipe away.
+    # @api private
+    def announce_prompt
+      say_status :note, "cold start: `bin/rails poetry:prompt | pbcopy` copies the prompt that points an " \
+                        "assistant without the skills or MCP server at poetry's workflow " \
+                        "(verify, catalog, usage rules, check last)", :cyan
+    end
+
     private
 
     # Whether this install vendors the reset floor: asked for now, or
@@ -450,6 +676,11 @@ module Poetry
     # vendored artifact, and a theme switch swaps the chart fragment too.
     def charts?
       options[:charts] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"))
+    end
+
+    # --motion, or a motion stylesheet already vendored (the upgrade path).
+    def motion?
+      options[:motion] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"))
     end
 
     # Whether preflight is skipped: by option, or a reset file is present.
@@ -492,6 +723,21 @@ module Poetry
     # Whether the charts gem is bundled.
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
+    end
+
+    # Whether the motion gem is bundled.
+    def motion_available?
+      defined?(Poetry::Motion::Engine) ? true : false
+    end
+
+    # Whether the island gem is bundled.
+    def island_available?
+      defined?(Poetry::Island::Engine) ? true : false
+    end
+
+    # Whether Active Storage is in the app (its engine loaded).
+    def active_storage_available?
+      defined?(::ActiveStorage::Engine) ? true : false
     end
 
     # Whether the agent gem is bundled.
@@ -550,6 +796,23 @@ module Poetry
       return if File.exist?(path) && File.read(path).include?(line)
 
       append_to_file relative, "#{line}\n"
+    end
+
+    # Whether the install writes the check's test and CI step: what
+    # --skip-ci (or --no-skip-ci) says now, else what a run before it said,
+    # else yes. What is said is written to the manifest.
+    def check_in_ci?
+      return @check_in_ci unless @check_in_ci.nil?
+
+      path = File.join(destination_root, Generators::EditorChoice::MANIFEST)
+      data = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
+      data = {} unless data.is_a?(Hash)
+      said = options[:skip_ci]
+      if !said.nil? && data["ci"] != !said
+        create_file Generators::EditorChoice::MANIFEST, YAML.dump(data.merge("ci" => !said)), force: true,
+                                                                                              verbose: false
+      end
+      @check_in_ci = said.nil? ? data["ci"] != false : !said
     end
 
     # A host-owned file, seeded once: the file is the host's to edit from

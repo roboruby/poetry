@@ -1,0 +1,401 @@
+{
+  "source": "verify/__tests__/verify.reasoning.test.ts",
+  "vectors": [
+    {
+      "name": "reasoning message bracketing > accepts a well-formed span around a well-formed message",
+      "line": 41,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "msg-1",
+          "delta": "x"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "span-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_CONTENT",
+          "REASONING_MESSAGE_END",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#spans-reasoning_start-and-reasoning_end: a span MAY contain reasoning messages; span and messages are bracketed independently",
+      "notes": "TS asserts every event is delivered (length equality)."
+    },
+    {
+      "name": "reasoning message bracketing > accepts a span and its message sharing one id",
+      "line": 58,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning: spans and reasoning messages are separate namespaces; a span and the message inside it MAY share one messageId",
+      "notes": "TS asserts every event is delivered."
+    },
+    {
+      "name": "reasoning message bracketing > rejects REASONING_MESSAGE_CONTENT with no opener",
+      "line": 72,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "msg-1",
+          "delta": "x"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning message found with ID 'msg-1'"
+      },
+      "spec": "/spec/1.0/events/reasoning: a REASONING_MESSAGE_CONTENT/END naming nothing opened has no referent; a consumer MUST fail the run and MUST NOT invent the message",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "reasoning message bracketing > rejects REASONING_MESSAGE_END with no opener",
+      "line": 82,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "msg-1"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning message found with ID 'msg-1'"
+      },
+      "spec": "/spec/1.0/events/reasoning: a REASONING_MESSAGE_CONTENT/END naming nothing opened has no referent; a consumer MUST fail the run and MUST NOT invent the message",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "reasoning message bracketing > rejects REASONING_MESSAGE_CONTENT after the message closed",
+      "line": 89,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "msg-1",
+          "delta": "x"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning message found with ID 'msg-1'"
+      },
+      "spec": "/spec/1.0/events/reasoning: a REASONING_MESSAGE_CONTENT/END naming nothing opened has no referent; a consumer MUST fail the run and MUST NOT invent the message",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "reasoning message bracketing > rejects re-opening a reasoning message that is already open",
+      "line": 101,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        }
+      ],
+      "expect": {
+        "error": "A reasoning message with ID 'msg-1' is already in progress"
+      },
+      "spec": "/spec/1.0/events/reasoning: a REASONING_MESSAGE_START reopening a message still open is rejected; it must be closed with REASONING_MESSAGE_END before its messageId is used again",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "reasoning message bracketing > allows re-opening a reasoning message that was closed",
+      "line": 112,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: only an OPEN identifier may not be reopened; a closed reasoning message may be opened again",
+      "notes": "TS asserts every event is delivered."
+    },
+    {
+      "name": "reasoning span bracketing > rejects re-opening a span that is already open",
+      "line": 126,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        }
+      ],
+      "expect": {
+        "error": "A reasoning span with ID 'span-1' is already in progress"
+      },
+      "spec": "/spec/1.0/events/reasoning#spans-reasoning_start-and-reasoning_end: a producer MUST NOT open a span whose messageId is already open",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "reasoning span bracketing > rejects closing a span nobody opened",
+      "line": 137,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "span-1"
+        }
+      ],
+      "expect": {
+        "error": "No active reasoning span found with ID 'span-1'"
+      },
+      "spec": "/spec/1.0/events/reasoning#spans-reasoning_start-and-reasoning_end: a producer MUST NOT close a span it did not open",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "RUN_FINISHED while reasoning is still open > rejects an unclosed reasoning message",
+      "line": 146,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "msg-1",
+          "role": "reasoning"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": "while reasoning messages are still active: msg-1"
+      },
+      "spec": "/spec/1.0/events/reasoning: a span or a reasoning message still open when the run finishes fails the run",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "RUN_FINISHED while reasoning is still open > rejects an unclosed reasoning span",
+      "line": 157,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": "while reasoning spans are still active: span-1"
+      },
+      "spec": "/spec/1.0/events/reasoning: a span or a reasoning message still open when the run finishes fails the run",
+      "notes": "TS asserts with a regex; the fragment is its literal text."
+    },
+    {
+      "name": "RUN_FINISHED while reasoning is still open > lets the next run start clean after a run that left reasoning open",
+      "line": 168,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "gave up mid-thought"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r2"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "span-1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "span-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "RUN_ERROR",
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: RUN_ERROR ends whatever was still open; a new run starts with nothing open (reasoning spans included)",
+      "notes": "Run 1 errors with span 'span-1' open; run 2 reopens 'span-1'. TS asserts every event is delivered."
+    }
+  ]
+}

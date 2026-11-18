@@ -1,0 +1,156 @@
+<%# What the Markdown component needs from the host, what it lets
+    through, and how a reply still being written is rendered. %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  gem_source = <<~CODE
+    # Gemfile
+    gem "commonmarker"
+
+    # config/initializers/poetry.rb - only when you want something other than the default
+    Poetry::Ui::MarkdownParser.parser = :redcarpet                      # both gems bundled, this one preferred
+    Poetry::Ui::MarkdownParser.renderer = ->(text) { MyParser.to_html(text) } # a parser of your own
+  CODE
+  stream_source = <<~CODE
+    # app/jobs/chat_response_job.rb - re-render the reply's row as its text grows
+    text = +""
+    chat.ask(prompt) do |chunk|
+      text << chunk.content.to_s
+      message.broadcast_replace_to(chat, partial: "messages/reply", locals: { message: message, text: text, streaming: true })
+    end
+    message.broadcast_replace_to(chat, partial: "messages/reply", locals: { message: message, text: text, streaming: false })
+  CODE
+  cited_source = <<~CODE
+    #{o}# sources numbered for the model, or a provider's own citations #{e}
+    #{o} text, sources = Poetry::Ui::Citations.mark(message.content, message.citations) #{e}
+
+    #{o}= poetry_markdown(text: text, sources: sources, heading_level: 3) #{e}
+    #{o}= poetry_sources do |list| #{e}
+      #{o} sources.each { |source| list.with_source(source[:title], href: source[:href], description: source[:description]) } #{e}
+    #{o} end #{e}
+  CODE
+  reply_source = <<~CODE
+    #{o}# app/views/messages/_reply.html.erb #{e}
+    #{o}= poetry_message_scroller_item(id: message.id, dom_id: dom_id(message), class: "px-4 py-2") do #{e}
+      #{o}= poetry_message do #{e}
+        #{o}= poetry_bubble(variant: :ghost) do #{e}
+          #{o}= poetry_markdown(text: text, streaming: streaming, heading_level: 3) #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+%>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="a-markdown-gem">A Markdown gem</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Parsing is the host's gem, the way highlighting is for CodeBlock. With
+    <code class="text-foreground">commonmarker</code> or
+    <code class="text-foreground">redcarpet</code> in the Gemfile the text is parsed as
+    GitHub-flavored Markdown: tables, strikethrough and bare addresses as links.
+    <code class="text-foreground">commonmarker</code> is used when both are there. Without either,
+    the text renders as plain paragraphs with its line breaks kept and its fenced code still a code
+    block, so a page never fails for want of a gem.
+  </p>
+  <%= poetry_code_block(code: gem_source, language: "ruby", label: "The gem, and naming another") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="what-reaches-the-page">What reaches the page</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    The parser's HTML is never passed on. The component reads it and writes each element again from
+    a short list: headings, paragraphs, emphasis, inline code, quotes, lists, rules, tables, links
+    and images. An element it does not know is reduced to its text, and no attribute survives except
+    a link's address and title, an image's address and alt text, a list's starting number and a
+    cell's alignment. HTML written in the text is shown as text, so a reply can still name a tag.
+    This holds whatever wrote the HTML, a parser of your own included.
+  </p>
+  <ul class="max-w-2xl list-disc space-y-1 ps-5 text-muted-foreground">
+    <li>
+      A link keeps an <code class="text-foreground">http</code>,
+      <code class="text-foreground">https</code>, <code class="text-foreground">mailto</code> or
+      <code class="text-foreground">tel</code> address, or one on your own site. Any other scheme
+      leaves the label as plain text. Every link carries
+      <code class="text-foreground">rel="nofollow noopener noreferrer"</code>, and
+      <code class="text-foreground">link_target: "_blank"</code> opens them in a new tab.
+    </li>
+    <li>
+      An image renders as a link to it. A reader's browser fetches a remote image without asking,
+      which a reply shaped by untrusted content can use to send data out, so
+      <code class="text-foreground">images: true</code> is a choice, and then only an absolute
+      <code class="text-foreground">http</code> or <code class="text-foreground">https</code>
+      address loads.
+    </li>
+    <li>Fenced code is a CodeBlock in the fence's language, with its copy button.</li>
+    <li>A table sits in a scroller, so a wide one scrolls sideways and the prose keeps its width.</li>
+  </ul>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="a-reply-being-written">A reply still being written</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A reply arrives as a growing piece of its Markdown, and a piece ends wherever the last token
+    did: inside a bold phrase, halfway through a link's address, one row into a table. Rendered as
+    it stands, each of those shows its raw marks until the closing ones arrive, then jumps.
+    <code class="text-foreground">streaming: true</code> closes what the last block has left open
+    before it is parsed, so every frame reads as finished prose.
+  </p>
+  <ul class="max-w-2xl list-disc space-y-1 ps-5 text-muted-foreground">
+    <li>Bold, italic and strikethrough are closed where the text stops.</li>
+    <li>A code span is closed; code inside an open fence is left alone, since it already renders as code.</li>
+    <li>A link whose address is not finished shows its label, and an image shows nothing yet.</li>
+    <li>A table is a table from its first row, before the row under it arrives.</li>
+    <li>A mark with nothing after it yet is left out until something follows.</li>
+  </ul>
+  <p class="max-w-2xl text-muted-foreground">
+    The server holds the text. Each time it grows, render the reply's row again and replace it, as
+    the MessageScroller asks for any streamed row, then render the finished reply once more without
+    <code class="text-foreground">streaming:</code>. The closing is for display only: a finished
+    reply renders the same either way.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    A reply that was stopped, or that failed part way, is never finished, and a host usually keeps
+    what was written. Store what <code class="text-foreground">Poetry::Ui::MarkdownTail.close(text)</code>
+    returns, so the saved text is whole Markdown and renders the same wherever it is shown, or keep
+    rendering that message with <code class="text-foreground">streaming: true</code>.
+  </p>
+  <%= poetry_code_block(code: stream_source, language: "ruby", label: "The job") %>
+  <%= poetry_code_block(code: reply_source, language: "erb", label: "The row") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="cited-sources">Cited sources</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A model told to cite writes numbered marks in its text, <code class="text-foreground">[1]</code>,
+    against sources you numbered for it. Pass the same list as
+    <code class="text-foreground">sources:</code>, each entry with a
+    <code class="text-foreground">title</code> and an <code class="text-foreground">href</code>, and
+    every mark that numbers one of them becomes a
+    <%= link_to "citation", component_path("citation"), class: "text-foreground underline underline-offset-4" %>
+    linked to it and named for it. A number with no source stays text, and so does a bracketed
+    number inside code. Show the list itself with
+    <%= link_to "Sources", component_path("sources"), class: "text-foreground underline underline-offset-4" %>
+    under the reply. While the reply streams, a mark half written shows nothing.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    A provider that cites by itself reports spans of the reply instead, each with the source it
+    rests on, as RubyLLM's <code class="text-foreground">message.citations</code> are.
+    <code class="text-foreground">Poetry::Ui::Citations.mark(text, citations)</code> turns those
+    into the marked text and the list of sources, in the order the reply first cites them.
+  </p>
+  <%= poetry_code_block(code: cited_source, language: "erb", label: "A reply with its sources") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="headings-in-a-transcript">Headings in a transcript</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A model writes <code class="text-foreground">#</code> for its top heading, which would put a
+    second <code class="text-foreground">h1</code> on your page.
+    <code class="text-foreground">heading_level: 3</code> renders that heading as an
+    <code class="text-foreground">h3</code> and the ones under it one level down each, none past
+    <code class="text-foreground">h6</code>. The component is a Typeset, so
+    <code class="text-foreground">preset:</code> retunes its rhythm as it does there, and it takes
+    the size of the text around it.
+  </p>
+</section>

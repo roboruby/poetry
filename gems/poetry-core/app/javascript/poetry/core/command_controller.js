@@ -49,7 +49,9 @@ const STATUS_DEBOUNCE = 100
  * The DOM is the store, filtering included: query in the input, visibility
  * as hidden + data-hidden, highlight as data-highlighted +
  * aria-activedescendant, group visibility derived - a Turbo Stream can
- * append items mid-session and the next keystroke ranks them.
+ * append items mid-session and the next keystroke ranks them; a refill
+ * that sweeps the highlighted item away during a live search re-seats it
+ * at once (the server-side search answering after the keystroke).
  * Each part matches both families' vocabularies: Command's own names and the
  * combobox's (two names for the same parts; the engine rides both).
  */
@@ -73,6 +75,7 @@ export default class CommandController extends Controller {
   #passTimer = null
   #statusTimer = null
   #delegatedList = null
+  #listObserver = null
 
   /**
    * Reconciles (a non-empty input re-derives visibility + highlight
@@ -103,6 +106,12 @@ export default class CommandController extends Controller {
       list.addEventListener("click", this.#onListClick)
       list.addEventListener("pointermove", this.#onListPointermove)
       this.#delegatedList = list
+
+      // Results that land after the keystroke (a Turbo frame or stream
+      // answering a server-side search) get the highlight and the count a
+      // keystroke would give them (Base UI #5818).
+      this.#listObserver = new MutationObserver(this.#onListMutated)
+      this.#listObserver.observe(list, { childList: true, subtree: true })
     }
 
   }
@@ -120,6 +129,27 @@ export default class CommandController extends Controller {
       this.#delegatedList.removeEventListener("pointermove", this.#onListPointermove)
       this.#delegatedList = null
     }
+
+    this.#listObserver?.disconnect()
+    this.#listObserver = null
+  }
+
+  // The list's children changed. A highlight that survived needs nothing;
+  // one swept away by the refill is re-seated by a pass while a search is
+  // live in a focused input over an open list (upstream's discard rules),
+  // and otherwise its dangling activedescendant is dropped.
+  #onListMutated = () => {
+    if (this.#highlighted()) return
+
+    const input = this.#input()
+    const list = this.#list()
+
+    if (!input || !list) return
+
+    const live = (input.value ?? "") !== "" && document.activeElement === input && !list.closest("[hidden]")
+
+    if (live) this.#pass()
+    else input.removeAttribute("aria-activedescendant")
   }
 
   #onListClick = (event) => {

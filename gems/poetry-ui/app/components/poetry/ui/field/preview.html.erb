@@ -2,15 +2,16 @@
     a real Input wired through control_attributes - the canonical host
     composition (see eval/arms/form_field/poetry.html.erb). group: wraps
     the field in the FieldGroup @container scope responsive fields key on. %>
+<%# locals: (component:, input_options: nil, hint_link: false, checkbox_options: nil, switch_options: nil, group: false, container_class: nil, error: nil) %>
 <% field_markup = capture do %>
   <%= render component do |field| %>
-    <% if local_assigns[:hint_link] %>
+    <% if hint_link %>
       <% field.with_hint do %>Short and lowercase - see the <a class="underline underline-offset-4" href="/docs/naming">naming guide</a>.<% end %>
     <% end %>
-    <% if local_assigns[:checkbox_options] %>
+    <% if checkbox_options %>
       <%= render Poetry::Ui::Checkbox::Component.new(**checkbox_options,
                                                      **field.control_attributes.transform_keys(&:to_sym)) %>
-    <% elsif local_assigns[:switch_options] %>
+    <% elsif switch_options %>
       <%= render Poetry::Ui::Switch::Component.new(**switch_options,
                                                    **field.control_attributes.transform_keys(&:to_sym)) %>
     <% else %>
@@ -20,7 +21,7 @@
   <% end %>
 <% end %>
 <div class="p-4">
-  <% if local_assigns[:group] %>
+  <% if group %>
     <%= render Poetry::Ui::FieldGroup::Component.new do %>
       <%= field_markup %>
     <% end %>

@@ -15,17 +15,24 @@ tag: "vX", glob: "gems/poetry-docs/*.gemspec"`).
 
 - `bundle exec rake` — the default chain: `test` (includes the
   whole-gallery gates: every catalog page must 200 AND carry ≥1 example),
-  `rubocop`, `poetry_docs:css:verify` (the committed stylesheet matches a
-  fresh build)
+  `rubocop`, `poetry_docs:vendored:verify` (every vendored copy of the
+  gems' CSS matches the gems), `poetry_docs:css:verify` (the committed
+  stylesheet matches a fresh build)
 - `bundle exec rake poetry_docs:css` — REQUIRED after any change that
   affects scanned classes (new pages, new examples, gem fragment changes);
   the build is `app/assets/builds/poetry_docs.css`, committed
-- `ruby script/build_style_registry.rb` — regenerate the nine wrapped
-  `.style-<name>` theme files under `tailwind/styles` after ANY gem
-  fragment change, then rebuild the stylesheet
+- `bundle exec rake poetry_docs:vendored` — REQUIRED after ANY change to a
+  gem's theme, tokens, stylesheet or dictionary classes, then rebuild the
+  stylesheet. The docs render from their own copies of the gems' CSS: the
+  install slots under `tailwind/poetry` (the safelist among them) and the
+  nine wrapped `.style-<name>` theme files under `tailwind/styles`. The
+  task runs `ruby script/build_style_registry.rb` (everything but the
+  safelist, no Rails needed; `--check` lists stale files and writes
+  nothing) and regenerates the safelist from the loaded gems. Never edit a
+  copy by hand, the safelist included
 - `bundle exec rake poetry_docs:refresh` — the skills (`.claude/skills`),
-  the API reference (`data/api`), the search index (`data/search-index.json`)
-  and the stylesheet; CI's "Reference data is fresh" job runs it and fails
+  the API reference (`data/api`), the search index (`data/search-index.json`),
+  the vendored CSS and the stylesheet; CI's "Reference data is fresh" job runs it and fails
   on a diff, and the release train runs it at bump time
 - `bin/dev` — the dummy host on port 4110 (`PORT=` to change); it runs
   `rails server` from `test/dummy`, no watcher, so rebuild the stylesheet by
@@ -110,7 +117,7 @@ alone, run `rails g poetry:agents` from `test/dummy` with the destination
 set to the engine root.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (101 components + 8 blocks)
+## Building UI with poetry (128 components + 9 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted
@@ -147,11 +154,14 @@ set to the engine root.
   arrive from data meet a runtime tier: an off-list variant or a missing
   required option raises at construction in development and test.
 - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
-  `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
+  `["exec", "poetry-agent"]`, the poetry-agent gem) serves twelve tools from the live registry
   with no app boot - `compose`, `build_page`, `list_components`,
   `describe_component`, `check`, `list_blocks`, `describe_block`,
-  `list_recipes`, `get_skill`, and `guidance`. Prefer `compose` (or `build_page` for a
-  whole screen) to start, and its `check` tool when iterating. Wire it
+  `list_recipes`, `find_icon` (which icon means this), `get_skill`, `guidance`, and
+  `report_gap` (a link that reports something the library lacked; nothing is sent).
+  Prefer `compose` (or `build_page` for a
+  whole screen) to start, and its `check` tool when iterating (pass `path:`
+  for a file you wrote: one short call however long the page). Wire it
   into every editor at once with `bin/rails g poetry:editor` (MCP
   configs for VS Code / Cursor / Claude Code / Zed / RubyMine plus
   registry-driven snippets).

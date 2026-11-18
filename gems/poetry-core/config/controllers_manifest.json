@@ -377,7 +377,7 @@
     }
   },
   "poetry--core--command": {
-    "doc": "The Command palette engine - the suite's first ACTIVEDESCENDANT component (the APG editable-combobox pattern, the deliberate delta vs the menus/Select family's roving focus): real DOM focus stays pinned to the input for the whole session; the highlighted option carries data-highlighted + its server-stable id in the input's aria-activedescendant (the twin-write, activedescendant-flavored). Options never get tabindex; roving-focus is NOT attached; aria-selected is NEVER written here (reserved for committed values - Combobox's twin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 > word-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded) and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get both removed, and children are NEVER reordered - DOM order is the ranking authority within a band; the score's only job is seating the auto-highlight. filter:false is the server-driven mode: steps 1-2 (hiding) are skipped entirely and only highlight/activation/announcement run over whatever the server rendered - the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable poetry:command:select and this controller does nothing further - no navigation, no close, no value write. The listener (host data-action, Combobox's commit pipeline) owns the consequences - the engine-purity Combobox's composition depends on (no popper/commit/native-select code lives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility as hidden + data-hidden, highlight as data-highlighted + aria-activedescendant, group visibility derived - a Turbo Stream can append items mid-session and the next keystroke ranks them. Each part matches both families' vocabularies: Command's own names and the combobox's (two names for the same parts; the engine rides both).",
+    "doc": "The Command palette engine - the suite's first ACTIVEDESCENDANT component (the APG editable-combobox pattern, the deliberate delta vs the menus/Select family's roving focus): real DOM focus stays pinned to the input for the whole session; the highlighted option carries data-highlighted + its server-stable id in the input's aria-activedescendant (the twin-write, activedescendant-flavored). Options never get tabindex; roving-focus is NOT attached; aria-selected is NEVER written here (reserved for committed values - Combobox's twin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 > word-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded) and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get both removed, and children are NEVER reordered - DOM order is the ranking authority within a band; the score's only job is seating the auto-highlight. filter:false is the server-driven mode: steps 1-2 (hiding) are skipped entirely and only highlight/activation/announcement run over whatever the server rendered - the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable poetry:command:select and this controller does nothing further - no navigation, no close, no value write. The listener (host data-action, Combobox's commit pipeline) owns the consequences - the engine-purity Combobox's composition depends on (no popper/commit/native-select code lives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility as hidden + data-hidden, highlight as data-highlighted + aria-activedescendant, group visibility derived - a Turbo Stream can append items mid-session and the next keystroke ranks them; a refill that sweeps the highlighted item away during a live search re-seats it at once (the server-side search answering after the keystroke). Each part matches both families' vocabularies: Command's own names and the combobox's (two names for the same parts; the engine rides both).",
     "targets": [],
     "values": {
       "filter": {
@@ -421,6 +421,138 @@
       "keydown": "The input's keydown action: ArrowUp/Down move the highlight (Meta/Ctrl jumps first/last), Enter activates it. Home/End/ArrowLeft/ArrowRight fall through to the input (CARET movement - APG-correct for an editable field; a Home/End list-jump is deliberately not offered). Space TYPES a space, never activates (a text field - the family delta vs Select/menus). Esc/Tab are NOT handled - the hosting layer owns them (Dialog dismiss / Combobox close / natural tab-out).",
       "pointerHighlight": "Each in-scope item's pointermove action: hovering highlights (no scroll chasing); pointerleave does NOT clear - the keyboard position survives mouse exit (contractual).",
       "reset": "Clears the query and silently re-derives visibility + highlight (the clean-reopen reset an overlay host runs on close)."
+    }
+  },
+  "poetry--core--composer": {
+    "doc": "The Composer seams: a chat message form whose state the SERVER holds. The form is never replaced; the server redraws one slot inside it with a Send button or a Stop button, and a Stop button on the page is the whole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always sends; with submit-on-enter off a bare Enter is a line break). An Enter that confirms an input-method composition never sends. The form's own submit event is the one gate, so the key and the button obey the same rules: nothing is sent while the field is blank, while a reply runs, or while a send is already on its way. Turbo marks the form aria-busy for the length of a request; the one moment before that mark lands is bridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and whatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the attachments target): a message of files alone is not blank, and once the server accepts it the sent event names the files that went, so the file-input controller beside this one drops their chips and keeps any file added since. The event names the per-message fields that went as well (elements marked data-composer-field, a chosen reference's hidden input), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it where it was, so a field being typed in keeps its on-screen keyboard and a reader who put the keyboard away is not handed it back. A button pressed from the keyboard does hold focus, and the server is about to disable or replace it, so focus goes to the field instead of the page.\n\nA suggested prompt reaches the composer as a poetry:composer:prompt event on the window that names it by id (the composer-prompt controller's press). The composer writes the text and, asked to, sends it through the same gate. A prompt that could not go writes nothing, so a draft is never traded for a prompt the gate refused.",
+    "targets": [
+      "attachments",
+      "form",
+      "input",
+      "send",
+      "stop"
+    ],
+    "values": {
+      "submitOnEnter": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "changed",
+      "connect",
+      "disconnect",
+      "guard",
+      "holdFocus",
+      "keydown",
+      "returnFocus",
+      "send",
+      "setText",
+      "settle",
+      "stop",
+      "submit"
+    ],
+    "events": [
+      "poetry:composer:sent"
+    ],
+    "method_docs": {
+      "changed": "The field's input action, the file input's change action and the root's turbo:morph-element action: keeps data-empty on the root honest. A morph puts the server's attributes back on the root while the field keeps its draft, so the emptiness is read again from the field once the morph has passed.",
+      "connect": "Reflects the field's emptiness (a browser may restore a draft the server never rendered) and starts hearing prompts meant for this composer.",
+      "disconnect": "Undoes the per-connect scope (the pending flag's timer).",
+      "guard": "The form's submit action, the one gate for the key and the button: refuses a blank message, a send while a reply runs (a Stop button is on the page), and a second send while the first is on its way.",
+      "holdFocus": "The Send and Stop buttons' pointerdown action: a press does not take focus. A field being typed in keeps it, and with it the on-screen keyboard.",
+      "keydown": "The field's keydown action: Enter sends, Shift+Enter is left to the browser, and an Enter that belongs to an input-method composition is never read as a send.",
+      "returnFocus": "The Stop button's click action: when the button itself holds focus (a press from the keyboard), focus moves to the field, because the server is about to replace the button and a replaced element drops focus to the page.",
+      "send": "The programmatic surface for sending: send() does what a press of Send would, through the same gate. Returns whether the message was let go and, when it was not, why: blank, running (a reply is being written), sending (a send is on its way) or disabled.",
+      "setText": "The programmatic surface for the message's text: setText(\"Hello\") replaces the draft, with a real input event, and does not send. A disabled field is left alone. Returns the resulting state - what an agent tool reports back - so a refusal is visible as changed: false.",
+      "settle": "The form's turbo:submit-end action: an accepted message leaves the field (text typed since the send stays) and is reported with the files and the per-message fields that went with it, a refused one stays whole, and a send made from inside the composer ends with focus in the field unless the reader took it elsewhere meanwhile.",
+      "stop": "The programmatic surface for stopping: stop() presses the Stop button when a reply is running and the button can be pressed. Returns whether it was.",
+      "submit": "Sends the message through the form, as a press of the Send button would. The form's submit action decides whether anything goes."
+    }
+  },
+  "poetry--core--composer-menu": {
+    "doc": "The Composer's menus: lists the server rendered that open over the composer while the word at the caret starts with a menu's trigger (\"@\", \"/\"), filter as the word grows, and put the chosen option into the message. The field stays a plain textarea and keeps focus throughout: the open list is named by aria-controls, the highlighted option by aria-activedescendant, and a live region says how many suggestions there are, because a textarea takes no expanded state.\n\nWhat a choice does is the menu's to say. A text menu replaces the typed word with the option's text (\"@ana \"). A chip menu takes the typed word out and adds a chip beside the field with a hidden field for the server, so the reference is context for the whole message and never syntax inside it. An option marked to run takes the typed word out and only reports the choice. Every choice is reported with the choose event.\n\nA menu with data-src is fed by the server. Its listbox is a Turbo frame, and the word being typed is asked about at that address (?q=word, under the menu's data-param) once typing has paused. What the server answers is shown as it came: the server decides what matches and in what order. The frame is stamped with the word its options answer (data-query), so a longer word narrows them here at once while the server is asked again, and a word they cannot answer shows no list until the server has. The menu carries data-loading from the moment a word is to be asked about until its answer lands. An answer that is an error, or that holds no such frame, leaves the list as it was: Turbo is kept from writing its own message into the list, and from making a page visit of an error page that asks for one, as Rails' own does in development.\n\nArrow keys move the highlight, Enter and Tab choose, and Escape closes the list for the word being typed: it stays closed until the caret leaves that word. A key this controller takes is claimed (preventDefault), which is how the composer controller beside it knows an Enter was a choice and not a send.",
+    "targets": [
+      "chips",
+      "input",
+      "menu",
+      "template"
+    ],
+    "values": {
+      "messages": {
+        "type": "Object",
+        "default": {},
+        "doc": "What the live region says: one and other with a {count} token for the suggestions, added and removed with a {label} token for a chip."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "answered",
+      "blurred",
+      "connect",
+      "disconnect",
+      "failed",
+      "hold",
+      "keep",
+      "keydown",
+      "loaded",
+      "pick",
+      "point",
+      "remove",
+      "restore",
+      "sent",
+      "track"
+    ],
+    "events": [
+      "poetry:composer-menu:choose"
+    ],
+    "method_docs": {
+      "answered": "A server-fed list's turbo:before-fetch-response action: an answer that is an error is not handed to Turbo. Rails' exception page in development asks Turbo for a full page visit, which would take the draft along; any other error page would be written over the options. The list stays as it was.",
+      "blurred": "The field's blur action: a list is open only while the field has focus.",
+      "connect": "Takes the announcement surface for this connect.",
+      "disconnect": "Closes an open list so its state never outlives the controller.",
+      "failed": "A server-fed list's turbo:frame-missing and turbo:fetch-request-error action: an answer without the list's frame, or no answer at all. A missing frame is not handed to Turbo either, which would write \"Content missing\" where the options go. The list stays as it was, and the same word is not asked about again until the word changes.",
+      "hold": "A list's pointerdown action: a press never takes focus from the field, so the list stays open under it and the on-screen keyboard stays up.",
+      "keep": "The chips' row's turbo:before-morph-element action: the chips and their hidden fields are the client's, and the server renders the row empty. A morph that reached it would drop what the reader chose, so the row is left as it is.",
+      "keydown": "The field's keydown action, ahead of the composer's own: while a list is open the arrows move its highlight, Enter and Tab choose the highlighted option and Escape dismisses the list. Each of those keys is claimed. Keys held with a modifier, and keys that belong to an input-method composition, are left alone.",
+      "loaded": "A server-fed list's turbo:frame-load action: the server's options for the word last asked about are in the list. The list is stamped with that word, and when the reader is still on a word it answers the list opens on the new options, with the highlight on the option it was on when that option is still among them.",
+      "pick": "A list's click action: chooses the option under it. A click and not a press, so a finger that scrolls the list chooses nothing.",
+      "point": "A list's pointermove action: the highlight follows the pointer.",
+      "remove": "A chip's remove action: the reference and its hidden field leave the message, and focus goes to the field.",
+      "restore": "The root's turbo:morph-element action: a morph puts the server's render back on the options and the field, which highlights nothing and names no option, while the reader is still on the same word. Once the whole composer has been morphed the open list is filtered again and the highlight returns to the option it was on.",
+      "sent": "The composer's sent action: the chips that went with an accepted message leave, and a chip added since stays.",
+      "track": "The field's input, keyup, click and focus action: reads the word at the caret and opens, filters or closes the list it calls for. A word whose list was dismissed stays without one."
+    }
+  },
+  "poetry--core--composer-prompt": {
+    "doc": "A suggested prompt for a Composer elsewhere on the page: a chip under an empty conversation, a quick reply, a retry. Pressed, it asks the named composer to take its text, and by default to send it, by dispatching poetry:composer:prompt on the window. The composer does the writing and the sending itself, through its own gate, so a prompt can do nothing a typed message could not.",
+    "targets": [],
+    "values": {
+      "composer": {
+        "type": "String",
+        "doc": "The id of the composer the prompt is for."
+      },
+      "text": {
+        "type": "String",
+        "doc": "The text the prompt writes in place of the draft."
+      },
+      "send": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the composer sends the text at once. Off, the text is written and the caret put after it, for the person to finish."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "write"
+    ],
+    "events": [
+      "poetry:composer:prompt"
+    ],
+    "method_docs": {
+      "write": "The click action: hands the prompt to the composer it names."
     }
   },
   "poetry--core--context-menu": {
@@ -605,7 +737,7 @@
     "method_docs": {
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens modally: showModal() (the platform trap, top-layer and focus return), the pair flip, and the body scroll lock. Returns the resulting state (what an agent tool reports back).",
@@ -689,7 +821,7 @@
     "method_docs": {
       "backdropClose": "The inherited backdrop click, minus the ghost: a press that started inside the panel can end over the backdrop (a drag against the clamp, a slip off an inner control) and the click the browser then fires is a backdrop click by target and coordinates, never by intent.",
       "close": "Closes through the animated exit (data-ending-style), then the native close(), the unlock, and the swipe-var reset. The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "escapeClose": "The non-modal Escape exit (the component wires this keydown action only when modal is false): a non-modal dialog never fires cancel, so Esc needs its own path while focus is inside; modal drawers ride the native cancel.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
@@ -702,41 +834,148 @@
       "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
     }
   },
+  "poetry--core--file-drop": {
+    "doc": "The file-drop behavior's controller: files arrive on this element by drop, picker or paste, are checked against accept, size and count, and land in the native input inside it (the input target, or the first file input below). Values only, zero actions: the behavior binds the zone, the document and the paste listeners in connect, through the scope. A component listens for the files event to reflect the selection, and a trigger outside the label may call open.",
+    "targets": [
+      "input"
+    ],
+    "values": {
+      "accept": {
+        "type": "String",
+        "default": "",
+        "doc": "The native accept list; empty takes everything."
+      },
+      "multiple": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the selection may hold several files; a single zone keeps the first."
+      },
+      "maxFiles": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The most files the selection may hold; 0 is unlimited."
+      },
+      "maxSize": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The largest file in bytes; 0 is unlimited."
+      },
+      "minSize": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The smallest file in bytes."
+      },
+      "paste": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether a paste carrying files lands here."
+      },
+      "overlay": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the whole page is the drop target, with data-drag-global while files are over it."
+      },
+      "directory": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether dropped folders are walked for their files."
+      },
+      "preventDocumentDrop": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether a drop outside the zone is swallowed instead of navigating to the file."
+      },
+      "messages": {
+        "type": "Object",
+        "default": {},
+        "doc": "Rejection messages by code, with {name}, {size}, {count} and {reason} tokens."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "clear",
+      "connect",
+      "disconnect",
+      "open",
+      "removeFile"
+    ],
+    "events": [
+      "poetry:file-drop:drag",
+      "poetry:file-drop:files"
+    ],
+    "method_docs": {
+      "clear": "Empties the selection.",
+      "connect": "Binds the intake for this connect.",
+      "disconnect": "Unbinds everything the connect bound.",
+      "open": "Opens the native picker: the action for a trigger that is not the label (a button beside the zone).",
+      "removeFile": "Drops one file from the selection: the component beside this controller calls it from a row's remove button."
+    }
+  },
   "poetry--core--file-input": {
-    "doc": "The FileInput dropzone engine: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's - this controller adds only what HTML cannot: drag-and-drop onto the label, the selected-file list, and the clear affordance. The native input stays the single source of truth (its FileList is the form value; ActiveStorage direct upload rides it untouched).\n\nDrag state uses an enter/leave COUNTER: dragenter/dragleave fire per descendant crossed, so a boolean flickers over child elements - the counter nets out to zero only when the pointer truly leaves the zone.",
+    "doc": "The FileInput dropzone's reflection: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's, and the file-drop controller beside this one takes drops, pastes and picker selections through the accept, size and count checks. This controller shows the result: one Attachment chip per file, cloned from the server's template, with the rejections, the populated state and the clear affordance; and it runs the uploads the component asked for. With upload \"immediate\" every file goes to Active Storage as it lands, with progress, cancel, retry and remove, and the form posts the signed ids the queue leaves as hidden inputs; with \"on_submit\" Rails uploads at submit time and the chips follow its events; with \"none\" the native input posts the bytes.",
     "targets": [
       "clear",
+      "errors",
       "input",
-      "list"
+      "items",
+      "template"
     ],
     "values": {
       "multiple": {
         "type": "Boolean",
         "default": false,
-        "doc": "Whether more than one file may be chosen; otherwise a drop keeps the first."
+        "doc": "Whether more than one file may be chosen; the file-drop controller enforces it."
+      },
+      "upload": {
+        "type": "String",
+        "default": "none",
+        "doc": "none, on_submit (Rails uploads at submit) or immediate (the queue uploads as files land)."
+      },
+      "name": {
+        "type": "String",
+        "default": "",
+        "doc": "The field name the hidden signed-id inputs carry in immediate mode."
+      },
+      "url": {
+        "type": "String",
+        "default": "",
+        "doc": "The direct uploads endpoint, in immediate mode."
+      },
+      "preview": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether image files show a thumbnail in their chip."
+      },
+      "messages": {
+        "type": "Object",
+        "default": {},
+        "doc": "The upload messages: unavailable, failed and busy, with a {name} token."
       }
     },
     "classes": [],
     "methods": [
-      "changed",
       "clear",
       "connect",
-      "dragenter",
-      "dragleave",
-      "dragover",
-      "drop"
+      "discard",
+      "disconnect",
+      "files",
+      "keep",
+      "remove",
+      "retry"
     ],
     "events": [
-      "poetry:file-input:change"
+      "poetry:file-input:change",
+      "poetry:file-input:upload"
     ],
     "method_docs": {
-      "changed": "The native input's change action (picker AND drop land here): reflects the selection and reports the file names.",
-      "clear": "The clear button's click action: empties the input and dispatches a real change.",
-      "connect": "Reflects the input's current FileList (list, clear, data-populated).",
-      "dragenter": "File drags flip the zone into its accepting state - depth-counted (the header explains the counter).",
-      "dragleave": "Nets the depth counter down; at zero the drag styling clears.",
-      "dragover": "The required preventDefault - without it the browser navigates to the dropped file.",
-      "drop": "Assigns the dropped files to the native input (single-file zones take the FIRST - the native picker's rule) and dispatches a real change so every listener sees a picker-identical selection."
+      "clear": "The clear button's click action: cancels every upload, empties the input and dispatches a real change, which the file-drop controller hears as a cleared selection.",
+      "connect": "Wires the upload mode and reflects the input's current selection.",
+      "discard": "A host's discard action, for files that have been delivered (a composer's sent event, once the server accepts the message): the files in the event's detail leave the selection, their signed ids with them, and a file added since stays. Without a list the whole selection goes. The event is left alone, so other listeners hear it.",
+      "disconnect": "Unbinds the queue and the listeners; the chips' object URLs are released.",
+      "files": "The file-drop controller's files action (drop, paste, picker and a removal land here): reflects the selection as chips, shows the rejections, starts the uploads in immediate mode and reports the file names.",
+      "keep": "The chips' container's turbo:before-morph-element action: the chips are the client's, built from the files the input holds, and the server renders the container empty. A morph that reached it would take them away while the input kept its files, so the container is left as it is.",
+      "remove": "A chip's remove action: the upload is cancelled or its signed id dropped, and the file leaves the selection through the file-drop controller, which reports back into files.",
+      "retry": "A chip's retry action: a failed upload goes back into the queue."
     }
   },
   "poetry--core--focus-scope": {
@@ -1689,7 +1928,7 @@
     "method_docs": {
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
-      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close and the close on the dialog's own successful form submission, and arms the opt-in global hotkey.",
       "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens with the animated entry: showModal(), then the presence enter so the data-starting-style hook fires like every other presence consumer (the exit half is inherited - the base close() already holds through the slide-out).",
@@ -1757,7 +1996,7 @@
     }
   },
   "poetry--core--slider": {
-    "doc": "The Slider machine - the only form control with real math. Three concerns, nothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the step grid with decimal-precision rounding (a 0.1 grid lands on 0.3, never 0.30000000000000004), clamp to [min, max], and clamp against neighbor thumbs +- the min gap (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the thumb's EFFECTIVE min/max) with the orientation x RTL x inverted resolution - horizontal RTL swaps Left/Right only, inverted flips the whole axis, both compose (rtl + inverted = ltr math); and pointer capture on the root - pointerdown jumps the NEAREST thumb (ties to the later index, so stacked thumbs stay separable), the track box is read ONCE at pointerdown (no per-frame layout), pointermove projects the value ABSOLUTELY from the pointer position (overshoot past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the range bounds are DYNAMIC (neighbor-clamped, rewritten on every neighbor move: APG multithumb), the --slider-start/--slider-end geometry vars consumed by the calc() rules, and one hidden native input per thumb. poetry:slider:change fires per mutation; commit (pointerup / each keydown) syncs the hidden inputs + dispatches native input/change so Rails listeners get one event per gesture, not per frame.",
+    "doc": "The Slider machine - the only form control with real math. Three concerns, nothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the step grid with decimal-precision rounding (a 0.1 grid lands on 0.3, never 0.30000000000000004), clamp to [min, max], and clamp against neighbor thumbs +- the min gap (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the thumb's EFFECTIVE min/max) with the orientation x RTL x inverted resolution - horizontal RTL swaps Left/Right only, inverted flips the whole axis, both compose (rtl + inverted = ltr math); and pointer capture on the root - pointerdown jumps the NEAREST thumb (ties to the later index, so stacked thumbs stay separable), the track box is read ONCE at pointerdown (no per-frame layout), pointermove projects the value ABSOLUTELY from the pointer position (overshoot past a neighbor clamps, never swaps), pointerup or pointercancel commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the range bounds are DYNAMIC (neighbor-clamped, rewritten on every neighbor move: APG multithumb), the --slider-start/--slider-end geometry vars consumed by the calc() rules, and one hidden native input per thumb. poetry:slider:change fires per mutation; commit (pointerup / each keydown) syncs the hidden inputs + dispatches native input/change so Rails listeners get one event per gesture, not per frame.",
     "targets": [
       "input",
       "range",
@@ -1818,13 +2057,13 @@
       "connect": "Adopts the value (the Value, else the server-rendered aria-valuenow), projects, and primes the hidden inputs silently.",
       "disconnect": "Ends any in-flight gesture without committing.",
       "keydown": "Each thumb's keydown action: the APG map (arrows step, Shift/Page = large step, Home/End to the thumb's EFFECTIVE bounds) under the orientation x RTL x inverted resolution; every keyboard change commits.",
-      "pointerdown": "The root's pointerdown action: jumps the NEAREST thumb to the pointer (ties to the later index), reads the track box once, and starts the window-level drag; pointerup commits.",
+      "pointerdown": "The root's pointerdown action: jumps the NEAREST thumb to the pointer (ties to the later index), reads the track box once, and starts the window-level drag; pointerup or pointercancel commits.",
       "setValue": "The programmatic controllable-state surface: must keep the thumb count; changes commit.",
       "valueValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream) may own the value."
     }
   },
   "poetry--core--state": {
-    "doc": "The controllable-state controller: seeds the data-open/ data-closed pair from a Value default when no other layer owns it, and exposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the attribute - a server re-render, the URL, an Outlet, or this default - the controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger target mirrors aria-expanded; a content target rides the presence helper (the pair flip deferred through animationend, hidden applied only after the exit animation finishes).",
+    "doc": "The controllable-state controller: seeds the data-open/ data-closed pair from a Value default when no other layer owns it, and exposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the attribute - a server re-render, the URL, an Outlet, or this default - the controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger target mirrors aria-expanded; a content target rides the presence helper (the pair flip deferred through animationend, hidden applied only after the exit animation finishes) and carries the measured --collapsible-panel-height / --collapsible-panel-width while it opens or closes (auto at rest), so a height transition can animate it.",
     "targets": [
       "content",
       "trigger"
@@ -1846,10 +2085,10 @@
     ],
     "events": [],
     "method_docs": {
-      "close": "Closes: flips the pair and holds the content target through its exit animation before hiding it (the presence contract).",
+      "close": "Closes: flips the pair and holds the content target through its exit animation before hiding it (the presence contract), the exit starting from the measured size.",
       "connect": "Seeds the pair from the Value default when no other layer wrote it, then reflects the current state onto the optional targets.",
       "disconnect": "Abandons any exit animation still holding the content.",
-      "open": "Opens: flips the pair, unhides the content target (when present) and runs its entry presence, mirrors aria-expanded onto the trigger.",
+      "open": "Opens: flips the pair, unhides the content target (when present), measures it into the size vars and runs its entry presence, then returns the vars to auto once the entry settles; mirrors aria-expanded onto the trigger.",
       "toggle": "The toggle action: open when closed, close when open."
     }
   },

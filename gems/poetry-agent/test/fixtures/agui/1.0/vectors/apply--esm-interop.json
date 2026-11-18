@@ -1,0 +1,53 @@
+{
+  "source": "apply/__tests__/esm-interop.test.ts",
+  "vectors": [
+    {
+      "name": "ESM consumers under Node's native loader (regression #1577) > applies STATE_DELTA through the built ESM bundle without 'applyPatch is not a function' [outcome]",
+      "line": 25,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "count": 0
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/count",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "messages": [],
+        "state": {
+          "count": 1
+        }
+      },
+      "spec": "/spec/1.0/events/state#state_delta (an RFC 6902 patch against the current state)",
+      "notes": "The TS test pins the built ESM bundle under Node's loader (excluded); the vector keeps the outcome. The TS run input's state {count: 0} is the vector's initial state. Wrapped: the TS test sends the bare delta with no RUN_STARTED."
+    }
+  ],
+  "excluded": [
+    {
+      "line": 25,
+      "name": "ESM consumers under Node's native loader (regression #1577) > applies STATE_DELTA through the built ESM bundle without 'applyPatch is not a function'",
+      "reason": "esm-interop: the built bundle under Node's native ESM loader; outcome kept as a vector"
+    }
+  ]
+}

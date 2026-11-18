@@ -1,0 +1,274 @@
+{
+  "source": "apply/__tests__/default.text-message.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with text messages > should handle text message events correctly",
+      "line": 29,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Hello "
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "world!"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "Hello world!"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#events: deltas concatenate in arrival order into the message opened by TEXT_MESSAGE_START",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with text messages > should handle multiple text messages correctly",
+      "line": 107,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "First message"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg2",
+          "role": "user"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg2",
+          "delta": "Second message"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "First message"
+          },
+          {
+            "id": "msg2",
+            "role": "user",
+            "content": "Second message"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#events: deltas concatenate in arrival order into the message opened by TEXT_MESSAGE_START; /spec/1.0/events/text-messages#text_message_start: role is the message's role (absent means assistant)",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with text messages > should not create duplicate message when TEXT_MESSAGE_START uses same ID as TOOL_CALL_START parentMessageId",
+      "line": 212,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_123",
+          "toolCallName": "updateWorkingMemory",
+          "parentMessageId": "d0b45a7f-d877-4a59-a6db-e11365066393"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "call_123",
+          "delta": "{\"memory\":{}}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_123"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tool-result-1",
+          "toolCallId": "call_123",
+          "content": "{\"success\":true}",
+          "role": "tool"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "d0b45a7f-d877-4a59-a6db-e11365066393",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "d0b45a7f-d877-4a59-a6db-e11365066393",
+          "delta": "Here is the response"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "d0b45a7f-d877-4a59-a6db-e11365066393"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "d0b45a7f-d877-4a59-a6db-e11365066393",
+            "role": "assistant",
+            "content": "Here is the response",
+            "toolCalls": [
+              {
+                "id": "call_123",
+                "type": "function",
+                "function": {
+                  "name": "updateWorkingMemory",
+                  "arguments": "{\"memory\":{}}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool-result-1",
+            "role": "tool",
+            "toolCallId": "call_123",
+            "content": "{\"success\":true}"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it; /spec/1.0/events/tool-calls#tool_call_result: a result is a tool message in its own right, under its own messageId",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The text streams into the assistant message the tool call minted under its parentMessageId."
+    },
+    {
+      "name": "defaultApplyEvents with text messages > should set name on message when TEXT_MESSAGE_START has name",
+      "line": 313,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant",
+          "name": "research-agent"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "Hello",
+            "name": "research-agent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#text_message_start: name is OPTIONAL and labels the speaker; absent stays absent"
+    },
+    {
+      "name": "defaultApplyEvents with text messages > should not set name on message when TEXT_MESSAGE_START has no name",
+      "line": 365,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread",
+          "runId": "test-run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "",
+            "name": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#text_message_start: name is OPTIONAL and labels the speaker; absent stays absent"
+    }
+  ],
+  "excluded": []
+}

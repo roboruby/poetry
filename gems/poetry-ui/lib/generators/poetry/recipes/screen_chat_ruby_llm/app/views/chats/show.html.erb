@@ -1,0 +1,11 @@
+<%# installed by the poetry `screen-chat-ruby-llm` recipe - yours to adapt.
+    A conversation: the page listens to the chat's stream, and the chat
+    block is given the stored messages as its rows, the two addresses,
+    and the status from the chat's record, so a reload in the middle of a
+    reply shows Stop. The block partial is the same source
+    `bin/rails g poetry:block chat` copies in; its title, welcome and
+    prompts are sample text to replace. %>
+<%= turbo_stream_from @chat %>
+<%= render "blocks/chat", url: chat_messages_path(@chat), stop_url: stop_chat_path(@chat),
+           status: @chat.composer_status, new_chat_url: new_chat_path,
+           rows: render(partial: "messages/message", collection: @messages, as: :message) %>

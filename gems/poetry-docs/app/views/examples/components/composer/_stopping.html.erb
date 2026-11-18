@@ -1,0 +1,8 @@
+<%# status: :stopping holds the Stop button busy and disabled between the
+    press and the moment the reply ends. Render it from your record while
+    the model's stream winds down, then draw :idle. %>
+<div class="mx-auto w-full max-w-md">
+  <%= poetry_composer(id: "composer-stopping", status: :stopping, placeholder: "Write a message",
+                      url: composer_demo_messages_path(composer: "composer-stopping"),
+                      stop_url: composer_demo_stop_path(composer: "composer-stopping")) %>
+</div>

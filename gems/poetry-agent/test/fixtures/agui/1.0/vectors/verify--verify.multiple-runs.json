@@ -1,0 +1,749 @@
+{
+  "source": "verify/__tests__/verify.multiple-runs.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents multiple runs > should allow multiple sequential runs",
+      "line": 30,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-1",
+          "delta": "Hello from run 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-2",
+          "delta": "Hello from run 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "Hello from run 1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-2",
+            "delta": "Hello from run 2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a single stream MAY carry several runs in sequence",
+      "notes": "TS asserts 10 events and the runIds of both RUN_STARTED events; every event passes through verification unchanged. The explicit TEXT_MESSAGE_START events carry no role and are delivered without one: TS verification passes events through unchanged and does not materialise the assistant default on an explicit start (only chunk expansion does, on starts it synthesizes)."
+    },
+    {
+      "name": "verifyEvents multiple runs > should allow reusing message IDs across different runs",
+      "line": 102,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: run-scoped tracking (open messages, tool calls, steps) does not cross the run boundary; a new run starts with nothing open",
+      "notes": "TS asserts 8 delivered events. The second run's TEXT_MESSAGE_START reuses 'msg-1'."
+    },
+    {
+      "name": "verifyEvents multiple runs > should allow multiple runs with tool calls",
+      "line": 158,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool-1",
+          "toolCallName": "calculator"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool-1",
+          "delta": "{\"a\": 1, \"b\": 2}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool-1",
+          "toolCallName": "weather"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool-1",
+          "delta": "{\"city\": \"NYC\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: run-scoped tracking (open messages, tool calls, steps) does not cross the run boundary; a new run starts with nothing open",
+      "notes": "TS asserts 10 delivered events. The second run reuses toolCallId 'tool-1' with a different toolCallName."
+    },
+    {
+      "name": "verifyEvents multiple runs > should allow multiple runs with steps",
+      "line": 226,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "planning"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "planning"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "planning"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "planning"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "STEP_FINISHED",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: run-scoped tracking (open messages, tool calls, steps) does not cross the run boundary; a new run starts with nothing open",
+      "notes": "TS asserts 8 delivered events. The second run reuses stepName 'planning'."
+    },
+    {
+      "name": "verifyEvents multiple runs > should not allow new RUN_STARTED while run is active",
+      "line": 282,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_STARTED' while a run is still active"
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a RUN_STARTED while a run is still active is a violation",
+      "notes": "Distinct runIds do not make a nested RUN_STARTED legal. Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents multiple runs > should allow three sequential runs",
+      "line": 320,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-1",
+          "delta": "Message from run 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-2",
+          "delta": "Message from run 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-3"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg-3",
+          "delta": "Message from run 3"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-3"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "Message from run 1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-2",
+            "delta": "Message from run 2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-3"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-3"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-3",
+            "delta": "Message from run 3"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-3"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-3"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a single stream MAY carry several runs in sequence",
+      "notes": "TS asserts 15 events and the runIds at positions 0, 5 and 10 (the test builds the stream in a loop). The explicit TEXT_MESSAGE_START events carry no role and are delivered without one: TS verification passes events through unchanged and does not materialise the assistant default on an explicit start (only chunk expansion does, on starts it synthesizes)."
+    },
+    {
+      "name": "verifyEvents multiple runs > should still block events after RUN_ERROR within the same run",
+      "line": 372,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "Test error"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        }
+      ],
+      "expect": {
+        "error": "The run has already errored with 'RUN_ERROR'"
+      },
+      "spec": "/spec/1.0/events/lifecycle#after-a-run-closes: a producer MUST NOT emit anything after RUN_ERROR except RUN_STARTED; a consumer MUST reject it",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents multiple runs > should allow a new RUN_STARTED after RUN_ERROR",
+      "line": 414,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "Agent unreachable"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "RUN_ERROR",
+            "message": "Agent unreachable"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#after-a-run-closes: a producer MAY emit RUN_STARTED to begin a new run after RUN_ERROR",
+      "notes": "TS asserts 6 events, RUN_ERROR at 1, the second run's runId at 2 and RUN_FINISHED at 5. The explicit TEXT_MESSAGE_START events carry no role and are delivered without one: TS verification passes events through unchanged and does not materialise the assistant default on an explicit start (only chunk expansion does, on starts it synthesizes)."
+    },
+    {
+      "name": "verifyEvents multiple runs > should replay a thread containing an errored run without dropping later runs",
+      "line": 464,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "Agent restarted"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-3"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-3"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-1"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "RUN_ERROR",
+            "message": "Agent restarted"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-3"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "test-thread-1",
+            "runId": "test-run-3"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: RUN_ERROR ends whatever was still open along with the run; a new run starts with nothing open",
+      "notes": "Run 2 errors with 'msg-2' still open (a dropped connection); run 3 reopens 'msg-2', which is legal because the RUN_ERROR ended the open message with the run. TS asserts all 11 events are delivered, the runId at 7 and RUN_FINISHED at 10. The explicit TEXT_MESSAGE_START events carry no role and are delivered without one: TS verification passes events through unchanged and does not materialise the assistant default on an explicit start (only chunk expansion does, on starts it synthesizes)."
+    },
+    {
+      "name": "verifyEvents multiple runs > should handle complex scenario with multiple runs and various event types",
+      "line": 534,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool-1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "analysis"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg-2"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "analysis"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-1",
+          "runId": "test-run-2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a single stream MAY carry several runs in sequence",
+      "notes": "TS asserts 12 events with run boundaries at 0, 5, 6 and 11. The first RUN_FINISHED carries runId 'test-run-2' although that run started as 'test-run-1', exactly as in the TS test: TS verification does not match RUN_FINISHED.runId to RUN_STARTED.runId (no spec rule requires it). A port that does match them fails this vector for that reason alone. Input normalized: the TS test closes the run with a RUN_FINISHED whose threadId/runId differ from its RUN_STARTED (incidental); here they match, so the vector pins neither acceptance nor rejection of mismatched ids."
+    }
+  ]
+}

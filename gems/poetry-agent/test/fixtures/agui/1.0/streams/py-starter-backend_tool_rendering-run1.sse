@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"thread-backend_tool_rendering","runId":"8385d1c2-6a5d-4cdd-aec8-509030f1dfb1","protocolVersion":"1.0"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"28553bd0-76f1-4c6a-8d32-98cb1af89c56","role":"user","content":"weather in SF?"},{"id":"87af2848-3121-4241-8489-0041a8dd7718","role":"assistant","toolCalls":[{"id":"d98e56ea-9185-42e2-894e-0eab6792be06","type":"function","function":{"name":"get_weather","arguments":"{\"city\": \"San Francisco\"}"}}]},{"id":"e743a4c2-86dc-4de3-b682-fcc6cac0a190","role":"tool","content":"{\"city\": \"San Francisco\", \"conditions\": \"sunny\", \"wind_speed\": \"10\", \"temperature\": \"20\", \"humidity\": \"60\"}","toolCallId":"d98e56ea-9185-42e2-894e-0eab6792be06"}]}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-backend_tool_rendering","runId":"8385d1c2-6a5d-4cdd-aec8-509030f1dfb1"}
+

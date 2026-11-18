@@ -53,8 +53,13 @@ module Poetry
           refute_predicate Component.new(name: :"definitely-not-an-icon"), :valid?
         end
 
+        def test_a_renamed_icon_renders_its_current_name
+          assert_equal render_inline(Component.new(name: :trash)).to_html.sub("trash", ""),
+                       render_inline(Component.new(name: :"trash-2")).to_html.sub("trash-2", "")
+        end
+
         def test_the_invalid_message_names_the_closest_icon
-          component = Component.new(name: :"alert-circle")
+          component = Component.new(name: :"circle-alrt")
 
           refute_predicate component, :valid?
           assert_includes component.errors[:name].first, %(did you mean :"circle-alert"?)
@@ -147,6 +152,47 @@ module Poetry
           html = render_inline(Component.new(name: :plus, library: :lucide)).to_html
 
           assert_includes html, 'data-component="icon"'
+        end
+
+        def test_a_set_with_an_attribution_carries_it_inside_every_svg
+          Dir.mktmpdir("icons") do |dir|
+            path = File.join(dir, "credited.tsv")
+            File.write(path, Poetry::Core::Icons::Vendor.packed("house" => %(<path d="M1 1"/>)))
+            Poetry::Core::Icons.register(:credited_test, Poetry::Core::Icons::PackedSet.new(
+                                                           path: path, attribution: "Set by Someone, CC BY 4.0"
+                                                         ))
+
+            html = render_inline(Component.new(name: :house, library: :credited_test)).to_html
+
+            assert_includes html, %(<!-- Set by Someone, CC BY 4.0 --><path d="M1 1"></path>)
+            refute_includes render_inline(Component.new(name: :plus)).to_html, "<!--"
+          ensure
+            Poetry::Core::Icons.registry.delete(:credited_test)
+          end
+        end
+
+        def test_a_set_draws_with_its_own_svg_attributes
+          Dir.mktmpdir("icons") do |dir|
+            path = File.join(dir, "filled.tsv")
+            File.write(path, Poetry::Core::Icons::Vendor.packed("house" => %(<path d="M1 1"/>)))
+            Poetry::Core::Icons.register(
+              :filled_test, Poetry::Core::Icons::PackedSet.new(path: path, svg_attributes: {
+                                                                 "width" => "16", "height" => "16",
+                                                                 "viewBox" => "0 0 256 256", "fill" => "currentColor"
+                                                               })
+            )
+
+            svg = render_inline(Component.new(name: :house, library: :filled_test, class: "size-4")).at_css("svg")
+
+            assert_equal "0 0 256 256", svg["viewBox"]
+            assert_equal "currentColor", svg["fill"]
+            assert_equal "16", svg["width"]
+            assert_nil svg["stroke"]
+            assert_equal "icon", svg["data-slot"]
+            assert_equal "true", svg["aria-hidden"]
+          ensure
+            Poetry::Core::Icons.registry.delete(:filled_test)
+          end
         end
       end
     end

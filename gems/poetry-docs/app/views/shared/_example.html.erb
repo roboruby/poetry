@@ -1,3 +1,4 @@
+<%# locals: (partial:, source:, section:, slug:, name:, heading:, note: nil) %>
 <section class="flex flex-col gap-3">
   <h2 class="text-lg font-medium" id="<%= name.dasherize %>"><%= heading %></h2>
   <div class="relative">
@@ -10,8 +11,11 @@
     <% end %>
   <%= poetry_tabs(label: "#{heading} example", variant: :line) do |tabs| %>
     <% tabs.with_tab("Preview", value: "preview") do %>
-      <div class="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border p-8">
-        <% if local_assigns[:note].present? %>
+      <%# A demo wider than the box scrolls inside it: centred while it
+          fits, from its start edge once it does not, so no part of it is
+          out of reach and the page itself never scrolls sideways. %>
+      <div class="flex min-h-48 flex-col items-center-safe justify-center gap-4 overflow-x-auto rounded-lg border p-8">
+        <% if note.present? %>
           <p class="max-w-md text-center text-sm text-muted-foreground"><%= note %></p>
         <% end %>
         <%= render partial %>

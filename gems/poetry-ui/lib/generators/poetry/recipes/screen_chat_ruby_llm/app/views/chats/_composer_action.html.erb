@@ -1,0 +1,5 @@
+<%# locals: (status:) %>
+<%# installed by the poetry `screen-chat-ruby-llm` recipe. The composer's
+    action slot alone: Send while idle, Stop while a reply runs. It is
+    the one part of the composer the server redraws. %>
+<%= poetry_composer_action(id: "chat", status: status) %>

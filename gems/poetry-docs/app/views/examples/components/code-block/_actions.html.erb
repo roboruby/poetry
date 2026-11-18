@@ -1,0 +1,18 @@
+<%# with_actions puts more buttons beside the copy button. %>
+<% code = <<~YAML
+  production:
+    adapter: postgresql
+    database: app_production
+    pool: 10
+YAML
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: code, language: "yaml") do |block| %>
+    <% block.with_title { "config/database.yml" } %>
+    <% block.with_actions do %>
+      <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Download") do %>
+        <%= poetry_icon(name: :download) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

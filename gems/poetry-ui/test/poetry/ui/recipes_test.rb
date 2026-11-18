@@ -10,7 +10,8 @@ module Poetry
       end
 
       test "the roster projects all recipes with valid items" do
-        assert_equal %w[agent-embed scaffold-templates screen-data-index screen-settings
+        assert_equal %w[agent-embed scaffold-templates screen-chat screen-chat-ruby-llm screen-data-index
+                        screen-settings
                         skill-poetry skill-poetry-component skill-poetry-design], items.names
 
         items.names.each do |name|
@@ -51,7 +52,7 @@ module Poetry
           Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH)
         )["blocks"].keys
 
-        %w[screen-data-index screen-settings].each do |name|
+        %w[screen-chat screen-chat-ruby-llm screen-data-index screen-settings].each do |name|
           item = items.item(name)
 
           assert_predicate item["registryDependencies"], :any?, "#{name} composes no blocks"
@@ -63,7 +64,10 @@ module Poetry
 
           assert(targets.any? { |t| t.start_with?("app/controllers/") }, "#{name} ships no controller")
           assert(targets.any? { |t| t.start_with?("app/views/") }, "#{name} ships no view")
-          assert(targets.any? { |t| t.start_with?("test/system/") }, "#{name} ships no system test")
+          assert(targets.any? { |t| t.start_with?("test/") }, "#{name} ships no test")
+          # A new Rails app has no application_system_test_case to
+          # require, and these tests read the server's HTML: none needs a browser.
+          assert(targets.none? { |t| t.start_with?("test/system/") }, "#{name} ships a system test")
           assert_includes item["description"], "to routes", "#{name} must state its route line"
         end
       end

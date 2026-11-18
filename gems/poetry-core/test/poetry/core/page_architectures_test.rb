@@ -11,8 +11,8 @@ module Poetry
     class PageArchitecturesTest < Minitest::Test
       REQUIRED = %w[name title purpose keywords sections states edge_cases components].freeze
       NON_EMPTY = %w[keywords sections states edge_cases components].freeze
-      # The eight vetted blocks a `block` reference may point at (or nil).
-      BLOCKS = %w[action-bar app-shell data-index destructive-panel page-header
+      # The nine vetted blocks a `block` reference may point at (or nil).
+      BLOCKS = %w[action-bar app-shell chat data-index destructive-panel page-header
                   section-card stepper top-nav].freeze
 
       def test_every_archetype_is_well_formed
@@ -43,6 +43,13 @@ module Poetry
 
         assert_equal "admin-dashboard", best["name"]
         assert_operator best_score, :>=, 4
+      end
+
+      def test_a_chat_brief_plans_from_the_chat_block
+        best, = PageArchitectures.scored(Set["chat", "assistant"]).first
+
+        assert_equal "assistant-chat", best["name"]
+        assert_equal "chat", best["block"]
       end
 
       def test_no_match_scores_zero

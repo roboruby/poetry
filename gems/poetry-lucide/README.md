@@ -1,6 +1,6 @@
 # poetry-lucide
 
-The default poetry icon set: [Lucide](https://lucide.dev)'s 1,745 icons,
+The default poetry icon set: [Lucide](https://lucide.dev)'s 1,890 icons,
 **vendored at a pinned upstream commit and sanitized at vendor time** —
 render time never parses, never sanitizes, never touches the network.
 
@@ -23,6 +23,14 @@ the Icon component owns the `<svg>` wrapper and the ARIA contract riding
 on it. `poetry check` validates icon-name literals statically against
 this set; a dynamic name that misses raises in dev/test (with a
 did-you-mean) and renders the configured fallback in production.
+
+## Renamed icons
+
+Lucide renames icons now and then (`trash-2` became `trash` in 1.57.0). The
+fetch reads each icon's upstream metadata and writes `icons/aliases.json`,
+264 old names each mapped to the current one, so an old name keeps
+rendering after an update. `poetry check` warns on an old name and suggests
+the new one; `Poetry::Lucide.aliases` returns the map.
 
 ## The pin
 

@@ -101,7 +101,7 @@ poetry:
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: system sans
   treatment: the neutral source-parity treatment (the ported baseline)
-  components_count: 88
+  components_count: 93
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
     floor: WCAG 2.2 AA (4.5:1) - locked, every gated pair
@@ -116,6 +116,16 @@ poetry:
       4.5)"
     - "[dark] sidebar-primary-foreground on sidebar-primary: 6.54:1 (locked AA, needs
       >= 4.5)"
+    - "[light] success-strong on background: 5.19:1 (locked AA, needs >= 4.5)"
+    - "[light] success-strong on muted: 4.76:1 (locked AA, needs >= 4.5)"
+    - "[light] success-strong on success/10% over background: 4.60:1 (locked AA, needs
+      >= 4.5)"
+    - "[light] warning-strong on muted: 6.59:1 (locked AA, needs >= 4.5)"
+    - "[light] warning-strong on warning/10% over background: 6.26:1 (locked AA, needs
+      >= 4.5)"
+    - "[light] info-strong on muted: 6.93:1 (locked AA, needs >= 4.5)"
+    - "[light] info-strong on info/10% over background: 6.54:1 (locked AA, needs >=
+      4.5)"
 ---
 # DESIGN.md - poetry default
 
@@ -194,7 +204,7 @@ Semantic roles only - components never reference raw palette values
 
 ## Components
 
-- catalog: 88 components - the registry is the truth; read
+- catalog: 93 components - the registry is the truth; read
   `/poetry/llms.txt` (or `llms-full.txt` with events and variants)
   instead of duplicating it here
 - consume via `poetry_*` helpers; styling rides the theme's `cn-*` classes,

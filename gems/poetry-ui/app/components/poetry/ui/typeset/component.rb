@@ -9,9 +9,10 @@ module Poetry
       # styled by the app-owned typeset.css the installer copies. Three
       # rhythm variables (size / leading / flow) drive the scale -
       # everything else derives - and preset: appends a tiny app-defined
-      # class that retunes them. Opt an embedded component's subtree out
-      # with class: "not-typeset"; wrap a wide block in a typeset-scroll
-      # div to scroll horizontally instead of compressing.
+      # class that retunes them. Embedded components keep their own styles
+      # (the prose rules skip anything with data-slot); opt a plain-HTML
+      # subtree out with class: "not-typeset"; wrap a wide block in a
+      # typeset-scroll div to scroll horizontally instead of compressing.
       #
       # @example
       #   render Poetry::Ui::Typeset::Component.new(preset: "docs") do
@@ -26,8 +27,8 @@ module Poetry
           "chrome; poetry components style themselves.",
           "preset: \"docs\" appends typeset-docs - a preset is a tiny class in the app's own CSS " \
           "setting --typeset-size/-leading/-flow (and font vars).",
-          "Opt an embedded component OUT of the prose styling with class: \"not-typeset\" - it " \
-          "covers the whole subtree.",
+          "Embedded poetry components keep their own styles - the prose rules skip anything with " \
+          "data-slot. Opt a plain-HTML subtree OUT with class: \"not-typeset\".",
           "Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose to " \
           "scroll horizontally instead of compressing."
         ].freeze
@@ -37,8 +38,8 @@ module Poetry
                     "(e.g. \"docs\")."
 
         part "typeset", "The prose container - every bare element inside is styled by the " \
-                        "app-owned typeset.css; not-typeset (class or data attribute) opts a " \
-                        "subtree out"
+                        "app-owned typeset.css; components (data-slot) keep their own styles, " \
+                        "and not-typeset (class or data attribute) opts a subtree out"
 
         # Raises without content.
         # @api private

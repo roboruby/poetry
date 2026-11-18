@@ -2,8 +2,10 @@
 
 # The shipped interaction testers (lib/poetry/ui/testing), PROVEN
 # against poetry's own preview pages (rakelib/support/tester_proofs.rb
-# holds the proofs). Browser-gated like visual/axe (needs Chrome; not in
-# the default gate).
+# holds the proofs). What needs Turbo is proven on the composer menu gate
+# (/cgate), the dummy host's page for server-fed menus: the previews run
+# none. Browser-gated like visual/axe (needs Chrome; not in the default
+# gate).
 
 namespace :test do
   desc "Prove the shipped interaction testers (Poetry::Ui::Testing) against the preview pages"

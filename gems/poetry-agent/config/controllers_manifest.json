@@ -39,24 +39,37 @@
     }
   },
   "poetry--agent--webmcp-form": {
-    "doc": "The declarative-form companion: a form declared with poetry_webmcp_form (toolname/tooldescription on the <form>) is registered by the BROWSER; this controller only answers an agent-invoked submit with the outcome. Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we submit the form ourselves (fetch, same method/action, Turbo-Stream accepting) and respond with a short descriptive result instead of navigating, so the agent learns whether the submission succeeded and what the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the result is handed to the browser, so a navigation can never swallow it): a GET answer is the page at that URL - a Turbo visit, or a plain navigation without Turbo; a Turbo-Stream answer renders; a redirected POST (redirect-after-create) visits where the redirect went. An HTML re-render of a failed POST stays put - the agent already holds the errors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through untouched: the human path stays the human path.",
+    "doc": "The declarative-form companion: a form declared with poetry_webmcp_form (toolname/tooldescription on the <form>) is registered by the BROWSER; this controller only answers an agent-invoked submit with the outcome. Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we submit the form ourselves (fetch, same method/action, Turbo-Stream accepting) and respond with a short descriptive result instead of navigating, so the agent learns whether the submission succeeded and what the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the result is handed to the browser, so a navigation can never swallow it): a GET answer is the page at that URL - a Turbo visit, or a plain navigation without Turbo; a Turbo-Stream answer renders; a redirected POST (redirect-after-create) visits where the redirect went. An HTML re-render of a failed POST stays put - the agent already holds the errors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through untouched: the human path stays the human path.\n\nThe browser also tells the page when an agent runs a tool: toolactivated fires on document.modelContext once the agent has filled a declarative form, and toolcancel when the agent abandons the call because the person moved on to another turn. For its own tool this controller marks the form (`data-webmcp-agent=\"active\"`), dispatches poetry:webmcp:tool-activated and poetry:webmcp:tool-cancelled on it, and announces the fill and the cancel through the shared live region - the agent's fill is a change the person did not make. The marker lasts until the cancel, the person's own submit, or the delivered answer of an agent-invoked submit: Chrome 156 (measured 2026-10-30) fires toolactivated AFTER the submit of an autosubmit form, so a submit alone cannot end it. An autosubmit form's fill is announced by nothing here - its submit's answer, and the page catching up, are what the person perceives. The browser's pseudo-classes carry the visual; a browser without a model context hears nothing and loses nothing.",
     "targets": [],
-    "values": {},
+    "values": {
+      "activatedMessage": {
+        "type": "String",
+        "default": "Your agent filled this form. Review it, then submit.",
+        "doc": "What screen-reader users hear once an agent has filled this form."
+      },
+      "cancelledMessage": {
+        "type": "String",
+        "default": "Your agent stopped filling this form.",
+        "doc": "What they hear when the agent abandons the fill."
+      }
+    },
     "classes": [],
     "methods": [
       "connect",
       "disconnect"
     ],
     "events": [
-      "poetry:webmcp:form-submitted"
+      "poetry:webmcp:form-submitted",
+      "poetry:webmcp:tool-activated",
+      "poetry:webmcp:tool-cancelled"
     ],
     "method_docs": {
-      "connect": "Listens for the form's submit.",
-      "disconnect": "Stops listening for the form's submit."
+      "connect": "Listens for the form's submit, and for the browser's tool events when it exposes a model context.",
+      "disconnect": "Stops listening, drops the agent marker and releases the live region."
     }
   },
   "poetry--agent--agui-client-tool": {
-    "doc": "The AG-UI client-tool bridge: the relay appends one of these (hidden) per tool call the agent made to a FRONTEND tool - a component tool the page declared - and this controller executes it through the registrar (the same dispatch a WebMCP call takes, so it works in every browser, modelContext or not), then POSTs the result to the continue URL. The server folds the tool message into the transcript and answers with the next run's streams, which Turbo renders. One element, one execution: the done flag makes a Turbo re-render inert.",
+    "doc": "The AG-UI client-tool bridge: the relay appends one of these per tool call the agent made to a FRONTEND tool - a component tool the page declared - and this controller executes it through the registrar (the same dispatch a WebMCP call takes, so it works in every browser, modelContext or not), then POSTs the result to the continue URL. The server folds the tool message into the transcript and answers with the next run's streams, which Turbo renders. A tool declared to ask first renders the host's approval prompt inside the element and waits: its approve action runs the call, its deny action answers it as declined without running it, and either answer hides the prompt. One element, one answer: the done flag makes a Turbo re-render inert.",
     "targets": [],
     "values": {
       "call": {
@@ -70,47 +83,187 @@
       "done": {
         "type": "Boolean",
         "doc": "Whether the call has already been answered (a restored snapshot must not answer twice)."
+      },
+      "confirm": {
+        "type": "Boolean",
+        "doc": "Whether the call waits for the user's approve or deny before anything runs."
       }
     },
     "classes": [],
     "methods": [
-      "connect"
+      "approve",
+      "connect",
+      "deny"
     ],
     "events": [
+      "poetry:agui:client-tool-declined",
       "poetry:agui:client-tool-executed"
     ],
     "method_docs": {
-      "connect": "Runs the pending client tool once, posts its result, and marks the call done."
+      "approve": "Runs the call the user approved.",
+      "connect": "Runs the pending client tool once, unless it waits for the user.",
+      "deny": "Answers the call as declined: the tool never runs, and the agent is told so."
     }
   },
   "poetry--agent--a2ui-surface": {
-    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules with absolute bindings, the bound inputs by path with their kinds, and the data model) and this controller evaluates it as the user types - a button whose own checks fail is disabled, a failing input is marked invalid and its error slot carries the message. The five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
+    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules, spelled as v1.0 spells them whatever the surface speaks: `{\"@path\"}` bindings made absolute, `{\"@call\", args}` calls, a literal `@` key doubled; the path each checked control binds; the bound inputs by path with their kinds; and the data model) and this controller evaluates it as the user types.\n\nA button whose own checks fail is disabled from the start. What the user sees of a failure waits for them: an input's message and invalid state appear once its path has been edited, a button's reason once any input has. Until then the server's rendering stands, including the failures it rendered after a rejected action; one the browser cannot judge (a rule on a function it does not know) stands until the server judges it again. A morph keeps the element and this controller, so the edited inputs are judged again once the morph is over.\n\nThe five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
     "targets": [],
     "values": {
       "program": {
         "type": "Object",
-        "doc": "The check program the server compiled: the checks, the bound inputs by path, and the data model."
+        "doc": "The check program the server compiled: the checks (each with the path its control binds), the bound inputs by path, and the data model."
       }
     },
     "classes": [],
     "methods": [
       "apply",
       "call",
-      "connect",
       "evaluate",
       "failure",
+      "initialize",
+      "morphed",
       "read",
-      "resolve"
+      "resolve",
+      "touch"
     ],
     "events": [],
     "method_docs": {
-      "apply": "Reflects a check's failures on the elements bound to a key: a button disables, an input turns invalid.",
+      "apply": "Reflects a check's verdict on the elements bound to a key. A button disables while its checks fail. The message and the invalid state follow the verdict only once the user has touched the input (any input, for a button); before that, and for a server failure the browser cannot judge, the server's rendering stands.",
       "call": "Runs a catalog function by name with its arguments resolved; an unknown name resolves to null.",
-      "connect": "Evaluates every check once at mount.",
       "evaluate": "Runs every check in the program and applies its failures.",
-      "failure": "A rule's failure message, or null when it passes or cannot be decided here.",
+      "failure": "A rule's failure message, null when it passes, or undefined when it cannot be decided here.",
+      "initialize": "Starts with nothing touched: the paths the user has edited since the surface mounted.",
+      "morphed": "Evaluates every check once a morph of the surface is over: the morph left the slots and attributes as the server rendered them, and the edited inputs keep their values. One pass per morph, however many elements it touched.",
       "read": "The current value of a bound path from the form's inputs, falling back to the data model.",
-      "resolve": "A value with its bindings read and its calls run, recursively."
+      "resolve": "A value with its bindings read and its calls run, recursively; a literal object's doubled `@@` keys read as their literal.",
+      "touch": "Marks the edited input's path touched and evaluates every check."
+    }
+  },
+  "poetry--agent--mcp-app-host": {
+    "doc": "The frame another server's MCP App renders in, and the host's half of the bridge. The element carries the call (server, tool, input, result, the app's resource) and where the sandbox page and the RPC endpoint are; the controller reads the app's HTML through the endpoint, mounts the sandbox proxy frame (on the apps origin, or as an opaque frame of the page's own in the inline mode), answers `ui/initialize` with the page's theme and tokens, delivers the input and the result, sends the app's own requests to the endpoint, resizes to what the app reports, moves the frame between the display modes (inline in the page, fullscreen over it, pip in a corner), and tears the app down when the element leaves.\n\nWhat the page hears: `poetry:mcp-app-host:connect` (the app's info), `poetry:mcp-app-host:message` (a message for the chat, `detail.params`), `poetry:mcp-app-host:context` (a model-context update), `poetry:mcp-app-host:display-mode` (a mode about to be entered, by the app's request or the page's call: `detail.requested`, `detail.mode` the controller is granting, which the handler may change, `inline` to refuse), `poetry:mcp-app-host:authorize` (the endpoint wants the person signed in to the server first: `detail.url`), and with `debug`, `poetry:mcp-app-host:trace` for every message both ways. A link is opened in a new tab after the person confirms it.",
+    "targets": [
+      "frame",
+      "status"
+    ],
+    "values": {
+      "server": {
+        "type": "String",
+        "doc": "The server's id in the host's registry."
+      },
+      "tool": {
+        "type": "String",
+        "doc": "The tool the app belongs to."
+      },
+      "resource": {
+        "type": "String",
+        "doc": "The app's resource uri."
+      },
+      "input": {
+        "type": "String",
+        "doc": "The tool's input, as JSON."
+      },
+      "result": {
+        "type": "String",
+        "doc": "The tool's result (a CallToolResult), as JSON."
+      },
+      "rpcUrl": {
+        "type": "String",
+        "doc": "Where the app's own requests go: a POST taking { server, method, params }."
+      },
+      "sandboxUrl": {
+        "type": "String",
+        "doc": "The sandbox page's URL on the apps origin; absent in the inline mode."
+      },
+      "sandboxOrigin": {
+        "type": "String",
+        "doc": "The apps origin, the only origin the frame's messages are accepted from."
+      },
+      "sandboxPage": {
+        "type": "String",
+        "doc": "The sandbox page's HTML for the inline mode, written into an opaque frame of the page's own."
+      },
+      "height": {
+        "type": "Number",
+        "default": 160,
+        "doc": "The frame's height before the app reports its size, in pixels."
+      },
+      "maxHeight": {
+        "type": "Number",
+        "default": 4000,
+        "doc": "The most the frame grows to inline, in pixels."
+      },
+      "displayModes": {
+        "type": "Array",
+        "default": [
+          "inline",
+          "fullscreen",
+          "pip"
+        ],
+        "doc": "The display modes this page offers: inline, fullscreen and pip, in any subset."
+      },
+      "pipWidth": {
+        "type": "Number",
+        "default": 360,
+        "doc": "The pip panel's width, in pixels."
+      },
+      "pipHeight": {
+        "type": "Number",
+        "default": 480,
+        "doc": "The most the frame grows to in the pip panel, in pixels."
+      },
+      "debug": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether every message both ways is announced as a `poetry:mcp-app-host:trace` event, for a log."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "applyDisplayMode",
+      "availableDisplayModes",
+      "connect",
+      "containerDimensions",
+      "disconnect",
+      "displayMode",
+      "emit",
+      "hostContext",
+      "initialized",
+      "leaveMode",
+      "mount",
+      "openLink",
+      "post",
+      "receive",
+      "resize",
+      "rpc",
+      "setDisplayMode",
+      "status",
+      "theme",
+      "themeChanged",
+      "unmount"
+    ],
+    "events": [],
+    "method_docs": {
+      "applyDisplayMode": "Moves the element into a mode: fixed over the page or in its corner with a placeholder holding the row's height and a button back, or back into the page's flow.",
+      "availableDisplayModes": "The display modes this page offers, in the spec's names.",
+      "connect": "Mounts the frame and starts the handshake.",
+      "containerDimensions": "What the frame may grow to in the mode in effect.",
+      "disconnect": "Tears the app down, puts the element back inline and removes the frame.",
+      "displayMode": "A page action putting the frame in a mode: `data-action=\"click->poetry--agent--mcp-app-host#displayMode\"` with `data-poetry--agent--mcp-app-host-mode-param=\"fullscreen\"`.",
+      "emit": "Dispatches a page event under the controller's prefix.",
+      "hostContext": "The host context the app is initialized with.",
+      "initialized": "Once the app is initialized: tells the page, delivers the input and the result.",
+      "leaveMode": "Undoes what a mode put in place: the placeholder, the button, the key listener, the page's scroll lock and the element's styles.",
+      "mount": "Reads the app's HTML through the endpoint, builds the bridge and the frame, and starts the sandbox.",
+      "openLink": "Opens a link the app asks for, in a new tab, after the person confirms it.",
+      "post": "Posts a message to the frame, to the apps origin only.",
+      "receive": "Takes a message from the frame: the proxy's ready note gets the app's HTML, everything else goes to the bridge.",
+      "resize": "Sizes the frame to what the app reports: the height within the mode's cap (fullscreen fills the viewport whatever the app says), the width as a floor that still shrinks with the container.",
+      "rpc": "Sends one of the app's requests to the endpoint. An answer that asks for the person's authorization first is announced to the page as `poetry:mcp-app-host:authorize` with the URL to send them to.",
+      "setDisplayMode": "Puts the frame in a display mode: fullscreen (the element over the whole viewport), pip (a fixed panel in the corner, the page's row kept at its height) or inline (back in the page), the frame staying put so the app never reloads. A mode the page does not offer, or the app did not declare, is refused; the page hears `display-mode` first and may change `detail.mode`. The app is told through the host context.",
+      "status": "Shows a status line, when the element has one.",
+      "theme": "The page's theme.",
+      "themeChanged": "Tells the app the page's theme and tokens changed.",
+      "unmount": "Asks the app to tear down, drops the bridge and removes the frame."
     }
   }
 }

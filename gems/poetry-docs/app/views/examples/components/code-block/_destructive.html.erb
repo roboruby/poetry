@@ -1,0 +1,13 @@
+<%# variant: :destructive for errors and failed output: the panel, the title
+    and the text all turn destructive. %>
+<% error = <<~TEXT
+  NoMethodError: undefined method 'sum' for nil
+      from app/models/invoice.rb:8:in 'Invoice#total'
+      from app/controllers/invoices_controller.rb:12:in 'InvoicesController#show'
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: error, variant: :destructive, wrap: true) do |block| %>
+    <% block.with_title { "Error" } %>
+  <% end %>
+</div>

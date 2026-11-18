@@ -14,6 +14,120 @@ module Poetry
     destination File.expand_path("../tmp/install-dest", __dir__)
     setup :prepare_destination
 
+    # The install reads the shell for the agent that runs it; a test run
+    # has to see the same nothing wherever it is run from.
+    setup { Poetry::Generators::EditorChoice.environment = {} }
+    teardown { Poetry::Generators::EditorChoice.environment = nil }
+
+    def manifest
+      YAML.safe_load_file(File.join(destination_root, "config/poetry_components.yml"))
+    end
+
+    CI_FILE = <<~RUBY
+      CI.run do
+        step "Setup", "bin/setup --skip-server"
+        step "Tests: Rails", "bin/rails test"
+      end
+    RUBY
+
+    def test_install_writes_a_test_that_holds_the_suite_to_poetry_check_and_a_ci_step
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/ci.rb"), CI_FILE)
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_file "test/poetry_check_test.rb" do |test|
+        assert_includes test, "errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)"
+        assert_includes test, "class PoetryCheckTest < ActiveSupport::TestCase"
+      end
+      assert_file "config/ci.rb" do |ci|
+        assert_equal 1, ci.scan("poetry:check").size, "the step is added once"
+        assert_operator ci.index(%(  step "Poetry: check", "bin/rails poetry:check"\n)), :<,
+                        ci.index(%(step "Tests: Rails"))
+      end
+    end
+
+    def test_the_check_test_is_the_apps_once_written_and_an_rspec_app_gets_a_spec
+      run_generator %w[--skip-bundle]
+      File.write(File.join(destination_root, "test/poetry_check_test.rb"), "# mine now\n")
+      run_generator %w[--skip-bundle]
+
+      assert_file "test/poetry_check_test.rb", "# mine now\n"
+
+      prepare_destination
+      FileUtils.mkdir_p(File.join(destination_root, "spec"))
+      run_generator %w[--skip-bundle]
+
+      assert_file "spec/poetry_check_spec.rb", /RSpec\.describe "poetry check"/
+      assert_no_file "test/poetry_check_test.rb"
+    end
+
+    def test_skip_ci_leaves_tests_ci_and_the_test_group_alone_and_is_remembered
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/ci.rb"), CI_FILE)
+      File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
+      with_action_view(herb: false) { run_generator %w[--skip-bundle --skip-ci] }
+
+      assert_no_file "test/poetry_check_test.rb"
+      assert_file "config/ci.rb", CI_FILE
+      assert_file "Gemfile", /^gem "herb", group: :development$/
+      refute manifest.fetch("ci")
+
+      with_action_view(herb: false) { run_generator %w[--skip-bundle] }
+
+      assert_no_file "test/poetry_check_test.rb" # a later run keeps what was said
+
+      with_action_view(herb: false) { run_generator %w[--skip-bundle --no-skip-ci] }
+
+      assert_file "test/poetry_check_test.rb"
+      assert manifest.fetch("ci")
+    end
+
+    def test_install_wires_no_editor_unless_one_is_named_remembered_or_found
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "none (nothing said which, so none)"
+      assert_includes output, "no editor wired - `bin/rails g poetry:editor --editor claude`"
+      assert_no_file ".mcp.json"
+      assert_no_file ".cursor/mcp.json"
+      assert_no_file "bin/poetry-check-hook"
+      assert_equal [], manifest["editors"]
+      assert_equal({}, manifest["components"])
+    end
+
+    def test_install_wires_the_editor_it_is_told_and_the_agent_that_runs_it
+      run_generator %w[--skip-bundle --editor cursor]
+
+      assert_file ".cursor/mcp.json"
+      assert_file ".cursor/hooks.json"
+      assert_file "bin/poetry-check-hook"
+      assert_no_file ".mcp.json"
+      assert_equal %w[cursor], manifest["editors"]
+
+      prepare_destination
+      Poetry::Generators::EditorChoice.environment = { "CLAUDECODE" => "1" }
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "claude (found: claude by CLAUDECODE)"
+      assert_file ".mcp.json"
+      assert_file ".claude/settings.json", /poetry-check-hook/
+      assert_no_file ".cursor/mcp.json"
+    end
+
+    def test_the_install_ends_on_the_cold_start_prompt_offer
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "bin/rails poetry:prompt | pbcopy"
+    end
+
+    def test_the_install_ignores_the_audit_folder_once
+      File.write(File.join(destination_root, ".gitignore"), "/tmp\n")
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_equal ["/tmp", ".poetry/audit/"], File.read(File.join(destination_root, ".gitignore")).lines.map(&:strip)
+    end
+
     def test_installs_tokens_theme_safelist_initializer_and_manifest
       run_generator
 
@@ -47,7 +161,7 @@ module Poetry
       end
 
       assert_file "Gemfile" do |content|
-        assert_equal 1, content.scan(/^gem "herb", group: :development$/).size
+        assert_equal 1, content.scan(/^gem "herb", group: \[:development, :test\]$/).size
         assert_match(/^# poetry:check parses ERB with herb/, content)
       end
     end
@@ -100,7 +214,7 @@ module Poetry
       output = with_action_view(herb: false) { run_generator %w[--skip-bundle] }
 
       refute_match(/herb comes with Action View/, output)
-      assert_file "Gemfile", /^gem "herb", group: :development$/
+      assert_file "Gemfile", /^gem "herb", group: \[:development, :test\]$/
     end
 
     # An app that pins herb itself keeps its line on either generation.
@@ -198,6 +312,97 @@ module Poetry
       # trigger dead in a fresh host without this call.
       assert_equal 1, content.scan("registerPoetryControllers(application)").size
       assert_includes content, %(import { registerPoetryControllers } from "@poetry/controllers")
+    end
+
+    def test_active_storage_pin_and_start_land_once_when_the_engine_is_in_the_app
+      importmap = File.join(destination_root, "config/importmap.rb")
+      entry = File.join(destination_root, "app/javascript/application.js")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(importmap, %(pin "application"\n))
+      File.write(entry, %(import "@hotwired/turbo-rails"\n))
+
+      with_active_storage_engine do
+        run_generator
+        run_generator
+      end
+
+      assert_equal 1, File.read(importmap).scan(%(pin "@rails/activestorage", to: "activestorage.esm.js")).size
+      assert_equal 1, File.read(entry).scan("ActiveStorage.start()").size
+      assert_includes File.read(entry), %(import * as ActiveStorage from "@rails/activestorage")
+    end
+
+    def test_an_existing_active_storage_pin_is_left_alone_and_nothing_lands_without_the_engine
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js", preload: true\n))
+
+      with_active_storage_engine { run_generator }
+
+      assert_equal 1, File.read(importmap).scan("@rails/activestorage").size, "the host's own pin stands"
+
+      File.write(importmap, %(pin "application"\n))
+      run_generator
+
+      refute_includes File.read(importmap), "@rails/activestorage", "no pin without Active Storage in the app"
+    end
+
+    # The availability probe reads ActiveStorage::Engine; the ui gem's
+    # test host loads no Active Storage, so the constant stands in for it.
+    def with_active_storage_engine
+      defined_here = !defined?(::ActiveStorage::Engine)
+      if defined_here
+        Object.const_set(:ActiveStorage, Module.new) unless defined?(::ActiveStorage)
+        ::ActiveStorage.const_set(:Engine, Class.new)
+      end
+      yield
+    ensure
+      if defined_here
+        ::ActiveStorage.send(:remove_const, :Engine)
+        Object.send(:remove_const, :ActiveStorage) if ::ActiveStorage.constants.empty?
+      end
+    end
+
+    def test_island_registration_and_the_islands_pin_land_once_when_poetry_island_is_bundled
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(index))
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+      File.write(importmap, %(pin "application"\n))
+
+      with_island_engine do
+        run_generator
+        run_generator
+      end
+
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryIslandControllers(application)").size
+      assert_includes content, %(import { registerPoetryIslandControllers } from "@poetry/island")
+      assert_equal 1, File.read(importmap).scan(%(pin_all_from "app/javascript/islands", under: "islands")).size
+      assert_file "app/javascript/islands/.keep"
+    end
+
+    def test_nothing_island_lands_without_the_gem
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      run_generator
+
+      refute_includes File.read(index), "@poetry/island"
+      assert_no_file "app/javascript/islands/.keep"
+    end
+
+    # The availability probe reads Poetry::Island::Engine; the ui gem's test
+    # host loads no poetry-island, so the constant stands in for it.
+    def with_island_engine
+      island = Module.new { const_set(:Engine, Class.new) }
+      Poetry.const_set(:Island, island)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Island) if Poetry.const_defined?(:Island, false)
     end
 
     def test_agent_runtime_registers_beside_the_controllers_when_poetry_agent_is_bundled
@@ -452,7 +657,7 @@ module Poetry
         spec.name = "actionview"
         spec.version = herb ? "8.2.0" : "8.1.0"
         real.runtime_dependencies.each do |dependency|
-          spec.add_dependency dependency.name, dependency.requirement unless dependency.name == "herb"
+          spec.add_dependency dependency.name, *dependency.requirement.as_list unless dependency.name == "herb"
         end
         spec.add_dependency "herb", ">= 0.10" if herb
       end
@@ -524,6 +729,63 @@ module Poetry
           Poetry::Charts.root.join("themes/vega.css").delete # the stub is shared
         end
       end
+    end
+
+    # -- the --motion flag (cross-repo: poetry-motion), stubbed like charts --
+
+    MOTION_CSS_MARKER = "--motion-duration-fast: 150ms;"
+
+    def with_motion_stub
+      root = Pathname.new(File.expand_path("../tmp/motion-stub", __dir__))
+      FileUtils.mkdir_p(root.join("app/assets/stylesheets"))
+      root.join("app/assets/stylesheets/poetry-motion.css").write(":root { #{MOTION_CSS_MARKER} }\n")
+
+      motion = Module.new do
+        const_set(:Engine, Class.new)
+        define_singleton_method(:root) { root }
+      end
+      Poetry.const_set(:Motion, motion)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Motion) if Poetry.const_defined?(:Motion, false)
+    end
+
+    def test_motion_flag_copies_the_tokens_and_registers_once
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        run_generator %w[--motion --skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/motion.css";').size, "entry line appended exactly once"
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryMotionControllers(application)").size
+      assert_includes content, %(import { registerPoetryMotionControllers } from "@poetry/motion")
+    end
+
+    def test_motion_is_remembered_by_the_vendored_file_on_a_plain_rerun
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        File.write(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"), "/* stale */\n")
+
+        run_generator %w[--skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+    end
+
+    def test_motion_without_the_gem_fails_before_any_file_lands
+      error = assert_raises(Thor::Error) { run_generator %w[--motion --skip-bundle], debug: true }
+
+      assert_includes error.message, %(gem "poetry-motion")
+      assert_no_file "app/assets/tailwind/poetry/tokens.css"
     end
 
     def test_a_superseded_tokens_line_converges_however_it_was_written
@@ -749,7 +1011,7 @@ module Poetry
 
       assert_file "app/controllers/settings_controller.rb", /class SettingsController/
       assert_file "app/views/settings/show.html.erb", %r{render "blocks/page_header"}
-      assert_file "test/system/settings_show_test.rb", /Usage-based billing/
+      assert_file "test/integration/settings_show_test.rb", /Usage-based billing/
       # registryDependencies pull the composed blocks through the block path
       assert_file "app/views/blocks/_page_header.html.erb"
       assert_file "app/views/blocks/_section_card.html.erb"
@@ -757,6 +1019,52 @@ module Poetry
       assert_file "config/poetry_components.yml" do |manifest|
         assert_includes YAML.safe_load(manifest)["recipes"].keys, "screen-settings"
       end
+    end
+
+    # The chat slice: the controller, its views and both tests land, the
+    # block comes with its locals intact (the screen passes them), and the
+    # routes the slice needs are named at the end of the run.
+    def test_add_screen_chat_installs_the_slice_its_block_and_names_the_routes
+      output = run_generator ["screen-chat"]
+
+      assert_file "app/controllers/chats_controller.rb", /class ChatsController/
+      assert_file "app/views/chats/show.html.erb", %r{render "blocks/chat", url: chat_path, stop_url: stop_chat_path}
+      assert_file "app/views/chats/_message.html.erb", /poetry_message_scroller_item/
+      assert_file "test/controllers/chats_controller_test.rb", /post chat_path/
+      assert_no_file "test/system/chat_test.rb"
+      assert_file "app/views/blocks/_chat.html.erb" do |block|
+        assert_match(/locals: \(url: "#", stop_url: nil, status: :idle, rows: nil, new_chat_url: "\?new"\)/, block)
+        assert_match(/poetry_composer\(id: "chat", url: url, status: status, stop_url: stop_url/, block)
+      end
+      assert_match(/Add `resource :chat, only: %i\[show create\] do post :stop end` to routes/, output)
+    end
+
+    # The RubyLLM slice: every file lands where Rails looks for it, the
+    # block comes with it, and the run ends on the routes to add.
+    def test_add_screen_chat_ruby_llm_installs_the_slice_and_names_the_routes
+      output = run_generator ["screen-chat-ruby-llm"]
+
+      assert_file "app/controllers/chats_controller.rb", /chat\.begin_turn!/
+      assert_file "app/controllers/messages_controller.rb", /head\(:conflict\) if @chat\.responding\?/
+      assert_file "app/jobs/chat_response_job.rb", /rescue RubyLLM::CancelledError/
+      assert_file "app/models/concerns/chat_turn.rb", /module ChatTurn/
+      assert_file "app/models/chat_stream.rb", /class ChatStream/
+      assert_file "app/models/concerns/chat_turn.rb", /g migration AddRespondingSinceToChats responding_since:datetime/
+      assert_no_directory "db/migrate"
+      assert_file "app/views/chats/show.html.erb", /turbo_stream_from @chat/
+      assert_file "app/views/chats/new.html.erb", /rows: nil/
+      assert_file "app/views/messages/_message.html.erb" do |row|
+        assert_match(/poetry_markdown\(text: written, streaming: true, heading_level: 3\)/, row)
+        assert_match(/poetry_markdown\(text: marked, sources: sources, heading_level: 3\)/, row)
+        assert_match(/g migration AddNoteAndFeedbackToMessages note:string feedback:string/, row)
+      end
+      assert_file "app/views/messages/_feedback.html.erb", /poetry_toggle\(pressed: chosen/
+      assert_no_file "app/views/messages/_note.html.erb"
+      assert_file "app/views/blocks/_chat.html.erb", /local_assigns\.key\?\(:rows\)/
+      assert_file "test/controllers/chats_controller_test.rb"
+      assert_file "test/jobs/chat_response_job_test.rb", /class ScriptedProvider < RubyLLM::Provider/
+      assert_includes output, "Add `resources :chats, only: %i[new create show] do post :stop, on: :member; " \
+                              "resources :messages, only: %i[create update] end` to routes"
     end
 
     # The overrides ledger writes `created:` as a bare YAML date; a later

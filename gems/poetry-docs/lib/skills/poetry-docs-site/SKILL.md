@@ -11,7 +11,7 @@ This site documents poetry, an AI-native, Rails-first component library. Every s
 
 ## Discovery
 
-- `/llms.txt` - the site index: every page with a one-line description.
+- `/llms.txt` - the site index: the five usage rules, then every page with a one-line description.
 - `/poetry/llms.txt` - the component catalog for agents; `/poetry/llms-full.txt` adds full contracts and Stimulus wiring (targets / values / actions / events).
 - Every docs page serves a markdown mirror: append `.md` to its URL, or send `Accept: text/markdown`.
 - `/installation.md` - copy-and-follow install instructions for a coding agent.

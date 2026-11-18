@@ -1,0 +1,9 @@
+<%# A reply in a transcript: the Markdown sits in a ghost bubble, its
+    headings starting at h3 so they fall under the page's own. %>
+<div class="max-w-xl p-4">
+  <%= poetry_message do %>
+    <%= poetry_bubble(variant: :ghost) do %>
+      <%= poetry_markdown(text: "# Next steps\n\nORD-1041 is **late**. Run `bin/rails orders:chase` or open [the order](/orders/1041).\n\n- Email Lumen Labs\n- Upgrade the delivery", heading_level: 3) %>
+    <% end %>
+  <% end %>
+</div>

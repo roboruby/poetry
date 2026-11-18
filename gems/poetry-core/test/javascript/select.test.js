@@ -344,6 +344,22 @@ describe("poetry--core--select", () => {
       expect(natives).toEqual(["cherry"])
     })
 
+    it("opening drops a closed-trigger search: the first Space commits (Base UI #5816)", async () => {
+      el("trigger").focus()
+      press(el("trigger"), "c") // commits cherry, the buffer stays live for a beat
+      press(el("trigger"), "Enter")
+      await flushMicrotasks()
+      await nextFrame()
+      expect(document.activeElement).toBe(el("item-cherry"))
+
+      press(el("item-cherry"), "ArrowUp")
+      press(el("item-blueberry"), " ")
+      await nextFrame()
+
+      expect(el("native").value).toBe("blueberry")
+      expect(el("content").hidden).toBe(true)
+    })
+
     it("Left/Right are no-ops in the flat listbox (no menu map leak)", async () => {
       await open()
 

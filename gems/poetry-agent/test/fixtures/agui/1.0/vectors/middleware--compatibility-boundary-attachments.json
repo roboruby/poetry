@@ -1,0 +1,2320 @@
+{
+  "source": "middleware/__tests__/compatibility-boundary-attachments.test.ts",
+  "vectors": [
+    {
+      "name": "always-on request attachment compatibility > converts legacy input added at initialization before transport validation",
+      "line": 93,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "binary",
+                    "mimeType": "image/png",
+                    "data": "image-data"
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "message",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "data",
+                        "value": "image-data",
+                        "mimeType": "image/png"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. Expected content: [{type: image, source}] (no metadata: the legacy part had no filename)."
+    },
+    {
+      "name": "always-on request attachment compatibility > keeps one modern attachment when a legacy mirror is present: %j [image, binary]",
+      "line": 97,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "mimeType": "image/png",
+                      "value": "image-data"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "binary",
+                    "mimeType": "image/png",
+                    "data": "image-data"
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "message",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "data",
+                        "value": "image-data",
+                        "mimeType": "image/png"
+                      },
+                      "metadata": {
+                        "filename": "image.png",
+                        "caption": "Keep this metadata"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. Expected content: the modern image alone, metadata intact, whichever order the mirror came in."
+    },
+    {
+      "name": "always-on request attachment compatibility > keeps one modern attachment when a legacy mirror is present: %j [binary, image]",
+      "line": 97,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "binary",
+                    "mimeType": "image/png",
+                    "data": "image-data"
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "mimeType": "image/png",
+                      "value": "image-data"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "message",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "data",
+                        "value": "image-data",
+                        "mimeType": "image/png"
+                      },
+                      "metadata": {
+                        "filename": "image.png",
+                        "caption": "Keep this metadata"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. Expected content: the modern image alone, metadata intact, whichever order the mirror came in."
+    },
+    {
+      "name": "always-on request attachment compatibility > passes modern input through with its metadata intact",
+      "line": 104,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "mimeType": "image/png",
+                      "value": "image-data"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r",
+            "input": {
+              "threadId": "t",
+              "runId": "r",
+              "messages": [
+                {
+                  "id": "message",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "image",
+                      "source": {
+                        "type": "data",
+                        "value": "image-data",
+                        "mimeType": "image/png"
+                      },
+                      "metadata": {
+                        "filename": "image.png",
+                        "caption": "Keep this metadata"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "context": []
+            }
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. No conversion, no warning.",
+      "noWarnings": true
+    },
+    {
+      "name": "always-on request attachment compatibility > still rejects malformed modern content",
+      "line": 108,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "mimeType": "image/png",
+                      "value": 42
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a malformed known value is fatal",
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. TS asserts a bare rejects.toThrow(). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "always-on request attachment compatibility > still converts and deduplicates inbound message snapshots",
+      "line": 112,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS asserts the reducer's message content is [image] (the mirror removed); already an inbound MESSAGES_SNAPSHOT."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [image/png, data]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "payload"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "payload",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [image/png, url]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "url": "https://example.test/attachment"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/attachment",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [audio/mp3, data]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "audio/mp3",
+                  "data": "payload"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "audio",
+                    "source": {
+                      "type": "data",
+                      "value": "payload",
+                      "mimeType": "audio/mp3"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [audio/mp3, url]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "audio/mp3",
+                  "url": "https://example.test/attachment"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "audio",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/attachment",
+                      "mimeType": "audio/mp3"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [video/mp4, data]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "video/mp4",
+                  "data": "payload"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "video",
+                    "source": {
+                      "type": "data",
+                      "value": "payload",
+                      "mimeType": "video/mp4"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [video/mp4, url]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "video/mp4",
+                  "url": "https://example.test/attachment"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "video",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/attachment",
+                      "mimeType": "video/mp4"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [application/pdf, data]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "application/pdf",
+                  "data": "payload"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "document",
+                    "source": {
+                      "type": "data",
+                      "value": "payload",
+                      "mimeType": "application/pdf"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > converts $mimeType payloads and URLs [application/pdf, url]",
+      "line": 120,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "application/pdf",
+                  "url": "https://example.test/attachment"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "document",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/attachment",
+                      "mimeType": "application/pdf"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The media kind comes from the MIME type prefix (image/, audio/, video/, anything else document); data becomes a data source and url a url source, keeping the MIME type."
+    },
+    {
+      "name": "shared legacy attachment conversion > preserves text content: $content [plain string]",
+      "line": 134,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": "plain string"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": "plain string"
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. Nothing to convert; delivered unchanged."
+    },
+    {
+      "name": "shared legacy attachment conversion > preserves text content: $content [text part]",
+      "line": 134,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "text part"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "text part"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. Nothing to convert; delivered unchanged."
+    },
+    {
+      "name": "shared legacy attachment conversion > preserves non-user messages",
+      "line": 141,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "assistant",
+              "role": "assistant",
+              "content": "Hi"
+            },
+            {
+              "id": "system",
+              "role": "system",
+              "content": "You are helpful"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "assistant",
+                "role": "assistant",
+                "content": "Hi"
+              },
+              {
+                "id": "system",
+                "role": "system",
+                "content": "You are helpful"
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. Delivered unchanged."
+    },
+    {
+      "name": "shared legacy attachment conversion > keeps mixed text, legacy media and unrelated modern media",
+      "line": 149,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Look at this"
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                },
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "url",
+                    "value": "https://example.test/image"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Look at this"
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://example.test/image"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The url image is not a mirror of the data binary, so all three parts survive, in order."
+    },
+    {
+      "name": "shared legacy attachment conversion > prefers data over URL and preserves the filename",
+      "line": 159,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data",
+                  "url": "https://example.test/unused",
+                  "filename": "photo.png"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "photo.png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> the media parts with a source; the always-on boundary converts it on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. A legacy part with both data and url becomes a data source; its filename moves to metadata.filename."
+    },
+    {
+      "name": "shared legacy attachment conversion > warns and preserves an id-only attachment that cannot be converted",
+      "line": 165,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "id": "asset-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": []
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: inside a list, an unrecognised element is dropped and the list survives",
+      "warnings": [
+        "asset-1",
+        "DEPRECATIONS.md"
+      ],
+      "notes": "TS calls the helper directly and asserts it RETURNS the id-only binary part unchanged and warns naming 'asset-1' and DEPRECATIONS.md. Through the full pipeline the unconverted part then reaches enforcement as an unrecognised union member and is STRIPPED from the content list (TS warns \"Removed unrecognised material at '/messages/0/content/0'\"), so the delivered content is []. The vector pins that pipeline outcome."
+    },
+    {
+      "name": "shared legacy attachment conversion > still rejects malformed legacy payloads before transport",
+      "line": 172,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "binary",
+                    "mimeType": "image/png",
+                    "data": 42
+                  }
+                ]
+              }
+            ],
+            "tools": [],
+            "context": []
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/versioning#downgrading: a shim MUST NOT repair a malformed value on the way past",
+      "notes": "TS asserts the OUTGOING request (onRunInitialized adds the legacy message, the transport validates it). Stated inbound: the boundary upgrades RUN_STARTED.input.messages with the same upgradeMessageContent helper. TS asserts a bare rejects.toThrow(). The boundary converts {data: 42} into an image whose source value is 42 (it does not repair it) and enforcement rejects that. Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError."
+    },
+    {
+      "name": "legacy attachment mirror matching > removes the legacy mirror independent of ordering: %j [image, binary]",
+      "line": 178,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper."
+    },
+    {
+      "name": "legacy attachment mirror matching > removes the legacy mirror independent of ordering: %j [binary, image]",
+      "line": 178,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                },
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper."
+    },
+    {
+      "name": "legacy attachment mirror matching > preserves repeated modern attachments",
+      "line": 185,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. The mirror goes; the two identical modern parts both stay."
+    },
+    {
+      "name": "legacy attachment mirror matching > preserves repeated legacy-only attachments",
+      "line": 189,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. Two legacy parts with no modern original both convert; neither is a mirror of the other."
+    },
+    {
+      "name": "legacy attachment mirror matching > retains a filename that the modern part does not contain",
+      "line": 196,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data",
+                  "filename": "different.png"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "different.png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. A legacy filename the modern part does not hold is data, so that legacy part is converted rather than removed."
+    },
+    {
+      "name": "legacy attachment mirror matching > removes a mirror whose filename is already preserved",
+      "line": 204,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "image-data",
+                  "filename": "image.png"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper."
+    },
+    {
+      "name": "legacy attachment mirror matching > keeps distinct legacy sources: %j [different data]",
+      "line": 208,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "different-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "different-data",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. TS asserts only that the content keeps two parts; the vector pins both delivered parts (the modern image and the converted legacy one)."
+    },
+    {
+      "name": "legacy attachment mirror matching > keeps distinct legacy sources: %j [different mimeType]",
+      "line": 208,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/jpeg",
+                  "data": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/jpeg"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. TS asserts only that the content keeps two parts; the vector pins both delivered parts (the modern image and the converted legacy one)."
+    },
+    {
+      "name": "legacy attachment mirror matching > keeps distinct legacy sources: %j [url instead of data]",
+      "line": 208,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "data",
+                    "mimeType": "image/png",
+                    "value": "image-data"
+                  },
+                  "metadata": {
+                    "filename": "image.png",
+                    "caption": "Keep this metadata"
+                  }
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "url": "image-data"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "message",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    },
+                    "metadata": {
+                      "filename": "image.png",
+                      "caption": "Keep this metadata"
+                    }
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "image-data",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: when a message carries a modern attachment and its legacy binary mirror, the boundary keeps the modern part and removes only a mirror with matching media type, source kind, MIME type and payload or URL, whose filename the modern part also retains; repeats stay separate)",
+      "notes": "TS calls the shared upgradeMessageContent helper directly; stated inbound on a MESSAGES_SNAPSHOT, which the boundary upgrades with the same helper. TS asserts only that the content keeps two parts; the vector pins both delivered parts (the modern image and the converted legacy one)."
+    }
+  ]
+}

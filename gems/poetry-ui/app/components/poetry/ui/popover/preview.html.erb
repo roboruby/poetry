@@ -4,8 +4,9 @@
     (default/modal) render the upstream popover-demo form - grid gap-2 rows,
     each grid-cols-3 with the input spanning two columns at h-8 - the layout
     the port originally dropped (bare label+input pairs had no spacing). %>
-<div class="<%= defined?(container_class) && container_class.presence || "p-4" %>">
-  <% if local_assigns[:content_block] %>
+<%# locals: (component: nil, content_block: nil, container_class: nil, error: nil) %>
+<div class="<%= container_class.presence || "p-4" %>">
+  <% if content_block %>
     <%= render(component, &content_block) %>
   <% else %>
     <%= render component do |popover| %>

@@ -29,9 +29,14 @@ module Poetry
         "copied" => "clipboard-text post-copy beat (poetry--core--clipboard-text via " \
                     "toggleAttribute; drives the copy/check glyph swap)",
         "disabled" => "server-rendered + JS-reflected disabled marker",
+        "empty" => "composer field emptiness on the root (server-rendered + poetry--core--composer " \
+                   "via toggleAttribute; dims the Send button)",
         "placeholder" => "select trigger empty-value marker (server + JS)",
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
+        "wrap" => "CodeBlock wrap: marker on the scroll container (server-rendered)",
+        "numbered" => "CodeBlock line_numbers: marker on the scroll container (server-rendered)",
+        "status" => "Trace step status: on the line - running/error/pending (server-rendered)",
         "inset" => "menu item inset marker (server-rendered)",
         "enhanced" => "date/time field progressive-enhancement marker " \
                       "(poetry--core--date-field via setAttribute)",
@@ -70,6 +75,10 @@ module Poetry
         "instant" => "tooltip instant-open reason (JS)",
         "queued" => "toast overflow queue marker (JS)",
         "dragging" => "slider drag marker (JS)",
+        "drag-reject" => "file-input drag verdict while files the zone cannot take are over it " \
+                         "(behaviors/file_drop.js via toggleAttribute, best effort mid-drag)",
+        "drag-global" => "file-input files-over-the-window marker in overlay mode " \
+                         "(behaviors/file_drop.js via setAttribute; the overlay surface shows on it)",
         "complete" => "OTP complete marker (JS)",
         "completed" => "timeline progress marker (server-rendered)",
         "swiping" => "drawer swipe drag marker (poetry--core--drawer writes it; toast swipe reserved)",

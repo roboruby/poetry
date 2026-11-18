@@ -15,6 +15,7 @@ Bulk actions over a selectable table: a selection-driven floating bar with the l
 Composes: button, data_table, icon. Generate: `bin/rails g poetry:block action-bar`.
 Source (adapt freely - the sample content is meant to be replaced):
 
+<%# locals: (rows: nil) %>
 <%# ActionBar is a BLOCK, not a component: the bar
     is plain markup wired to two small engines - the data_table's
     selectable: engine dispatches selection-change, and the bar's
@@ -25,7 +26,7 @@ Source (adapt freely - the sample content is meant to be replaced):
     sample actions for your bulk endpoints: the checkboxes are real form
     values (selected_ids[]), so a wrapping form_with posts them as-is. %>
 <% invoice = Struct.new(:id, :number, :customer, :amount) %>
-<% rows = local_assigns[:rows] || [
+<% rows ||= [
      invoice.new(1, "INV-001", "Acme", "$250.00"),
      invoice.new(2, "INV-002", "Globex", "$1,150.00"),
      invoice.new(3, "INV-003", "Initech", "$420.00")
@@ -146,7 +147,8 @@ Source (adapt freely - the sample content is meant to be replaced):
   <% shell.with_inset do %>
     <header class="flex h-14 shrink-0 items-center gap-2 border-b px-4 transition-[height] group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <%= poetry_sidebar_trigger %>
-      <%= poetry_separator(orientation: :vertical, class: "h-4") %>
+      <%# The header centers its items; the separator's own data-vertical:self-stretch would pin a fixed-height one to the top. %>
+      <%= poetry_separator(orientation: :vertical, class: "h-4 data-vertical:self-center") %>
       <%= poetry_breadcrumb do |crumb| %>
         <% crumb.with_item("Meridian", href: "/") %>
         <% crumb.with_item("Dashboard") %>
@@ -163,20 +165,21 @@ Source (adapt freely - the sample content is meant to be replaced):
           Export
         <% end %>
       </div>
+      <%# Grid items are min-width: auto like flex items: min-w-0 keeps a card with wide content (a chart, a table) inside its track. %>
       <div class="grid gap-4 md:grid-cols-3">
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "Revenue" } %>
           <% card.with_description { "Last 30 days" } %>
           <div class="text-2xl font-semibold tabular-nums">$48,210</div>
           <p class="text-xs text-muted-foreground">+12.4% from the previous period</p>
         <% end %>
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "Open orders" } %>
           <% card.with_description { "Awaiting fulfillment" } %>
           <div class="text-2xl font-semibold tabular-nums">42</div>
           <p class="text-xs text-muted-foreground">12 due before Friday</p>
         <% end %>
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "On-time rate" } %>
           <% card.with_description { "Trailing quarter" } %>
           <div class="text-2xl font-semibold tabular-nums">98.2%</div>
@@ -204,6 +207,122 @@ Source (adapt freely - the sample content is meant to be replaced):
     </div>
   <% end %>
 <% end %>
+
+## Block: Chat (`chat`)
+
+A conversation with an assistant: a titled panel, a transcript that follows the newest message (the person's bubbles, the assistant's steps and typeset replies), a welcome with suggested prompts while the transcript is empty, and a composer whose Send the server turns into Stop while a reply runs.
+Composes: bubble, button, composer, icon, markdown, message, message_scroller, trace, typeset. Generate: `bin/rails g poetry:block chat`.
+Source (adapt freely - the sample content is meant to be replaced):
+
+<%# locals: (url: "#", stop_url: nil, status: :idle, rows: nil, new_chat_url: "?new") %>
+<%# The page half of a chat; the server half is yours. url: is where a
+    message posts and stop_url: where Stop posts. status: is your record
+    of the reply (:idle, :running, :stopping): the composer draws Send or
+    Stop from it, so a reload in the middle of a reply shows Stop.
+    Everything the server touches hangs off two ids. New turns are
+    appended to "chat-thread-messages", one poetry_message_scroller_item
+    per message, and a reply's row is replaced as its text grows. The
+    composer's action slot is "chat-action": redraw it alone with
+    poetry_composer_action(id: "chat", status:) when a reply starts and
+    when it ends - never the form, the draft lives there.
+    The welcome needs no server at all: it shows while the transcript
+    holds no row and leaves when the first one lands.
+    rows: is your messages, already rendered, one
+    poetry_message_scroller_item each. Pass it, even as nil for a
+    conversation with no message yet, and the sample rows are left out.
+    Without it the block shows its sample conversation, and "New chat",
+    a plain link to ?new, renders the block without them, on its
+    welcome. new_chat_url: is where that link goes in your app.
+    Page framing: the panel keeps a container and a height of its own
+    when the chat is the page's subject. Inside an app shell, drop the
+    wrapper and give the panel h-full. %>
+<div class="mx-auto max-w-2xl p-6">
+  <section class="group/chat flex h-[min(80dvh,44rem)] flex-col overflow-hidden rounded-xl border bg-background"
+           aria-labelledby="chat-title">
+    <header class="flex items-center justify-between gap-3 border-b px-4 py-2">
+      <div class="flex min-w-0 items-center gap-2">
+        <%= poetry_icon(name: :sparkles, class: "size-4 shrink-0 text-muted-foreground") %>
+        <h2 id="chat-title" class="truncate text-sm font-medium">Orders assistant</h2>
+      </div>
+      <%= poetry_button(tag: :a, href: new_chat_url, variant: :ghost, size: :sm) do |button| %>
+        <% button.with_leading { poetry_icon(name: :plus) } %>
+        New chat
+      <% end %>
+    </header>
+    <div class="relative min-h-0 flex-1">
+      <%= poetry_message_scroller(id: "chat-thread") do %>
+        <% if local_assigns.key?(:rows) %>
+          <%= rows %>
+        <% elsif !params.key?(:new) %>
+          <%= poetry_message_scroller_item(id: "m1", anchor: true, class: "px-4 py-2") do %>
+            <%= poetry_message(align: :end) do %>
+              <%= poetry_bubble { "Which orders are still processing, and is any of them late?" } %>
+            <% end %>
+          <% end %>
+          <%# A reply: the steps the assistant took as a Trace, then its
+              words in a ghost bubble, which lets them run the row's width.
+              The sample's words are written out as prose. A model's reply
+              is Markdown: render it in the Typeset's place with
+              poetry_markdown(text: message.content, heading_level: 3). %>
+          <%= poetry_message_scroller_item(id: "m2", class: "px-4 py-2") do %>
+            <%= poetry_message do %>
+              <div class="flex min-w-0 flex-col gap-2">
+                <%= poetry_trace do |trace| %>
+                  <% trace.with_step("Searched open orders", icon: :search, description: "42 found") %>
+                  <% trace.with_step("Checked delivery estimates", icon: :truck, description: "1 late") %>
+                <% end %>
+                <%= poetry_bubble(variant: :ghost) do %>
+                  <%= poetry_typeset do %>
+                    <p>Two orders are still processing, and one of them is past its estimate.</p>
+                    <ul>
+                      <li><strong>ORD-1041</strong>, Lumen Labs, $482.50. Due yesterday.</li>
+                      <li><strong>ORD-1039</strong>, Gable &amp; Sons, $2,040.00. Due Friday.</li>
+                    </ul>
+                    <p>ORD-1041 is waiting on a stock transfer from the Reno warehouse.</p>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_message_scroller_item(id: "m3", anchor: true, class: "px-4 py-2") do %>
+            <%= poetry_message(align: :end) do %>
+              <%= poetry_bubble { "Draft a note to Lumen Labs about the delay." } %>
+            <% end %>
+          <% end %>
+          <%= poetry_message_scroller_item(id: "m4", class: "px-4 py-2") do %>
+            <%= poetry_message do %>
+              <%= poetry_bubble(variant: :ghost) do %>
+                <%= poetry_typeset do %>
+                  <p>Here is a draft you can send as it is.</p>
+                  <blockquote>
+                    <p>Your order ORD-1041 is running a day behind while stock moves between our warehouses. It ships tomorrow, and we have upgraded the delivery at no charge.</p>
+                  </blockquote>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%# The welcome lies over the empty transcript and is gone once it
+          holds a row. A prompt is a button the composer answers: pressed,
+          its text is sent as a typed message would be. %>
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background px-6 text-center group-has-data-[slot=message-scroller-item]/chat:hidden">
+        <div class="space-y-1">
+          <h3 class="text-xl font-semibold tracking-tight">What do you want to know?</h3>
+          <p class="mx-auto max-w-sm text-sm text-muted-foreground">Ask about orders, customers or refunds. Answers come from the live order book.</p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2">
+          <%= poetry_composer_prompt(id: "chat-prompt-1", composer: "chat", text: "Which orders are late?") %>
+          <%= poetry_composer_prompt(id: "chat-prompt-2", composer: "chat", text: "Summarize this week's refunds") %>
+          <%= poetry_composer_prompt(id: "chat-prompt-3", composer: "chat", text: "Who are our five largest customers?") %>
+        </div>
+      </div>
+    </div>
+    <%= poetry_composer(id: "chat", url: url, status: status, stop_url: stop_url,
+                        label: "Message the assistant", placeholder: "Ask about an order…",
+                        class: "border-t p-3") %>
+  </section>
+</div>
 
 ## Block: Data index (`data-index`)
 
@@ -423,6 +542,7 @@ A multi-step flow header: numbered step indicators with connectors and completed
 Composes: button, card, icon. Generate: `bin/rails g poetry:block stepper`.
 Source (adapt freely - the sample content is meant to be replaced):
 
+<%# locals: (step: nil) %>
 <%# Stepper is a BLOCK, not a component: neither shadcn nor Base UI
     ships one, so the pattern lives here as copy-in source - adapt the
     steps freely; nothing hides behind an API. The server owns step state:
@@ -431,7 +551,7 @@ Source (adapt freely - the sample content is meant to be replaced):
     flow, swap the query param for your wizard's own routes/model state
     and the final action for a form submit. %>
 <% steps = ["Shipping", "Payment", "Review"] %>
-<% step = (local_assigns[:step] || params[:step] || 2).to_i.clamp(1, steps.length) %>
+<% step = (step || params[:step] || 2).to_i.clamp(1, steps.length) %>
 <% panels = {
      1 => ["Shipping", "Step 1 of 3 - where this order lands.",
            "Address fields mount here; this panel is the step's content slot."],

@@ -6,7 +6,8 @@ require "json"
 module Poetry
   module Ui
     # The report-only upstream watch: a committed token manifest pins
-    # what upstream's registry looked like when poetry last synced, and
+    # what upstream's registry (and the behavior hooks behind it, by file
+    # digest) looked like when poetry last synced, and
     # `rake upstream:watch` diffs
     # the current checkout against it. poetry is deliberately NOT a 1:1
     # class-string port (AA fixes, cn-* theme layer, added variants), so
@@ -41,6 +42,21 @@ module Poetry
         "apps/v4/app/(app)/(typeset)/typeset.css"
       ].freeze
 
+      # Upstream source trees hash-watched file by file: the behavior hooks
+      # behind the components (message-scroller, questionnaire, use-render).
+      # Their changes are logic, not class strings, so the token extractor
+      # would miss them - a guard added to a hook carries no new literal.
+      WATCHED_TREES = [
+        "packages/react/src"
+      ].freeze
+
+      # The poetry source that ports each upstream hook, named in the report
+      # so a change there routes to its port.
+      PORTED_SOURCES = {
+        "packages/react/src/message-scroller" => "poetry-core message_scroller_controller.js",
+        "packages/react/src/questionnaire" => "poetry-core questionnaire_controller.js"
+      }.freeze
+
       # Family keys (as they appear in the manifest, e.g.
       # "new-york-v4/ui/button") poetry claims as VERBATIM ports - any
       # upstream change fails the watch instead of just reporting. Empty
@@ -72,12 +88,23 @@ module Poetry
         end
       end
 
-      # The digest of each watched file under the root, nil where a file is missing.
+      # The digest of each watched file under the root, nil where a listed
+      # file is missing; every file under the watched trees joins them.
       def scan_watched_files(root)
-        WATCHED_FILES.each_with_object({}) do |path, hashes|
+        hashes = WATCHED_FILES.each_with_object({}) do |path, digests|
           file = File.join(root, path)
-          hashes[path] = File.exist?(file) ? Digest::SHA256.hexdigest(File.read(file)) : nil
+          digests[path] = File.exist?(file) ? Digest::SHA256.hexdigest(File.read(file)) : nil
         end
+
+        WATCHED_TREES.each do |tree|
+          Dir.glob(File.join(root, tree, "**", "*")).each do |file|
+            next unless File.file?(file)
+
+            hashes[file.delete_prefix("#{root}/")] = Digest::SHA256.hexdigest(File.read(file))
+          end
+        end
+
+        hashes
       end
 
       # The manifest: the pin, timestamp, families and watched files under a root.
@@ -102,20 +129,24 @@ module Poetry
           [key, { added: added, removed: removed }] unless added.empty? && removed.empty?
         end.to_h
 
+        old_watched = manifest.fetch("watched_files", {}).compact
+        new_watched = current.fetch("watched_files", {}).compact
+        kept = old_watched.keys & new_watched.keys
+
         {
           added_families: (new_families.keys - old_families.keys).sort,
           removed_families: (old_families.keys - new_families.keys).sort,
           changed: changed,
-          watched_changed: manifest.fetch("watched_files", {}).keys.reject do |path|
-            manifest["watched_files"][path] == current.fetch("watched_files", {})[path]
-          end
+          watched_changed: kept.reject { |path| old_watched[path] == new_watched[path] }.sort,
+          watched_added: (new_watched.keys - old_watched.keys).sort,
+          watched_removed: (old_watched.keys - new_watched.keys).sort
         }
       end
 
       # Whether a diff carries any change.
       def drift?(diff)
-        diff.values_at(:added_families, :removed_families, :watched_changed).any?(&:any?) ||
-          diff[:changed].any?
+        diff.values_at(:added_families, :removed_families, :watched_changed, :watched_added, :watched_removed)
+            .any?(&:any?) || diff[:changed].any?
       end
 
       # The verbatim families a diff changed or removed.
@@ -143,7 +174,13 @@ module Poetry
           lines << "  + #{cap.call(delta[:added])}" if delta[:added].any?
           lines << "  - #{cap.call(delta[:removed])}" if delta[:removed].any?
         end
-        diff[:watched_changed].each { |path| lines << "CHANGED watched file: #{path}" }
+        port = lambda do |path|
+          source = PORTED_SOURCES.find { |prefix, _| path.start_with?("#{prefix}/") }&.last
+          source ? " (ported: #{source})" : ""
+        end
+        diff[:watched_added].each { |path| lines << "NEW watched file: #{path}#{port.call(path)}" }
+        diff[:watched_removed].each { |path| lines << "REMOVED watched file: #{path}#{port.call(path)}" }
+        diff[:watched_changed].each { |path| lines << "CHANGED watched file: #{path}#{port.call(path)}" }
         lines
       end
 

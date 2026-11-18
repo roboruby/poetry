@@ -8,6 +8,10 @@ gemspec
 # CodeBlock's soft highlighting dependency - the dummy/gate builds exercise
 # the rouge path (hosts without rouge get the plain fallback).
 gem "rouge"
+# Markdown's soft parsing dependency - the dummy/gate builds exercise the
+# commonmarker path, and the redcarpet one through the gem Lookbook brings
+# (hosts with neither get the plain rendering).
+gem "commonmarker"
 
 # The sibling gems ride local paths while the family is checked out side by
 # side (development); anywhere else (CI, a release job, a lone clone) they
@@ -39,7 +43,7 @@ gem "flay", require: false
 gem "flog", require: false
 
 gem "bundler-audit", require: false
-gem "herb", "~> 0.11.0" # template-class scan in poetry:install + herb:compile gate (build-time, optional in hosts)
+gem "herb", "~> 0.11.2" # template-class scan in poetry:install + herb:compile gate (build-time, optional in hosts)
 gem "lookbook", "~> 2.3" # the preview browser over the sidecar preview corpus - dev-only, never a runtime dep
 gem "nokogiri"
 gem "simplecov", require: false

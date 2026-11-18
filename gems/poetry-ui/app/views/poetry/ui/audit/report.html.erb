@@ -1,0 +1,199 @@
+<%# The audit report: one self-contained page over the audit's data
+    (@audit) with the host's compiled stylesheet inlined (@stylesheet), so
+    it opens from disk. Poetry's own components carry it. %>
+<% summary = @audit["summary"] %>
+<% inventory = @audit["inventory"] %>
+<% health = @audit["health"] %>
+<% flows = @audit["flows"] %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poetry audit: <%= summary["app"] %></title>
+  <% if @stylesheet %>
+    <style><%= @stylesheet.html_safe %></style>
+  <% end %>
+</head>
+<body class="bg-background text-foreground">
+  <main class="mx-auto flex max-w-5xl flex-col gap-8 p-8">
+    <header class="flex flex-col gap-2">
+      <h1 class="text-3xl font-semibold tracking-tight">Poetry audit</h1>
+      <p class="text-muted-foreground">
+        <%= summary["app"] %>: <%= summary["templates"] %> templates, <%= summary["ruby_files"] %> Ruby files,
+        generated <%= summary["generated_at"] %>. The numbers live in <code><%= Poetry::Ui::Audit::OUTPUT %>/</code>.
+      </p>
+    </header>
+
+    <section class="grid gap-4 md:grid-cols-4">
+      <%= poetry_stat(label: "Axis coverage") do |stat| %>
+        <% stat.with_description { "#{summary["coverage"]["used"]} of #{summary["coverage"]["declared"]} declared values exercised" } %>
+        <%= summary["coverage"]["percent"] %>%
+      <% end %>
+      <%= poetry_stat(label: "Check") do |stat| %>
+        <% stat.with_description { "#{summary["health"]["warnings"]} warnings, #{summary["health"]["design_warnings"]} design warnings" } %>
+        <%= summary["health"]["errors"] %> errors
+      <% end %>
+      <%= poetry_stat(label: "Raw colors") do |stat| %>
+        <% stat.with_description { "across #{summary["raw_colors"]["uses"]} uses" } %>
+        <%= summary["raw_colors"]["unique"] %>
+      <% end %>
+      <%= poetry_stat(label: "Font sizes") do |stat| %>
+        <% stat.with_description { "distinct app-wide; most in one template: #{summary["font_sizes"]["max_per_template"]}" } %>
+        <%= summary["font_sizes"]["distinct"] %>
+      <% end %>
+    </section>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Declared axes" } %>
+      <% card.with_description { "Every variant axis of a component the app renders, against the values its templates pass. A value no template passes has no coverage here." } %>
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Helper" } %>
+            <%= poetry_table_head { "Axis" } %>
+            <%= poetry_table_head { "Used" } %>
+            <%= poetry_table_head { "Unused values" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% inventory["axes"].each do |axis| %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { axis["helper"] } %>
+              <%= poetry_table_cell { axis["axis"] } %>
+              <%= poetry_table_cell { "#{axis["used"].size}/#{axis["declared"].size}#{" (+#{axis["dynamic"]} dynamic)" if axis["dynamic"].positive?}" } %>
+              <%= poetry_table_cell do %>
+                <% axis["unused"].each do |value| %>
+                  <%= poetry_badge(variant: :outline) { value } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Components by call sites" } %>
+        <ul class="flex flex-col divide-y">
+          <% inventory["components"].each do |row| %>
+            <li class="flex items-center justify-between py-2">
+              <code class="text-sm"><%= row["helper"] %></code>
+              <span class="tabular-nums text-muted-foreground"><%= row["call_sites"] %> in <%= row["files"] %> files</span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="flex flex-col gap-8">
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Paint outside the tokens" } %>
+          <% card.with_description { "Raw colors and off-scale lengths by uses; the check and the design tier name the fix per site." } %>
+          <ul class="flex flex-col divide-y">
+            <% (inventory["raw_colors"] + inventory["off_scale"]).each do |row| %>
+              <li class="flex items-center justify-between py-2">
+                <code class="text-sm"><%= row["token"] %></code>
+                <span class="tabular-nums text-muted-foreground"><%= row["uses"] %> in <%= row["files"].uniq.size %> files</span>
+              </li>
+            <% end %>
+            <% if inventory["raw_colors"].empty? && inventory["off_scale"].empty? %>
+              <li class="py-2 text-muted-foreground">None.</li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Font sizes per template" } %>
+          <ul class="flex flex-col divide-y">
+            <% inventory["font_sizes"]["templates"].first(8).each do |row| %>
+              <li class="flex flex-col gap-1 py-2">
+                <code class="text-sm"><%= row["template"] %></code>
+                <span class="text-sm text-muted-foreground"><%= row["sizes"].size %> sizes: <%= row["sizes"].join(" ") %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Health" } %>
+      <% card.with_description { "The check's findings and the design tier's, by rule. Every finding in health.json names its file, line and fix." } %>
+      <ul class="flex flex-col divide-y">
+        <% health["by_rule"].each do |rule, count| %>
+          <li class="flex items-center justify-between py-2"><code class="text-sm"><%= rule %></code><span class="tabular-nums text-muted-foreground"><%= count %></span></li>
+        <% end %>
+        <% health["design"]["by_rule"].each do |rule, count| %>
+          <li class="flex items-center justify-between py-2"><code class="text-sm"><%= rule %></code><span class="tabular-nums text-muted-foreground"><%= count %> (design)</span></li>
+        <% end %>
+        <% if health["by_rule"].empty? && health["design"]["by_rule"].empty? %>
+          <li class="py-2 text-muted-foreground">Clean.</li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Partials" } %>
+      <% if flows["partials"]["available"] %>
+        <% card.with_description { "From Herb's render graph: a partial with no static render site is listed, a dynamic render is listed beside it, never guessed." } %>
+        <div class="grid gap-6 md:grid-cols-3">
+          <div class="flex flex-col gap-2">
+            <h3 class="text-sm font-medium">No static render site (<%= flows["partials"]["unused"].size %>)</h3>
+            <ul class="flex flex-col gap-1 text-sm text-muted-foreground">
+              <% flows["partials"]["unused"].each do |row| %><li><code><%= row["file"] %></code></li><% end %>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-2">
+            <h3 class="text-sm font-medium">Renders naming no file (<%= flows["partials"]["unresolved"].size %>)</h3>
+            <ul class="flex flex-col gap-1 text-sm text-muted-foreground">
+              <% flows["partials"]["unresolved"].each do |row| %><li><code><%= row["file"] %></code>: <%= row["partial"] %></li><% end %>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-2">
+            <h3 class="text-sm font-medium">Dynamic renders (<%= flows["partials"]["dynamic"].size %>)</h3>
+            <ul class="flex flex-col gap-1 text-sm text-muted-foreground">
+              <% flows["partials"]["dynamic"].each do |row| %><li><code><%= row["file"] %></code> <%= row["location"] %></li><% end %>
+            </ul>
+          </div>
+        </div>
+      <% else %>
+        <% card.with_description { "Not analyzed: #{flows["partials"]["reason"]}" } %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Pages" } %>
+      <% card.with_description { "Every route with a template of its own, and the components it renders through its partials." } %>
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Route" } %>
+            <%= poetry_table_head { "Template" } %>
+            <%= poetry_table_head { "Components" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% flows["pages"].each do |page| %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "#{page["verb"]} #{page["path"]}" } %>
+              <%= poetry_table_cell { page["template"] } %>
+              <%= poetry_table_cell { page["components"].map { |row| "#{row["helper"]} x#{row["call_sites"]}" }.join(", ") } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Flow edges" } %>
+      <% card.with_description { "#{summary["flows"]["edges"]} link, form and redirect call sites: #{summary["flows"]["resolved"]} resolve to a route by name, the rest are recorded by the kind of target they carry." } %>
+      <ul class="flex flex-col divide-y">
+        <% flows["unresolved_kinds"].each do |kind, count| %>
+          <li class="flex items-center justify-between py-2"><code class="text-sm"><%= kind %></code><span class="tabular-nums text-muted-foreground"><%= count %></span></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </main>
+</body>
+</html>

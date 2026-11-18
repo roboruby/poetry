@@ -16,6 +16,7 @@
         even for a visitor who once collapsed it. %>
     <% site_links = [ [ "Docs", introduction_path, nil ], [ "Components", Poetry::Docs::DocsCatalog.components.first.path, "Components" ],
                       [ "Libraries", library_path("poetry"), "Libraries" ], [ "AI", mcp_path, "AI Native" ] ] %>
+    <% site_links << [ "Community", community_path, "Community" ] if Poetry::Docs.config.community_section? %>
     <% opener = sidebar_opener(site_links.filter_map { |_, href, section| [ href, section ] if section }.to_h) %>
     <nav aria-label="Site" class="flex items-center gap-3 sm:gap-6">
       <%= tag.div(class: "hidden sm:block", data: opener) do %>

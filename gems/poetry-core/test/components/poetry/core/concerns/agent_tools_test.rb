@@ -63,7 +63,8 @@ module Poetry
                 "required" => ["value"],
                 "additionalProperties" => false
               },
-              "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+              "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false, "consequentialHint" => false,
+                                 "debugging" => false },
               "executes" => "poetry--core--accordion#toggle"
             },
             toggle
@@ -73,11 +74,29 @@ module Poetry
               "name" => "clear_selection",
               "title" => "Clear selection",
               "description" => "Clear the current selection.",
-              "annotations" => { "readOnlyHint" => true, "untrustedContentHint" => false },
+              "annotations" => { "readOnlyHint" => true, "untrustedContentHint" => false, "consequentialHint" => false,
+                                 "debugging" => false },
               "executes" => "poetry--core--action-bar#clear"
             },
             clear
           )
+        end
+
+        def test_consequential_and_debugging_project_the_spec_s_other_two_hints
+          component = Class.new(Poetry::Core::Component) do
+            use_stimulus { on(:root) { controller(:accordion) { register } } }
+            tool :commit, description: "Commit the order.", executes: :toggle, mutating: true, consequential: true
+            tool :dump, description: "Dump the state.", executes: :toggle, debugging: true
+          end
+          commit, dump = component.tool_definitions
+
+          assert_equal({ "readOnlyHint" => false, "untrustedContentHint" => false, "consequentialHint" => true,
+                         "debugging" => false }, commit["annotations"])
+          assert_equal({ "readOnlyHint" => true, "untrustedContentHint" => false, "consequentialHint" => false,
+                         "debugging" => true }, dump["annotations"])
+          assert component.tools[:commit].consequential
+          refute component.tools[:commit].debugging
+          assert component.tools[:dump].debugging
         end
 
         def test_definitions_are_plain_string_keyed_data
@@ -187,6 +206,24 @@ module Poetry
                           params: { a: { type: "string" } }
             end
           end
+        end
+
+        def test_output_schema_projects_as_the_tool_s_output_schema_when_declared
+          schema = { type: "object", properties: { count: { type: "integer" } }, required: [:count] }
+          klass = Class.new(ToolComponent) do
+            tool :count, description: "Count the open panels.", executes: :toggle, output_schema: schema
+            tool :plain, description: "Toggle.", executes: :toggle
+          end
+          definitions = klass.tool_definitions.to_h { |definition| [definition["name"], definition] }
+
+          assert_equal({ "type" => "object", "properties" => { "count" => { "type" => "integer" } },
+                         "required" => ["count"] }, definitions.fetch("count")["outputSchema"])
+          refute definitions.fetch("plain").key?("outputSchema"), "a tool that declares none projects none"
+          error = assert_raises(AgentTools::ToolError) do
+            Class.new(ToolComponent) { tool :bad, description: "Bad.", executes: :toggle, output_schema: "object" }
+          end
+
+          assert_match(/output_schema: must be a JSON-Schema Hash with type:/, error.message)
         end
 
         # Sheet over Dialog: the subclass re-controllers its root, so a bare

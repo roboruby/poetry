@@ -6,7 +6,9 @@
 # committed baselines. Both boot the dummy host under Capybara/Cuprite and
 # drive the /previews/<preview_name>/<example> pages (PreviewsController +
 # the component_preview layout: compiled Tailwind + live Stimulus). Neither
-# joins the default gate - they need a local Chrome.
+# joins the default gate - they need a local Chrome. CI's browser job runs
+# the axe walk (and rake test:testers) on the runner's Chrome; the
+# screenshots stay local.
 
 POETRY_BROWSER_VIEWPORT = [1024, 768].freeze
 POETRY_AXE_RULESETS = %w[wcag2a wcag2aa].freeze
@@ -16,19 +18,14 @@ POETRY_AXE_SCHEMES = [nil, "dark"].freeze # each page audits light, then .dark i
 # mechanism (no silent skips). Key: "<component>/<example>"; value: the
 # reason the violation is acceptable or the follow-up it awaits. A key that
 # stops producing violations fails the run so this list can't go stale.
-POETRY_AXE_SKIPS = {
-  # Inherited shadcn destructive-palette contrast (design-token decisions,
-  # not preview bugs) - fixing means retuning --destructive/--muted tokens
-  # against shadcn new-york-v4 parity, which needs a design review.
-  # (alert/destructive graduated off this list: the walk reports
-  # it clean now - the staleness rule caught the entry, as designed.)
-  "attachment/error" => "color-contrast 4.11:1 - error-state description tint #ec333c on white at text-xs; " \
-                        "shadcn destructive token, review with the token retune",
-  "attachment/error@dark" => "color-contrast 4.36:1 - the dark twin (#d15457 on #171717 at text-xs); " \
-                             "same destructive-token family, same token-retune review",
-  "bubble/destructive" => "color-contrast 4.0:1 - destructive text #e7000b on destructive-tinted bubble #fde6e7; " \
-                          "shadcn destructive token pair, review with the token retune"
-}.freeze
+#
+# Empty since 2026-11-15. The destructive-palette entries it carried were
+# closed in the components, the token left as the source has it:
+# alert/destructive (its description takes the token whole in light mode),
+# attachment/error in both schemes (the error line takes the token whole)
+# and bubble/destructive (its words ride the oklch darkening in light
+# mode). Each is a documented deviation in the fidelity ledgers.
+POETRY_AXE_SKIPS = {}.freeze
 
 # ---------------------------------------------------------------------------
 # Shared harness
@@ -98,6 +95,37 @@ def poetry_ui_visit_preview(session, url)
   # A scroller that never settles is a failure to report, not a shot from the top.
   raise "a scroller never settled at #{url}" unless session.has_no_css?("[data-pending-scroll]", wait: 10)
   raise "Stimulus never booted at #{url}" unless session.has_css?("html[data-poetry-ready]", wait: 10)
+
+  poetry_ui_wait_for_paint(session, url)
+end
+
+# Whether every transcript row in view has been rendered. A scroller's rows
+# are content-visibility: auto, so a row is skipped until the browser finds
+# it on screen, and a scroller that has just jumped to its newest row can
+# be caught with the rows it brought into view still unpainted.
+POETRY_UI_ROWS_PAINTED_JS = <<~JS
+  (() => [...document.querySelectorAll("[data-slot=message-scroller-viewport]")].every((viewport) => {
+    const box = viewport.getBoundingClientRect();
+    return [...viewport.querySelectorAll("[data-slot=message-scroller-item]")].every((item) => {
+      const row = item.getBoundingClientRect();
+      const child = item.firstElementChild;
+      if (row.bottom <= box.top || row.top >= box.bottom || !child) return true;
+      return child.checkVisibility({ contentVisibilityAuto: true });
+    });
+  }))()
+JS
+
+# Lets the page paint what it has laid out before anything reads it: the
+# rows a scroller brought into view, then two frames for the paint itself.
+# The chat block's shot came out with its upper rows blank in two full
+# walks of five, hundreds of pages into the session and never alone.
+def poetry_ui_wait_for_paint(session, url)
+  painted = 40.times.any? do
+    session.evaluate_script(POETRY_UI_ROWS_PAINTED_JS) || (sleep(0.05) && false)
+  end
+  raise "transcript rows never painted at #{url}" unless painted
+
+  session.evaluate_async_script("requestAnimationFrame(() => requestAnimationFrame(() => arguments[0](true)))")
 end
 
 # ---------------------------------------------------------------------------
@@ -370,7 +398,7 @@ namespace :test do
     summary = results.map { |theme, ok| "#{theme}=#{ok ? "ok" : "DIFFS"}" }.join(" ")
     puts "visual walk summary: #{summary}"
     failed = results.reject { |_, ok| ok }.keys
-    return if failed.empty?
+    next if failed.empty?
 
     abort "visual walk: diffs in #{failed.join(", ")} - review with script/visual_review.rb <theme>"
   end

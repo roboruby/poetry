@@ -5,6 +5,9 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 const SWIPE_SLOP = 4 // px before a drag counts (clicks stay clicks)
 const DISMISS_PROGRESS = 0.5 // released past halfway -> dismiss
 const DISMISS_VELOCITY = 0.5 // px/ms toward dismissal -> flick-dismiss
+const STATIONARY_PX = 1 // a move shorter than this is a stationary sample
+const MIN_SAMPLE_MS = 4 // near-simultaneous samples cannot spike the velocity
+const MAX_VELOCITY_AGE_MS = 80 // a release after a hold carries no flick
 const MIN_STRENGTH = 0.25 // even a full swipe animates the remainder briefly
 
 const INTERACTIVE = "button, a[href], input, select, textarea, [contenteditable], [role=button]"
@@ -171,7 +174,7 @@ export default class DrawerController extends DialogController {
       pointerId: event.pointerId,
       startX: event.clientX, startY: event.clientY,
       lastPosition: this.#along(event), lastTime: event.timeStamp,
-      velocity: 0, movement: 0, dragging: false
+      velocity: 0, movement: 0, dragging: false, stationary: false
     }
     this.dialogTarget.setPointerCapture(event.pointerId)
   }
@@ -201,11 +204,21 @@ export default class DrawerController extends DialogController {
       this.dialogTarget.setAttribute("data-swiping", "")
     }
 
+    const position = this.#along(event)
     const elapsed = event.timeStamp - swipe.lastTime
     if (elapsed > 0) {
-      swipe.velocity = (this.#sign() * (this.#along(event) - swipe.lastPosition)) / elapsed
-      swipe.lastPosition = this.#along(event)
-      swipe.lastTime = event.timeStamp
+      // Some Android devices send one stationary move just before the
+      // release: skip a single one so it cannot zero a real flick (a
+      // second in a row is a hold and does zero it - Base UI #5658).
+      const stationary = Math.abs(position - swipe.lastPosition) < STATIONARY_PX
+      const skip = stationary && !swipe.stationary
+      swipe.stationary = stationary
+
+      if (!skip) {
+        swipe.velocity = (this.#sign() * (position - swipe.lastPosition)) / Math.max(elapsed, MIN_SAMPLE_MS)
+        swipe.lastPosition = position
+        swipe.lastTime = event.timeStamp
+      }
     }
 
     swipe.movement = movement
@@ -226,6 +239,8 @@ export default class DrawerController extends DialogController {
 
     this.#swipe = null
     if (!swipe.dragging) return
+    // The last moving sample is stale after a hold: no flick.
+    if (event.timeStamp - swipe.lastTime > MAX_VELOCITY_AGE_MS) swipe.velocity = 0
     if (this.#snapping()) return this.#settleSnap(swipe)
 
     const progress = swipe.movement / this.#size()

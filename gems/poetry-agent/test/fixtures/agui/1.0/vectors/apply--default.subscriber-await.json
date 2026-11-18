@@ -1,0 +1,225 @@
+{
+  "source": "apply/__tests__/default.subscriber-await.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TEXT_MESSAGE_END's onNewMessage before moving on [outcome]",
+      "line": 52,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "hi"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages",
+      "notes": "The TS test pins awaiting an async subscriber hook (excluded); the vector keeps the outcome of its stream. Wrapped with RUN_FINISHED."
+    },
+    {
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TOOL_CALL_END's onNewToolCall before moving on [outcome]",
+      "line": 52,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls (a call with no parentMessageId; the reference mints its assistant message under the toolCallId)",
+      "notes": "The TS test pins awaiting an async subscriber hook (excluded); the vector keeps the outcome of its stream. Wrapped with RUN_FINISHED."
+    },
+    {
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TOOL_CALL_RESULT's onNewMessage before moving on [outcome]",
+      "line": 52,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "res1",
+          "toolCallId": "tc1",
+          "content": "ok"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "res1",
+            "role": "tool",
+            "toolCallId": "tc1",
+            "content": "ok"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result (a tool message with its own messageId)",
+      "notes": "The TS test pins awaiting an async subscriber hook (excluded); the vector keeps the outcome of its stream. Wrapped with RUN_FINISHED."
+    },
+    {
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for REASONING_MESSAGE_END's onNewMessage before moving on [outcome]",
+      "line": 52,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "hmm"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "hmm"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning-messages",
+      "notes": "The TS test pins awaiting an async subscriber hook (excluded); the vector keeps the outcome of its stream. Wrapped with RUN_FINISHED. Required field completed for enforcement: role 'reasoning' on REASONING_MESSAGE_START."
+    }
+  ],
+  "excluded": [
+    {
+      "line": 52,
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TEXT_MESSAGE_END's onNewMessage before moving on",
+      "reason": "subscriber: awaiting an async hook (rxjs/Promise timing); outcome kept as a vector"
+    },
+    {
+      "line": 52,
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TOOL_CALL_END's onNewToolCall before moving on",
+      "reason": "subscriber: awaiting an async hook (rxjs/Promise timing); outcome kept as a vector"
+    },
+    {
+      "line": 52,
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for TOOL_CALL_RESULT's onNewMessage before moving on",
+      "reason": "subscriber: awaiting an async hook (rxjs/Promise timing); outcome kept as a vector"
+    },
+    {
+      "line": 52,
+      "name": "defaultApplyEvents awaits async subscriber hooks > waits for REASONING_MESSAGE_END's onNewMessage before moving on",
+      "reason": "subscriber: awaiting an async hook (rxjs/Promise timing); outcome kept as a vector"
+    }
+  ]
+}

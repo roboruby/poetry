@@ -15,7 +15,7 @@ module Poetry
     # building the page - it is the answer to "what does a real <kind of>
     # screen need", stated once, correctly.
     #
-    # SEED: this ships the archetypes anchored to poetry's eight blocks plus
+    # SEED: this ships the archetypes anchored to poetry's nine blocks plus
     # the universal page types every app needs. It is deliberately a seed
     # (the target is ~50); it grows as blocks and evidence
     # accrue. A brief that matches nothing is told so and routed to compose
@@ -268,6 +268,28 @@ module Poetry
                            "Editing routes to the settings archetype, it does not inline every field"],
           "components" => %w[avatar metadata_list badge card button separator icon link],
           "block" => "section-card"
+        },
+        {
+          "name" => "assistant-chat",
+          "title" => "Assistant chat",
+          "purpose" => "A conversation with an assistant or agent: the person writes, the reply arrives " \
+                       "as it is written, and the transcript is the page.",
+          "keywords" => %w[chat assistant conversation messages message ai agent copilot llm prompt
+                           composer thread ask support bot chatbot],
+          "sections" => ["A panel header (who the person is talking to, a way to start over)",
+                         "The transcript (the person at the end, the assistant at the start: steps, then words)",
+                         "A welcome with suggested prompts, in place of an empty transcript",
+                         "The composer (a growing field, and a Send that turns into Stop while a reply runs)"],
+          "states" => ["Empty: the welcome and its prompts, not a blank panel",
+                       "Running: Stop in place of Send, and the reply shown as begun (a running step, a spinner)",
+                       "Streaming: the reply's row replaced as its text grows, the newest line kept in view",
+                       "Stopped or failed: the partial reply kept, a line saying what happened, Send back"],
+          "edge_cases" => ["A draft typed during a reply survives it: redraw the action slot, never the form",
+                           "A reload in the middle of a reply still shows Stop: the server holds the state",
+                           "A message sent while a reply runs is refused by the server, not only by the button",
+                           "A wide table or a long line of code scrolls in its own box, not the transcript"],
+          "components" => %w[message_scroller message bubble trace markdown composer button icon],
+          "block" => "chat"
         }
       ].freeze
 

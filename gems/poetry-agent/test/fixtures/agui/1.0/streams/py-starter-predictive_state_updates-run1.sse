@@ -1,0 +1,52 @@
+data: {"type":"RUN_STARTED","threadId":"thread-predictive_state_updates","runId":"3bfeac94-255f-4aa1-9deb-2ad6c75decc9","protocolVersion":"1.0"}
+
+data: {"type":"CUSTOM","name":"PredictState","value":[{"state_key":"document","tool":"write_document_local","tool_argument":"document"}]}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","toolCallName":"write_document_local"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"{\"document\":\""}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"Once "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"upon "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"a "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"time, "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"there "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"was "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"a "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"dog "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"named "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"Rex. "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"Rex "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"was "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"a "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"very "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"good "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"dog. "}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9","delta":"\"}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"e8cc8804-c917-4f59-aa65-c95aaa4ec1c9"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"8b90fe58-7c26-43a0-8d45-6c0578a0c548","toolCallName":"confirm_changes"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"8b90fe58-7c26-43a0-8d45-6c0578a0c548","delta":"{}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"8b90fe58-7c26-43a0-8d45-6c0578a0c548"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-predictive_state_updates","runId":"3bfeac94-255f-4aa1-9deb-2ad6c75decc9"}
+

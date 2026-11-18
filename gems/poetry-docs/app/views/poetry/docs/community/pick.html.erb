@@ -1,0 +1,7 @@
+<%# A long filter's choices: the body of the dialog the sidebar opens,
+    and a page of its own where no script runs. %>
+<% content_for :title, "Choose #{params[:pick].to_s.pluralize}" %>
+<div class="mx-auto flex max-w-lg flex-col gap-4">
+  <%= render "poetry/docs/community/picker", browse: @browse, param: params[:pick], options: @browse.picker(params[:pick]),
+             path: community_path %>
+</div>

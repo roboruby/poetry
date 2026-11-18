@@ -53,12 +53,7 @@ module Poetry
               register
               action :keydown, on: :keydown
             end
-            controller :roving_focus do
-              register
-              value :orientation, :horizontal
-              value :loop, true
-              action :keydown, on: :keydown
-            end
+            behavior :roving_focus, orientation: :horizontal, loop: true
           end
           on :remove do
             controller(:tag_group) { action :remove, on: :click }

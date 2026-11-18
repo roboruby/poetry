@@ -1,0 +1,25 @@
+# yard-lint: the documentation tier YARD's own gates miss - a documented
+# method missing a @param, an @example that does not parse, option tags,
+# tag order, invalid types. Runs as rake yard:lint (in the default task).
+# UndocumentedObjects stays off: yard:coverage gates public objects at its
+# recorded floor, and this validator counts the @api private internals the
+# gems hide on purpose (--hide-api is not honoured here). MissingReturn is
+# off until the @param backlog is cleared; revisit then.
+AllValidators:
+  YardOptions:
+    - --no-private
+Documentation/UndocumentedObjects:
+  Enabled: false
+Documentation/MissingReturn:
+  Enabled: false
+Tags/InvalidTypes:
+  Enabled: true
+# A **options splat passed through to a control is documented as @param
+# options [Hash], not one @option per key; and @example blocks here are
+# ERB as often as Ruby, which this validator cannot parse.
+Documentation/UndocumentedOptions:
+  Enabled: false
+Tags/OptionTags:
+  Enabled: false
+Tags/ExampleSyntax:
+  Enabled: false

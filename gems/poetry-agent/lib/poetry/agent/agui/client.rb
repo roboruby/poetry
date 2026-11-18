@@ -40,22 +40,35 @@ module Poetry
           @read_timeout = read_timeout
         end
 
-        # Runs the agent and yields every event.
+        # Runs the agent and yields every VERIFIED event, as AG-UI 1.0's
+        # processing model requires of a client that hands events to
+        # application code. The input is prepared on the way out
+        # ({Pipeline#outgoing}: unrecognised material stripped with a warning,
+        # a malformed known field fatal before anything is sent), and the
+        # stream goes through the pipeline on the way in.
         #
         # @param input [Hash] the wire hash ({RunInput.build})
-        # @yieldparam event [Hash]
-        # @return [SSE::Parser] the parser (its `errors` list any unreadable lines)
+        # @param pipeline [Pipeline] the consumer pipeline (strict unless given a lenient one)
+        # @yieldparam event [Hash] a verified event
+        # @return [Pipeline] the pipeline: its `warnings`, and `truncated?` for a run that broke off
         # @raise [Error] on a non-2xx response
+        # @raise [ProtocolError] for a malformed input, an undecodable frame, or a stream the client rejects
         # @example
         #   client.run(input) { |event| transcript.apply(event) }
-        def run(input, &)
+        def run(input, pipeline: Pipeline.new, &block)
           request = Net::HTTP::Post.new(@uri)
           request["Content-Type"] = "application/json"
           request["Accept"] = "text/event-stream"
           @headers.each { |name, value| request[name] = value }
-          request.body = JSON.generate(input)
+          request.body = JSON.generate(pipeline.outgoing(input))
 
           parser = SSE::Parser.new
+          deliver = lambda do |raw|
+            pipeline.push(raw).each { |event| block&.call(event) }
+          rescue ProtocolError => e
+            e.events.each { |event| block&.call(event) } # what preceded the failure was delivered
+            raise
+          end
           Net::HTTP.start(@uri.host, @uri.port, use_ssl: @uri.scheme == "https",
                                                 open_timeout: @open_timeout, read_timeout: @read_timeout) do |http|
             http.request(request) do |response|
@@ -63,11 +76,27 @@ module Poetry
                 raise Error.new("AG-UI endpoint answered #{response.code}", status: response.code.to_i)
               end
 
-              response.read_body { |chunk| parser.feed(chunk, &) }
+              response.read_body do |chunk|
+                parser.feed(chunk, &deliver)
+                undecodable!(parser)
+              end
             end
           end
-          parser.finish(&)
-          parser
+          parser.finish(&deliver)
+          undecodable!(parser)
+          pipeline.finish.each { |event| block&.call(event) }
+          pipeline
+        end
+
+        private
+
+        # A frame that maps to no event fails the run: dropping it silently
+        # could hide a lost RUN_FINISHED or tool call.
+        def undecodable!(parser)
+          return if parser.errors.empty?
+
+          raise ProtocolError.new("An SSE frame is not a JSON object: #{parser.errors.first[0, 120].inspect}",
+                                  stage: :transport)
         end
       end
     end

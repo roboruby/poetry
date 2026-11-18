@@ -1,0 +1,35 @@
+<%# This page as Markdown, one press away: copy it, read it, or hand its
+    address to an assistant. The layout draws it on every page that has a
+    Markdown twin, over the address the page head already advertises. It
+    sits on the title's line from a tablet up (the layout keeps the title
+    clear of it) and on a line of its own on a phone. %>
+<%# locals: (markdown_path:) %>
+<%
+  markdown_url = "#{request.base_url}#{markdown_path}"
+  ask = "Read #{markdown_url} so I can ask questions about it."
+%>
+<div class="relative z-10 mb-4 flex justify-end md:-mb-8" data-page-menu
+     data-controller="page-menu" data-page-menu-url-value="<%= markdown_path %>">
+  <%= poetry_button_group("aria-label": "This page as Markdown") do %>
+    <%= poetry_button(variant: :outline, size: :sm, data: { action: "page-menu#copy" }) do |button| %>
+      <% button.with_leading { poetry_icon(name: :copy) } %>
+      <span data-page-menu-target="label">Copy page</span>
+    <% end %>
+    <%= poetry_dropdown_menu(align: :end, content_class: "w-52") do |menu| %>
+      <% menu.with_trigger(variant: :outline, size: :"icon-sm", label: "More ways to read this page") do %>
+        <%= poetry_icon(name: :"chevron-down") %>
+      <% end %>
+      <% menu.with_item(href: markdown_path, external: true) do %>
+        <%= poetry_icon(name: :"file-text") %>View as Markdown
+      <% end %>
+      <% menu.with_separator %>
+      <% menu.with_item(href: "https://claude.ai/new?#{{ q: ask }.to_query}", external: true) do %>
+        <%= poetry_icon(name: :"message-circle") %>Open in Claude
+      <% end %>
+      <% menu.with_item(href: "https://chatgpt.com/?#{{ hints: "search", q: ask }.to_query}", external: true) do %>
+        <%= poetry_icon(name: :"message-circle") %>Open in ChatGPT
+      <% end %>
+    <% end %>
+  <% end %>
+  <span class="sr-only" role="status" data-page-menu-target="status"></span>
+</div>

@@ -1,0 +1,1742 @@
+{
+  "source": "apply/__tests__/default.result-attribution.test.ts",
+  "vectors": [
+    {
+      "name": "replaces result attribution with undefined consistently with verification",
+      "line": 7,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "$absent"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result: a result is a tool message in its own right, under its own messageId; /spec/1.0/events/subagents#ownership: TOOL_CALL_RESULT mints a tool message owned by the result's own attribution",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). A repeated result messageId updates the held tool message in place: content and owner replaced (an absent tag returns it to the parent), metadata kept. The TS test runs verifyEvents alone; here the whole pipeline runs."
+    },
+    {
+      "name": "replaces result attribution with undefined consistently with verification [live history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "$absent"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (the live verifier). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with undefined consistently with verification [live history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('child') is rejected."
+    },
+    {
+      "name": "replaces result attribution with undefined consistently with verification [snapshot history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              }
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "$absent"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (a verifier seeded by MESSAGES_SNAPSHOT). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with undefined consistently with verification [snapshot history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              }
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('child') is rejected."
+    },
+    {
+      "name": "replaces result attribution with child consistently with verification",
+      "line": 7,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "child"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result: a result is a tool message in its own right, under its own messageId; /spec/1.0/events/subagents#ownership: TOOL_CALL_RESULT mints a tool message owned by the result's own attribution",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). A repeated result messageId updates the held tool message in place: content and owner replaced (an absent tag returns it to the parent), metadata kept. The TS test runs verifyEvents alone; here the whole pipeline runs."
+    },
+    {
+      "name": "replaces result attribution with child consistently with verification [live history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "child"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (the live verifier). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with child consistently with verification [live history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "child"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "other-child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('other-child') is rejected."
+    },
+    {
+      "name": "replaces result attribution with child consistently with verification [snapshot history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              },
+              "subagentRunId": "child"
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (a verifier seeded by MESSAGES_SNAPSHOT). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with child consistently with verification [snapshot history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              },
+              "subagentRunId": "child"
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "other-child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('other-child') is rejected."
+    },
+    {
+      "name": "replaces result attribution with other-child consistently with verification",
+      "line": 7,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "other-child"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "other-child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result: a result is a tool message in its own right, under its own messageId; /spec/1.0/events/subagents#ownership: TOOL_CALL_RESULT mints a tool message owned by the result's own attribution",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). A repeated result messageId updates the held tool message in place: content and owner replaced (an absent tag returns it to the parent), metadata kept. The TS test runs verifyEvents alone; here the whole pipeline runs."
+    },
+    {
+      "name": "replaces result attribution with other-child consistently with verification [live history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "other-child"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "other-child"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "other-child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (the live verifier). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with other-child consistently with verification [live history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result",
+          "toolCallId": "call",
+          "content": "corrected",
+          "subagentRunId": "other-child"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('child') is rejected."
+    },
+    {
+      "name": "replaces result attribution with other-child consistently with verification [snapshot history, same owner reopens]",
+      "line": 67,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              },
+              "subagentRunId": "other-child"
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "other-child"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "result"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread",
+          "runId": "run"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "corrected",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            },
+            "subagentRunId": "other-child"
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: a TEXT_MESSAGE_START reopening the id under the corrected owner is accepted (a verifier seeded by MESSAGES_SNAPSHOT). TEXT_MESSAGE_END and RUN_FINISHED added. The reducer leaves the tool message as it is."
+    },
+    {
+      "name": "replaces result attribution with other-child consistently with verification [snapshot history, other owner rejected]",
+      "line": 73,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "before",
+            "role": "user",
+            "content": "Question"
+          },
+          {
+            "id": "result",
+            "role": "tool",
+            "toolCallId": "call",
+            "content": "old",
+            "subagentRunId": "child",
+            "metadata": {
+              "source": "before-pause",
+              "custom": {
+                "retained": true
+              }
+            }
+          },
+          {
+            "id": "after",
+            "role": "assistant",
+            "content": "Done"
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread",
+          "runId": "run",
+          "input": {
+            "threadId": "thread",
+            "runId": "run",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "before",
+                "role": "user",
+                "content": "Question"
+              },
+              {
+                "id": "result",
+                "role": "tool",
+                "toolCallId": "call",
+                "content": "old",
+                "subagentRunId": "child",
+                "metadata": {
+                  "source": "before-pause",
+                  "custom": {
+                    "retained": true
+                  }
+                }
+              },
+              {
+                "id": "after",
+                "role": "assistant",
+                "content": "Done"
+              }
+            ]
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "before",
+              "role": "user",
+              "content": "Question"
+            },
+            {
+              "id": "result",
+              "role": "tool",
+              "toolCallId": "call",
+              "content": "corrected",
+              "metadata": {
+                "source": "before-pause",
+                "custom": {
+                  "retained": true
+                }
+              },
+              "subagentRunId": "other-child"
+            },
+            {
+              "id": "after",
+              "role": "assistant",
+              "content": "Done"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "result",
+          "role": "assistant",
+          "subagentRunId": "child"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected; an untagged one MUST be accepted",
+      "notes": "From the test's verification loop: reopening under a different explicit owner ('child') is rejected."
+    }
+  ],
+  "excluded": []
+}

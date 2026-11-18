@@ -3,7 +3,7 @@
 #
 # Rules are version-gated: a newer linter never enables new rules here
 # until `version` is bumped deliberately (bump + re-lint in one change).
-version: 0.11.0
+version: 0.11.2
 
 framework: actionview
 # Every template is gated to compile under Herb::Engine (rake

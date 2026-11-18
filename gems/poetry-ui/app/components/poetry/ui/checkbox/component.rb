@@ -50,13 +50,9 @@ module Poetry
 
         use_stimulus do
           on :root do
-            controller :checked do
-              register
-              # No input-id value -> pure visual mode: state lives on the
-              # button's checked attributes alone (discouraged; see AGENT_RULES).
-              value :input_id, if: :form_participant?
-              action :toggle, on: :click
-            end
+            # No input-id value -> pure visual mode: state lives on the
+            # button's checked attributes alone (discouraged; see AGENT_RULES).
+            behavior :checked
           end
         end
 

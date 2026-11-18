@@ -53,6 +53,15 @@ module Poetry
         extend ActiveSupport::Concern
         include DeclaredAttributes
 
+        # Option names that would shadow a method the rendering itself
+        # calls: an option named `capture` once blanked every block a
+        # template captured. Declaring one raises at class load.
+        RESERVED_OPTION_NAMES = %i[capture content render helpers view_context output_buffer controller
+                                   request].freeze
+
+        # The keys an option's deprecated: Hash may carry.
+        DEPRECATION_KEYS = %i[use since note].freeze
+
         included do
           class_attribute :registered_options,
                           instance_writer: true,
@@ -83,12 +92,20 @@ module Poetry
           #
           # @example Value format (machine-checkable value contract)
           #   option :name, :symbol, required: true, format: :"icon-name"
+          #
+          # @example An option on its way out (see {#option_deprecation})
+          #   option :kind, :symbol, deprecated: { use: :variant, since: "0.2.0" }
           # @return [void]
           def option(name, type, **options)
+            if RESERVED_OPTION_NAMES.include?(name.to_sym)
+              raise ArgumentError, "#{self}: option #{name.inspect} would shadow a rendering method " \
+                                   "(#{RESERVED_OPTION_NAMES.join(", ")} are the view's) - pick another name"
+            end
             register_declared_attribute(:option, name, options)
 
             required, default_value = extract_declared_defaults(options)
             register_option_format(name, options.delete(:format))
+            register_option_deprecation(name, options.delete(:deprecated))
 
             attribute(name, option_cast_type(type), **options)
             add_option_validations(name, type, required)
@@ -161,6 +178,22 @@ module Poetry
             collect_declared_map(:@_option_formats)[name.to_sym]
           end
 
+          # What an option's declaration says about its retirement, or nil.
+          # `deprecated:` marks an option that still works and should no
+          # longer be written: `{ use: :variant }` names the option that
+          # replaces it, `since:` the version that retired it, `note:`
+          # anything else worth saying; a String is a note on its own. The
+          # marker changes nothing at render. It reaches the registry, so
+          # `poetry check` warns wherever the option is written,
+          # `poetry:rename` rewrites a call whose option was renamed, and
+          # the agent surfaces stop offering it.
+          #
+          # @param name [Symbol, String] the attribute name
+          # @return [Hash{Symbol => String}, nil] the given keys of use, since and note
+          def option_deprecation(name)
+            collect_declared_map(:@_option_deprecations)[name.to_sym]
+          end
+
           private
 
           # Collects option types from the class hierarchy. An ancestor's
@@ -188,6 +221,24 @@ module Poetry
             return unless format
 
             (@_option_formats ||= {})[name.to_sym] = format.to_sym
+          end
+
+          # Records an option's deprecated: marker (hierarchy-walked like
+          # formats, so subclasses inherit it).
+          #
+          # @param name [Symbol, String] the attribute name
+          # @param deprecated [Hash, String, nil] the marker, if any
+          def register_option_deprecation(name, deprecated)
+            return unless deprecated
+
+            notice = deprecated.is_a?(Hash) ? deprecated : { note: deprecated }
+            unknown = notice.keys - Options::DEPRECATION_KEYS
+            if unknown.any? || notice.empty?
+              raise ArgumentError, "#{self}: option #{name.inspect} deprecated: takes use:, since: and note: " \
+                                   "(or a String note), not #{deprecated.inspect}"
+            end
+
+            (@_option_deprecations ||= {})[name.to_sym] = notice.transform_values(&:to_s).freeze
           end
 
           # Adds validations for the option attribute.

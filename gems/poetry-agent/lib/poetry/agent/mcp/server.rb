@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "json"
+require "mcp"
+require "active_support/notifications"
 
 module Poetry
   module Agent
@@ -11,24 +13,29 @@ module Poetry
     # source. Read-only, progressive-disclosure (brief|detailed|full), and
     # verdict-returning (check returns per-finding pass/fail).
     #
-    # Two transports, one server: newline-delimited JSON-RPC 2.0 over stdio
-    # (the `poetry-agent` exe; own the supply chain - no MCP SDK dependency)
-    # and POST JSON-RPC over HTTP ({HTTP}, for the same-origin `/mcp` mount
-    # in-page bridges read). {Server#handle} is a pure request->response
-    # function (testable without either transport); {Server#serve} is the
-    # stdio loop; {Bundled} is the one assembly both transports share.
+    # Two transports, one server, on the official `mcp` gem: the gem speaks
+    # JSON-RPC 2.0, negotiates the protocol version, validates a call's
+    # arguments against the tool's schema and serves Streamable HTTP; this
+    # class owns the roster and the tools. Newline-delimited JSON-RPC over
+    # stdio is the `poetry-agent` exe ({Server#serve}); POST JSON-RPC over
+    # HTTP is {HTTP}, for the same-origin `/mcp` mount in-page bridges read.
+    # {Server#handle} is a pure request->response function (testable without
+    # either transport); {Bundled} is the one assembly both transports share;
+    # {Server#mcp} is the gem's server, open to a host's own tools.
     #
     # v1 is the read/verify surface. The heavier roadmap - verify_screen
     # running the eval gate array, component:// artifact resources, tag
     # browsing, SSE streaming - is maturity-gated and NOT in this cut.
     module MCP
-      # The MCP protocol revision this server negotiates.
-      PROTOCOL_VERSION = "2025-06-18"
+      # The latest MCP protocol revision this server negotiates (the gem's); a
+      # client asking for an older supported revision is answered in that one.
+      PROTOCOL_VERSION = ::MCP::Configuration::LATEST_HANDSHAKE_PROTOCOL_VERSION
       # The serverInfo payload returned by the initialize handshake.
       SERVER_INFO = { "name" => "poetry-agent", "version" => Poetry::Agent::VERSION }.freeze
 
       # Tools that answer a blank brief with guidance of their own (the
-      # block catalog, what to send) rather than a pass.
+      # block catalog, what to send) rather than a pass; their schemas
+      # mark nothing required, so the gem lets the blank call through.
       TOLERATES_BLANK = %w[compose build_page].freeze
 
       # The tool roster the server advertises (tools/list): MCP Tool-shaped
@@ -46,8 +53,7 @@ module Poetry
             "properties" => {
               "brief" => { "type" => "string",
                            "description" => "the task text, verbatim (a sentence is enough)" }
-            },
-            "required" => ["brief"]
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -71,8 +77,7 @@ module Poetry
                           "description" => "the workflow step to run; omit to start at the routed entry" },
               "source" => { "type" => "string",
                             "description" => "verify step only: the ERB you built, to run through check" }
-            },
-            "required" => ["intent"]
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -108,11 +113,19 @@ module Poetry
                            "required content blocks, required slots a call never set, and any-of " \
                            "contracts (Button's visible content, Command's accessible name). Returns a " \
                            "verdict and findings. Run this as the LAST action after the final edit - " \
-                           "an edit after your last check is unverified.",
+                           "an edit after your last check is unverified. Pass path: (or paths:) for a " \
+                           "file you have written - one short call however long the page - or source: " \
+                           "for markup that is not in a file yet.",
           "inputSchema" => {
             "type" => "object",
-            "properties" => { "source" => { "type" => "string", "description" => "the ERB template source" } },
-            "required" => ["source"]
+            "properties" => {
+              "path" => { "type" => "string",
+                          "description" => "a template in the app, from its root " \
+                                           "(app/views/orders/index.html.erb)" },
+              "paths" => { "type" => "array", "items" => { "type" => "string" },
+                           "description" => "several templates, each from the app's root" },
+              "source" => { "type" => "string", "description" => "ERB template source, when there is no file" }
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -144,6 +157,25 @@ module Poetry
                            "poetry registry. Install one with `bin/rails g poetry:add <name>` or " \
                            "any shadcn-compatible client.",
           "inputSchema" => { "type" => "object", "properties" => {} },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "find_icon",
+          "description" => "Which icon means this? Give what the icon should stand for (\"delete\", " \
+                           "\"warning\", \"send message\") or part of a name, and get the names in the " \
+                           "active icon set that answer it, best first, each with the words it is filed " \
+                           "under. Call it before writing poetry_icon(name:) for a name you have not " \
+                           "seen in this catalog: check rejects a name the set does not have.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "query" => { "type" => "string",
+                           "description" => "what the icon should mean, in a word or two, or part of its name" },
+              "limit" => { "type" => "integer", "minimum" => 1, "maximum" => 50, "default" => 8,
+                           "description" => "the most names to return" }
+            },
+            "required" => ["query"]
+          },
           "annotations" => { "readOnlyHint" => true }
         },
         {
@@ -182,6 +214,27 @@ module Poetry
             "required" => ["topic"]
           },
           "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "report_gap",
+          "description" => "The library lacked something this task needed: a component, a variant, an option " \
+                           "or a block, or its documentation was wrong. Describe it and get back a link that " \
+                           "opens a prefilled issue. Nothing is sent from here: show the link to the person " \
+                           "you are working for, who decides whether to file it. Call it after you have " \
+                           "worked around the gap, never instead of finishing the task.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "summary" => { "type" => "string",
+                             "description" => "the gap in one line, e.g. Badge has no warning variant" },
+              "kind" => { "type" => "string", "enum" => Poetry::Agent::GapReport::KINDS, "default" => "other" },
+              "component" => { "type" => "string", "description" => "the component or block it concerns, if any" },
+              "wanted" => { "type" => "string", "description" => "what the task needed, in a sentence or two" },
+              "workaround" => { "type" => "string", "description" => "what you did instead" }
+            },
+            "required" => ["summary"]
+          },
+          "annotations" => { "readOnlyHint" => true }
         }
       ].freeze
 
@@ -204,13 +257,22 @@ module Poetry
         # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
         #   nil derives it from the registries
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
+        #   names, so check warns on a renamed icon instead of rejecting it
+        # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
+        #   words each icon is filed under, which find_icon searches by meaning
+        # @param icon_hint [String, nil] what the active set says it does not draw (brand marks)
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
-        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
-          from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills,
-                                  app_root: app_root, recipes: recipes)
+        # rubocop:disable Metrics/ParameterLists
+        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
+                               icon_aliases: nil, icon_tags: nil, icon_hint: nil)
+          # rubocop:enable Metrics/ParameterLists
+          from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills, app_root: app_root,
+                                  recipes: recipes, icon_aliases: icon_aliases, icon_tags: icon_tags,
+                                  icon_hint: icon_hint)
         end
 
         # Several registry roots as one catalog (Registry.merged: later
@@ -223,11 +285,19 @@ module Poetry
         # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
         #   nil derives it from the registries
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
+        #   names, so check warns on a renamed icon instead of rejecting it
+        # @param icon_tags [Hash{String => Array<String>}, nil] the active set's names => the
+        #   words each icon is filed under, which find_icon searches by meaning
+        # @param icon_hint [String, nil] what the active set says it does not draw (brand marks)
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
-        def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
+        # rubocop:disable Metrics/ParameterLists
+        def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
+                                 icon_aliases: nil, icon_tags: nil, icon_hint: nil)
+          # rubocop:enable Metrics/ParameterLists
           committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
           # (`helper :name`); a boot-free scan of app_root's component files
@@ -245,13 +315,17 @@ module Poetry
           # valid names with contracts of their own, whether or not the
           # registry is committed - no registry lists a helper method.
           host_helpers = app_root ? Poetry::Core::HostComponents.helper_methods(root: app_root) : nil
+          icons = icon_names && Poetry::Core::Icons::Finder.new(names: icon_names, aliases: icon_aliases || {},
+                                                                tags: icon_tags || {}, hint: icon_hint)
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
                                                                         helper_entries: helper_entries,
                                                                         icon_names: icon_names,
+                                                                        icon_aliases: icon_aliases,
                                                                         helper_args: committed.helper_args,
-                                                                        host_helpers: host_helpers)
+                                                                        host_helpers: host_helpers,
+                                                                        icon_finder: icons)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
-              root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes)
+              root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes, icons: icons)
         end
 
         # The helper each entry names, so an explicit helper list never
@@ -278,7 +352,10 @@ module Poetry
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning the skill's file map
         # @param app_root [String, nil] the host app directory (see above)
         # @param recipes [Array<Hash>] registry-item summaries (see above)
-        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: []) # rubocop:disable Metrics/ParameterLists
+        # @param icons [Poetry::Core::Icons::Finder, nil] the active icon set's finder, or nil
+        #   for a bundle with no icon set (find_icon then says so)
+        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [], icons: nil) # rubocop:disable Metrics/ParameterLists
+          @icons = icons
           @entries = entries
           @catalog = catalog
           @blocks = blocks
@@ -287,7 +364,18 @@ module Poetry
           @skill_files = {}
           @app_root = app_root
           @recipes = recipes
+          @documents = []
         end
+
+        # The three things check can be handed; it needs one.
+        CHECK_INPUTS = %w[source path paths].freeze
+
+        # What find_icon answers in a bundle with no icon set.
+        NO_ICON_SET = "find_icon: this bundle has no icon set to search. Add one (gem \"poetry-lucide\" is " \
+                      "the default set) and restart the server."
+        # What find_icon suggests when nothing answered.
+        ICON_HINT = "Say what it draws or what it is used for in one or two plain words (\"trash\", " \
+                    "\"delete\", \"arrow left\"); a set files its icons under everyday words."
 
         # compose routing: the strong-match threshold, and the words
         # too generic to signal a block - connectives, task verbs, and
@@ -310,22 +398,83 @@ module Poetry
           title titles description descriptions action actions
         ].to_set.freeze
 
+        # The gem's configuration for this server: every request runs inside {#notify}.
+        def configuration
+          ::MCP::Configuration.new(around_request: method(:notify))
+        end
+
+        # The event every request to the server is reported as, for a host
+        # that wants to know how its agents use the library.
+        EVENT = "request.poetry_agent"
+
+        # Runs one request inside an ActiveSupport::Notifications event.
+        # The payload says what was asked and by whom: method ("tools/call"),
+        # tool (the tool's name, for a call), client (what the agent named
+        # itself in the handshake, when it did) and error (the gem's error
+        # kind, when the request failed). A tool's arguments are left out:
+        # they can be a whole template.
+        #
+        # @param data [Hash] what the gem knows of the request, filled in as it runs
+        # @return [Object] the request's own result
+        # @example Count tool calls by agent
+        #   ActiveSupport::Notifications.subscribe("request.poetry_agent") do |event|
+        #     StatsD.increment("poetry.tool", tags: ["tool:#{event.payload[:tool]}"]) if event.payload[:tool]
+        #   end
+        def notify(data, &)
+          ActiveSupport::Notifications.instrument(EVENT) do |payload|
+            yield
+          ensure
+            payload.merge!({ method: data[:method], tool: data[:tool_name], client: data[:client],
+                             error: data[:error] }.compact)
+          end
+        end
+
+        # A short name: the default would print every registry entry, every
+        # block and every icon the server holds.
+        #
+        # @return [String]
+        def inspect
+          "#<#{self.class.name} #{TOOLS.size} tools, #{@entries.size} components>"
+        end
+
+        # The gem's server over the roster: JSON-RPC, the protocol
+        # negotiation, the argument validation and the transports are its;
+        # every tool dispatches here. Public so a host can define its own
+        # tools beside Poetry's (an MCP App's among them, see {#apps}).
+        #
+        # @return [::MCP::Server] the server the transports mount
+        def mcp
+          @mcp ||= ::MCP::Server.new(name: SERVER_INFO["name"], version: SERVER_INFO["version"],
+                                     capabilities: capabilities, tools: tool_classes,
+                                     resources: @documents.map(&:resource),
+                                     configuration: configuration).tap do |server|
+            server.resources_read_handler(&Apps.reader(@documents)) if @documents.any?
+          end
+        end
+
+        # Serves MCP Apps beside the roster: each document becomes a
+        # `ui://` resource, the server declares the extension, and the
+        # host defines the documents' tools on {#mcp}. Call it before the
+        # server first serves.
+        #
+        # @param documents [Array<Apps::Document>] the documents to serve
+        # @return [self]
+        # @raise [ArgumentError] once the server has served (its capabilities are declared)
+        def apps(*documents)
+          raise ArgumentError, "add apps before the server first serves" if @mcp
+
+          @documents.concat(documents.flatten)
+          self
+        end
+
         # A JSON-RPC 2.0 request hash -> a response hash (or nil for a
         # notification, which gets no reply).
         #
         # @param request [Hash] one parsed JSON-RPC 2.0 request
         # @return [Hash, nil] the response hash, or nil for a notification
         def handle(request)
-          id = request["id"]
-          case request["method"]
-          when "initialize" then result(id, initialize_result)
-          when "tools/list" then result(id, { "tools" => TOOLS })
-          when "tools/call" then result(id, call_tool(request["params"] || {}))
-          when %r{\Anotifications/} then nil
-          else error(id, -32_601, "method not found: #{request["method"]}")
-          end
-        rescue StandardError => e
-          error(id, -32_603, e.message)
+          response = mcp.handle_json(JSON.generate(request))
+          response && JSON.parse(response)
         end
 
         # The thin stdio loop: newline-delimited JSON-RPC in, replies out.
@@ -338,37 +487,48 @@ module Poetry
             line = line.strip
             next if line.empty?
 
-            response =
-              begin
-                handle(JSON.parse(line))
-              rescue JSON::ParserError => e
-                error(nil, -32_700, "parse error: #{e.message}")
-              end
+            response = mcp.handle_json(line)
             next unless response
 
-            output.puts(JSON.generate(response))
+            output.puts(response)
             output.flush
           end
         end
 
         private
 
-        # The initialize result: protocol version, server info and capabilities.
-        def initialize_result
-          {
-            "protocolVersion" => PROTOCOL_VERSION,
-            "serverInfo" => SERVER_INFO,
-            "capabilities" => { "tools" => {} }
-          }
+        # Tools alone, or tools, resources and the Apps extension once a document is served.
+        def capabilities
+          @documents.any? ? Apps.capabilities : ::MCP::Server::Capabilities.new.tap(&:support_tools)
         end
 
-        # Dispatches a tools/call to its tool; missing required arguments answer as an error.
-        def call_tool(params)
-          name = params["name"]
-          arguments = params["arguments"] || {}
+        # The roster as the gem's tool classes, each one calling back here
+        # with the arguments the gem validated against its schema.
+        def tool_classes
+          poetry = self
+          TOOLS.map do |tool|
+            name = tool["name"]
+            schema = JSON.parse(JSON.generate(tool["inputSchema"]), symbolize_names: true)
+            annotations = { read_only_hint: tool.dig("annotations", "readOnlyHint") }
+            ::MCP::Tool.define(name: name, description: tool["description"], input_schema: schema,
+                               annotations: annotations) do |**arguments|
+              poetry.send(:dispatch, name, arguments.transform_keys(&:to_s))
+            end
+          end
+        end
+
+        # Runs one tool; a blank required argument answers as a tool error
+        # (the gem already refused an absent one or a value off the schema).
+        def dispatch(name, arguments)
           if !TOLERATES_BLANK.include?(name) && (missing = missing_arguments(name, arguments)).any?
             return tool_content("#{name}: missing required argument#{"s" if missing.size > 1} " \
                                 "#{missing.join(", ")} (see tools/list for the schema)", error: true)
+          end
+          # check reads one of three things, so its schema can require none
+          # of them: nothing at all is refused here, as a missing argument is.
+          if name == "check" && CHECK_INPUTS.all? { |key| Array(arguments[key]).join.strip.empty? }
+            return tool_content("check: missing required argument source, path or paths (see tools/list for " \
+                                "the schema)", error: true)
           end
           text =
             case name
@@ -380,9 +540,10 @@ module Poetry
             when "list_blocks" then list_blocks
             when "describe_block" then describe_block(arguments)
             when "list_recipes" then list_recipes
+            when "find_icon" then find_icon(arguments)
+            when "report_gap" then report_gap(arguments)
             when "get_skill" then get_skill(arguments)
             when "guidance" then guidance(arguments)
-            else return tool_content("unknown tool: #{name}", error: true)
             end
           tool_content(text)
         end
@@ -427,14 +588,40 @@ module Poetry
 
         # The check tool: the lint findings for an ERB source with a PASS or FAIL verdict.
         def check(arguments)
-          findings = Poetry::Core::Check.lint(arguments["source"].to_s, catalog: @catalog)
+          paths = [arguments["path"], *Array(arguments["paths"])].map(&:to_s).reject(&:empty?)
+          return check_files(paths) if paths.any?
+
+          verdict(Poetry::Core::Check.lint(arguments["source"].to_s, catalog: @catalog)) { |finding| "line #{finding.line}" }
+        end
+
+        # The check over files of the app: the same run `bin/rails
+        # poetry:check` makes, each finding under its file and line. A path
+        # is read from the app's root and nowhere else.
+        def check_files(paths)
+          return "check: this server has no app to read files from - send the template as source:" unless @app_root
+
+          root = Pathname(@app_root).expand_path
+          files = paths.map { |path| root.join(path).expand_path }
+          named = ->(list) { list.map { |file| file.relative_path_from(root) }.join(", ") }
+          outside = files.reject { |file| file.to_s.start_with?("#{root}/") }
+          return "check: #{named.call(outside)} is outside the app" if outside.any?
+
+          missing = files.reject(&:file?)
+          return "check: no such file in the app: #{named.call(missing)}" if missing.any?
+
+          findings = Poetry::Core::Check::Runner.new(@catalog).run(files.map(&:to_s), root: root.to_s)
+          verdict(findings) { |finding| "#{Pathname(finding.file).relative_path_from(root)}:#{finding.line}" }
+        end
+
+        # PASS or FAIL with the counts, then each finding at the place the block names.
+        def verdict(findings)
           errors = findings.count { |finding| finding.severity == :error }
-          verdict = errors.zero? ? "PASS" : "FAIL"
           report = findings.map do |finding|
             hint = finding.suggestion ? " (did you mean #{finding.suggestion}?)" : ""
-            "- [#{finding.severity}] line #{finding.line}: #{finding.message}#{hint}"
+            "- [#{finding.severity}] #{yield(finding)}: #{finding.message}#{hint}"
           end
-          (["#{verdict} - #{errors} error(s), #{findings.length - errors} warning(s)"] + report).join("\n")
+          headline = "#{errors.zero? ? "PASS" : "FAIL"} - #{errors} error(s), #{findings.length - errors} warning(s)"
+          ([headline] + report).join("\n")
         end
 
         # The compose router: the unconditional first move. Measured runs
@@ -625,7 +812,8 @@ module Poetry
            "", "To build a NEW page instead, re-call with a build verb."].join("\n")
         end
 
-        # One build_page step by name; an unknown step redirects.
+        # One build_page step by name (the gem refuses a name off the
+        # schema's enum before the call reaches here).
         def run_step(step, intent, arguments)
           case step
           when "probe" then framed(1, "PROBE (host setup)", probe_body, "plan")
@@ -633,7 +821,6 @@ module Poetry
           when "direct" then framed(3, "DIRECT (creative direction)", direct_body, "snippets")
           when "snippets" then framed(4, "SNIPPETS (start-from source)", snippets_body(intent), "verify")
           when "verify" then verify_body(arguments)
-          else redirect_step(step)
           end
         end
 
@@ -641,12 +828,6 @@ module Poetry
         def framed(number, label, body, nxt)
           ["STEP #{number}/5 - #{label}", "", body, "",
            %(NEXT -> call build_page again with step: "#{nxt}" (same intent).)].join("\n")
-        end
-
-        # The answer for an unknown step name.
-        def redirect_step(step)
-          "no such step: #{step.inspect} - the workflow is #{STEPS.join(" -> ")}. " \
-            "Omit step for the guided entry, or pass one of those."
         end
 
         # Step 1: host doctor. Reads what it can from @app_root and degrades
@@ -882,6 +1063,45 @@ module Poetry
           end.join("\n")
         end
 
+        # The report_gap tool: what the task lacked, as a link that opens a
+        # prefilled issue. Nothing leaves the server.
+        def report_gap(arguments)
+          Poetry::Agent::GapReport.new(
+            summary: arguments["summary"], kind: arguments.fetch("kind", "other"), component: arguments["component"],
+            wanted: arguments["wanted"], workaround: arguments["workaround"]
+          ).to_s
+        end
+
+        # The find_icon tool: the icon names that answer a description,
+        # best first, each with the words it is filed under (the ones that
+        # matched ahead of the rest).
+        def find_icon(arguments)
+          return NO_ICON_SET unless @icons
+
+          query = arguments["query"].to_s.strip
+          matches = @icons.find(query, limit: arguments.fetch("limit", Poetry::Core::Icons::Finder::LIMIT))
+          return ["No icon answers #{query.inspect}. #{ICON_HINT}", @icons.hint].compact.join(" ") if matches.empty?
+
+          lines = matches.map { |match| icon_line(match) }
+          asked = query.downcase.scan(/[a-z0-9]+/)
+          named = matches.any? { |match| match[:name].split("-").intersect?(asked) }
+          lines << @icons.hint if @icons.hint && !named
+          example = matches.first[:name]
+          ["#{matches.size} icon#{"s" if matches.size > 1} for #{query.inspect}, best first:", *lines,
+           "Render one with poetry_icon(name: #{icon_symbol(example)}). A name with a hyphen is a quoted " \
+           "symbol, as in poetry_icon(name: :\"circle-alert\")."].join("\n")
+        end
+
+        # One answer: the name, then up to six of its tags (the finder
+        # lists the ones that answered first).
+        def icon_line(match)
+          filed = match[:tags].first(6)
+          filed.empty? ? "- #{match[:name]}" : "- #{match[:name]} (filed under: #{filed.join(", ")})"
+        end
+
+        # An icon name as the Ruby symbol a template writes.
+        def icon_symbol(name) = name.include?("-") ? ":\"#{name}\"" : ":#{name}"
+
         # Runtime skill delivery: the SAME
         # files `rails g poetry:skill` installs, served over MCP for hosts
         # that cannot write files. SKILL.md alone first - the skill's own
@@ -971,6 +1191,7 @@ module Poetry
             facets << prop["variants"].join("|") if prop["variants"]
             facets << "required" if prop["required"] && !prop.key?("default")
             facets << "format: #{prop["format"]}" if prop["format"]
+            facets << Poetry::Core::Check::Renames.notice(prop["deprecated"]) if prop["deprecated"]
             suffix = facets.any? ? " (#{facets.join("; ")})" : ""
             description = prop["description"] ? " - #{prop["description"]}" : ""
             "- #{prop["name"]}: #{prop["type"]}#{suffix}#{description}"
@@ -1024,6 +1245,7 @@ module Poetry
           (entry["parts"] || []).each { |part| lines << part_line(part) }
           # The operate surface: the tools an in-page agent may invoke on a
           # rendered instance once the call opts in (webmcp: "name").
+          lines.concat(Poetry::Core::LlmsText.behavior_lines(entry))
           (entry["tools"] || []).each { |tool| lines << tool_line(tool) }
           (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
           lines
@@ -1040,6 +1262,16 @@ module Poetry
           "- wiring #{controller["identifier"]}: actions #{actions.join(", ")}"
         end
 
+        # The words for a tool's hints: read-only or mutating, then the hints set.
+        def tool_hints(tool)
+          annotations = tool["annotations"] || {}
+          words = [annotations["readOnlyHint"] ? "read-only" : "mutating"]
+          words << "untrusted content" if annotations["untrustedContentHint"]
+          words << "consequential" if annotations["consequentialHint"]
+          words << "debugging" if annotations["debugging"]
+          words
+        end
+
         # One line for a component's WebMCP tool: its name, description and parameters.
         def tool_line(tool)
           schema = tool["inputSchema"] || {}
@@ -1050,8 +1282,7 @@ module Poetry
             facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
             "#{name} (#{facets.join(", ")})"
           end
-          hint = tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"
-          facets = [hint]
+          facets = [tool_hints(tool).join(", ")]
           facets << "params: #{params.join(", ")}" if params.any?
           "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
             "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
@@ -1100,19 +1331,9 @@ module Poetry
         # The registry path whose title matches a name, or nil.
         def path_for(name) = @entries.keys.find { |path| title(path) == name }
 
-        # A JSON-RPC result envelope.
-        def result(id, value) = { "jsonrpc" => "2.0", "id" => id, "result" => value }
-
-        # A JSON-RPC error envelope.
-        def error(id, code,
-                  message)
-          { "jsonrpc" => "2.0", "id" => id, "error" => { "code" => code, "message" => message } }
-        end
-
         # A tool result with one text content block, flagged when it is an error.
-        def tool_content(text,
-                         error: false)
-          { "content" => [{ "type" => "text", "text" => text }], "isError" => error }
+        def tool_content(text, error: false)
+          ::MCP::Tool::Response.new([{ type: "text", text: text }], error: error)
         end
       end
     end

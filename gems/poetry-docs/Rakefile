@@ -25,4 +25,4 @@ task check: :environment do
   Rake::Task["poetry:check"].invoke("../../{app/views,app/controllers,app/helpers,app/lib}/**/*.{html.erb,rb}")
 end
 
-task default: %i[test rubocop poetry_docs:css:verify]
+task default: %i[test rubocop poetry_docs:vendored:verify poetry_docs:css:verify]

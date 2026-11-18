@@ -12,7 +12,12 @@ module Poetry
       module SSE
         # The incremental parser.
         class Parser
-          # Lines that carried data the parser could not read as JSON.
+          # The largest frame it buffers, as the reference client caps it.
+          MAX_FRAME_BYTES = 10 * 1024 * 1024
+
+          # Frames whose data the parser could not read as a JSON object.
+          # Turning bytes into events is the reader's job, and a frame that maps
+          # to no event is a decode failure: {Client#run} fails the run on one.
           #
           # @return [Array<String>]
           attr_reader :errors
@@ -29,8 +34,13 @@ module Poetry
           # @param chunk [String]
           # @yieldparam event [Hash] the parsed JSON object (string keys)
           # @return [void]
+          # @raise [ProtocolError] when a frame outgrows {MAX_FRAME_BYTES}
           def feed(chunk, &)
             @buffer << chunk
+            if @buffer.bytesize + @data.sum(&:bytesize) > MAX_FRAME_BYTES
+              raise ProtocolError.new("An SSE frame exceeded #{MAX_FRAME_BYTES} bytes", stage: :transport)
+            end
+
             while (newline = @buffer.index("\n"))
               line = @buffer.slice!(0..newline).chomp
               consume(line, &)
@@ -66,7 +76,9 @@ module Poetry
             payload = @data.join("\n")
             @data = []
             event = JSON.parse(payload)
-            yield event if event.is_a?(Hash) && block_given?
+            return @errors << payload unless event.is_a?(Hash)
+
+            yield event if block_given?
           rescue JSON::ParserError
             @errors << payload
           end

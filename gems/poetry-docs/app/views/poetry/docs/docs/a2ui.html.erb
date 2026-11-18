@@ -18,34 +18,47 @@
     import { registerPoetryControllers } from "@poetry/controllers"
     import { registerPoetryAgent } from "@poetry/agent"
     registerPoetryControllers(application)
-    registerPoetryAgent(application) // the surface controller, the versioned replace, the morph guard
+    registerPoetryAgent(application) // the surface controller, the versioned replace, the MCP App frame guard
   CODE
   catalog_source = <<~CODE
     # config/routes.rb
-    get "a2ui/catalog.json" => "a2ui#catalog"
+    get "a2ui/v1_0/catalog.json" => "a2ui#catalog", defaults: { version: "1.0" }
+    get "a2ui/v0_9/catalog.json" => "a2ui#catalog", defaults: { version: "v0.9" }
 
     # app/controllers/a2ui_controller.rb
     class A2uiController < ApplicationController
       CATALOG = Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)
 
       def catalog
-        render json: CATALOG.to_h   # CATALOG.inline for a middleware that wants { catalogId, components }
+        # CATALOG.inline(version:) for a middleware that wants { catalogId, components }
+        render json: CATALOG.to_h(version: params[:version])
       end
     end
   CODE
+  versions_source = <<~CODE
+    { "version": "1.0",  "updateDataModel": { "surfaceId": "signin", "path": "/email", "value": "ada@example.com" } }
+    { "version": "1.0",  ... "text": { "@path": "/email" } ... "condition": { "@call": "required", "args": { ... } } }
+    { "version": "v0.9", ... "text": { "path": "/email" } ... "condition": { "call": "required", "args": { ... } } }
+  CODE
+  strict_source = <<~CODE
+    session = Poetry::Agent::A2UI::Session.new(strict: true)
+    session.apply(message)       # an update that breaks the surface is refused whole
+    session.errors.last          # => { "version" => "1.0", "error" => { "code" => "INTEGRITY_ERROR", "surfaceId" => "signin",
+                                 #      "message" => "Component 'root' references non-existent component 'email' ..." } }
+  CODE
   message_source = <<~CODE
-    { "version": "v1.0",
+    { "version": "1.0",
       "createSurface": {
         "surfaceId": "signin", "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
         "sendDataModel": true, "dataModel": { "email": "" },
         "components": [
           { "id": "root", "component": "Column", "children": ["title", "email", "submit"] },
           { "id": "title", "component": "Text", "text": "## Sign in" },
-          { "id": "email", "component": "TextField", "label": "Email", "value": { "path": "/email" },
-            "checks": [{ "condition": { "call": "email", "args": { "value": { "path": "/email" } } },
+          { "id": "email", "component": "TextField", "label": "Email", "value": { "@path": "/email" },
+            "checks": [{ "condition": { "@call": "email", "args": { "value": { "@path": "/email" } } },
                          "message": "Enter a valid email" }] },
           { "id": "submit", "component": "Button", "child": "submit_label", "variant": "primary",
-            "action": { "event": { "name": "sign_in", "context": { "email": { "path": "/email" } } } } },
+            "action": { "event": { "name": "sign_in", "context": { "email": { "@path": "/email" } } } } },
           { "id": "submit_label", "component": "Text", "text": "Sign in" } ] } }
   CODE
   fold_source = <<~CODE
@@ -116,7 +129,7 @@
     end
   CODE
   message_json = <<~CODE
-    { "version": "v1.0",
+    { "version": "1.0",
       "action": { "name": "sign_in", "surfaceId": "signin", "sourceComponentId": "submit",
                   "timestamp": "2026-09-01T18:05:00.000Z", "context": { "email": "ada@example.com" } } }
   CODE
@@ -128,9 +141,43 @@
       required: %w[value], callers: "rendererOrAgent"
     ) { |args, _evaluator| args["value"].to_s.split.map { |word| word[0] }.join.upcase }
   CODE
+  agent_function_source = <<~CODE
+    # The agent's functions as Ruby in this app: a call is answered where it is made
+    session = Poetry::Agent::A2UI::Session.new(
+      agent_functions: {
+        "quote" => ->(args) { Quotes.price(args["symbol"], currency: args["currency"]) },
+        "isFree" => ->(args) { User.where(username: args["name"]).none? }
+      }
+    )
+    session.apply_all(messages)
+    html = render_surface(session.surface("quote"))          # every binding has its answer already
+
+    # An agent elsewhere: the calls gather, you send them and apply the answers
+    session = Poetry::Agent::A2UI::Session.new(agent_functions: true)
+    session.apply_all(messages)
+    html = render_surface(session.surface("quote"))          # a binding that needs the agent is sent, and renders empty
+    until (calls = session.agent_calls.shift(session.agent_calls.size)).empty?
+      changed = session.apply_all(agent.answer(calls))        # the agent's agentFunctionResponse messages
+      html = render_surface(session.surface("quote")) if changed.include?("quote")
+    end
+
+    # An action whose context, user message or function call needs an answer first
+    action = session.action(surface_id: "quote", source: "buy")
+    while action.pending? && (calls = session.agent_calls.shift(session.agent_calls.size)).any?
+      session.apply_all(agent.answer(calls))                  # one call at a time, in the order the event writes them
+    end
+    agent.reply(action.to_h) if action.valid?
+
+    # Declared without a block: the agent's, with its arguments held to a schema (defaults filled in) before they go
+    Poetry::Agent::A2UI::Functions.basic.define(
+      "quote", description: "A price.", returns: "number",
+      schema: { "type" => "object", "required" => ["symbol"],
+                "properties" => { "symbol" => { "type" => "string" }, "currency" => { "type" => "string", "default" => "USD" } } }
+    )
+  CODE
   interpolation_source = <<~CODE
     { "id": "total", "component": "Text",
-      "text": { "call": "formatString",
+      "text": { "@call": "formatString",
                 "args": { "value": "${/count} ${pluralize(value: ${/count}, one: 'item', other: 'items')}, ${formatCurrency(value: ${/total}, currency: 'USD')}" } } }
   CODE
 %>
@@ -169,13 +216,61 @@
         Poetry's own catalog is the registry projected into A2UI's schema: every
         component with its style axes as enums, options as typed properties, slots
         as child references, and its rules in the description. Serve it for agents
-        you brief yourself; this site's copy lives at
-        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %>. Surfaces
+        you brief yourself, once per protocol version: this site's copies live at
+        <%= link_to "/a2ui/v1_0/catalog.json", "/a2ui/v1_0/catalog.json" %> and
+        <%= link_to "/a2ui/v0_9/catalog.json", "/a2ui/v0_9/catalog.json" %>. Surfaces
         against it render straight from the registry, with no hand mapping, so a
         new component is available the moment it is registered.
       </p>
+      <p>
+        Each catalog is bound once per version: the basic catalog under its v1.0 id
+        and its v0.9 id (and the id AG-UI's A2UI toolkits send for it), Poetry's under
+        <code>Catalog::DEFAULT_ID</code> and <code>Catalog::V0_9_ID</code>. A surface
+        naming a catalog the session does not hold is refused, as the spec says,
+        rather than drawn with the wrong one; pass
+        <code>Session.new(fallback_catalog:)</code> to bind unknown ids to a catalog of
+        your choosing.
+      </p>
     <% end %>
     <%= poetry_code_block(code: catalog_source, language: "ruby", label: "Serving the catalog") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="versions">Two versions</h2>
+      <p>
+        A2UI v0.9 and v1.0 run side by side. Each surface speaks the version of the
+        message that created it, and everything the session sends about it carries
+        that version: <code>"1.0"</code> or <code>"v0.9"</code>. The two spell
+        dynamic values differently. v1.0 binds data with <code>{ "@path" }</code>
+        and calls a function with <code>{ "@call" }</code>, so a plain object's
+        <code>path</code> key is data there, and a literal key that starts with
+        <code>@</code> is escaped by doubling it; v0.9 uses <code>path</code> and
+        <code>call</code>. The AG-UI A2UI middleware speaks v0.9 today, and A2UI's
+        own agent SDKs speak v1.0.
+      </p>
+      <p>
+        Every message names its version. v1.0's is the bare <code>"1.0"</code>;
+        its earlier spelling <code>"v1.0"</code>, which the published agent SDKs
+        still send, is accepted too. The browser's checks need no version of their
+        own: the server writes them in v1.0's spelling whatever the surface speaks.
+      </p>
+      <p id="upgrading-a-log">
+        A log of messages written before 0.2.0 names no version, and it is in
+        neither dialect as it stands: a <code>createSurface</code> there carries
+        its components and data model, as v1.0's does, with bindings spelled
+        <code>path</code> and <code>call</code>, as v0.9's are. To replay one,
+        give each message a version and make it that version's. For
+        <code>"1.0"</code>, respell each binding as <code>@path</code> and each
+        call as <code>@call</code>. For <code>"v0.9"</code>, move the components
+        into an <code>updateComponents</code> and the data model into an
+        <code>updateDataModel</code> after the <code>createSurface</code>. A v0.9
+        <code>createSurface</code> that still carries either is refused, so a log
+        stamped without the change fails where it used to render and never
+        renders empty.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: versions_source, language: "json", label: "The same binding in each version") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -190,9 +285,42 @@
         error: streaming delivers components in any order, and the surface renders
         what it has.
       </p>
+      <p>
+        On a v1.0 surface a component and a function call may each name their own
+        catalog with <code>catalogId</code>, among the session's catalogs of the
+        surface's version; one that names none uses the surface's default. A2UI's
+        agent SDKs write surfaces that way whenever more than one catalog is in
+        play, and a v1.0 surface may name no default at all.
+      </p>
     <% end %>
     <%= poetry_code_block(code: message_source, language: "json", label: "A surface, as the agent sends it") %>
     <%= poetry_code_block(code: fold_source, language: "ruby", label: "Folding") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        A catalog's composition rules hold in every mode: an update that puts a
+        component under a parent its <code>allowedParents</code> leaves out, or a
+        child into a container its <code>allowedChildren</code> leaves out, is
+        refused whole, as the spec's processors refuse it. Strict validation is opt
+        in. With <code>strict: true</code> an update is refused whole unless the
+        surface keeps its <code>root</code>, references only components it holds,
+        and reaches every component from the root; values and function calls nest
+        within the spec's limits, bound paths are pointers, v1.0 ids and function
+        names are identifiers, and every call names a function its catalog
+        declares. The two topology rules are also flags of their own,
+        <code>allow_orphans:</code> and <code>allow_dangling_references:</code>,
+        for a session that is not strict but should still refuse an unreached
+        component or a reference to one it does not hold (the spec's
+        <code>allowOrphanComponents</code> and <code>allowDanglingReferences</code>);
+        by default a surface tolerates what streaming leaves incomplete. Every
+        message is also held to its version's
+        schema, the specification's own, with the surface's catalogs plugged in, so
+        an unknown property, a mistyped value or a malformed call is refused and
+        named by its component. A catalog binding of your own takes part by
+        answering <code>document</code> with its catalog document. Use it while developing an agent, or for
+        one that sends whole surfaces; leave it off for agents that stream.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: strict_source, language: "ruby", label: "Strict validation") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -236,7 +364,15 @@
         carries, each coerced to its kind), runs the surface's checks, and resolves
         the source component's event into the spec's action message. A valid
         action goes to the agent; an invalid one comes back with its failures by
-        component, and you re-render the surface with them.
+        component, and you re-render the surface with them. A
+        <code>functionCall</code> action sends no action message: it runs a catalog
+        function on the renderer, under the user's gesture, and the surface's data
+        may have changed, so <code>action.local?</code> means re-render the surface
+        and send nothing (a function no catalog implements is another matter, see
+        <a href="#agent-functions">Functions the agent runs</a>). A v1.0 action carries what you pass as
+        <code>metadata:</code> (an attestation, an audit tag) as its
+        <code>metadata.extensions</code>, each key an identifier; a component's own
+        <code>metadata</code> is held to the same rule when it arrives.
       </p>
     <% end %>
     <%= poetry_code_block(code: action_source, language: "ruby", label: "The action endpoint") %>
@@ -261,12 +397,26 @@
         and a failure renders under its control. In the browser, the surface form
         carries the same rules with their bindings made absolute, and the
         <code>poetry--agent--a2ui-surface</code> controller evaluates them on every
-        keystroke: a button whose own checks fail is disabled, a failing input turns
-        invalid and its error slot fills. The five validators and the three
-        combinators run in both places; a function the browser does not know
-        passes there and is judged by the server. Where the browser can enforce a
-        rule natively, the renderer also emits the attribute: required, a pattern,
-        a length range, an email type.
+        keystroke: a button whose own checks fail is disabled from the start, and
+        what the user is told waits for them. An input's message and invalid state
+        appear once they have edited it, a button's reason once they have edited
+        any input; until then the page reads as the server rendered it, including
+        the failures it rendered after a rejected action, and a failure on a
+        function the browser does not know stands until the server judges it
+        again. A streamed re-render keeps the edited inputs and judges them again
+        once the morph is over. The five validators and the three combinators run
+        in both places. Where the browser can enforce a rule natively, the renderer
+        also emits the attribute: required, a pattern, a length range, an email
+        type.
+      </p>
+      <p>
+        A call that leaves out an argument its function requires is refused when
+        it arrives, in every mode, with the function and the argument named
+        (<code>numeric: missing value</code>). A check built on such a call has
+        nothing to judge, so it would fail whatever was typed and its form could
+        never be sent. The refusal goes back to the agent like any other
+        <code>VALIDATION_FAILED</code>, under the component's path, and the
+        update applies once the argument is there.
       </p>
     <% end %>
   </section>
@@ -282,9 +432,30 @@
         <code>required</code>, <code>regex</code>, <code>length</code>,
         <code>numeric</code>, and <code>email</code>, the combinators
         <code>and</code>, <code>or</code>, and <code>not</code>, and
-        <code>openUrl</code>, which validates the scheme and renders as a link.
-        <code>@index</code> is available inside a list template. Poetry's own
-        catalog declares the same set, so agents against either catalog use them.
+        <code>openUrl</code>, which validates the scheme and renders as a link; it
+        runs only from a user's gesture, so a button's action may call it and a
+        binding may not. <code>@index</code> is available inside a list template.
+        Poetry's own catalog declares the same set, so agents against either
+        catalog use them. The validators answer as the surface's version does: a
+        boolean in v0.9, a ValidationResult in v1.0, whose message a check shows
+        before the rule's own.
+      </p>
+      <p>
+        <code>regex</code> reads its pattern in the A2UI regex dialect, in every
+        version: a portable subset of ECMAScript patterns in which <code>^</code>
+        and <code>$</code> are the ends of the value, <code>\d</code>,
+        <code>\w</code> and <code>\b</code> are ASCII, and backreferences,
+        lookbehind, named groups and inline flags have no place. Before anything
+        is matched the pattern passes the protocol's safety check, so one that
+        could backtrack without bound (<code>(a+)+$</code>,
+        <code>\d+\s*\d+</code>) fails as an expression error instead of running,
+        as does a pattern past 256 characters; a value past 4,096 does not match.
+        The browser's copy applies the same dialect and the same check. A boolean
+        argument (<code>and</code>, <code>or</code>, <code>not</code>, a check's
+        condition) reads by the protocol's coercion, alike in every version: a
+        ValidationResult as its verdict, the string <code>"true"</code> in any
+        letter case as true and every other string as false, a number as whether
+        it is not zero, and anything else as false.
       </p>
     <% end %>
     <%= poetry_code_block(code: interpolation_source, language: "json", label: "Interpolation") %>
@@ -293,10 +464,74 @@
         Add your own with <code>Functions.basic.define</code>. A function is
         renderer-only unless it declares otherwise; one declared for agents answers
         an agent's <code>callRendererFunction</code> with a response the session
-        collects in <code>session.responses</code>.
+        collects in <code>session.responses</code>, its value or, when the call is
+        refused or raises, an error inside it. A call names its catalog, and runs in
+        the surface it names, whose root data context its arguments read, or in an
+        isolated empty model when it names none, so nothing of any surface leaks
+        into it. Pass
+        <code>session.apply(message, user_activated: true)</code> when the message
+        answers the user's own gesture, so a function that needs one may run. A
+        function declared <code>callers: "agentOnly"</code> is the agent's alone:
+        on a v1.0 surface a binding or an action that names it is refused, in
+        strict validation and again when it would run.
       </p>
     <% end %>
     <%= poetry_code_block(code: function_source, language: "ruby", label: "A function of your own") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h3 id="agent-functions">Functions the agent runs</h3>
+      <p>
+        On a v1.0 surface, a function that no catalog implements here is the
+        agent's (the protocol's <code>callAgentFunction</code>). Where your agent
+        is Ruby in the same app, hand the session its functions and nothing has
+        to travel: <code>agent_functions:</code> takes a handler for each, by
+        name. A handler receives the call's resolved arguments and returns the
+        value, and the call is answered the moment a binding, a check rule or an
+        action makes it, so the surface renders with its answers and an action
+        comes back finished. A handler that raises fails its call (raise
+        <code>Poetry::Agent::A2UI::AgentCalls::Failure</code> to say why, and
+        under which code), and a function without a handler fails as the agent's
+        unknown function.
+      </p>
+      <p>
+        Where the agent is elsewhere, build the session with
+        <code>agent_functions: true</code> and it sends the call instead of
+        failing it. The messages gather in
+        <code>session.agent_calls</code>; a binding that waits renders as nothing
+        and a check rule that waits does not fail; and when you apply the agent's
+        <code>agentFunctionResponse</code>, the surface it changed comes back
+        from <code>session.apply</code> like any other change, in a newer
+        version. Identical calls on a surface ride one request, and its answer
+        serves every later render. A call the agent fails is reported in
+        <code>session.errors</code> with the call's id, the binding stays empty,
+        and it does not ask again until its arguments change.
+      </p>
+      <p>
+        An action waits the same way: <code>session.action</code> returns an
+        action that is <code>pending?</code> while its event's context, its user
+        message or its function call needs an answer, each call sent once the
+        one before it was answered, and the same action carries its message
+        when the last answer is applied. A function declared without a block is
+        declared for the agent: its arguments are held to the schema before they
+        are sent, its defaults filled in, and <code>callers: "agentOnly"</code>
+        or <code>activation: true</code> keep it from a surface or from anything
+        but a user's gesture. A <code>formatString</code> template part never
+        reaches the agent, and neither does a v0.9 surface.
+      </p>
+      <p>
+        A session has no clock: call <code>session.expire_agent_calls</code>
+        when you look at it again, and a call that waited past
+        <code>agent_call_timeout</code> (30 seconds) fails as a timeout. A
+        deleted surface takes its waiting calls with it, without an error. A
+        binding's call gets its id from its surface and its arguments, so a
+        session you rebuild from its messages asks nothing twice: an answer
+        already among the messages settles the call the moment the binding is
+        read. A rebuilt session cannot know which calls it already sent, so
+        keep the ids you sent if you rebuild while calls wait. AG-UI's A2UI
+        middleware does not carry these messages; send them to your agent over
+        your own endpoint.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: agent_function_source, language: "ruby", label: "Calling the agent") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -306,10 +541,10 @@
         An update replaces the whole surface, which would reset a tab the reader
         picked or text they typed. Two things prevent that. Every rendered component
         carries a render-stable key, so two renders of a surface are byte-identical
-        and Turbo morph pairs the same element across them. And the runtime's guard
-        keeps what the server cannot know while a morph runs: tab selection, a
-        dialog's open state, an expanded popup, and any control whose value differs
-        from what the server last rendered. Pass <code>morph: false</code> to
+        and Turbo morph pairs the same element across them. And Poetry's morph guard
+        keeps what the server cannot know while a morph runs: the tab selection,
+        dialog state and expanded popups the reader changed, and any control whose
+        value differs from what the server last rendered. Pass <code>morph: false</code> to
         Streams if you want plain swaps.
       </p>
     <% end %>
@@ -325,6 +560,17 @@
         whatever your agent returns from a request, as the stream action above
         assumes; over MCP they sit inside an <code>application/a2ui+json</code>
         resource, and the messages you extract fold the same way.
+      </p>
+      <p>
+        While the AG-UI middleware's agent is still building a surface, its activity
+        carries only a status; the session keeps it as <code>session.status</code>
+        (<code>{ "status" =&gt; "building", "progressTokens" =&gt; 20 }</code>) for a
+        placeholder. To tell an agent what you render, send
+        <code>session.capabilities</code>, the catalogs the session holds for each
+        version (<code>inline: true</code> adds each catalog's definition, for an
+        agent that cannot fetch one by its id);
+        <code>session.renderer_data_model(version:)</code> is the data models of
+        the surfaces that asked to send theirs.
       </p>
     <% end %>
   </section>

@@ -1,0 +1,7 @@
+<%= element_tag(:div, **root_attributes) do %>
+  <%= element_tag(:div, "data-slot": "island-shell", class: shell_classes, **stimulus_attributes_for(:shell)) do %><%= content %><% end %>
+  <% if name.present? %>
+    <%= tag.input(type: "hidden", name: name, value: value, "data-slot": "island-input", **stimulus_attributes_for(:input)) %>
+  <% end %>
+  <%= tag.script(props_json, type: "application/json") %>
+<% end %>

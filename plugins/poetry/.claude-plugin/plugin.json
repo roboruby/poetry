@@ -1,0 +1,19 @@
+{
+  "name": "poetry",
+  "description": "Skills for building Rails interfaces with Poetry, a ViewComponent and Stimulus component library: using the components, composing a page, authoring a component, and reading the documentation site.",
+  "version": "0.1.13",
+  "author": {
+    "name": "Matt Solt"
+  },
+  "homepage": "https://poetryui.com",
+  "repository": "https://github.com/roboruby/poetry",
+  "license": "MIT",
+  "keywords": [
+    "rails",
+    "viewcomponent",
+    "stimulus",
+    "hotwire",
+    "components",
+    "ui"
+  ]
+}

@@ -3,6 +3,7 @@
 #
 #   /r/registry.json     the index (shadcn registry.json shape)
 #   /r/:name.json        one full item, file content embedded
+#   /r/community/screenshots/:name.webp   a community item's screenshot
 #   /r/registries.json   the public namespace directory - the client's
 #                        auto-resolution source for unconfigured @namespaces;
 #                        carries the verified field the installer's trust
@@ -20,11 +21,25 @@ module Poetry
         }
       end
 
+      # An item: the gems' own, else a community item of that name.
       def show
-        item = RegistryIndex.item(params[:name].delete_suffix(".json"))
-        return head :not_found unless item
+        name = params[:name].delete_suffix(".json")
+        item = RegistryIndex.item(name)
+        return render json: item if item
 
-        render json: item
+        path = CommunityRegistry.file("#{name}.json")
+        return head :not_found unless path
+
+        render json: path.read
+      end
+
+      # A community item's screenshot, at the address its detail names.
+      def screenshot
+        path = CommunityRegistry.file("screenshots/#{params[:file]}")
+        return head :not_found unless path
+
+        expires_in 1.hour, public: true
+        send_file path, type: "image/webp", disposition: "inline"
       end
 
       def directory

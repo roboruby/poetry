@@ -1,0 +1,30 @@
+data: {"type":"RUN_STARTED","threadId":"strands-interrupt-162641","runId":"3add0b62-c5d3-4943-9562-1eefc73b70a0","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"1233d5e1-fb56-4ca6-a459-d34236fbd4d1","role":"user","content":"Book a meeting with Ada"},{"id":"72a8fe9b-51da-4608-9da3-b9e3406e852e","role":"assistant","content":"","toolCalls":[{"id":"call_schedule_1","type":"function","function":{"name":"schedule_meeting","arguments":"{\"topic\":\"Quarterly sync\",\"attendee\":\"Ada\"}"}}]}]}
+
+data: {"type":"TOOL_CALL_RESULT","toolCallId":"call_schedule_1","messageId":"915eda9f-752e-441b-a76f-c16ed62467fb","content":"\"Meeting scheduled for Thu 10am: Quarterly sync\""}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"1233d5e1-fb56-4ca6-a459-d34236fbd4d1","role":"user","content":"Book a meeting with Ada"},{"id":"72a8fe9b-51da-4608-9da3-b9e3406e852e","role":"assistant","content":"","toolCalls":[{"id":"call_schedule_1","type":"function","function":{"name":"schedule_meeting","arguments":"{\"topic\":\"Quarterly sync\",\"attendee\":\"Ada\"}"}}]},{"id":"915eda9f-752e-441b-a76f-c16ed62467fb","role":"tool","content":"\"Meeting scheduled for Thu 10am: Quarterly sync\"","toolCallId":"call_schedule_1"}]}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","delta":"Done: "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","delta":"I used"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","delta":"ool re"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"39b524fe-00dd-44d4-b2cc-533b324b00c8","delta":"sult."}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":33,"outputTokens":8,"totalTokens":41}},"source":"strands"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"1233d5e1-fb56-4ca6-a459-d34236fbd4d1","role":"user","content":"Book a meeting with Ada"},{"id":"72a8fe9b-51da-4608-9da3-b9e3406e852e","role":"assistant","content":"","toolCalls":[{"id":"call_schedule_1","type":"function","function":{"name":"schedule_meeting","arguments":"{\"topic\":\"Quarterly sync\",\"attendee\":\"Ada\"}"}}]},{"id":"915eda9f-752e-441b-a76f-c16ed62467fb","role":"tool","content":"\"Meeting scheduled for Thu 10am: Quarterly sync\"","toolCallId":"call_schedule_1"},{"id":"39b524fe-00dd-44d4-b2cc-533b324b00c8","role":"assistant","content":"Done: I used the tool result."}]}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"RUN_FINISHED","threadId":"strands-interrupt-162641","runId":"3add0b62-c5d3-4943-9562-1eefc73b70a0","outcome":{"type":"success"},"usage":[{"provider":"openai","model":"gpt-4.1-mini","inputTokens":33,"outputTokens":8,"totalTokens":41}]}
+

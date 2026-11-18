@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0]
+
+### Changed
+
+- The Composer is exempt from the bridge (`BRIDGE_EXEMPT`): it is a chat message form of its own, never a field inside a simple_form form.
+
 ## [0.1.13] - 2026-10-13
 
 ### Changed

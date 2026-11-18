@@ -81,9 +81,10 @@ module Poetry
       end
 
       initializer "poetry_core.assets", before: "propshaft.set_manifest" do |_app|
-        # Add JavaScript to asset paths for Propshaft
+        # Add JavaScript to asset paths for Propshaft: the minified tree in a
+        # released gem, the source in the repository
         if Rails.application.config.respond_to?(:assets)
-          Rails.application.config.assets.paths << Poetry::Core.root.join("app/javascript")
+          Rails.application.config.assets.paths << Poetry::Core.javascript_path(Poetry::Core.root)
         end
       end
 
@@ -94,7 +95,7 @@ module Poetry
       initializer "poetry_core.importmap", before: "importmap" do |app|
         if app.config.respond_to?(:importmap)
           app.config.importmap.paths << Poetry::Core.root.join("config/importmap.rb")
-          app.config.importmap.cache_sweepers << Poetry::Core.root.join("app/javascript")
+          app.config.importmap.cache_sweepers << Poetry::Core.javascript_path(Poetry::Core.root)
         end
       end
     end

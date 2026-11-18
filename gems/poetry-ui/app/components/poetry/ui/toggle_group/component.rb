@@ -19,8 +19,8 @@ module Poetry
       #
       # @example A text-alignment switcher
       #   render Poetry::Ui::ToggleGroup::Component.new(value: "left", label: "Text alignment") do |group|
-      #     group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
-      #     group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #     group.with_item(value: "left", label: "Align left") { icon(:"text-align-start") }
+      #     group.with_item(value: "center", label: "Align center") { icon(:"text-align-center") }
       #   end
       class Component < Poetry::Core::Component
         # The closed vocabulary for the type axis.
@@ -91,14 +91,9 @@ module Poetry
               register
               value :type
             end
-            controller :roving_focus do
-              register
-              # DEFAULT tabindex-managing mode (contrast Accordion's
-              # manage_tabindex: false).
-              value :orientation
-              value :loop, true
-              action :keydown, on: :keydown
-            end
+            # DEFAULT tabindex-managing mode (contrast Accordion's
+            # manage_tabindex: false).
+            behavior :roving_focus, orientation: :option, loop: true
           end
           on :item do
             controller(:toggle_group) { action :toggle, on: :click }

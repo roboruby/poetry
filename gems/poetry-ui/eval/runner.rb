@@ -229,6 +229,27 @@ module Poetry
             })
           ]
         },
+        "agent_steps" => {
+          "description" => "An agent's steps: a search with its result count, a running test step, a " \
+                           "failed tool call that reveals its error output, and a link to a file it changed",
+          "gates" => [
+            Gate.new(:steps_described, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("3 results") && doc.text.include?("Running bin/rails test")
+            }),
+            Gate.new(:disclosure_is_a_wired_button, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? &&
+                doc.css("button[aria-expanded]").any? do |button|
+                  button.text.include?("Failed to run") && doc.at_css("##{button["aria-controls"]}")
+                end
+            }),
+            Gate.new(:error_output_is_code, :cross_arm, lambda { |doc, _html|
+              doc.css("pre, code").any? { |node| node.text.include?("PendingMigrationError") }
+            }),
+            Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
         "chat_transcript" => {
           "description" => "A chat transcript: date divider, assistant message with an attachment " \
                            "and a quick reply, and a live 'thinking' status",
@@ -247,6 +268,61 @@ module Poetry
             }),
             Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
               doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
+        "chat_composer" => {
+          "description" => "A chat composer while a reply is running: a named message field holding a " \
+                           "draft, and a stop button that leaves the draft unsent",
+          "gates" => [
+            Gate.new(:field_is_named, :cross_arm, lambda { |doc, _html|
+              doc.css("textarea").any? do |field|
+                field["aria-label"].to_s.strip != "" || field["aria-labelledby"] ||
+                  (field["id"] && doc.at_css(%(label[for="#{field["id"]}"])))
+              end
+            }),
+            # The tell: a Stop button that belongs to the message form submits
+            # the draft with it. A real one posts through a form of its own.
+            Gate.new(:stop_leaves_the_draft_unsent, :cross_arm, lambda { |doc, _html|
+              field_form = doc.at_css("textarea")&.ancestors("form")&.first
+              doc.css("button").any? do |button|
+                owner = button["form"] ? doc.at_css(%(form[id="#{button["form"]}"])) : button.ancestors("form").first
+                (button["aria-label"].to_s + button.text).match?(/stop/i) && owner && owner != field_form
+              end
+            }),
+            Gate.new(:buttons_are_named, :cross_arm, lambda { |doc, _html|
+              doc.css("button").all? { |button| button["aria-label"].to_s.strip != "" || button.text.strip != "" }
+            }),
+            Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
+        "chat_reply" => {
+          "description" => "An assistant's reply written in Markdown, shown in a transcript: its heading, " \
+                           "a link out, a cited source, a block of code, and text in the reply that is markup",
+          "gates" => [
+            # The tell: Markdown rendered by a gem and marked html_safe makes
+            # the model's words the page's markup.
+            Gate.new(:reply_text_is_inert, :cross_arm, lambda { |doc, _html|
+              doc.css("script").empty? && doc.xpath(".//@*[starts-with(name(), 'on')]").empty? &&
+                doc.css("a[href]").none? { |link| link["href"].strip.match?(/\A(javascript|data|vbscript):/i) }
+            }),
+            Gate.new(:headings_sit_under_the_page, :cross_arm, lambda { |doc, _html|
+              doc.css("h1, h2").empty?
+            }),
+            Gate.new(:links_out_are_marked, :cross_arm, lambda { |doc, _html|
+              outward = doc.css("a[href]").select { |link| link["href"].start_with?("http") }
+              outward.any? && outward.all? { |link| link["rel"].to_s.include?("noopener") }
+            }),
+            # A citation whose whole text is a number says nothing to a
+            # screen reader unless it is named for its source.
+            Gate.new(:citations_name_their_source, :cross_arm, lambda { |doc, _html|
+              marks = doc.css("a[href]").select { |link| link.text.strip.match?(/\A\[?\d+\]?\z/) }
+              marks.any? && marks.all? { |link| link["aria-label"].to_s.match?(/[[:alpha:]]/) }
+            }),
+            Gate.new(:code_is_a_block, :cross_arm, lambda { |doc, _html|
+              doc.css("pre").any?
             })
           ]
         },

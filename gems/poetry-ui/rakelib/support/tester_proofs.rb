@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require "tmpdir"
+
 # The shipped interaction testers (lib/poetry/ui/testing) proven against
-# poetry's own preview pages: one method per proof, each driving a
+# poetry's own preview pages (and, for what needs Turbo, the dummy host's
+# composer menu gate): one method per proof, each driving a
 # component through the tester consumers will use and raising on any
 # outcome the dommy tier pins - if a controller contract drifts, the
 # tester (and every consumer test written through it) fails here first.
@@ -15,6 +18,17 @@ class PoetryTesterProofs
     dialog_keyboard_and_escape: "dialog opens by keyboard, Escape returns focus to the trigger",
     combobox_filter_and_commit: "combobox filters and commits",
     checkbox_toggles_by_keyboard_and_pointer: "checkbox checks by keyboard, unchecks by pointer, reports its value",
+    checkbox_reports_what_the_form_submits: "checkbox reports what the form submits: in a field, disabled, " \
+                                            "visual-only",
+    composer_writes_and_sends: "composer writes its text, reflects emptiness and submits by key and by button",
+    composer_reads_the_status: "composer reads idle, running and stopping from the slot, and presses Stop",
+    composer_attaches_files: "composer attaches a file, lists it and removes it",
+    composer_chooses_from_menus: "composer chooses a mention by keyboard and a reference by pointer",
+    composer_chooses_from_a_server_fed_menu: "composer chooses from a menu the server feeds: its answer as it " \
+                                             "came, the newest word's, and options the page rendered",
+    composer_keeps_the_page_when_a_menus_server_fails: "composer keeps the page and the draft when a menu's " \
+                                                       "server answers with an error or without the frame",
+    composer_takes_a_suggested_prompt: "composer takes a suggested prompt: one writes and sends, one only writes",
     registration_guard_passes: "registration guard finds every poetry controller registered",
     registration_guard_names_the_stray: "registration guard names an unregistered poetry controller"
   }.freeze
@@ -105,6 +119,27 @@ class PoetryTesterProofs
     raise "unchecked value #{checkbox.value.inspect}" unless checkbox.value == "0"
   end
 
+  # The value is what the form submits: the same answers when the root is
+  # an element around the control, nothing from a disabled control (checked
+  # or not), nothing from a control with no input behind it.
+  def checkbox_reports_what_the_form_submits
+    visit("/previews/poetry/ui/checkbox/in_a_field")
+    field = Poetry::Ui::Testing::Checkbox.new("[data-slot='field']", session: @session)
+    raise "field: checked value #{field.value.inspect}" unless field.value == "1"
+
+    field.uncheck
+    raise "field: unchecked value #{field.value.inspect}" unless field.value == "0"
+
+    visit("/previews/poetry/ui/checkbox/disabled_checked")
+    locked = Poetry::Ui::Testing::Checkbox.new(root_for("checkbox"), session: @session)
+    raise "disabled and checked reads as unchecked" unless locked.checked?
+    raise "disabled value #{locked.value.inspect}" unless locked.value.nil?
+
+    visit("/previews/poetry/ui/checkbox/visual_only")
+    bare = Poetry::Ui::Testing::Checkbox.new(root_for("checkbox"), session: @session)
+    raise "visual-only value #{bare.value.inspect}" unless bare.value.nil?
+  end
+
   # The combobox filters on typed text and commits the pick to the native value.
   def combobox_filter_and_commit
     visit("/previews/poetry/ui/combobox/default")
@@ -113,6 +148,171 @@ class PoetryTesterProofs
     combobox.filter("re")
     combobox.select_option("Remix")
     raise "native value #{combobox.value.inspect}" unless combobox.value.to_s == "remix"
+  end
+
+  # The composer takes text, follows it with its emptiness, and both
+  # ways of sending reach the message form once each.
+  def composer_writes_and_sends
+    visit("/previews/poetry/ui/composer/default")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "empty at birth expected" unless composer.empty? && composer.status == :idle
+
+    composer.write("Hello there")
+    raise "text #{composer.text.inspect}" unless composer.text == "Hello there"
+    raise "still empty with text" if composer.empty?
+
+    count_composer_submits
+    composer.send_message
+    composer.send_message(via: :mouse)
+    submits = @session.evaluate_script("window.__composerSubmits")
+    raise "submits #{submits.inspect}" unless submits == %w[composer-form composer-form]
+
+    composer.write("")
+    raise "not empty after clearing" unless composer.empty?
+  end
+
+  # The slot's three states read back, and Stop submits its own form.
+  def composer_reads_the_status
+    visit("/previews/poetry/ui/composer/stopping")
+    stopping = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "stopping read as #{stopping.status.inspect}" unless stopping.status == :stopping
+
+    visit("/previews/poetry/ui/composer/running")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    raise "running read as #{composer.status.inspect}" unless composer.status == :running && composer.running?
+    raise "idle? while running" if composer.idle?
+
+    count_composer_submits
+    composer.stop
+    submits = @session.evaluate_script("window.__composerSubmits")
+    raise "stop submitted #{submits.inspect}" unless submits == ["composer-running-stop"]
+  end
+
+  # A file attached through the composer's input shows as a chip, makes
+  # the message sendable, and leaves by its remove button.
+  def composer_attaches_files
+    visit("/previews/poetry/ui/composer/with_attachments")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+
+    Dir.mktmpdir("poetry-composer") do |dir|
+      file = File.join(dir, "plan.pdf")
+      File.binwrite(file, "%PDF-1.4\n%%EOF\n")
+      composer.attach(file)
+    end
+    raise "attachments #{composer.attachments.inspect}" unless composer.attachments == ["plan.pdf"]
+    raise "files alone should not be empty" if composer.empty?
+
+    composer.remove_attachment("plan.pdf")
+    raise "still attached: #{composer.attachments.inspect}" unless composer.attachments.empty? && composer.empty?
+  end
+
+  # A typed trigger opens its menu; the keyboard writes a mention as
+  # text, and the pointer adds a reference as a chip.
+  def composer_chooses_from_menus
+    visit("/previews/poetry/ui/composer/with_menus")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+
+    composer.choose("@", "Jordan Lee")
+    raise "mention text #{composer.text.inspect}" unless composer.text == "@jordan "
+    raise "menu left open" if composer.menu_open?
+
+    composer.choose("#", "Roadmap.md", via: :mouse)
+    raise "references #{composer.references.inspect}" unless composer.references == ["Roadmap.md"]
+    raise "text after a chip #{composer.text.inspect}" unless composer.text == "@jordan "
+
+    composer.remove_reference("Roadmap.md")
+    raise "still referenced: #{composer.references.inspect}" unless composer.references.empty?
+  end
+
+  # A menu the server feeds, under real Turbo. A match by an address the
+  # page never holds proves the answer is shown as it came. The word "r"
+  # is answered late: the request for it is dropped when "ro" is asked
+  # about, so the list is the newer word's and stays so. Options the page
+  # rendered answer the bare trigger with no request.
+  def composer_chooses_from_a_server_fed_menu
+    visit("/cgate")
+    composer = Poetry::Ui::Testing::Composer.new(@session.find("#people-composer"), session: @session)
+
+    composer.choose("@pri", "Priya Shah")
+    raise "mention text #{composer.text.inspect}" unless composer.text == "@priya "
+
+    composer.choose("@acme", "Jordan Lee", via: :mouse)
+    raise "text after a match by address #{composer.text.inspect}" unless composer.text == "@priya @jordan "
+
+    composer.write("")
+    field = @session.find("#people-composer textarea")
+    field.send_keys("@r")
+    sleep 0.3
+    field.send_keys("o")
+    newest = composer.options
+    raise "the newer word's answer #{newest.inspect}" unless newest == ["Rosa Park", "Rob Lin"]
+
+    sleep 0.8
+    raise "a dropped answer landed: #{composer.options.inspect}" unless composer.options == newest
+
+    recent = Poetry::Ui::Testing::Composer.new(@session.find("#recent-composer"), session: @session)
+    asked = "performance.getEntriesByType('resource').filter((entry) => entry.name.includes('/cgate/people')).length"
+    requests = -> { @session.evaluate_script(asked) }
+    before = requests.call
+    @session.find("#recent-composer textarea").send_keys("@")
+    raise "rendered options #{recent.options.inspect}" unless recent.options == ["Ana Diaz", "Rob Lin"]
+    raise "the bare trigger asked the server" unless requests.call == before
+
+    recent.write("")
+    recent.choose("@rosa", "Rosa Park")
+    raise "a server's person in a menu with rendered options #{recent.text.inspect}" unless recent.text == "@rosa "
+  end
+
+  # A menu whose server fails. Left to Turbo, an error page that asks for
+  # a full visit (Rails' own, in development) takes the page and the draft
+  # with it, and an answer with no frame puts "Content missing" where the
+  # options go. Neither happens: the page and the draft stay, the list
+  # holds nothing, and no list opens.
+  def composer_keeps_the_page_when_a_menus_server_fails
+    visit("/cgate")
+    composer = Poetry::Ui::Testing::Composer.new(@session.find("#broken-composer"), session: @session)
+    field = @session.find("#broken-composer textarea")
+
+    { "@" => "an error answer", "#" => "an answer without the frame" }.each do |trigger, answer|
+      composer.write("")
+      field.send_keys("#{trigger}ana")
+      @session.assert_no_selector("#broken-composer [data-slot='composer-menu'][data-loading]", visible: :all)
+      sleep 0.3
+      raise "#{answer}: path #{@session.current_path.inspect}" unless @session.current_path == "/cgate"
+      raise "#{answer}: draft #{composer.text.inspect}" unless composer.text == "#{trigger}ana"
+      raise "#{answer} opened a list" if composer.menu_open?
+
+      written = @session.evaluate_script(
+        "Array.from(document.querySelectorAll('#broken-composer [role=listbox]'))" \
+        ".map((list) => list.textContent.trim()).join('')"
+      )
+      raise "#{answer}: Turbo wrote #{written.inspect} into a list" unless written.empty?
+    end
+  end
+
+  # Suggested prompts, buttons outside the composer: the first writes its
+  # text and sends it; the second only writes and leaves the caret in the
+  # field after the text.
+  def composer_takes_a_suggested_prompt
+    visit("/previews/poetry/ui/composer/with_prompts")
+    composer = Poetry::Ui::Testing::Composer.new(root_for("composer"), session: @session)
+    sends, writes = @session.all("button[data-slot='composer-prompt']").to_a
+
+    count_composer_submits
+    sends.click
+    submits = @session.evaluate_script("window.__composerSubmits")
+    sent = "Summarize the open pull requests"
+    raise "the sending prompt's text #{composer.text.inspect}" unless composer.text == sent
+    raise "the sending prompt's submits #{submits.inspect}" unless submits == %w[composer-prompts-form]
+
+    writes.click
+    raise "the writing prompt's text #{composer.text.inspect}" unless composer.text == "Compare "
+    raise "the writing prompt sent" unless @session.evaluate_script("window.__composerSubmits").size == 1
+
+    caret = @session.evaluate_script(<<~JS)
+      (() => { const f = document.activeElement; return f.tagName === "TEXTAREA" ? [f.selectionStart, f.selectionEnd] : null })()
+    JS
+    raise "the caret after a writing prompt #{caret.inspect}" unless caret == [8, 8]
   end
 
   # The registration guard finds nothing missing on a healthy page.
@@ -143,6 +343,18 @@ class PoetryTesterProofs
   end
 
   private
+
+  # Records each form submission's form id and holds it there, so a
+  # preview page (which has no server behind its forms) stays put.
+  def count_composer_submits
+    @session.execute_script(<<~JS)
+      window.__composerSubmits = []
+      document.addEventListener("submit", (event) => {
+        window.__composerSubmits.push(event.target.id)
+        event.preventDefault()
+      }, true)
+    JS
+  end
 
   # The first rendered root of a component on the page.
   def root_for(component)

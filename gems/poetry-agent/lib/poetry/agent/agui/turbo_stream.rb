@@ -54,6 +54,11 @@ module Poetry
         # @return [String]
         def remove(target) = build("remove", target)
 
+        # A remove stream for every element a CSS selector matches (Turbo's `targets`).
+        # @param selector [String]
+        # @return [String]
+        def remove_all(selector) = %(<turbo-stream action="remove" targets="#{escape(selector)}"></turbo-stream>)
+
         # One SSE frame carrying the streams (newlines folded, as Turbo's
         # stream source expects one `data:` line).
         #

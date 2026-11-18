@@ -1,0 +1,3595 @@
+{
+  "source": "verify/__tests__/subagent-verify.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents subagent lifecycle > should allow a well-formed subagent lifecycle within a run",
+      "line": 22,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "sub-agent-1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: SUBAGENT_STARTED announces an invocation, SUBAGENT_FINISHED closes it"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a duplicate SUBAGENT_STARTED for the same id",
+      "line": 52,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "sub-agent-1"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "sub-agent-1"
+        }
+      ],
+      "expect": {
+        "error": "already"
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MUST NOT announce an invocation whose id is already active",
+      "notes": "TS regex /already/i; full message \"Cannot send 'SUBAGENT_STARTED': subagent 's1' is already active. Finish it with 'SUBAGENT_FINISHED' first.\" The test also asserts RUN_STARTED and the first SUBAGENT_STARTED were delivered before the rejection."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject SUBAGENT_FINISHED for an id that never started",
+      "line": 91,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "no active"
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a lifecycle terminal closes an announced invocation",
+      "notes": "TS regex /not started|no active|matching/i; full message \"Cannot send 'SUBAGENT_FINISHED': no active subagent found with ID 's1'. A 'SUBAGENT_STARTED' event must be sent first.\" The test also asserts RUN_STARTED was delivered before the rejection."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject SUBAGENT_STARTED whose parentSubagentRunId was not started",
+      "line": 124,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "sub-agent-1",
+          "parentSubagentRunId": "missing-parent"
+        }
+      ],
+      "expect": {
+        "error": "parent"
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: a producer MUST NOT name a parent invocation that has not been announced in this run",
+      "notes": "TS regex /parent/i; full message \"Cannot send 'SUBAGENT_STARTED': parentSubagentRunId 'missing-parent' has not been started in this run.\" The test also asserts RUN_STARTED was delivered before the rejection."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject RUN_FINISHED while a subagent is still open",
+      "line": 159,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "sub-agent-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "error": "subagent"
+      },
+      "spec": "/spec/1.0/events/subagents#termination: a run MUST NOT finish while an invocation is still active",
+      "notes": "TS regex /subagent/i; full message \"Cannot send 'RUN_FINISHED' while subagents are still active: s1\". The test also asserts RUN_STARTED and SUBAGENT_STARTED were delivered before the rejection."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should allow a stream with no subagent lifecycle events",
+      "line": 199,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MAY attribute events without announcing anything, and a consumer MUST accept it"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a close event whose subagentRunId differs from its opener",
+      "line": 232,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a TEXT_MESSAGE_END MUST NOT carry a subagentRunId that disagrees with its opener",
+      "notes": "TS regex /does not match/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject TOOL_CALL_ARGS whose subagentRunId differs from its opener",
+      "line": 284,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: tool calls against their TOOL_CALL_START",
+      "notes": "TS regex /does not match/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject TOOL_CALL_END whose subagentRunId differs from its opener",
+      "line": 302,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: tool calls against their TOOL_CALL_START",
+      "notes": "TS regex /does not match/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should ACCEPT state events attributed to a subagent",
+      "line": 319,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "researcher"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "a": 1
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [],
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "researcher"
+          },
+          {
+            "type": "STATE_SNAPSHOT",
+            "subagentRunId": "s1",
+            "snapshot": {
+              "a": 1
+            }
+          },
+          {
+            "type": "STATE_DELTA",
+            "subagentRunId": "s1",
+            "delta": []
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#state: subagentRunId on a state event is provenance; the update MUST NOT be withheld",
+      "notes": "The test asserts every event is delivered and that subagentRunId survives verification on the two state events."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should allow unattributed state while a subagent is running",
+      "line": 348,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "a": 1
+          }
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": []
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "STATE_SNAPSHOT",
+          "STATE_DELTA",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#state: state is run-scoped"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject restarting a subagent that already finished in this run",
+      "line": 363,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        }
+      ],
+      "expect": {
+        "error": "has already finished in this run"
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MUST NOT reuse the id of an invocation that has already finished in this run",
+      "notes": "TS regex /has already finished in this run/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should NOT reject an event tagged with an already-finished subagent",
+      "line": 377,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: attribution is meaningful on its own; a tag need not name a live invocation",
+      "notes": "Pins a design decision: a tag naming a finished invocation is accepted (not tied to the active set)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a second terminal for the same subagent",
+      "line": 402,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "boom"
+        }
+      ],
+      "expect": {
+        "error": "no active subagent"
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: every invocation is closed once, by SUBAGENT_FINISHED or SUBAGENT_ERROR",
+      "notes": "TS regex /no active subagent/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should let a new run reuse a subagent id closed by the previous run",
+      "line": 414,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r1"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r2"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an id MAY reappear in a later run",
+      "notes": "The closed-id set is run-scoped."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject an ACTIVITY_DELTA whose subagentRunId differs from its snapshot",
+      "line": 431,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "search",
+          "content": {},
+          "replace": false,
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "search",
+          "patch": [],
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: activity messages against the snapshot that opened them",
+      "notes": "TS regex /does not match/i. ACTIVITY_DELTA completed for enforcement: `activityType` added and the test's `delta`/`content` replaced by the schema's required `patch: []`."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should allow an attribution-only stream with no lifecycle events",
+      "line": 454,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "never-declared"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a consumer MUST accept attribution without lifecycle events"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a tagged continuation of an UNTAGGED (parent-owned) opener",
+      "line": 473,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "x",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: an untagged opener means the parent agent owns the entity; a tagged continuation disagrees",
+      "notes": "TS regex /does not match/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject REASONING_END whose owner differs from the reasoning opener",
+      "line": 493,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the same holds for reasoning messages",
+      "notes": "TS regex /does not match/i. The span's owner must survive REASONING_MESSAGE_END."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a tool-call encrypted value whose owner differs from the tool call",
+      "line": 514,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "tc1",
+          "encryptedValue": "opaque",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership: a tool-call encrypted value continues the tool call",
+      "notes": "TS regex /does not match/i. The subtype routes the owner lookup to the tool call."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should allow a child whose parent has already finished",
+      "line": 539,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "p",
+          "name": "parent"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "p"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "c",
+          "name": "child",
+          "parentSubagentRunId": "p"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "c"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: the parent must have been announced in this run, not still be active"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should still reject a parent never started in this run",
+      "line": 561,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "c",
+          "name": "child",
+          "parentSubagentRunId": "ghost"
+        }
+      ],
+      "expect": {
+        "error": "has not been started"
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: a producer MUST NOT name a parent invocation that has not been announced in this run",
+      "notes": "TS regex /has not been started/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should not let a non-replacing ACTIVITY_SNAPSHOT take over an activity",
+      "line": 576,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "search",
+          "content": {},
+          "replace": false,
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "search",
+          "content": {},
+          "replace": false,
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "search",
+          "patch": [],
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/events/activity#activity_snapshot: replace:false leaves an existing activity (and its owner) as it stands",
+      "notes": "TS regex /does not match/i. ACTIVITY_DELTA completed for enforcement: `activityType` added and the test's `delta`/`content` replaced by the schema's required `patch: []`."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should allow an untagged continuation of a tagged tool call",
+      "line": 610,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation carrying no tag is not a disagreement and MUST be accepted"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should accept the parent and a subagent both having a step of the same name open",
+      "line": 642,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "alpha"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "SUBAGENT_STARTED",
+          "STEP_STARTED",
+          "STEP_FINISHED",
+          "SUBAGENT_FINISHED",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: steps are per-owner; a parent and a subagent MAY each have a step of the same name open"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a STEP_FINISHED that closes the PARENT's step under a subagent's tag",
+      "line": 661,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "alpha"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "that step is open under the parent agent"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a STEP_FINISHED MUST carry the same attribution as the STEP_STARTED it closes",
+      "notes": "TS regex /that step is open under the parent agent.*finished by whoever started it/i; the fragment is its longest literal piece."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a STEP_FINISHED that closes a SUBAGENT's step untagged",
+      "line": 675,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "alpha"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "inner",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "inner"
+        }
+      ],
+      "expect": {
+        "error": "attributed to the parent agent"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a STEP_FINISHED MUST carry the same attribution as the STEP_STARTED it closes",
+      "notes": "TS regex /attributed to the parent agent.*open under subagent 's1'/i; the fragment is its longest literal piece. Full message \"Cannot send 'STEP_FINISHED' for step \\\"inner\\\" attributed to the parent agent: that step is open under subagent 's1'. A step must be finished by whoever started it.\""
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should name the owner of an unfinished subagent step at RUN_FINISHED",
+      "line": 689,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "alpha"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "inner",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": "steps are still active: inner (subagent 's1')"
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: every step MUST be closed before the run finishes",
+      "notes": "TS regex /steps are still active: inner \\(subagent 's1'\\)/i. Naming the owner in the message is a TS diagnostic detail; the protocol outcome is the rejection."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject an encrypted MESSAGE value whose id collides with a tool call",
+      "line": 705,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "x",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "x",
+          "toolCallName": "t",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "x",
+          "encryptedValue": "v",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'x'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: owners are tracked per entity kind; an id is unique only within a kind",
+      "notes": "TS regex /does not match the message 'x'/i. The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should keep a tool call's owner after TOOL_CALL_END for a later encrypted value",
+      "line": 722,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c",
+          "toolCallName": "t",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "c",
+          "encryptedValue": "v",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "REASONING_ENCRYPTED_VALUE"
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership",
+      "notes": "The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field). Left unterminated: s1 is still active, so an appended RUN_FINISHED would be rejected."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a second reasoning opener that contradicts the first",
+      "line": 735,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the reasoning message 'r1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a span and the reasoning message inside it sharing an id share one owner",
+      "notes": "TS regex /does not match the reasoning message 'r1'/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should treat the empty string as a real subagent id, distinct from the parent [reject]",
+      "line": 750,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "",
+          "name": "a"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools",
+          "subagentRunId": ""
+        }
+      ],
+      "expect": {
+        "error": "that step is open under the parent agent"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: steps are per-owner; \"\" is a legal opaque subagentRunId distinct from the parent agent",
+      "notes": "TS regex /that step is open under the parent agent/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should treat the empty string as a real subagent id, distinct from the parent [valid]",
+      "line": 750,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "",
+          "name": "a"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "tools",
+          "subagentRunId": ""
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools",
+          "subagentRunId": ""
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "tools"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "STEP_STARTED",
+          "STEP_STARTED",
+          "STEP_FINISHED",
+          "STEP_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: steps are per-owner; \"\" is a legal opaque subagentRunId distinct from the parent agent",
+      "notes": "Left unterminated: the \"\" subagent is still active, so an appended RUN_FINISHED would be rejected."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should treat an omitted activity `replace` as true, matching the schema and reducer",
+      "line": 776,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "x",
+          "content": {},
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "x",
+          "content": {},
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "x",
+          "patch": [],
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_STARTED",
+          "ACTIVITY_SNAPSHOT",
+          "ACTIVITY_SNAPSHOT",
+          "ACTIVITY_DELTA"
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: an absent replace means true, so the second snapshot re-owns the activity",
+      "notes": "ACTIVITY_DELTA completed for enforcement: `activityType` added and the test's `delta`/`content` replaced by the schema's required `patch: []`. Left unterminated: s1 and s2 are still active."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should still accept an attribution-only stream with ids that were never started",
+      "line": 792,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "never-started"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m",
+          "delta": "x",
+          "subagentRunId": "never-started"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "never-started"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a consumer MUST accept attribution without lifecycle events"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a `message` encrypted value that disagrees with its REASONING owner",
+      "line": 817,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "v",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'r1'"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership: subtype \"message\" covers reasoning messages too",
+      "notes": "TS regex /does not match the message 'r1'/i. The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should accept a `message` encrypted value that agrees with its REASONING owner",
+      "line": 832,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "v",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_STARTED",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "REASONING_ENCRYPTED_VALUE"
+        ]
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership",
+      "notes": "The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field). Left unterminated: the span r1 and both subagents are still open."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a `message` encrypted value that disagrees with its TEXT message owner",
+      "line": 844,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "m1",
+          "encryptedValue": "v",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm1'"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership",
+      "notes": "TS regex /does not match the message 'm1'/i. The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a TEXT_MESSAGE_START that reopens a closed id under a different subagent",
+      "line": 864,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "x",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the owner outlives the close; a reopen by another producer disagrees",
+      "notes": "TS regex /does not match the message 'm1'/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a TOOL_CALL_START that reopens a closed id under a different subagent",
+      "line": 877,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the tool call 'tc1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the owner outlives the close; a reopen by another producer disagrees",
+      "notes": "TS regex /does not match the tool call 'tc1'/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should accept reopening a closed id under the SAME subagent",
+      "line": 890,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/events/lifecycle#several-runs-on-one-stream: re-streaming a message appends to it"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should keep the first owner when an UNTAGGED opener reopens a tagged id",
+      "line": 905,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "x",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: an untagged opener agrees with any owner but does not take the entity over (first writer wins)"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject an encrypted value naming a CLOSED tool call under a different subagent",
+      "line": 925,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c",
+          "toolCallName": "t",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "c",
+          "encryptedValue": "v",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the tool call 'c'"
+      },
+      "spec": "/spec/1.0/events/reasoning#reasoning_encrypted_value + /spec/1.0/events/subagents#ownership: owners are retained for the run, past the close",
+      "notes": "TS regex /does not match the tool call 'c'/i. The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should clear the retained owner buckets on a new run",
+      "line": 940,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c",
+          "toolCallName": "t",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r2"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "tool-call",
+          "entityId": "c",
+          "encryptedValue": "v",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r2"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "REASONING_ENCRYPTED_VALUE",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: run-scoped tracking does not cross the boundary",
+      "notes": "The test's `value: \"v\"` is renamed to the schema's required `encryptedValue` (enforcement would otherwise strip `value` and reject the missing field)."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should accept a second reasoning opener that agrees with the first",
+      "line": 957,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the same holds for reasoning messages"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should accept an UNTAGGED second reasoning opener on a tagged first",
+      "line": 968,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "x",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_CONTENT",
+          "REASONING_MESSAGE_END",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: an untagged event never disagrees, and does not overwrite the recorded owner"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should keep the reasoning owner when an UNTAGGED opener reopens after REASONING_END",
+      "line": 982,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_END",
+          "messageId": "r1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "REASONING_START",
+          "REASONING_END",
+          "REASONING_START",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_END",
+          "REASONING_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the owner outlives the close (first writer wins)"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject a TAGGED second reasoning opener on an UNTAGGED (parent-owned) first",
+      "line": 997,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_START",
+          "messageId": "r1"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "does not match the reasoning message 'r1' opener's subagent '(the parent agent)'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: the parent agent is an owner too",
+      "notes": "TS regex /does not match the reasoning message 'r1' opener's subagent '\\(the parent agent\\)'/i. \"(the parent agent)\" is TS's spelling of an absent owner."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject an empty-string-tagged continuation of a parent-owned message",
+      "line": 1012,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m",
+          "delta": "x",
+          "subagentRunId": ""
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent '(the parent agent)'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: \"\" is a real subagentRunId, distinct from the parent agent's absent tag",
+      "notes": "TS regex /does not match the message 'm' opener's subagent '\\(the parent agent\\)'/i."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle > should reject an s1-tagged continuation of a message owned by the empty-string subagent",
+      "line": 1023,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": ""
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m",
+          "delta": "x",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent ''"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: \"\" is a real subagentRunId, distinct from the parent agent's absent tag",
+      "notes": "TS regex /does not match the message 'm' opener's subagent ''/i."
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should reject reopening a snapshot message under a different subagent",
+      "line": 1055,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "old",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener",
+      "notes": "TS regex /does not match the message 'm' opener's subagent 's1'/i."
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should reject a tagged reopen of a parent-owned snapshot message",
+      "line": 1068,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "old"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "(the parent agent)"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener",
+      "notes": "TS regex /\\(the parent agent\\)/i; \"(the parent agent)\" is TS's spelling of an absent owner. Full message \"Cannot send 'TEXT_MESSAGE_START': subagentRunId 's2' does not match the message 'm' opener's subagent '(the parent agent)'.\""
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should accept reopening a snapshot message under its own subagent, and untagged",
+      "line": 1079,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "old",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m",
+          "delta": "new"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m2",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "MESSAGES_SNAPSHOT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener"
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should seed ownership from the RUN_STARTED input echo",
+      "line": 1094,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "state": {},
+            "tools": [],
+            "context": [],
+            "messages": [
+              {
+                "id": "m",
+                "role": "assistant",
+                "content": "old",
+                "subagentRunId": "s1"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener",
+      "notes": "TS regex /does not match the message 'm' opener's subagent 's1'/i."
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should seed a snapshot reasoning message into the reasoning owner map",
+      "line": 1120,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "r1",
+              "role": "reasoning",
+              "content": "old",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the reasoning message 'r1' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener",
+      "notes": "TS regex /does not match the reasoning message 'r1' opener's subagent 's1'/i. REASONING_MESSAGE_START completed with the schema-required role \"reasoning\" for enforcement."
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should let a later snapshot authoritatively replace a recorded owner",
+      "line": 1131,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "snapshot",
+              "subagentRunId": "s2"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent 's2'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener; a snapshot is authoritative and replaces the recorded owner",
+      "notes": "TS regex /does not match the message 'm' opener's subagent 's2'/i."
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should accept the snapshot's new owner after it replaces the recorded one",
+      "line": 1148,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "snapshot",
+              "subagentRunId": "s2"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "MESSAGES_SNAPSHOT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener; a snapshot is authoritative and replaces the recorded owner"
+    },
+    {
+      "name": "verifyEvents subagent ownership seeded from snapshots > should reject replaying a snapshot tool call under a different subagent",
+      "line": 1161,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "subagentRunId": "s1",
+              "toolCalls": [
+                {
+                  "id": "tc",
+                  "type": "function",
+                  "function": {
+                    "name": "search",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the tool call 'tc' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/basic/patterns/snapshots: replayed history (MESSAGES_SNAPSHOT, the RUN_STARTED input echo) records owners like an opener; a snapshot tool call takes the owner of the message holding it",
+      "notes": "TS regex /does not match the tool call 'tc' opener's subagent 's1'/i."
+    },
+    {
+      "name": "verifyEvents activity ownership survives a replace:false snapshot > rejects a delta under the re-owner after a replace:false snapshot on a seeded activity",
+      "line": 1216,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a",
+              "role": "activity",
+              "activityType": "PLAN",
+              "content": {},
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a",
+          "activityType": "PLAN",
+          "content": {},
+          "replace": false,
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a",
+          "activityType": "PLAN",
+          "patch": [],
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the activity 'a' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership + /spec/1.0/events/activity#activity_snapshot: replace:false on an existing (here snapshot-seeded) activity does not re-own it",
+      "notes": "TS regex /does not match the activity 'a' opener's subagent 's1'/i. ACTIVITY_DELTA completed with the schema-required activityType for enforcement."
+    },
+    {
+      "name": "verifyEvents activity ownership survives a replace:false snapshot > accepts a REPLACING snapshot re-owning a seeded activity, and the new owner's delta",
+      "line": 1240,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "a",
+              "role": "activity",
+              "activityType": "PLAN",
+              "content": {},
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a",
+          "activityType": "PLAN",
+          "content": {},
+          "replace": true,
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a",
+          "activityType": "PLAN",
+          "patch": [],
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "MESSAGES_SNAPSHOT",
+          "ACTIVITY_SNAPSHOT",
+          "ACTIVITY_DELTA",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: a replacing snapshot re-mints the activity under its own owner",
+      "notes": "ACTIVITY_DELTA completed with the schema-required activityType for enforcement."
+    },
+    {
+      "name": "verifyEvents tool result mints an owned message > rejects reopening a result-minted message under a different subagent",
+      "line": 1292,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "m",
+          "toolCallId": "tc",
+          "content": "done",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the message 'm' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result + /spec/1.0/events/subagents#ownership: a result mints a tool message owned by the result's attribution",
+      "notes": "TS regex /does not match the message 'm' opener's subagent 's1'/i."
+    },
+    {
+      "name": "verifyEvents tool result mints an owned message > rejects a tagged reopen of a message minted by an UNTAGGED result",
+      "line": 1303,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "m",
+          "toolCallId": "tc",
+          "content": "done"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "(the parent agent)"
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result + /spec/1.0/events/subagents#ownership: a result mints a tool message owned by the result's attribution",
+      "notes": "TS regex /\\(the parent agent\\)/i; \"(the parent agent)\" is TS's spelling of an absent owner."
+    },
+    {
+      "name": "verifyEvents tool result mints an owned message > accepts an untagged or same-owner reopen of a result-minted message",
+      "line": 1314,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "m",
+          "toolCallId": "tc",
+          "content": "done",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TOOL_CALL_RESULT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_result + /spec/1.0/events/subagents#ownership: a result mints a tool message owned by the result's attribution"
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > reads an event-level null attribution tag as absent and removes it",
+      "line": 1347,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": null
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an absent subagentRunId means the parent agent and MUST NOT be spelled as null; an event-level null tag is one of the tolerated legacy optional nulls, read as absent",
+      "notes": "Wrapped: RUN_FINISHED appended. On the full pipeline the COMPATIBILITY BOUNDARY removes the null (TS verify's own fallback does the same when fed directly), so the delivered events carry no subagentRunId key at all. The test asserts the notice is given once per run although two events carry the null; the warnings check here is a soft substring check only.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > treats a null tag on a continuation exactly like an absent one",
+      "line": 1381,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "subagentRunId": "s1",
+            "messageId": "m",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an absent subagentRunId means the parent agent and MUST NOT be spelled as null; a null tag reads as absent, which never disagrees with the opener",
+      "notes": "The test asserts the last delivered event is TEXT_MESSAGE_END with no subagentRunId key. Left unterminated: s1 is still active. The null is removed by the compatibility boundary on the full pipeline.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects a null tag nested in MESSAGES_SNAPSHOT and the RUN_STARTED input echo [MESSAGES_SNAPSHOT]",
+      "line": 1407,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "x",
+              "subagentRunId": null
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: null is not absent; a nested message's subagentRunId: null is a malformed known value (fatal)",
+      "notes": "TS verify (fed directly) says \"message (id 'm') with 'subagentRunId: null'\" (regex /message \\(id 'm'\\) with 'subagentRunId: null'/i). On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted. The compatibility boundary does not convert this nested null."
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects a null tag nested in MESSAGES_SNAPSHOT and the RUN_STARTED input echo [RUN_STARTED input echo]",
+      "line": 1407,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "input": {
+            "threadId": "t",
+            "runId": "r",
+            "messages": [
+              {
+                "id": "m",
+                "role": "assistant",
+                "content": "x",
+                "subagentRunId": null
+              }
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: null is not absent; a nested message's subagentRunId: null is a malformed known value (fatal)",
+      "notes": "Required fields completed for enforcement (input.threadId, input.runId). TS verify (fed directly) says \"message (id 'm') with 'subagentRunId: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects null one level deeper: outcome.interruptIds and interrupt tags [outcome.interruptIds]",
+      "line": 1433,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {
+            "type": "suspended",
+            "interruptIds": null
+          }
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MUST NOT send an outcome value the schema does not describe",
+      "notes": "TS verify (fed directly) says \"'outcome.interruptIds: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects null one level deeper: outcome.interruptIds and interrupt tags [interrupt subagentRunId]",
+      "line": 1433,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "outcome": {
+            "type": "interrupt",
+            "interrupts": [
+              {
+                "id": "int-1",
+                "reason": "approval",
+                "subagentRunId": null
+              }
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#termination: interrupts MAY be attributed; /spec/1.0/events/subagents#attribution: never as null",
+      "notes": "TS verify (fed directly) says \"interrupt (id 'int-1') carrying 'subagentRunId: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects null on the lifecycle events' optional fields [parentSubagentRunId]",
+      "line": 1463,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "researcher",
+          "parentSubagentRunId": null
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: optional lifecycle fields are omitted, never null",
+      "notes": "TS verify (fed directly) says \"'parentSubagentRunId: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects null on the lifecycle events' optional fields [outcome]",
+      "line": 1463,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": null
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: optional lifecycle fields are omitted, never null",
+      "notes": "TS verify (fed directly) says \"'outcome: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted. (The compatibility boundary converts only SUBAGENT_FINISHED.result: null, not outcome: null.)"
+    },
+    {
+      "name": "verifyEvents rejects null anywhere on the subagent surface > rejects null on the lifecycle events' optional fields [code]",
+      "line": 1463,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "boom",
+          "code": null
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: optional lifecycle fields are omitted, never null",
+      "notes": "TS verify (fed directly) says \"'code: null'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects a null element inside outcome.interruptIds",
+      "line": 1504,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {
+            "type": "suspended",
+            "interruptIds": [
+              null
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a producer MUST NOT send an outcome value the schema does not describe",
+      "notes": "TS verify (fed directly) says \"non-string entry in 'outcome.interruptIds'\". On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects an outcome whose discriminant is not success or suspended [type null]",
+      "line": 1525,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {
+            "type": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "r"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unrecognised union member in an optional position is stripped (/spec/1.0/events/subagents#lifecycle forbids the producer sending it)",
+      "notes": "CONTRADICTS the TS unit assertion, by design of the stage order: fed straight to verifyEvents the test expects a rejection (\"Cannot send 'SUBAGENT_FINISHED' with outcome type '...'\", regex /outcome type/i), but on the full pipeline ENFORCEMENT meets it first, reads the outcome as an unrecognised union member in an optional position, strips it with a warning (TS: \"Removed unrecognised material at '/outcome' on SUBAGENT_FINISHED\") and the run completes. Wrapped: RUN_FINISHED appended. The expected events are the TS full-pipeline result; verify's in-process guard is unreachable behind enforcement.",
+      "warnings": [
+        "outcome"
+      ]
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects an outcome whose discriminant is not success or suspended [type \"paused\"]",
+      "line": 1525,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {
+            "type": "paused"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "r"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unrecognised union member in an optional position is stripped (/spec/1.0/events/subagents#lifecycle forbids the producer sending it)",
+      "notes": "CONTRADICTS the TS unit assertion, by design of the stage order: fed straight to verifyEvents the test expects a rejection (\"Cannot send 'SUBAGENT_FINISHED' with outcome type '...'\", regex /outcome type/i), but on the full pipeline ENFORCEMENT meets it first, reads the outcome as an unrecognised union member in an optional position, strips it with a warning (TS: \"Removed unrecognised material at '/outcome' on SUBAGENT_FINISHED\") and the run completes. Wrapped: RUN_FINISHED appended. The expected events are the TS full-pipeline result; verify's in-process guard is unreachable behind enforcement.",
+      "warnings": [
+        "outcome"
+      ]
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects an outcome whose discriminant is not success or suspended [type absent]",
+      "line": 1525,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {}
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "r"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: an unrecognised union member in an optional position is stripped (/spec/1.0/events/subagents#lifecycle forbids the producer sending it)",
+      "notes": "CONTRADICTS the TS unit assertion, by design of the stage order: fed straight to verifyEvents the test expects a rejection (\"Cannot send 'SUBAGENT_FINISHED' with outcome type '...'\", regex /outcome type/i), but on the full pipeline ENFORCEMENT meets it first, reads the outcome as an unrecognised union member in an optional position, strips it with a warning (TS: \"Removed unrecognised material at '/outcome' on SUBAGENT_FINISHED\") and the run completes. Wrapped: RUN_FINISHED appended. The expected events are the TS full-pipeline result; verify's in-process guard is unreachable behind enforcement. The TS row is `{ type: undefined }`, which JSON can only spell as `{}`.",
+      "warnings": [
+        "outcome"
+      ]
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects falsy PRESENT outcomes — only undefined is absent [\"\"]",
+      "line": 1549,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": ""
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: an absent outcome means success; a present falsy value is malformed",
+      "notes": "The test asserts only that it rejects. On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects falsy PRESENT outcomes — only undefined is absent [false]",
+      "line": 1549,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": false
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: an absent outcome means success; a present falsy value is malformed",
+      "notes": "The test asserts only that it rejects. On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > rejects falsy PRESENT outcomes — only undefined is absent [0]",
+      "line": 1549,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": 0
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: an absent outcome means success; a present falsy value is malformed",
+      "notes": "The test asserts only that it rejects. On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents rejects non-string interruptIds entries > accepts a well-formed interruptIds list",
+      "line": 1571,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "r"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1",
+          "outcome": {
+            "type": "suspended",
+            "interruptIds": [
+              "int-1"
+            ]
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "outcome": {
+            "type": "interrupt",
+            "interrupts": [
+              {
+                "id": "int-1",
+                "reason": "approval"
+              }
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#termination: a suspended subagent outcome MAY name interrupt ids"
+    },
+    {
+      "name": "verifyEvents subagent lifecycle required fields > should reject SUBAGENT_STARTED without a subagentRunId",
+      "line": 1605,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "name": "worker"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: all three lifecycle events carry the subagentRunId they concern, and a producer MUST NOT omit it",
+      "notes": "TS verify (fed directly) says \"Cannot send 'SUBAGENT_STARTED' without a 'subagentRunId'.\" (regex /SUBAGENT_STARTED.*subagentRunId/i). On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle required fields > should reject SUBAGENT_STARTED without a name",
+      "line": 1612,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: name is schema-required",
+      "notes": "TS verify (fed directly) says \"Cannot send 'SUBAGENT_STARTED' without a 'name'.\" (regex /SUBAGENT_STARTED.*name/i). On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle required fields > should reject SUBAGENT_FINISHED without a subagentRunId",
+      "line": 1619,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "worker"
+        },
+        {
+          "type": "SUBAGENT_FINISHED"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: all three lifecycle events carry the subagentRunId they concern, and a producer MUST NOT omit it",
+      "notes": "TS verify (fed directly) says \"Cannot send 'SUBAGENT_FINISHED' without a 'subagentRunId'.\" On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents subagent lifecycle required fields > should reject SUBAGENT_ERROR without a message",
+      "line": 1630,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "worker"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: message is schema-required",
+      "notes": "TS verify (fed directly) says \"Cannot send 'SUBAGENT_ERROR' without a 'message'.\" On the full pipeline ENFORCEMENT rejects this first (the schema forbids the value; TS throws a ZodError whose text is not portable), so any ProtocolError is accepted."
+    },
+    {
+      "name": "verifyEvents tool call vs parent message ownership > should reject a tool call whose explicit owner conflicts with its parent message's owner",
+      "line": 1665,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "parent message 'm'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a producer MUST NOT attribute it to another owner",
+      "notes": "TS regex /parent message 'm'/i."
+    },
+    {
+      "name": "verifyEvents tool call vs parent message ownership > should reject a tagged tool call on a parent-owned message",
+      "line": 1684,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "(the parent agent)"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a producer MUST NOT attribute it to another owner",
+      "notes": "TS regex /\\(the parent agent\\)/i; \"(the parent agent)\" is TS's spelling of an absent owner."
+    },
+    {
+      "name": "verifyEvents tool call vs parent message ownership > should accept a matching tag and let an untagged tool call inherit its parent's owner",
+      "line": 1702,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc2",
+          "toolCallName": "search",
+          "parentMessageId": "m"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc2",
+          "delta": "{}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a producer MUST NOT attribute it to another owner"
+    },
+    {
+      "name": "verifyEvents tool call vs parent message ownership > should reject a continuation disagreeing with the owner an untagged tool call inherited",
+      "line": 1729,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc",
+          "delta": "{}",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the tool call 'tc' opener's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a producer MUST NOT attribute it to another owner",
+      "notes": "TS regex /does not match the tool call 'tc' opener's subagent 's1'/i."
+    },
+    {
+      "name": "verifyEvents tool call vs parent message ownership > should reject an untagged reopen whose new parent's owner disagrees with the retained one",
+      "line": 1746,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m2",
+          "role": "assistant",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m2",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc",
+          "toolCallName": "search",
+          "parentMessageId": "m2"
+        }
+      ],
+      "expect": {
+        "error": "parent message 'm2'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a producer MUST NOT attribute it to another owner",
+      "notes": "TS regex /owned by 's1'.*parent message 'm2'.*owned by 's2'/i; the fragment is its longest literal piece. Full message \"Cannot send 'TOOL_CALL_START': tool call 'tc' is owned by 's1' but its parent message 'm2' is owned by 's2'. A tool call belongs to the message that carries it.\""
+    }
+  ]
+}

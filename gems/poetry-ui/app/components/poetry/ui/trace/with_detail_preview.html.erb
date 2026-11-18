@@ -1,0 +1,11 @@
+<%# Steps with detail: one open over its tool output, one closed. %>
+<div class="p-4">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Ran git status --short", icon: :terminal, description: "0.4s", open: true) do %>
+      <%= poetry_code_block(code: " M app/models/invoice.rb\n?? db/migrate/\n", size: :sm, wrap: true, copy: false, label: "Output") %>
+    <% end %>
+    <% trace.with_step("Thought for 12 seconds", icon: :brain) do %>
+      <p>The overdue scope needs a due date, so the migration comes first.</p>
+    <% end %>
+  <% end %>
+</div>

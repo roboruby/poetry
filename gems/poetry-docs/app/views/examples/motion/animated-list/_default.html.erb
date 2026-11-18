@@ -1,0 +1,6 @@
+<%# A Turbo Stream that targets #activity (turbo_stream.prepend "activity", ...) now animates. %>
+<%= poetry_animated_list(id: "activity", class: "flex w-full max-w-sm flex-col gap-2") do %>
+  <% ["Deployed to production", "Reviewed by Ada", "Merged into main"].each do |event| %>
+    <li class="rounded-md border px-3 py-2 text-sm"><%= event %></li>
+  <% end %>
+<% end %>

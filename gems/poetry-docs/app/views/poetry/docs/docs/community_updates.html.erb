@@ -1,0 +1,125 @@
+<% content_for :title, "Updating community items" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Updating community items") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. The two reports are what the
+  # generators print for an item installed at 1.2.0, with one file edited,
+  # once the registry has 1.3.0.
+  diff_source = <<~CODE
+    $ bin/rails g poetry:diff
+          update  acme-pricing-table - installed from @poetry/acme-pricing-table at 1.2.0; the registry has 1.3.0:
+                  `bin/rails g poetry:update acme-pricing-table` takes what you have not edited
+        app/components/community/acme_pricing_table/component.rb: changed in the registry
+        app/components/community/acme_pricing_table/style.rb: changed in the registry, and edited here
+        app/components/community/acme_pricing_table/preview.rb: new in the registry
+  CODE
+  update_source = <<~CODE
+    $ bin/rails g poetry:update
+          update  acme-pricing-table - 1.2.0 to 1.3.0
+           force  app/components/community/acme_pricing_table/component.rb
+       identical  app/components/community/acme_pricing_table/component.html.erb
+            kept  app/components/community/acme_pricing_table/style.rb - edited here, and changed in the registry (--force replaces it)
+          create  app/components/community/acme_pricing_table/preview.rb
+           force  config/poetry_components.yml
+  CODE
+  commands_source = <<~CODE
+    bin/rails g poetry:diff                        # every item, and what the registry has now
+    bin/rails g poetry:diff --offline              # your edits only; no registry is asked
+    bin/rails g poetry:update                      # every item installed from a registry
+    bin/rails g poetry:update acme-pricing-table   # one item
+    bin/rails g poetry:update --force              # your edited files too
+  CODE
+  merge_source = <<~CODE
+    git commit -am "Before taking acme-pricing-table 1.3.0"
+    bin/rails g poetry:update acme-pricing-table --force
+    git diff          # the registry's change against your edit
+    git restore -p    # put back the parts of yours you want
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Updating community items</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      An item's files are yours once installed, and its registry may publish a
+      newer version. Two commands show what changed and take it without losing
+      an edit.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="see-what-changed">See what changed</h2>
+      <p>
+        The install recorded a digest of every file as it was written.
+        <code>poetry:diff</code> compares each file with that record and with
+        the registry's item as it stands now, so it can tell an edit you made
+        from a change the registry made. It prints and never writes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: diff_source, language: "plaintext", label: "poetry:diff") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        An item with nothing to report says so on one line. With
+        <code>--offline</code> no registry is asked and the report holds your
+        edits alone. A registry that does not answer is named, and the edits are
+        still reported.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="update">Update</h2>
+      <p>
+        <code>poetry:update</code> brings an item to the registry's current
+        version one file at a time:
+      </p>
+    <% end %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <ul>
+        <li><strong>A file you have not edited</strong> is replaced with the registry's.</li>
+        <li><strong>A file you edited, where the registry's is unchanged,</strong> is kept.</li>
+        <li><strong>A file you edited, where the registry changed it too,</strong> is kept, and named in the report.</li>
+        <li><strong>A file new in the item</strong> is written.</li>
+        <li><strong>A file dropped from the item</strong> is named in the report, never deleted.</li>
+      </ul>
+    <% end %>
+    <%= poetry_code_block(code: update_source, language: "plaintext", label: "poetry:update") %>
+    <%= poetry_code_block(code: commands_source, language: "shell", label: "The commands") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-record">The record follows the files</h2>
+      <p>
+        In <code>config/poetry_components.yml</code> a replaced file takes the
+        new digest, and a kept file keeps the digest it was installed with. The
+        item's version moves once every file is the registry's. Until then the
+        next <code>poetry:diff</code> still names the file you kept, so an update
+        you put off is not forgotten.
+      </p>
+      <h2 id="merging-an-edit">Taking a change into a file you edited</h2>
+      <p>
+        When the registry changed a file you also edited, let git show the two
+        side by side: commit, take the registry's file with <code>--force</code>,
+        and read the diff. What it shows is the registry's version against yours.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: merge_source, language: "shell", label: "With git") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="gem-components">Copies of Poetry's own components</h2>
+      <p>
+        A component copied from the gems with <code>poetry:add button</code> is
+        reported by the same <code>poetry:diff</code>, against what the installed
+        gems ship. <code>poetry:update</code> leaves those alone: they follow the
+        gems, and <%= link_to "the UI library page", library_path("ui") %> covers
+        them.
+      </p>
+    <% end %>
+  </section>
+</div>

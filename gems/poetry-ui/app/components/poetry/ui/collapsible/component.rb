@@ -25,7 +25,10 @@ module Poetry
           "size:), wired for you (aria-expanded/controls).",
           "Server-render the initial state via open: - never toggle data-open/data-closed by hand.",
           "Content stays in the DOM when closed (hidden) - do not conditionally render it.",
-          "For URL-controlled disclosure without JS, render open: from params - the same markup serves both."
+          "For URL-controlled disclosure without JS, render open: from params - the same markup serves both.",
+          "To animate the panel's height, pass content_class: \"h-(--collapsible-panel-height) overflow-hidden " \
+          "transition-[height] data-starting-style:h-0 data-ending-style:h-0\" - the controller measures the panel " \
+          "into --collapsible-panel-height while it opens or closes and sets it back to auto at rest."
         ].freeze
 
         # The required slots, stated statically so static checks can flag
@@ -65,6 +68,9 @@ module Poetry
 
         option :open, :boolean, default: false,
                                 doc: "The server-rendered initial state; the trigger toggles it client-side."
+        option :content_class, :string,
+               doc: "Class merge seam for the panel - e.g. the height animation over " \
+                    "--collapsible-panel-height. Root-level class: styles the root, not the panel."
 
         part "collapsible", "The disclosure root - the state controller flips the pair here",
              states: {
@@ -79,10 +85,18 @@ module Poetry
                "data-size" => "always - the composed Button's size axis"
              }
         part "collapsible-content", "The disclosure panel - stays in the DOM when closed (hidden) " \
-                                    "and rides the presence helper on exit",
+                                    "and rides the presence helper on entry and exit",
              states: {
                "data-open" => "content is open or entering",
-               "data-closed" => "content is closed or animating out (hidden lands after the exit finishes)"
+               "data-closed" => "content is closed or animating out (hidden lands after the exit finishes)",
+               "data-starting-style" => "the first painted frame of an entry (controller-written)",
+               "data-ending-style" => "the whole exit, until hidden lands (controller-written)"
+             },
+             vars: {
+               "--collapsible-panel-height" => "the measured panel height while it opens or closes, " \
+                                               "auto at rest (controller-written)",
+               "--collapsible-panel-width" => "the measured panel width while it opens or closes, " \
+                                              "auto at rest (controller-written)"
              }
 
         # A missing body yields a trigger disclosing an empty panel.
@@ -119,6 +133,7 @@ module Poetry
           attrs = {
             "id" => content_id, "data-slot" => "collapsible-content", "data-#{state}" => ""
           }
+          attrs["class"] = content_class if content_class.present?
           attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs

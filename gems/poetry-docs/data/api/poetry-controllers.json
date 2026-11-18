@@ -15,7 +15,7 @@
           "scope": "class",
           "group": null,
           "signature": "registerPoetryControllers(application)",
-          "docstring": "The bundler-host one-liner: registers every poetry controller on the\nhost's Stimulus application (importmap hosts get the same\nregistrations via the engine's pins + this same call in their\ncontrollers/index.js), arms the portal event bridge, and installs the\nunregistered-controller warning.",
+          "docstring": "The bundler-host one-liner: registers every poetry controller on the\nhost's Stimulus application (importmap hosts get the same\nregistrations via the engine's pins + this same call in their\ncontrollers/index.js), arms the portal event bridge, and installs the\nunregistered-controller warning and the morph guard.",
           "params": [
             {
               "name": "application",
@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/index.js",
-          "line": 205
+          "line": 218
         }
       ],
       "constants": [
@@ -167,6 +167,196 @@
       "constants": []
     },
     {
+      "path": "@poetry/controllers/behaviors/direct_upload",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useDirectUpload: Active Storage direct uploads for one connect, Rails'\nown DirectUpload class behind a queue with progress, cancel, retry and\nremove. Each finished upload lands as a hidden input carrying the\nblob's signed id under the field's name, so the form posts ids, never\nbytes. The class loads through the host's importmap on first use, as a\ndynamic import: a static one would fail the whole module graph in a\nhost without the pin, this fails one upload with a message. The form's\nsubmit is held while anything is in flight, and teardown aborts what\nis still running.\n\nuseDirectUploadEvents is the other mode: Rails' own submit-time\nuploads, read from the direct-upload:* events the input dispatches, so\na component can show the same rows while Rails does the work.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/direct_upload.js",
+      "methods": [
+        {
+          "name": "loadDirectUpload",
+          "scope": "class",
+          "group": null,
+          "signature": "loadDirectUpload()",
+          "docstring": "Rails' DirectUpload class, loaded once per page through the importmap\n(`pin \"@rails/activestorage\"`); a host without the pin rejects here\nand nowhere else.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<Function>"
+            ],
+            "text": "the DirectUpload constructor"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/direct_upload.js",
+          "line": 33
+        },
+        {
+          "name": "useDirectUpload",
+          "scope": "class",
+          "group": null,
+          "signature": "useDirectUpload(controller, { url, input = null, name = input?.name ?? \"\", form = input?.form ?? null, concurrency = 3, headers = {}, withCredentials = false, messages = {}, load = loadDirectUpload, onChange = () => {}, onBlocked = () => {} } = {})",
+          "docstring": "An upload queue for the controller's current connect.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "options.url",
+              "types": [
+                "string"
+              ],
+              "text": "the direct uploads endpoint"
+            },
+            {
+              "name": "[options.input]",
+              "types": [
+                "HTMLInputElement | null"
+              ],
+              "text": "the native file input; hidden inputs land before it"
+            },
+            {
+              "name": "[options.name]",
+              "types": [
+                "string"
+              ],
+              "text": "the hidden inputs' field name; the input's name by default"
+            },
+            {
+              "name": "[options.form]",
+              "types": [
+                "HTMLFormElement | null"
+              ],
+              "text": "the form whose submit waits; the input's form by default"
+            },
+            {
+              "name": "[options.concurrency]",
+              "types": [
+                "number"
+              ],
+              "text": "how many uploads run at once"
+            },
+            {
+              "name": "[options.headers]",
+              "types": [
+                "Object<string, string>"
+              ],
+              "text": "extra headers on the blob request"
+            },
+            {
+              "name": "[options.withCredentials]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether both requests send credentials"
+            },
+            {
+              "name": "[options.messages]",
+              "types": [
+                "Object<string, string>"
+              ],
+              "text": "unavailable, failed and busy, with a {name} token"
+            },
+            {
+              "name": "[options.load]",
+              "types": [
+                "() => Promise<Function>"
+              ],
+              "text": "how the DirectUpload class is found; the importmap by default"
+            },
+            {
+              "name": "[options.onChange]",
+              "types": [
+                "(entry: UploadEntry) => void"
+              ],
+              "text": "hears every change to an entry"
+            },
+            {
+              "name": "[options.onBlocked]",
+              "types": [
+                "() => void"
+              ],
+              "text": "hears a submit held back by uploads in flight"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ enqueue: (files: File[]) => UploadEntry[], cancel: (id: string) => void, retry: (id: string) => void, remove: (id: string) => void, cancelAll: () => void, busy: () => boolean, entries: () => UploadEntry[], entry: (id: string) => UploadEntry | undefined "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/direct_upload.js",
+          "line": 70
+        },
+        {
+          "name": "useDirectUploadEvents",
+          "scope": "class",
+          "group": null,
+          "signature": "useDirectUploadEvents(controller, input, { messages = {}, onChange = () => {} } = {})",
+          "docstring": "Rails' submit-time direct uploads on `input`, reported as entries in\nthe queue's vocabulary (queued, uploading with progress, error, done),\nfor the controller's current connect. The error alert Rails would show\nis cancelled; the message goes to the entry instead.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "input",
+              "types": [
+                "HTMLInputElement"
+              ],
+              "text": "the native input Rails uploads from"
+            },
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[options.messages]",
+              "types": [
+                "Object<string, string>"
+              ],
+              "text": "failed, with a {name} token"
+            },
+            {
+              "name": "[options.onChange]",
+              "types": [
+                "(entry: UploadEntry) => void"
+              ],
+              "text": "hears every change"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "stops listening early; teardown stops otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/direct_upload.js",
+          "line": 292
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "@poetry/controllers/behaviors/escape",
       "type": "module",
       "superclass": null,
@@ -215,6 +405,231 @@
         }
       ],
       "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/file_drop",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useFileDrop: files arriving by drop, picker or paste for one connect,\nchecked against accept, size and count before they reach the native\ninput. The zone's drag listeners, the document guard, the overlay\ncounter and the paste listener bind through the scope, so\nteardown(controller) unbinds them. The native input stays the form\nvalue: accepted files are mirrored into it through a DataTransfer and\na real change event, so drop, paste and picker end in one pipeline and\nevery listener on the input sees a picker-identical selection.\n\nDrag state uses an enter/leave COUNTER: dragenter and dragleave fire\nper descendant crossed, so a boolean flickers over child elements and\nSafari reported no relatedTarget for fifteen years; the counter nets\nout to zero only when the pointer truly leaves the zone.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/file_drop.js",
+      "methods": [
+        {
+          "name": "carriesFiles",
+          "scope": "class",
+          "group": null,
+          "signature": "carriesFiles(transfer)",
+          "docstring": "Whether a drag carries files: `types` holds \"Files\" (or Firefox's\nlegacy name), or an item is of kind file (some Chromium drags omit\nthe type and expose the item).",
+          "params": [
+            {
+              "name": "transfer",
+              "types": [
+                "DataTransfer | null | undefined"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/file_drop.js",
+          "line": 49
+        },
+        {
+          "name": "acceptMatcher",
+          "scope": "class",
+          "group": null,
+          "signature": "acceptMatcher(accept)",
+          "docstring": "A matcher for the native accept grammar: extensions (\".pdf\"), exact\ntypes (\"application/pdf\") and wildcards (\"image/*\"), case-insensitive;\nan empty accept, a bare \"*\" or the any-type wildcard takes everything.\nA file without a type matches an extension, never a type.",
+          "params": [
+            {
+              "name": "accept",
+              "types": [
+                "string"
+              ],
+              "text": "the comma-separated list"
+            }
+          ],
+          "return": {
+            "types": [
+              "(type: string, name: string) => boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/file_drop.js",
+          "line": 68
+        },
+        {
+          "name": "useFileDrop",
+          "scope": "class",
+          "group": null,
+          "signature": "useFileDrop(controller, { zone = controller.element, input = null, state = zone, accept = \"\", multiple = false, maxFiles = 0, maxSize = 0, minSize = 0, append = multiple, validate = null, paste = false, pasteTarget = zone, overlay = false, directory = false, preventDocumentDrop = true, messages = {}, onFiles = () => {}, onDrag = () => {} } = {})",
+          "docstring": "Files for the controller's current connect: drop onto the zone (or the\nwhole page with `overlay`), the native picker, and paste when asked.\nAccepted files land in the input; the report names both lists.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[options.zone]",
+              "types": [
+                "Element"
+              ],
+              "text": "the drop target; the controller's element by default"
+            },
+            {
+              "name": "[options.input]",
+              "types": [
+                "HTMLInputElement | null"
+              ],
+              "text": "the native file input the selection mirrors into"
+            },
+            {
+              "name": "[options.state]",
+              "types": [
+                "Element"
+              ],
+              "text": "where data-dragging, data-drag-reject and data-drag-global are written; the zone by default"
+            },
+            {
+              "name": "[options.accept]",
+              "types": [
+                "string"
+              ],
+              "text": "the native accept list; empty takes everything"
+            },
+            {
+              "name": "[options.multiple]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether the selection may hold several files; a single zone keeps the first"
+            },
+            {
+              "name": "[options.maxFiles]",
+              "types": [
+                "number"
+              ],
+              "text": "the most files the selection may hold; 0 is unlimited"
+            },
+            {
+              "name": "[options.maxSize]",
+              "types": [
+                "number"
+              ],
+              "text": "the largest file, in bytes; 0 is unlimited"
+            },
+            {
+              "name": "[options.minSize]",
+              "types": [
+                "number"
+              ],
+              "text": "the smallest file, in bytes"
+            },
+            {
+              "name": "[options.append]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether new files join the selection or replace it; follows `multiple`"
+            },
+            {
+              "name": "[options.validate]",
+              "types": [
+                "((file: File) => string | null) | null"
+              ],
+              "text": "a custom check returning the reason a file fails"
+            },
+            {
+              "name": "[options.paste]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether a paste carrying files lands in the zone"
+            },
+            {
+              "name": "[options.pasteTarget]",
+              "types": [
+                "EventTarget"
+              ],
+              "text": "where the paste listener binds; the zone by default"
+            },
+            {
+              "name": "[options.overlay]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether the whole document is the drop target, with data-drag-global while files are over the window"
+            },
+            {
+              "name": "[options.directory]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether dropped folders are walked for their files"
+            },
+            {
+              "name": "[options.preventDocumentDrop]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether a drop outside the zone is swallowed instead of navigating to the file"
+            },
+            {
+              "name": "[options.messages]",
+              "types": [
+                "Object<string, string>"
+              ],
+              "text": "rejection messages by code, with {name}, {size}, {count} and {reason} tokens"
+            },
+            {
+              "name": "[options.onFiles]",
+              "types": [
+                "(report: FileDropReport) => void"
+              ],
+              "text": "hears every change to the selection"
+            },
+            {
+              "name": "[options.onDrag]",
+              "types": [
+                "(verdict: \"none\" | \"accept\" | \"reject\" | \"unknown\") => void"
+              ],
+              "text": "hears the drag state as the pointer moves"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ open: () => void, clear: () => void, take: (files: File[], source: string) => void, remove: (file: File) => void, files: () => File[], dragging: () => boolean "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/file_drop.js",
+          "line": 186
+        }
+      ],
+      "constants": [
+        {
+          "name": "REJECTIONS",
+          "value": "Object.freeze({",
+          "docstring": "The rejection codes, react-dropzone's spelling, so a port's rulebook\nmaps them one to one."
+        }
+      ]
     },
     {
       "path": "@poetry/controllers/behaviors/in_view",
@@ -761,6 +1176,13 @@
               "text": "more elements an outside press must not dismiss from (a chips field)"
             },
             {
+              "name": "[options.levelTrigger]",
+              "types": [
+                "(node: Element) => Element | null"
+              ],
+              "text": "the trigger of a level wired with wireLevel (a submenu's sub-trigger): a press on it is that level's toggle, not an outside press"
+            },
+            {
               "name": "[options.onDismiss]",
               "types": [
                 "(event: Event) => void"
@@ -783,7 +1205,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/behaviors/overlay.js",
-          "line": 68
+          "line": 71
         }
       ],
       "constants": []
@@ -1199,6 +1621,42 @@
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/escape.js",
           "line": 32
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/helpers/file_size",
+      "type": "module",
+      "superclass": null,
+      "docstring": "A byte count as a selection list shows it.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/helpers/file_size.js",
+      "methods": [
+        {
+          "name": "formatFileSize",
+          "scope": "class",
+          "group": null,
+          "signature": "formatFileSize(bytes)",
+          "docstring": "Formats a byte count for people (\"2.0 KB\"): whole bytes below a\nkilobyte, one decimal above.",
+          "params": [
+            {
+              "name": "bytes",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "string"
+            ],
+            "text": "empty for a count that is not a size"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/file_size.js",
+          "line": 12
         }
       ],
       "constants": []
@@ -2015,6 +2473,144 @@
       ]
     },
     {
+      "path": "@poetry/controllers/helpers/morph_guard",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The morph guard: under turbo-refresh-method=morph a Turbo refresh keeps\nthe nodes the new page also has and syncs their attributes and form\nvalues to what the server rendered, which would strip the state a\ncontroller wrote onto the element (the DOM is the store, state.js): the\nselected tab, the open dialog, the expanded collapsible, the half-typed\nvalue. Ownership is per element AND attribute, by observation: a\nguarded attribute the client changed since the page was rendered is\nclient-owned until the next full render, and the morph leaves exactly\nthat attribute alone (its turbo:before-morph-attribute is cancelled).\nEverything the client never touched follows the server, so a change the\nserver made on purpose still lands. A form control follows the\nbrowser's own rule: kept while its value differs from what the server\nrendered (value against defaultValue, checked against defaultChecked,\nselected against defaultSelected). The morph's own writes never count:\na morph is synchronous within its task, so from its first\nturbo:before-morph-element to a zero timer (which runs after the\nmicrotasks that deliver the records) the observer ignores what it is\nhanded. Installed once per document by registerPoetryControllers; a\npage without Turbo never fires the events, and the observer costs one\nfiltered callback per client write. A node the morph replaces (no\nstable id to pair it) loses its state with the node - the guard works\non what the morph keeps.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+      "methods": [
+        {
+          "name": "ownsAttribute",
+          "scope": "class",
+          "group": null,
+          "signature": "ownsAttribute(element, name)",
+          "docstring": "Whether the client owns `name` on `element`: it changed the attribute's\nvalue since the page was rendered, outside a morph.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute name"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 53
+        },
+        {
+          "name": "isDirtyControl",
+          "scope": "class",
+          "group": null,
+          "signature": "isDirtyControl(element, name = \"value\")",
+          "docstring": "Whether a form control differs from what the server rendered: the\nbrowser's own dirty rule (value against defaultValue, checked against\ndefaultChecked, an option's selected against defaultSelected). A file\ninput has no server value to compare.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[name=\"value\"]",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute the morph is syncing: `value`, `checked` or `selected`"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 68
+        },
+        {
+          "name": "keepsAttribute",
+          "scope": "class",
+          "group": null,
+          "signature": "keepsAttribute(element, name)",
+          "docstring": "Whether a morph must leave `name` on `element` as it is: a dirty form\ncontrol's value, checked or selected, or a guarded attribute the client\nowns.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": "the element being morphed"
+            },
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the attribute the morph would sync"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 90
+        },
+        {
+          "name": "installMorphGuard",
+          "scope": "class",
+          "group": null,
+          "signature": "installMorphGuard(doc = document)",
+          "docstring": "Installs the guard on `doc` once: the attribute observer that records\nthe client's writes, the window that ignores a morph's own writes, and\nthe `turbo:before-morph-attribute` listener that keeps what the client\nowns. Returns false when it is already installed, or when the\nenvironment has no MutationObserver.",
+          "params": [
+            {
+              "name": "[doc=document]",
+              "types": [
+                "Document"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": "true when this call installed it"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/morph_guard.js",
+          "line": 128
+        }
+      ],
+      "constants": [
+        {
+          "name": "MORPH_GUARDED_ATTRIBUTES",
+          "value": "Object.freeze([",
+          "docstring": "The attributes a morph may not reset once the client wrote them: every\nattribute the state vocabulary writes, and the mirrors controllers write\nbeside it (the ARIA twin of a selection, a disclosure, a check or a\npress, the roving tabindex, hidden and its data twin, a dialog's open)."
+        }
+      ]
+    },
+    {
       "path": "@poetry/controllers/helpers/portal",
       "type": "module",
       "superclass": null,
@@ -2348,6 +2944,31 @@
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/presence.js",
           "line": 126
+        },
+        {
+          "name": "presenceMotionMs",
+          "scope": "class",
+          "group": null,
+          "signature": "presenceMotionMs(element)",
+          "docstring": "How long the element's declared motion runs (ms): the longer of its\nanimation and transition, delays included, plus the end-event grace;\n0 when it declares none.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "number"
+            ],
+            "text": "the wait before the motion has surely finished"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/presence.js",
+          "line": 194
         }
       ],
       "constants": []
@@ -4862,7 +5483,7 @@
       "path": "poetry--core--command",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode: steps 1-2\n(hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them.\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (two names for the same parts; the engine rides both).\n\n**Values**:\n- `filter` (Boolean, default: true): false = SERVER-DRIVEN mode: never hide - the host re-renders the list (Turbo frame) and Command only runs highlight/activation/announcement over what is rendered.\n- `loop` (Boolean, default: false): Arrow-key wrap over visible enabled items.\n- `debounce` (Number, default: 0): Filter-pass debounce in ms (0 = synchronous - client filtering is cheap string work; the status announcement is debounced separately).\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
+      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode: steps 1-2\n(hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them; a refill\nthat sweeps the highlighted item away during a live search re-seats it\nat once (the server-side search answering after the keystroke).\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (two names for the same parts; the engine rides both).\n\n**Values**:\n- `filter` (Boolean, default: true): false = SERVER-DRIVEN mode: never hide - the host re-renders the list (Turbo frame) and Command only runs highlight/activation/announcement over what is rendered.\n- `loop` (Boolean, default: false): Arrow-key wrap over visible enabled items.\n- `debounce` (Number, default: 0): Filter-pass debounce in ms (0 = synchronous - client filtering is cheap string work; the status announcement is debounced separately).\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/command_controller.js",
       "methods": [
@@ -4876,7 +5497,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 82
+          "line": 85
         },
         {
           "name": "disconnect",
@@ -4888,7 +5509,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 111
+          "line": 120
         },
         {
           "name": "filterInput",
@@ -4900,7 +5521,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 152
+          "line": 182
         },
         {
           "name": "keydown",
@@ -4920,7 +5541,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 180
+          "line": 210
         },
         {
           "name": "activate",
@@ -4940,7 +5561,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 236
+          "line": 266
         },
         {
           "name": "pointerHighlight",
@@ -4960,7 +5581,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 254
+          "line": 284
         },
         {
           "name": "highlightItem",
@@ -4994,7 +5615,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 273
+          "line": 303
         },
         {
           "name": "reset",
@@ -5006,7 +5627,535 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
+          "line": 313
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--composer",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The Composer seams: a chat message form whose state the SERVER holds.\nThe form is never replaced; the server redraws one slot inside it with\na Send button or a Stop button, and a Stop button on the page is the\nwhole fact that a reply is running - the controller keeps no copy.\n\nEnter sends and Shift+Enter breaks the line (Cmd/Ctrl+Enter always\nsends; with submit-on-enter off a bare Enter is a line break). An Enter\nthat confirms an input-method composition never sends. The form's own\nsubmit event is the one gate, so the key and the button obey the same\nrules: nothing is sent while the field is blank, while a reply runs, or\nwhile a send is already on its way. Turbo marks the form aria-busy for\nthe length of a request; the one moment before that mark lands is\nbridged by a flag that lasts a single task.\n\nWhen the server accepts a message the sent text leaves the field, and\nwhatever was typed after it stays. A refused message stays whole.\n\nFiles are part of the message when the composer has a file input (the\nattachments target): a message of files alone is not blank, and once\nthe server accepts it the sent event names the files that went, so the\nfile-input controller beside this one drops their chips and keeps any\nfile added since. The event names the per-message fields that went as\nwell (elements marked data-composer-field, a chosen reference's hidden\ninput), for whoever added them to take back out.\n\nFocus is never taken by a pointer: a press on Send or Stop leaves it\nwhere it was, so a field being typed in keeps its on-screen keyboard\nand a reader who put the keyboard away is not handed it back. A button\npressed from the keyboard does hold focus, and the server is about to\ndisable or replace it, so focus goes to the field instead of the page.\n\nA suggested prompt reaches the composer as a poetry:composer:prompt\nevent on the window that names it by id (the composer-prompt\ncontroller's press). The composer writes the text and, asked to, sends\nit through the same gate. A prompt that could not go writes nothing,\nso a draft is never traded for a prompt the gate refused.\n\n**Targets**: `attachments`, `form`, `input`, `send`, `stop`\n\n**Values**:\n- `submitOnEnter` (Boolean, default: true): Whether a bare Enter sends. Off, Enter is a line break and only Cmd/Ctrl+Enter sends.\n\n**Events**: `poetry:composer:sent`",
+      "examples": [],
+      "file": "app/javascript/poetry/core/composer_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Reflects the field's emptiness (a browser may restore a draft the\nserver never rendered) and starts hearing prompts meant for this\ncomposer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 71
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Undoes the per-connect scope (the pending flag's timer).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 77
+        },
+        {
+          "name": "keydown",
+          "scope": "instance",
+          "group": null,
+          "signature": "keydown(event)",
+          "docstring": "The field's keydown action: Enter sends, Shift+Enter is left to the\nbrowser, and an Enter that belongs to an input-method composition is\nnever read as a send.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "KeyboardEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 88
+        },
+        {
+          "name": "changed",
+          "scope": "instance",
+          "group": null,
+          "signature": "changed()",
+          "docstring": "The field's input action, the file input's change action and the\nroot's turbo:morph-element action: keeps data-empty on the root\nhonest. A morph puts the server's attributes back on the root while\nthe field keeps its draft, so the emptiness is read again from the\nfield once the morph has passed.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 106
+        },
+        {
+          "name": "submit",
+          "scope": "instance",
+          "group": null,
+          "signature": "submit()",
+          "docstring": "Sends the message through the form, as a press of the Send button\nwould. The form's submit action decides whether anything goes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 114
+        },
+        {
+          "name": "guard",
+          "scope": "instance",
+          "group": null,
+          "signature": "guard(event)",
+          "docstring": "The form's submit action, the one gate for the key and the button:\nrefuses a blank message, a send while a reply runs (a Stop button is\non the page), and a second send while the first is on its way.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "SubmitEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 125
+        },
+        {
+          "name": "settle",
+          "scope": "instance",
+          "group": null,
+          "signature": "settle(event)",
+          "docstring": "The form's turbo:submit-end action: an accepted message leaves the\nfield (text typed since the send stays) and is reported with the\nfiles and the per-message fields that went with it, a refused one\nstays whole, and a send made\nfrom inside the composer ends with focus in the field unless the\nreader took it elsewhere meanwhile.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.success decides"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 156
+        },
+        {
+          "name": "setText",
+          "scope": "instance",
+          "group": null,
+          "signature": "setText(text)",
+          "docstring": "The programmatic surface for the message's text: setText(\"Hello\")\nreplaces the draft, with a real input event, and does not send. A\ndisabled field is left alone. Returns the resulting state - what an\nagent tool reports back - so a refusal is visible as changed: false.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "string"
+              ],
+              "text": "the message text (stringified)"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ text: string, empty: boolean, changed: boolean "
+            ],
+            "text": "} the field after the call"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 187
+        },
+        {
+          "name": "send",
+          "scope": "instance",
+          "group": null,
+          "signature": "send()",
+          "docstring": "The programmatic surface for sending: send() does what a press of\nSend would, through the same gate. Returns whether the message was\nlet go and, when it was not, why: blank, running (a reply is being\nwritten), sending (a send is on its way) or disabled.",
+          "params": [],
+          "return": {
+            "types": [
+              "{ sent: boolean, reason?: \"blank\" | \"running\" | \"sending\" | \"disabled\" "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 208
+        },
+        {
+          "name": "stop",
+          "scope": "instance",
+          "group": null,
+          "signature": "stop()",
+          "docstring": "The programmatic surface for stopping: stop() presses the Stop\nbutton when a reply is running and the button can be pressed.\nReturns whether it was.",
+          "params": [],
+          "return": {
+            "types": [
+              "{ stopped: boolean "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 224
+        },
+        {
+          "name": "holdFocus",
+          "scope": "instance",
+          "group": null,
+          "signature": "holdFocus(event)",
+          "docstring": "The Send and Stop buttons' pointerdown action: a press does not take\nfocus. A field being typed in keeps it, and with it the on-screen\nkeyboard.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 238
+        },
+        {
+          "name": "returnFocus",
+          "scope": "instance",
+          "group": null,
+          "signature": "returnFocus(event)",
+          "docstring": "The Stop button's click action: when the button itself holds focus (a\npress from the keyboard), focus moves to the field, because the server\nis about to replace the button and a replaced element drops focus to\nthe page.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_controller.js",
+          "line": 250
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--composer-menu",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The Composer's menus: lists the server rendered that open over the\ncomposer while the word at the caret starts with a menu's trigger\n(\"@\", \"/\"), filter as the word grows, and put the chosen option into\nthe message. The field stays a plain textarea and keeps focus\nthroughout: the open list is named by aria-controls, the highlighted\noption by aria-activedescendant, and a live region says how many\nsuggestions there are, because a textarea takes no expanded state.\n\nWhat a choice does is the menu's to say. A text menu replaces the\ntyped word with the option's text (\"@ana \"). A chip menu takes the\ntyped word out and adds a chip beside the field with a hidden field\nfor the server, so the reference is context for the whole message\nand never syntax inside it. An option marked to run takes the typed\nword out and only reports the choice. Every choice is reported with\nthe choose event.\n\nA menu with data-src is fed by the server. Its listbox is a Turbo\nframe, and the word being typed is asked about at that address\n(?q=word, under the menu's data-param) once typing has paused. What\nthe server answers is shown as it came: the server decides what\nmatches and in what order. The frame is stamped with the word its\noptions answer (data-query), so a longer word narrows them here at\nonce while the server is asked again, and a word they cannot answer\nshows no list until the server has. The menu carries data-loading\nfrom the moment a word is to be asked about until its answer lands.\nAn answer that is an error, or that holds no such frame, leaves the\nlist as it was: Turbo is kept from writing its own message into the\nlist, and from making a page visit of an error page that asks for\none, as Rails' own does in development.\n\nArrow keys move the highlight, Enter and Tab choose, and Escape\ncloses the list for the word being typed: it stays closed until the\ncaret leaves that word. A key this controller takes is claimed\n(preventDefault), which is how the composer controller beside it\nknows an Enter was a choice and not a send.\n\n**Targets**: `chips`, `input`, `menu`, `template`\n\n**Values**:\n- `messages` (Object, default: {}): What the live region says: one and other with a {count} token for the suggestions, added and removed with a {label} token for a chip.\n\n**Events**: `poetry:composer-menu:choose`",
+      "examples": [],
+      "file": "app/javascript/poetry/core/composer_menu_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Takes the announcement surface for this connect.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 80
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Closes an open list so its state never outlives the controller.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 85
+        },
+        {
+          "name": "track",
+          "scope": "instance",
+          "group": null,
+          "signature": "track(event)",
+          "docstring": "The field's input, keyup, click and focus action: reads the word at\nthe caret and opens, filters or closes the list it calls for. A\nword whose list was dismissed stays without one.",
+          "params": [
+            {
+              "name": "[event]",
+              "types": [
+                "Event"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 100
+        },
+        {
+          "name": "keydown",
+          "scope": "instance",
+          "group": null,
+          "signature": "keydown(event)",
+          "docstring": "The field's keydown action, ahead of the composer's own: while a\nlist is open the arrows move its highlight, Enter and Tab choose\nthe highlighted option and Escape dismisses the list. Each of those\nkeys is claimed. Keys held with a modifier, and keys that belong to\nan input-method composition, are left alone.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "KeyboardEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 133
+        },
+        {
+          "name": "hold",
+          "scope": "instance",
+          "group": null,
+          "signature": "hold(event)",
+          "docstring": "A list's pointerdown action: a press never takes focus from the\nfield, so the list stays open under it and the on-screen keyboard\nstays up.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 170
+        },
+        {
+          "name": "pick",
+          "scope": "instance",
+          "group": null,
+          "signature": "pick(event)",
+          "docstring": "A list's click action: chooses the option under it. A click and not\na press, so a finger that scrolls the list chooses nothing.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 180
+        },
+        {
+          "name": "point",
+          "scope": "instance",
+          "group": null,
+          "signature": "point(event)",
+          "docstring": "A list's pointermove action: the highlight follows the pointer.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 191
+        },
+        {
+          "name": "blurred",
+          "scope": "instance",
+          "group": null,
+          "signature": "blurred()",
+          "docstring": "The field's blur action: a list is open only while the field has focus.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 198
+        },
+        {
+          "name": "loaded",
+          "scope": "instance",
+          "group": null,
+          "signature": "loaded(event)",
+          "docstring": "A server-fed list's turbo:frame-load action: the server's options\nfor the word last asked about are in the list. The list is stamped\nwith that word, and when the reader is still on a word it answers\nthe list opens on the new options, with the highlight on the option\nit was on when that option is still among them.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "dispatched by the menu's own listbox frame"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 212
+        },
+        {
+          "name": "answered",
+          "scope": "instance",
+          "group": null,
+          "signature": "answered(event)",
+          "docstring": "A server-fed list's turbo:before-fetch-response action: an answer\nthat is an error is not handed to Turbo. Rails' exception page in\ndevelopment asks Turbo for a full page visit, which would take the\ndraft along; any other error page would be written over the\noptions. The list stays as it was.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.fetchResponse is the answer"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 235
+        },
+        {
+          "name": "failed",
+          "scope": "instance",
+          "group": null,
+          "signature": "failed(event)",
+          "docstring": "A server-fed list's turbo:frame-missing and turbo:fetch-request-error\naction: an answer without the list's frame, or no answer at all. A\nmissing frame is not handed to Turbo either, which would write\n\"Content missing\" where the options go. The list stays as it was,\nand the same word is not asked about again until the word changes.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 254
+        },
+        {
+          "name": "keep",
+          "scope": "instance",
+          "group": null,
+          "signature": "keep(event)",
+          "docstring": "The chips' row's turbo:before-morph-element action: the chips and\ntheir hidden fields are the client's, and the server renders the\nrow empty. A morph that reached it would drop what the reader chose,\nso the row is left as it is.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "cancelled when the row itself is about to be morphed"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 270
+        },
+        {
+          "name": "restore",
+          "scope": "instance",
+          "group": null,
+          "signature": "restore(event)",
+          "docstring": "The root's turbo:morph-element action: a morph puts the server's\nrender back on the options and the field, which highlights nothing\nand names no option, while the reader is still on the same word.\nOnce the whole composer has been morphed the open list is filtered\nagain and the highlight returns to the option it was on.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "acted on when it is the root's own"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
           "line": 283
+        },
+        {
+          "name": "remove",
+          "scope": "instance",
+          "group": null,
+          "signature": "remove(event)",
+          "docstring": "A chip's remove action: the reference and its hidden field leave\nthe message, and focus goes to the field.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 318
+        },
+        {
+          "name": "sent",
+          "scope": "instance",
+          "group": null,
+          "signature": "sent(event)",
+          "docstring": "The composer's sent action: the chips that went with an accepted\nmessage leave, and a chip added since stays.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.fields holds the per-message fields that were sent"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_menu_controller.js",
+          "line": 333
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--composer-prompt",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "A suggested prompt for a Composer elsewhere on the page: a chip under\nan empty conversation, a quick reply, a retry. Pressed, it asks the\nnamed composer to take its text, and by default to send it, by\ndispatching poetry:composer:prompt on the window. The composer does\nthe writing and the sending itself, through its own gate, so a prompt\ncan do nothing a typed message could not.\n\n**Values**:\n- `composer` (String): The id of the composer the prompt is for.\n- `text` (String): The text the prompt writes in place of the draft.\n- `send` (Boolean, default: true): Whether the composer sends the text at once. Off, the text is written and the caret put after it, for the person to finish.\n\n**Events**: `poetry:composer:prompt`",
+      "examples": [],
+      "file": "app/javascript/poetry/core/composer_prompt_controller.js",
+      "methods": [
+        {
+          "name": "write",
+          "scope": "instance",
+          "group": null,
+          "signature": "write()",
+          "docstring": "The click action: hands the prompt to the composer it names.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/composer_prompt_controller.js",
+          "line": 27
         }
       ],
       "constants": []
@@ -5304,12 +6453,12 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Heals a restored zombie snapshot, subscribes the before-cache close,\nand arms the opt-in global hotkey.",
+          "docstring": "Heals a restored zombie snapshot, subscribes the before-cache close\nand the close on the dialog's own successful form submission, and\narms the opt-in global hotkey.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 39
+          "line": 40
         },
         {
           "name": "disconnect",
@@ -5321,7 +6470,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 71
+          "line": 81
         },
         {
           "name": "toggle",
@@ -5333,7 +6482,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 106
+          "line": 116
         },
         {
           "name": "open",
@@ -5350,7 +6499,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 118
+          "line": 128
         },
         {
           "name": "close",
@@ -5375,7 +6524,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 138
+          "line": 148
         },
         {
           "name": "backdropClose",
@@ -5395,7 +6544,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 164
+          "line": 174
         },
         {
           "name": "lockScroll",
@@ -5407,7 +6556,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 186
+          "line": 196
         },
         {
           "name": "unlockScroll",
@@ -5419,7 +6568,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 191
+          "line": 201
         }
       ],
       "constants": []
@@ -5477,7 +6626,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 67
+          "line": 70
         },
         {
           "name": "escapeClose",
@@ -5497,7 +6646,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 92
+          "line": 95
         },
         {
           "name": "close",
@@ -5517,7 +6666,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 108
+          "line": 111
         },
         {
           "name": "backdropClose",
@@ -5537,7 +6686,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 131
+          "line": 134
         },
         {
           "name": "swipeStart",
@@ -5557,7 +6706,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 155
+          "line": 158
         },
         {
           "name": "swipeMove",
@@ -5577,7 +6726,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 186
+          "line": 189
         },
         {
           "name": "swipeEnd",
@@ -5602,7 +6751,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 223
+          "line": 236
         },
         {
           "name": "swipeCancel",
@@ -5622,7 +6771,102 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 252
+          "line": 267
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--core--file-drop",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The file-drop behavior's controller: files arrive on this element by\ndrop, picker or paste, are checked against accept, size and count, and\nland in the native input inside it (the input target, or the first\nfile input below). Values only, zero actions: the behavior binds the\nzone, the document and the paste listeners in connect, through the\nscope. A component listens for the files event to reflect the\nselection, and a trigger outside the label may call open.\n\n**Targets**: `input`\n\n**Values**:\n- `accept` (String, default: \"\"): The native accept list; empty takes everything.\n- `multiple` (Boolean, default: false): Whether the selection may hold several files; a single zone keeps the first.\n- `maxFiles` (Number, default: 0): The most files the selection may hold; 0 is unlimited.\n- `maxSize` (Number, default: 0): The largest file in bytes; 0 is unlimited.\n- `minSize` (Number, default: 0): The smallest file in bytes.\n- `paste` (Boolean, default: false): Whether a paste carrying files lands here.\n- `overlay` (Boolean, default: false): Whether the whole page is the drop target, with data-drag-global while files are over it.\n- `directory` (Boolean, default: false): Whether dropped folders are walked for their files.\n- `preventDocumentDrop` (Boolean, default: true): Whether a drop outside the zone is swallowed instead of navigating to the file.\n- `messages` (Object, default: {}): Rejection messages by code, with {name}, {size}, {count} and {reason} tokens.\n\n**Events**: `poetry:file-drop:drag`, `poetry:file-drop:files`",
+      "examples": [],
+      "file": "app/javascript/poetry/core/file_drop_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Binds the intake for this connect.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_drop_controller.js",
+          "line": 48
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Unbinds everything the connect bound.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_drop_controller.js",
+          "line": 67
+        },
+        {
+          "name": "open",
+          "scope": "instance",
+          "group": null,
+          "signature": "open(event)",
+          "docstring": "Opens the native picker: the action for a trigger that is not the\nlabel (a button beside the zone).",
+          "params": [
+            {
+              "name": "[event]",
+              "types": [
+                "Event"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_drop_controller.js",
+          "line": 78
+        },
+        {
+          "name": "clear",
+          "scope": "instance",
+          "group": null,
+          "signature": "clear(event)",
+          "docstring": "Empties the selection.",
+          "params": [
+            {
+              "name": "[event]",
+              "types": [
+                "Event"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_drop_controller.js",
+          "line": 88
+        },
+        {
+          "name": "removeFile",
+          "scope": "instance",
+          "group": null,
+          "signature": "removeFile(file)",
+          "docstring": "Drops one file from the selection: the component beside this\ncontroller calls it from a row's remove button.",
+          "params": [
+            {
+              "name": "file",
+              "types": [
+                "File"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_drop_controller.js",
+          "line": 99
         }
       ],
       "constants": []
@@ -5631,7 +6875,7 @@
       "path": "poetry--core--file-input",
       "type": "controller",
       "superclass": null,
-      "docstring": "The FileInput dropzone engine: the\ncomponent renders a <label> wrapping a visually-hidden native\n<input type=file>, so click-to-browse and keyboard access are the\nPLATFORM's - this controller adds only what HTML cannot: drag-and-drop\nonto the label, the selected-file list, and the clear affordance. The\nnative input stays the single source of truth (its FileList is the\nform value; ActiveStorage direct upload rides it untouched).\n\nDrag state uses an enter/leave COUNTER: dragenter/dragleave fire per\ndescendant crossed, so a boolean flickers over child elements - the\ncounter nets out to zero only when the pointer truly leaves the zone.\n\n**Targets**: `clear`, `input`, `list`\n\n**Values**:\n- `multiple` (Boolean, default: false): Whether more than one file may be chosen; otherwise a drop keeps the first.\n\n**Events**: `poetry:file-input:change`",
+      "docstring": "The FileInput dropzone's reflection: the component renders a <label>\nwrapping a visually-hidden native <input type=file>, so click-to-browse\nand keyboard access are the PLATFORM's, and the file-drop controller\nbeside this one takes drops, pastes and picker selections through the\naccept, size and count checks. This controller shows the result: one\nAttachment chip per file, cloned from the server's template, with the\nrejections, the populated state and the clear affordance; and it runs\nthe uploads the component asked for. With upload \"immediate\" every\nfile goes to Active Storage as it lands, with progress, cancel, retry\nand remove, and the form posts the signed ids the queue leaves as\nhidden inputs; with \"on_submit\" Rails uploads at submit time and the\nchips follow its events; with \"none\" the native input posts the bytes.\n\n**Targets**: `clear`, `errors`, `input`, `items`, `template`\n\n**Values**:\n- `multiple` (Boolean, default: false): Whether more than one file may be chosen; the file-drop controller enforces it.\n- `upload` (String, default: \"none\"): none, on_submit (Rails uploads at submit) or immediate (the queue uploads as files land).\n- `name` (String, default: \"\"): The field name the hidden signed-id inputs carry in immediate mode.\n- `url` (String, default: \"\"): The direct uploads endpoint, in immediate mode.\n- `preview` (Boolean, default: false): Whether image files show a thumbnail in their chip.\n- `messages` (Object, default: {}): The upload messages: unavailable, failed and busy, with a {name} token.\n\n**Events**: `poetry:file-input:change`, `poetry:file-input:upload`",
       "examples": [],
       "file": "app/javascript/poetry/core/file_input_controller.js",
       "methods": [
@@ -5640,103 +6884,51 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Reflects the input's current FileList (list, clear, data-populated).",
+          "docstring": "Wires the upload mode and reflects the input's current selection.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 34
+          "line": 57
         },
         {
-          "name": "dragenter",
+          "name": "disconnect",
           "scope": "instance",
           "group": null,
-          "signature": "dragenter(event)",
-          "docstring": "File drags flip the zone into its accepting state - depth-counted\n(the header explains the counter).",
+          "signature": "disconnect()",
+          "docstring": "Unbinds the queue and the listeners; the chips' object URLs are released.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 83
+        },
+        {
+          "name": "files",
+          "scope": "instance",
+          "group": null,
+          "signature": "files(event)",
+          "docstring": "The file-drop controller's files action (drop, paste, picker and a\nremoval land here): reflects the selection as chips, shows the\nrejections, starts the uploads in immediate mode and reports the\nfile names.",
           "params": [
             {
               "name": "event",
               "types": [
-                "DragEvent"
+                "CustomEvent"
               ],
-              "text": ""
+              "text": "detail holds accepted, rejected, source and files"
             }
           ],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 45
+          "line": 98
         },
         {
-          "name": "dragover",
+          "name": "remove",
           "scope": "instance",
           "group": null,
-          "signature": "dragover(event)",
-          "docstring": "The required preventDefault - without it the browser navigates to\nthe dropped file.",
-          "params": [
-            {
-              "name": "event",
-              "types": [
-                "DragEvent"
-              ],
-              "text": ""
-            }
-          ],
-          "return": null,
-          "examples": [],
-          "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 59
-        },
-        {
-          "name": "dragleave",
-          "scope": "instance",
-          "group": null,
-          "signature": "dragleave()",
-          "docstring": "Nets the depth counter down; at zero the drag styling clears.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 66
-        },
-        {
-          "name": "drop",
-          "scope": "instance",
-          "group": null,
-          "signature": "drop(event)",
-          "docstring": "Assigns the dropped files to the native input (single-file zones take\nthe FIRST - the native picker's rule) and dispatches a real change so\nevery listener sees a picker-identical selection.",
-          "params": [
-            {
-              "name": "event",
-              "types": [
-                "DragEvent"
-              ],
-              "text": ""
-            }
-          ],
-          "return": null,
-          "examples": [],
-          "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 78
-        },
-        {
-          "name": "changed",
-          "scope": "instance",
-          "group": null,
-          "signature": "changed()",
-          "docstring": "The native input's change action (picker AND drop land here):\nreflects the selection and reports the file names.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 100
-        },
-        {
-          "name": "clear",
-          "scope": "instance",
-          "group": null,
-          "signature": "clear(event)",
-          "docstring": "The clear button's click action: empties the input and dispatches a\nreal change.",
+          "signature": "remove(event)",
+          "docstring": "A chip's remove action: the upload is cancelled or its signed id\ndropped, and the file leaves the selection through the file-drop\ncontroller, which reports back into files.",
           "params": [
             {
               "name": "event",
@@ -5749,7 +6941,87 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/file_input_controller.js",
-          "line": 114
+          "line": 123
+        },
+        {
+          "name": "keep",
+          "scope": "instance",
+          "group": null,
+          "signature": "keep(event)",
+          "docstring": "The chips' container's turbo:before-morph-element action: the chips\nare the client's, built from the files the input holds, and the\nserver renders the container empty. A morph that reached it would\ntake them away while the input kept its files, so the container is\nleft as it is.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "cancelled when the container itself is about to be morphed"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 140
+        },
+        {
+          "name": "discard",
+          "scope": "instance",
+          "group": null,
+          "signature": "discard(event)",
+          "docstring": "A host's discard action, for files that have been delivered (a\ncomposer's sent event, once the server accepts the message): the\nfiles in the event's detail leave the selection, their signed ids\nwith them, and a file added since stays. Without a list the whole\nselection goes. The event is left alone, so other listeners hear it.",
+          "params": [
+            {
+              "name": "[event]",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": "detail.files names the delivered files"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 153
+        },
+        {
+          "name": "retry",
+          "scope": "instance",
+          "group": null,
+          "signature": "retry(event)",
+          "docstring": "A chip's retry action: a failed upload goes back into the queue.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 168
+        },
+        {
+          "name": "clear",
+          "scope": "instance",
+          "group": null,
+          "signature": "clear(event)",
+          "docstring": "The clear button's click action: cancels every upload, empties the\ninput and dispatches a real change, which the file-drop controller\nhears as a cleared selection.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/file_input_controller.js",
+          "line": 183
         }
       ],
       "constants": []
@@ -6008,7 +7280,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 114
+          "line": 115
         },
         {
           "name": "disconnect",
@@ -6020,7 +7292,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 150
+          "line": 155
         },
         {
           "name": "openValueChanged",
@@ -6040,7 +7312,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 173
+          "line": 178
         },
         {
           "name": "toggle",
@@ -6052,7 +7324,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 183
+          "line": 188
         },
         {
           "name": "triggerKeydown",
@@ -6072,7 +7344,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 196
+          "line": 201
         },
         {
           "name": "open",
@@ -6113,7 +7385,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 223
+          "line": 228
         },
         {
           "name": "close",
@@ -6147,7 +7419,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 237
+          "line": 242
         },
         {
           "name": "activate",
@@ -6167,7 +7439,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 251
+          "line": 256
         },
         {
           "name": "keydown",
@@ -6187,7 +7459,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 274
+          "line": 279
         },
         {
           "name": "subEnter",
@@ -6207,7 +7479,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 327
+          "line": 332
         },
         {
           "name": "subLeave",
@@ -6227,7 +7499,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 339
+          "line": 346
         },
         {
           "name": "openSub",
@@ -6247,7 +7519,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 352
+          "line": 361
         },
         {
           "name": "closeSub",
@@ -6267,7 +7539,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 365
+          "line": 374
         }
       ],
       "constants": []
@@ -6464,7 +7736,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 208
+          "line": 216
         },
         {
           "name": "defaultScrollPositionValueChanged",
@@ -6476,7 +7748,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 255
+          "line": 268
         },
         {
           "name": "autoScrollValueChanged",
@@ -6488,7 +7760,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 263
+          "line": 276
         },
         {
           "name": "syncAfterScroll",
@@ -6500,7 +7772,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 280
+          "line": 293
         },
         {
           "name": "userScrollIntent",
@@ -6512,7 +7784,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 291
+          "line": 304
         },
         {
           "name": "keydownIntent",
@@ -6532,7 +7804,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 308
+          "line": 321
         },
         {
           "name": "jump",
@@ -6552,7 +7824,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 320
+          "line": 333
         },
         {
           "name": "scrollToEnd",
@@ -6577,7 +7849,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 340
+          "line": 353
         },
         {
           "name": "scrollToStart",
@@ -6602,7 +7874,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 350
+          "line": 363
         },
         {
           "name": "scrollToMessage",
@@ -6634,7 +7906,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 364
+          "line": 377
         }
       ],
       "constants": []
@@ -8479,7 +9751,7 @@
       "path": "poetry--core--slider",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (a 0.1 grid lands on\n   0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to\n   the later index, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**:\n- `min` (Number, default: 0): The lowest value of the track.\n- `max` (Number, default: 100): The highest value of the track.\n- `step` (Number, default: 1): The amount an arrow key changes a thumb by.\n- `value` (Array, default: []): The thumb values, one per thumb, in order.\n- `minStepsBetweenThumbs` (Number, default: 0): The least number of steps two thumbs keep between them.\n- `orientation` (String, default: \"horizontal\"): horizontal runs the track left to right; vertical runs it bottom to top.\n- `inverted` (Boolean, default: false): Whether the track runs in the opposite direction.\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
+      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (a 0.1 grid lands on\n   0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to\n   the later index, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup or pointercancel commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**:\n- `min` (Number, default: 0): The lowest value of the track.\n- `max` (Number, default: 100): The highest value of the track.\n- `step` (Number, default: 1): The amount an arrow key changes a thumb by.\n- `value` (Array, default: []): The thumb values, one per thumb, in order.\n- `minStepsBetweenThumbs` (Number, default: 0): The least number of steps two thumbs keep between them.\n- `orientation` (String, default: \"horizontal\"): horizontal runs the track left to right; vertical runs it bottom to top.\n- `inverted` (Boolean, default: false): Whether the track runs in the opposite direction.\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
       "examples": [],
       "file": "app/javascript/poetry/core/slider_controller.js",
       "methods": [
@@ -8552,7 +9824,7 @@
           "scope": "instance",
           "group": null,
           "signature": "pointerdown(event)",
-          "docstring": "The root's pointerdown action: jumps the NEAREST thumb to the pointer\n(ties to the later index), reads the track box once, and starts the\nwindow-level drag; pointerup commits.",
+          "docstring": "The root's pointerdown action: jumps the NEAREST thumb to the pointer\n(ties to the later index), reads the track box once, and starts the\nwindow-level drag; pointerup or pointercancel commits.",
           "params": [
             {
               "name": "event",
@@ -8585,7 +9857,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/slider_controller.js",
-          "line": 273
+          "line": 278
         }
       ],
       "constants": []
@@ -8594,7 +9866,7 @@
       "path": "poetry--core--state",
       "type": "controller",
       "superclass": null,
-      "docstring": "The controllable-state controller: seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes).\n\n**Targets**: `content`, `trigger`\n\n**Values**:\n- `state` (String, default: \"closed\"): The state seeded on the element when it carries none: open or closed.",
+      "docstring": "The controllable-state controller: seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes) and carries the measured\n--collapsible-panel-height / --collapsible-panel-width while it opens\nor closes (auto at rest), so a height transition can animate it.\n\n**Targets**: `content`, `trigger`\n\n**Values**:\n- `state` (String, default: \"closed\"): The state seeded on the element when it carries none: open or closed.",
       "examples": [],
       "file": "app/javascript/poetry/core/state_controller.js",
       "methods": [
@@ -8608,7 +9880,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 28
+          "line": 37
         },
         {
           "name": "disconnect",
@@ -8620,7 +9892,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 34
+          "line": 44
         },
         {
           "name": "toggle",
@@ -8632,31 +9904,31 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 39
+          "line": 50
         },
         {
           "name": "open",
           "scope": "instance",
           "group": null,
           "signature": "open()",
-          "docstring": "Opens: flips the pair, unhides the content target (when present) and\nruns its entry presence, mirrors aria-expanded onto the trigger.",
+          "docstring": "Opens: flips the pair, unhides the content target (when present),\nmeasures it into the size vars and runs its entry presence, then\nreturns the vars to auto once the entry settles; mirrors\naria-expanded onto the trigger.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 47
+          "line": 60
         },
         {
           "name": "close",
           "scope": "instance",
           "group": null,
           "signature": "close()",
-          "docstring": "Closes: flips the pair and holds the content target through its exit\nanimation before hiding it (the presence contract).",
+          "docstring": "Closes: flips the pair and holds the content target through its exit\nanimation before hiding it (the presence contract), the exit starting\nfrom the measured size.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 61
+          "line": 87
         }
       ],
       "constants": []

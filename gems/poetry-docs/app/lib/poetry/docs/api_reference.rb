@@ -75,6 +75,38 @@ module Poetry
                        poetry--charts--motion poetry--charts--window poetry--charts--adapter
                        @poetry/charts/adapter_registry @poetry/charts/motion/flip]
         },
+        "poetry-motion" => {
+          "title" => "poetry-motion",
+          "description" => "The motion gem's Ruby surface: the effect helpers, motion_options and " \
+                           "the behavior declarations effects use.",
+          "pins" => %w[Poetry::Motion::ComponentsHelper Poetry::Motion::Options Poetry::Motion::Behaviors::Animate],
+          "skip" => /\A(Poetry::Motion::(Marquee|TextReveal|NumberTicker|TiltCard)::)/
+        },
+        "poetry-motion-controllers" => {
+          "title" => "@poetry/motion",
+          "description" => "The motion JavaScript surface: the effect controllers, the motion policy, " \
+                           "the on-demand engine loader and the ten behaviors - generated from the " \
+                           "source JSDoc and the controllers manifest.",
+          "note" => "Generated from the source JSDoc plus the introspected controllers manifest. " \
+                    "Each effect's anatomy lives on its page under Motion.",
+          "pins" => %w[@poetry/motion @poetry/motion/policy @poetry/motion/load_engine
+                       @poetry/motion/behaviors/animate]
+        },
+        "poetry-island" => {
+          "title" => "poetry-island",
+          "description" => "The island gem's Ruby surface: the poetry_island helper and the component " \
+                           "behind it, a bounded client mount over a server-rendered shell.",
+          "pins" => %w[Poetry::Island::ComponentsHelper Poetry::Island::Island::Component]
+        },
+        "poetry-island-controllers" => {
+          "title" => "@poetry/island",
+          "description" => "The island JavaScript surface: the controller that imports a module through " \
+                           "the importmap, mounts it over the shell and carries it through the Turbo " \
+                           "lifecycle - generated from the source JSDoc and the controllers manifest.",
+          "note" => "Generated from the source JSDoc plus the introspected controllers manifest. The " \
+                    "Ruby side and the module contract live on the Islands library page.",
+          "pins" => %w[@poetry/island poetry--island--island]
+        },
         "poetry-agent" => {
           "title" => "poetry-agent",
           "description" => "The agent-interop gem: the MCP server (stdio exe and the Rack HTTP " \

@@ -83,6 +83,19 @@ colors:
     sidebar-accent-foreground: oklch(0.985 0 0)
     sidebar-border: oklch(1 0 0 / 10%)
     sidebar-ring: oklch(0.556 0 0)
+status_text:
+  roles:
+  - success
+  - warning
+  - info
+  companions:
+  - "--success-strong"
+  - "--warning-strong"
+  - "--info-strong"
+  light: the role at 0.85 of its lightness
+  dark: the role itself
+  utilities: text-<role> reads the companion; bg-, border- and ring-<role> keep the
+    role
 contrast_policy:
   floor: WCAG 2.2 AA (4.5:1) - locked, every gated pair
   target: AAA (7:1) wherever achievable at lock time
@@ -96,6 +109,16 @@ contrast_policy:
     4.5)"
   - "[dark] sidebar-primary-foreground on sidebar-primary: 6.54:1 (locked AA, needs
     >= 4.5)"
+  - "[light] success-strong on background: 5.19:1 (locked AA, needs >= 4.5)"
+  - "[light] success-strong on muted: 4.76:1 (locked AA, needs >= 4.5)"
+  - "[light] success-strong on success/10% over background: 4.60:1 (locked AA, needs
+    >= 4.5)"
+  - "[light] warning-strong on muted: 6.59:1 (locked AA, needs >= 4.5)"
+  - "[light] warning-strong on warning/10% over background: 6.26:1 (locked AA, needs
+    >= 4.5)"
+  - "[light] info-strong on muted: 6.93:1 (locked AA, needs >= 4.5)"
+  - "[light] info-strong on info/10% over background: 6.54:1 (locked AA, needs >=
+    4.5)"
 parity:
   base: shadcn/ui v4 neutral (cssVarsV4 drop-in var set)
   deltas:
@@ -107,8 +130,9 @@ parity:
     / 0.269) that cannot separate series.'
   - 'success, warning, info: poetry additions - the source ships no status roles.
     success and info reuse source hues (a green base chart hue; the blue ramp''s third
-    stop); warning is the orange base''s primary. All three are gated like every other
-    role.'
+    stop); warning is the orange base''s primary. As text each is read through its
+    -strong companion (the text-success, text-warning and text-info utilities), which
+    the contrast gate holds to AA in both modes.'
 ---
 
 # DESIGN.md - the Poetry design constitution

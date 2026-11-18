@@ -1,0 +1,19 @@
+<%# Room above each composer: a menu opens over it. %>
+<div class="mx-auto flex max-w-xl flex-col gap-64 p-8 pt-64">
+  <%= poetry_composer(id: "people-composer", url: "/cgate", label: "People message") do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user, src: "/cgate/people") %>
+  <% end %>
+
+  <%# The two people rendered here answer the bare trigger with no request. %>
+  <%= poetry_composer(id: "recent-composer", url: "/cgate", label: "Recent message") do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", icon: :user, src: "/cgate/people") do |menu| %>
+      <% menu.with_item(value: "ana", label: "Ana Diaz", description: "Design") %>
+      <% menu.with_item(value: "rob", label: "Rob Lin", description: "Support") %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_composer(id: "broken-composer", url: "/cgate", label: "Broken message") do |composer| %>
+    <% composer.with_menu(trigger: "@", label: "People", src: "/cgate/broken") %>
+    <% composer.with_menu(trigger: "#", label: "Files", src: "/cgate/missing") %>
+  <% end %>
+</div>

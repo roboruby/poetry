@@ -28,8 +28,25 @@ module Poetry
 
         def write!
           entries = build
+          refuse_shared_addresses!(entries)
           PATH.write("#{JSON.pretty_generate(entries)}\n")
           entries.size
+        end
+
+        # Two entries with one address: a section whose id is also an
+        # example's name on the same page, most often. The command palette
+        # takes each address once and raises on the second, on every page
+        # it renders on, the pages the next rebuild reads among them. So
+        # the index is not written, and the file on disk stays good.
+        #
+        # @param entries [Array<Hash>]
+        # @raise [ArgumentError] naming each shared address
+        def refuse_shared_addresses!(entries)
+          shared = entries.map { |entry| entry["path"] }.tally.select { |_, count| count > 1 }.keys
+          return if shared.empty?
+
+          raise ArgumentError, "the search index would hold #{shared.size} address(es) twice: #{shared.join(", ")}. " \
+                               "A section's id and an example's name on one page make the same anchor; rename one."
         end
 
         # A digest of the committed index, for cache keys: the palette that

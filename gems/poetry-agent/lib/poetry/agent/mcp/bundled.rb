@@ -43,7 +43,8 @@ module Poetry
           # ride along when the gem is loaded, for a registry that predates
           # the sections.
           Server.from_registries(roots, icon_names: icon_names, helpers: helpers, skills: skills,
-                                        app_root: app_root, recipes: recipes)
+                                        app_root: app_root, recipes: recipes, icon_aliases: icon_aliases,
+                                        icon_tags: icon_tags, icon_hint: icon_hint)
         end
 
         # The lucide names, or nil for a host without poetry-lucide (check
@@ -52,6 +53,38 @@ module Poetry
           return nil unless soft_require("poetry/lucide")
 
           Poetry::Core::Icons.set(:lucide).names
+        rescue Poetry::Core::Error
+          nil
+        end
+
+        # Lucide's renamed names => current names, or nil without poetry-lucide.
+        def icon_aliases
+          return nil unless soft_require("poetry/lucide")
+
+          set = Poetry::Core::Icons.set(:lucide)
+          set.respond_to?(:aliases) ? set.aliases : nil
+        rescue Poetry::Core::Error
+          nil
+        end
+
+        # The words Lucide files each icon under, or nil without poetry-lucide
+        # (find_icon then searches by name alone).
+        def icon_tags
+          return nil unless soft_require("poetry/lucide")
+
+          set = Poetry::Core::Icons.set(:lucide)
+          set.respond_to?(:tags) ? set.tags : nil
+        rescue Poetry::Core::Error
+          nil
+        end
+
+        # What Lucide says it does not draw (brand marks), or nil without
+        # poetry-lucide.
+        def icon_hint
+          return nil unless soft_require("poetry/lucide")
+
+          set = Poetry::Core::Icons.set(:lucide)
+          set.respond_to?(:hint) ? set.hint : nil
         rescue Poetry::Core::Error
           nil
         end

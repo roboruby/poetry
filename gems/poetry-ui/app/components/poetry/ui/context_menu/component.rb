@@ -38,6 +38,11 @@ module Poetry
       class Component < Poetry::Core::Component
         include ItemSlots
 
+        # The layers the JS activates on open: focus held inside, and
+        # Escape or an outside press to close.
+        use_behavior :focus_scope
+        use_behavior :dismissable
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "NEVER make a context menu the only path to an action - it is an invisible affordance; every " \
@@ -91,15 +96,9 @@ module Poetry
               value :modal
               value :loop
             end
-            controller :popper do
-              register
-              # side: is the one placement knob; align start / side_offset
-              # 2 stay fixed; collisions still flip the side.
-              value :side
-              value :align, :start
-              value :side_offset, 2
-              value :avoid_collisions, true
-            end
+            # side: is the one placement knob; align start / side_offset
+            # 2 stay fixed; collisions still flip the side.
+            behavior :popper, side: :option, align: :start, side_offset: 2, avoid_collisions: true
           end
           # The surface's wiring: contextmenu + the long-press pointer set;
           # popper's anchor target is the FALLBACK rect for positionless

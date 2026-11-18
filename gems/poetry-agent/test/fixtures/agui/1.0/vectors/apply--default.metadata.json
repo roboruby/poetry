@@ -1,0 +1,1091 @@
+{
+  "source": "apply/__tests__/default.metadata.test.ts",
+  "vectors": [
+    {
+      "name": "metadata merging into text messages > merges across start, content and end with the last write winning",
+      "line": 78,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "source": "openai",
+            "stage": "start"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "Hello",
+          "metadata": {
+            "stage": "content"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "metadata": {
+            "stage": "end",
+            "usage": {
+              "input": 10,
+              "output": 20
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "Hello",
+            "metadata": {
+              "source": "openai",
+              "stage": "end",
+              "usage": {
+                "input": 10,
+                "output": 20
+              }
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#merging: a consumer MUST merge the metadata of every event making up an item, key by key, the last write winning",
+      "noWarnings": true,
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata merging into text messages > leaves metadata absent when no event carries any",
+      "line": 108,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "Hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "Hi",
+            "metadata": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: only the events that build an item merge into it; an item no event gave metadata has none",
+      "noWarnings": true,
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata merging into text messages > changes nothing when a later event carries an empty object",
+      "line": 127,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "a": 1
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "x",
+          "metadata": {}
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "x",
+            "metadata": {
+              "a": 1
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#merging: a consumer MUST merge the metadata of every event making up an item, key by key, the last write winning",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Closing END events added before RUN_FINISHED so verification accepts it."
+    },
+    {
+      "name": "metadata merging into text messages > keeps a null value rather than dropping the key",
+      "line": 147,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "finishReason": "stop"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "metadata": {
+            "finishReason": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "",
+            "metadata": {
+              "finishReason": null
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#the-value: any JSON value is allowed under a key, including null, which is meaningful data",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The null is application data inside metadata: the compatibility boundary leaves it alone."
+    },
+    {
+      "name": "metadata merging into text messages > does not alias the event payload into the message",
+      "line": 166,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "tags": [
+              "a"
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "",
+            "metadata": {
+              "tags": [
+                "a"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#merging: a consumer MUST merge the metadata of every event making up an item, key by key, the last write winning",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Closing END events added before RUN_FINISHED so verification accepts it. Kept for its observable outcome (START's metadata lands on the message); the aliasing half (mutating the caller's object after the fact) is a JS object-identity detail."
+    },
+    {
+      "name": "wholesale replacement > replaces an array instead of concatenating it",
+      "line": 184,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "tags": [
+              "a",
+              "b",
+              "c"
+            ]
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "metadata": {
+            "tags": [
+              "z"
+            ]
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "",
+            "metadata": {
+              "tags": [
+                "z"
+              ]
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#merging: the merge MUST NOT recurse; a key's value is replaced wholesale",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "wholesale replacement > replaces a nested object under the reserved key instead of deep-merging",
+      "line": 203,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant",
+          "metadata": {
+            "ag-ui": {
+              "usage": {
+                "input": 10
+              },
+              "dropped": true
+            }
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1",
+          "metadata": {
+            "ag-ui": {
+              "usage": {
+                "output": 20
+              }
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "",
+            "metadata": {
+              "ag-ui": {
+                "usage": {
+                  "output": 20
+                }
+              }
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#merging: the merge MUST NOT recurse; a key's value is replaced wholesale",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). AGUI_METADATA_KEY is \"ag-ui\" (core/src/metadata.ts)."
+    },
+    {
+      "name": "metadata on tool calls and results > merges tool call event metadata into the tool call itself",
+      "line": 225,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "metadata": {
+            "stage": "start",
+            "provider": "anthropic"
+          }
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc1",
+          "delta": "{\"q\":1}",
+          "metadata": {
+            "stage": "args"
+          }
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1",
+          "metadata": {
+            "stage": "end"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc1",
+            "role": "assistant",
+            "metadata": "$absent",
+            "toolCalls": [
+              {
+                "id": "tc1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"q\":1}"
+                },
+                "metadata": {
+                  "stage": "end",
+                  "provider": "anthropic"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: TOOL_CALL_START/ARGS/END merge into the tool call itself, not the assistant message that owns it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). With no parentMessageId the reference mints the assistant message under the call's id."
+    },
+    {
+      "name": "metadata on tool calls and results > puts tool result metadata on the tool message it creates",
+      "line": 254,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tm1",
+          "toolCallId": "tc1",
+          "content": "result",
+          "metadata": {
+            "latencyMs": 12
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc1",
+            "role": "assistant",
+            "metadata": "$absent",
+            "toolCalls": [
+              {
+                "id": "tc1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": ""
+                },
+                "metadata": "$absent"
+              }
+            ]
+          },
+          {
+            "id": "tm1",
+            "role": "tool",
+            "toolCallId": "tc1",
+            "content": "result",
+            "metadata": {
+              "latencyMs": 12
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: TOOL_CALL_RESULT merges into the tool message it creates",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata on reasoning messages > merges across the reasoning message lifecycle",
+      "line": 282,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning",
+          "metadata": {
+            "stage": "start"
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "r1",
+          "delta": "thinking",
+          "metadata": {
+            "stage": "content"
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1",
+          "metadata": {
+            "stage": "end",
+            "tokens": 7
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "thinking",
+            "metadata": {
+              "stage": "end",
+              "tokens": 7
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: REASONING_MESSAGE_START/CONTENT/END merge into the reasoning message",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata on reasoning messages > keeps encrypted value metadata off the message it names",
+      "line": 307,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "r1",
+          "role": "reasoning"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "r1",
+          "encryptedValue": "secret",
+          "metadata": {
+            "sealed": true
+          }
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "r1",
+            "role": "reasoning",
+            "content": "",
+            "encryptedValue": "secret",
+            "metadata": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: REASONING_ENCRYPTED_VALUE builds no item, so its metadata merges into nothing",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Closing END events added before RUN_FINISHED so verification accepts it."
+    },
+    {
+      "name": "metadata on activity messages > merges across a snapshot and a following delta",
+      "line": 338,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "content": {
+            "steps": [
+              "one"
+            ]
+          },
+          "replace": true,
+          "metadata": {
+            "origin": "planner",
+            "revision": 1
+          }
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "add",
+              "path": "/steps/-",
+              "value": "two"
+            }
+          ],
+          "metadata": {
+            "revision": 2
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "steps": [
+                "one",
+                "two"
+              ]
+            },
+            "metadata": {
+              "origin": "planner",
+              "revision": 2
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: ACTIVITY_SNAPSHOT/DELTA merge into the activity message, and accumulated metadata survives a replacing snapshot",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata on activity messages > keeps accumulated metadata when a replacing snapshot carries none",
+      "line": 361,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "content": {
+            "steps": [
+              "one"
+            ]
+          },
+          "replace": true,
+          "metadata": {
+            "origin": "planner"
+          }
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "content": {
+            "steps": [
+              "one",
+              "two"
+            ]
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "steps": [
+                "one",
+                "two"
+              ]
+            },
+            "metadata": {
+              "origin": "planner"
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: ACTIVITY_SNAPSHOT/DELTA merge into the activity message, and accumulated metadata survives a replacing snapshot",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata that belongs to a non-message event > never reaches a message from RUN_STARTED, STEP_STARTED or RUN_FINISHED",
+      "line": 386,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r",
+          "metadata": {
+            "run": true
+          }
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "s1",
+          "metadata": {
+            "step": true
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r",
+          "metadata": {
+            "usage": {
+              "total": 100
+            }
+          }
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "hi",
+            "metadata": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#where-each-events-metadata-lands: RUN_*, STEP_*, snapshots, RAW, CUSTOM merge into nothing",
+      "notes": "Adapted: STEP_FINISHED s1 added before RUN_FINISHED (an open step at RUN_FINISHED is fatal)."
+    },
+    {
+      "name": "metadata through a messages snapshot > carries each message's own metadata and does not leak the event's",
+      "line": 424,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "a",
+              "metadata": {
+                "own": 1
+              }
+            },
+            {
+              "id": "m2",
+              "role": "assistant",
+              "content": "b"
+            }
+          ],
+          "metadata": {
+            "snapshotLevel": true
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "a",
+            "metadata": {
+              "own": 1
+            }
+          },
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "b",
+            "metadata": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata#stored-metadata: a message carries metadata as a stored field; a MESSAGES_SNAPSHOT event's own metadata merges into nothing",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "chunked stream end to end > lands a final usage-only chunk's metadata on the message",
+      "line": 447,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "Hello",
+          "metadata": {
+            "source": "openai"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "usage": {
+              "input": 10,
+              "output": 340
+            },
+            "finishReason": "stop"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "Hello",
+            "metadata": {
+              "source": "openai",
+              "usage": {
+                "input": 10,
+                "output": 340
+              },
+              "finishReason": "stop"
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a chunk's metadata lands wherever its synthesized events merge",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test pipes transformChunks into the reducer; here the whole pipeline runs, and the terminal closes the chunk stream."
+    },
+    {
+      "name": "activity delta metadata when the patch fails > still merges metadata but leaves content unchanged",
+      "line": 483,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "content": {
+            "steps": [
+              "one"
+            ]
+          },
+          "replace": true,
+          "metadata": {
+            "revision": 1
+          }
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "PLAN",
+          "patch": [
+            {
+              "op": "remove",
+              "path": "/missing/deeply"
+            }
+          ],
+          "metadata": {
+            "revision": 2,
+            "usage": {
+              "total": 9
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "a1",
+            "role": "activity",
+            "activityType": "PLAN",
+            "content": {
+              "steps": [
+                "one"
+              ]
+            },
+            "metadata": {
+              "revision": 2,
+              "usage": {
+                "total": 9
+              }
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/snapshots#when-a-patch-does-not-apply: a well-formed patch that fails is warned about and skipped (content unchanged); /spec/1.0/basic/metadata#where-each-events-metadata-lands: ACTIVITY_SNAPSHOT/DELTA merge into the activity message, and accumulated metadata survives a replacing snapshot",
+      "warnings": [
+        "Failed to apply activity patch"
+      ],
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "metadata on a message provided by a snapshot > merges a later event's metadata onto a snapshot-provided message",
+      "line": 517,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "original",
+              "metadata": {
+                "a": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "-appended",
+          "metadata": {
+            "b": 2
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "error": "No active text message found with ID 'm1'"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: content for a message that is not open is fatal; a MESSAGES_SNAPSHOT opens nothing",
+      "notes": "Full pipeline disagrees with the reducer-only test: verification rejects the orphan TEXT_MESSAGE_CONTENT before apply. The [reopened] variant states the reducer outcome the test pins."
+    },
+    {
+      "name": "metadata on a message provided by a snapshot > merges a later event's metadata onto a snapshot-provided message [reopened]",
+      "line": 517,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "assistant",
+              "content": "original",
+              "metadata": {
+                "a": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "m1",
+          "delta": "-appended",
+          "metadata": {
+            "b": 2
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m1",
+            "role": "assistant",
+            "content": "original-appended",
+            "metadata": {
+              "a": 1,
+              "b": 2
+            }
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/text-messages#text_message_end: a closed message MAY be reopened and its further content appends; /spec/1.0/basic/metadata#merging: a consumer MUST merge the metadata of every event making up an item, key by key, the last write winning",
+      "notes": "Adapted: TEXT_MESSAGE_START/END for m1 added around the content so verification accepts it; the START carries no metadata, so the merge is still snapshot {a} + content {b}."
+    }
+  ],
+  "excluded": []
+}

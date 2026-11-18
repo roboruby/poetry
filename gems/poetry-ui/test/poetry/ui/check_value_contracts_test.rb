@@ -25,7 +25,8 @@ module Poetry
         @catalog ||= Poetry::Core::Check::Catalog.from_registry(
           Poetry::Ui.root,
           helpers: Poetry::Ui::ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/),
-          icon_names: Poetry::Core::Icons.set.names
+          icon_names: Poetry::Core::Icons.set.names,
+          icon_aliases: Poetry::Core::Icons.set.aliases
         )
       end
 
@@ -73,10 +74,10 @@ module Poetry
                "with_item(:separator) must suggest the sibling setter")
       end
 
-      # The blocks-gate corpus (2026-07-09): the run's two render-crashers
-      # fail statically - data_table guessed lucide's renamed :filter (the
-      # icon-membership tier, catchable at generation time had the agent
-      # run check), and site_nav passed positional text to kwargs-only
+      # The blocks-gate corpus (2026-07-09): the run crashed twice. data_table
+      # guessed lucide's renamed :filter, which now renders through the alias
+      # (Lucide 1.57.0's metadata), so check warns with :funnel instead of
+      # failing; site_nav passed positional text to kwargs-only
       # helpers, the class the helper-arity rule was built from. All FIVE
       # of site_nav's arity misuses surface, not just the first crash.
       # The re-baseline corpus: ALL FIVE render-
@@ -153,10 +154,13 @@ module Poetry
       def test_the_blocks_gate_corpus_errors_on_exactly_the_two_crashers
         failures = error_templates(BLOCKS_GATE)
 
-        assert_equal %w[data_table site_nav], failures.keys.sort,
+        assert_equal %w[site_nav], failures.keys.sort,
                      "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
-        assert(failures["data_table"].any? { |finding| finding.rule == "unknown-icon" },
-               ":filter (lucide renamed it to funnel) must read as an icon-set miss")
+        data_table = Dir.glob(Poetry::Ui.root.join(BLOCKS_GATE).to_s).find { |path| path.include?("/data_table/") }
+        renamed = Poetry::Core::Check.lint(File.read(data_table), catalog: catalog)
+                                     .find { |finding| finding.rule == "renamed-icon" }
+
+        assert_equal "funnel", renamed&.suggestion, ":filter (lucide renamed it to funnel) must warn with the rename"
         arity = failures["site_nav"].select { |finding| finding.rule == "helper-arity" }
 
         assert_equal 5, arity.size, "static linting sees past the first crash: poetry_link + four " \

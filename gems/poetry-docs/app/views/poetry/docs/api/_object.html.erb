@@ -10,7 +10,7 @@
   </header>
 
   <% if object["docstring"].present? %>
-    <div class="max-w-3xl flex flex-col gap-3 text-sm text-muted-foreground [&_strong]:text-foreground">
+    <div class="max-w-3xl break-words flex flex-col gap-3 text-sm text-muted-foreground [&_strong]:text-foreground">
       <%= Poetry::Docs::ApiMarkdown.render(object["docstring"]) %>
     </div>
   <% end %>
@@ -51,12 +51,12 @@
             <%= m["scope"] == "class" ? "." : "#" %><%= m["signature"] %>
           </h4>
           <% if m["docstring"].present? %>
-            <div class="max-w-3xl flex flex-col gap-2 text-sm text-muted-foreground">
+            <div class="max-w-3xl break-words flex flex-col gap-2 text-sm text-muted-foreground">
               <%= Poetry::Docs::ApiMarkdown.render(m["docstring"]) %>
             </div>
           <% end %>
           <% if m["params"].any? %>
-            <ul class="flex flex-col gap-1 text-sm text-muted-foreground">
+            <ul class="break-words flex flex-col gap-1 text-sm text-muted-foreground">
               <% m["params"].each do |param| %>
                 <li>
                   <code class="font-mono text-xs text-foreground"><%= param["name"] %></code>

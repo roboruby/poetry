@@ -32,7 +32,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-sm text-muted-foreground">Installs:</span>
         <% recipe["files"].each do |file| %>
-          <%= poetry_badge(variant: :outline) { file["target"] } %>
+          <%= poetry_badge(variant: :outline, class: "h-auto max-w-full whitespace-normal break-all") { file["target"] } %>
         <% end %>
       </div>
       <% if recipe["registryDependencies"].any? %>

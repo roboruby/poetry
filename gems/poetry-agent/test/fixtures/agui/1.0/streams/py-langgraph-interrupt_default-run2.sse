@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"lg-hitl-default-161836","runId":"9e5f41cb-50bb-4ffb-8fdc-fbdfd0118128"}
+
+data: {"type":"CUSTOM","rawEvent":{"value":{"steps":[{"description":"Build rocket","status":"enabled"},{"description":"Train crew","status":"enabled"},{"description":"Launch","status":"enabled"}]},"id":"c6bb5c1ed84e460e08c4f60b6aff5664","response_schema":null},"name":"on_interrupt","value":"{\"steps\": [{\"description\": \"Build rocket\", \"status\": \"enabled\"}, {\"description\": \"Train crew\", \"status\": \"enabled\"}, {\"description\": \"Launch\", \"status\": \"enabled\"}]}"}
+
+data: {"type":"RUN_FINISHED","threadId":"lg-hitl-default-161836","runId":"9e5f41cb-50bb-4ffb-8fdc-fbdfd0118128"}
+

@@ -502,6 +502,10 @@ module Poetry
         assert_includes finding.message, "name: is required on poetry_icon"
       end
 
+      def test_a_positional_argument_stands_down_on_required_options
+        refute_includes rules(%(<%= poetry_icon("plus", label: "Plus") %>)), "missing-option"
+      end
+
       def test_a_splatted_call_stands_down_on_required_options
         refute_includes rules(%(<%= poetry_icon(**icon_attrs) %>)), "missing-option"
       end
@@ -517,6 +521,27 @@ module Poetry
                         "unknown-icon"
         refute_includes Check.lint(%(<%= poetry_icon(name: :"any-kebab-name") %>), catalog: catalog).map(&:rule),
                         "unknown-icon"
+      end
+
+      def test_a_named_library_checks_the_name_against_that_set
+        entry = { "options" => ICON_ENTRY["options"] + [{ "name" => "library", "type" => "symbol" }] }
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => entry }, icon_names: %w[circle-alert],
+                                                                    icon_libraries: { lucide: %w[circle-alert],
+                                                                                      tabler: %w[brand-github] })
+        lint = ->(source) { Check.lint(source, catalog: catalog) }
+
+        assert_empty lint.call(%(<%= poetry_icon(name: :"brand-github", library: :tabler) %>))
+        assert_equal ["unknown-icon"], lint.call(%(<%= poetry_icon(name: :"brand-github") %>)).map(&:rule)
+
+        missing = lint.call(%(<%= poetry_icon(name: :"brand-githb", library: :tabler) %>)).first
+
+        assert_equal "brand-github", missing.suggestion
+        assert_includes missing.message, "the tabler icon set"
+
+        unknown = lint.call(%(<%= poetry_icon(name: :home, library: :tabeler) %>)).first
+
+        assert_equal "unknown-icon-library", unknown.rule
+        assert_equal "tabler", unknown.suggestion
       end
 
       def test_a_reversed_compound_icon_gets_the_rename_suggestion
@@ -570,6 +595,166 @@ module Poetry
 
         assert_equal "circle-alert", finding.suggestion
         assert_includes finding.message, "kebab-case"
+      end
+
+      RETIRING = Check::Catalog.new(
+        { "demo/pill" => { "class_name" => "Demo::Pill::Component", "helper" => "demo_pill", "styles" => [],
+                           "slots" => [],
+                           "options" => [
+                             { "name" => "variant", "type" => "symbol" },
+                             { "name" => "kind", "type" => "symbol",
+                               "deprecated" => { "use" => "variant", "since" => "0.2.0" } },
+                             { "name" => "glyph", "type" => "symbol",
+                               "deprecated" => { "note" => "use the icon slot" } }
+                           ] } }
+      )
+
+      def test_a_run_is_an_event_that_counts_what_it_found
+        events = []
+        subscriber = ActiveSupport::Notifications.subscribe("check.poetry") { |event| events << event.payload }
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "show.html.erb")
+          File.write(path, %(<%= demo_pill(kind: :soft) %>\n<%= demo_pill(variant: :soft) %>\n))
+          Check::Runner.new(RETIRING).run([path])
+        end
+
+        assert_equal [{ files: 1, errors: 0, warnings: 1 }], events
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      def test_a_deprecated_option_warns_with_the_option_to_write_instead
+        finding = Check.lint(%(<%= demo_pill(kind: :soft) %>), catalog: RETIRING).sole
+
+        assert_equal %w[deprecated-option warning], [finding.rule, finding.severity.to_s]
+        assert_equal "kind: is deprecated on demo_pill since 0.2.0 - use variant:", finding.message
+        assert_equal %w[variant kind], [finding.suggestion, finding.subject]
+        refute finding.to_h.key?(:subject), "the subject is for the rename, not for the report"
+      end
+
+      def test_a_deprecation_with_no_replacement_warns_with_its_note_and_the_current_option_is_quiet
+        finding = Check.lint(%(<%= demo_pill(glyph: :star) %>), catalog: RETIRING).sole
+
+        assert_equal "glyph: is deprecated on demo_pill - use the icon slot", finding.message
+        assert_nil finding.suggestion
+        assert_empty Check.lint(%(<%= demo_pill(variant: :soft) %>), catalog: RETIRING)
+      end
+
+      def test_the_warnings_that_carry_a_rename_fix_the_template_they_point_at
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "show.html.erb")
+          File.write(path, %(<%= demo_pill(kind: :soft) %>\n<%= demo_pill(glyph: :star) %>\n))
+          findings = Check::Runner.new(RETIRING).run([path])
+          changes = Check::Renames.new(findings).apply
+
+          assert_equal [true], changes.map(&:applied), "the renamed option is rewritten; a note is left to a person"
+          assert_equal %(<%= demo_pill(variant: :soft) %>\n<%= demo_pill(glyph: :star) %>\n), File.read(path)
+          assert_equal ["deprecated-option"], Check::Runner.new(RETIRING).run([path]).map(&:rule)
+        end
+      end
+
+      ICONS = Check::Catalog.new(
+        { "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash layout-dashboard plug],
+                                            icon_aliases: { "trash-2" => "trash" },
+                                            icon_finder: Icons::Finder.new(
+                                              names: %w[trash layout-dashboard plug],
+                                              tags: { "layout-dashboard" => %w[dashboard] }, hint: "No brands here"
+                                            )
+      )
+
+      def test_an_unknown_icon_nothing_is_close_to_says_what_is_filed_under_it_or_what_the_set_lacks
+        filed = Check.lint(%(<%= poetry_icon(name: :dashboard) %>), catalog: ICONS).sole
+        brand = Check.lint(%(<%= poetry_icon(name: :github) %>), catalog: ICONS).sole
+        typo = Check.lint(%(<%= poetry_icon(name: :trsh) %>), catalog: ICONS).sole
+
+        assert_equal "name: \"dashboard\" is not in the icon set - try :\"layout-dashboard\"", filed.message
+        assert_equal "name: \"github\" is not in the icon set - No brands here", brand.message
+        assert_equal ["name: \"trsh\" is not in the icon set", "trash"], [typo.message, typo.suggestion]
+      end
+
+      def test_icon_names_in_a_templates_own_data_are_read_as_a_ruby_files_are
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "integrations.html.erb")
+          File.write(path, <<~ERB)
+            <% services = [
+                 { name: "GitHub", icon: :github },
+                 { name: "Bin", icon: :"trash-2" },
+                 { name: "Plug", icon: :plug }
+               ] %>
+            <% services.each do |service| %>
+              <%= poetry_icon(name: service[:icon]) %>
+            <% end %>
+            <%= poetry_icon(name: :github) %>
+          ERB
+          found = Check::Runner.new(ICONS).run([path])
+          findings = found.select { |finding| finding.rule.include?("icon") }.sort_by(&:line)
+
+          assert_equal([["icon-declaration", 2], ["renamed-icon", 3], ["unknown-icon", 9]],
+                       findings.map { |finding| [finding.rule, finding.line] })
+          assert_includes findings.first.message, "icon: \"github\" looks like an icon name but is not in the icon set"
+          assert_includes findings.first.message, "No brands here"
+          assert_equal [true], Check::Renames.new(findings).apply.map(&:applied)
+          assert_includes File.read(path), %({ name: "Bin", icon: :trash })
+        end
+      end
+
+      def test_template_data_is_read_through_block_helpers_and_uncompilable_ruby_is_an_error
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "team.html.erb")
+          File.write(path, <<~ERB)
+            <% Member = Struct.new(:name, :icon) %>
+            <% members = [{ name: "Ada", icon: :github }] %>
+            <%= content_tag(:ul) do %>
+              <% members.each do |member| %>
+                <li><%= poetry_icon(name: member[:icon]) %></li>
+              <% end %>
+            <% end %>
+          ERB
+          findings = Check::Runner.new(ICONS).run([path]).select { |finding| finding.rule.match?(/icon|parse/) }
+
+          assert_equal([["parse-error", 1, :error], ["icon-declaration", 2, :warning]],
+                       findings.sort_by(&:line).map { |finding| [finding.rule, finding.line, finding.severity] })
+          refused = findings.find { |finding| finding.rule == "parse-error" }
+
+          assert_includes refused.message, "dynamic constant assignment"
+        end
+      end
+
+      def test_a_name_a_helper_call_already_answered_for_is_not_reported_twice
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "one.html.erb")
+          File.write(path, %(<%= render Thing.new(icon: :github) %>\n) +
+                           %(<%= poetry_icon(name: :github, data: { icon: :github }) %>\n))
+          findings = Check::Runner.new(ICONS).run([path]).sort_by(&:line)
+
+          assert_equal([["icon-declaration", 1], ["unknown-icon", 2]],
+                       findings.map { |finding| [finding.rule, finding.line] })
+        end
+      end
+
+      def test_a_required_option_written_empty_is_missing
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash])
+        empty = Check.lint(%(<%= poetry_icon(name: "") %>), catalog: catalog).sole
+
+        assert_equal %w[missing-option error], [empty.rule, empty.severity.to_s]
+        assert_equal "name: is required on poetry_icon and cannot be empty", empty.message
+        assert_empty Check.lint(%(<%= poetry_icon(name: :trash, label: "") %>), catalog: catalog),
+                     "an option that is not required may be empty"
+      end
+
+      def test_a_renamed_icon_warns_with_its_current_name
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash],
+                                                                         icon_aliases: { "trash-2" => "trash" })
+        call = Check.lint(%(<%= poetry_icon(name: :"trash-2") %>), catalog: catalog).first
+        declared = Check::IconDeclarations.new(catalog).lint(%(ACTION_ICONS = { delete: :"trash-2" }.freeze)).first
+
+        [call, declared].each do |finding|
+          assert_equal "renamed-icon", finding.rule
+          assert_equal :warning, finding.severity
+          assert_equal "trash", finding.suggestion
+          assert_includes finding.message, "renamed :trash"
+        end
+        assert_empty Check.lint(%(<%= poetry_icon(name: :trash) %>), catalog: catalog)
       end
 
       def test_valid_declarations_and_non_name_values_stay_silent
@@ -1440,6 +1625,10 @@ module Poetry
         refute_includes rules(clean), "fake-button"
       end
 
+      def test_an_attribute_named_by_erb_is_read_as_no_name_not_a_crash
+        refute_includes rules(%(<div <%= "hidden" if flag %> class="p-4">x</div>)), "fake-button"
+      end
+
       def test_a_dynamic_role_is_left_alone_but_a_dynamic_onclick_still_counts
         refute_includes rules(%(<div role="<%= role %>">x</div>)), "fake-button"
         assert_includes rules(%(<div onclick="<%= handler %>">x</div>)), "fake-button"
@@ -1598,6 +1787,151 @@ module Poetry
         ERB
 
         assert_empty(findings.select { |f| f.rule == "unknown-option" })
+      end
+
+      # --- motion rules (poetry-motion's effects) ---
+
+      MOTION_CATALOG = Check::Catalog.new({
+                                            "poetry/motion/marquee" => { "options" => [{ "name" => "pausable" }],
+                                                                         "slots" => [] },
+                                            "poetry/motion/tilt_card" => { "options" => [], "slots" => [] },
+                                            "poetry/ui/popover" => { "options" => [], "slots" => [],
+                                                                     "behaviors" => [{ "name" => "popper" }] },
+                                            "poetry/ui/badge" => { "options" => [], "slots" => [] }
+                                          })
+
+      def test_a_marquee_without_its_pause_control_is_a_warning
+        findings = Check.lint(<<~ERB, catalog: MOTION_CATALOG)
+          <%= poetry_marquee { "a" } %>
+          <%= poetry_marquee(pausable: true) { "b" } %>
+          <%= poetry_marquee(label: "Logos",
+                             pausable: false) { "c" } %>
+        ERB
+
+        assert_equal([["motion-autoplay-pause", 4]], findings.map { |f| [f.rule, f.line] })
+        assert_equal :warning, findings.first.severity
+      end
+
+      def test_an_anchored_panel_inside_a_tilt_card_is_a_warning
+        findings = Check.lint(<<~ERB, catalog: MOTION_CATALOG)
+          <%= poetry_popover { "outside" } %>
+          <%= poetry_tilt_card do %>
+            <div>
+              <%= poetry_badge { "fine" } %>
+              <%= poetry_popover { "inside" } %>
+            </div>
+          <% end %>
+          <%= poetry_popover { "after" } %>
+        ERB
+
+        assert_equal([["motion-overlay-in-transform", 5]], findings.map { |f| [f.rule, f.line] })
+        assert_includes findings.first.message, "poetry_popover sits inside poetry_tilt_card"
+      end
+
+      # --- upload rules (FileInput's direct uploads) ---
+
+      UPLOAD_CATALOG = Check::Catalog.new({
+                                            "poetry/ui/file_input" => {
+                                              "options" => [{ "name" => "name" }, { "name" => "upload" },
+                                                            { "name" => "direct_upload" },
+                                                            { "name" => "direct_upload_url" }],
+                                              "slots" => []
+                                            }
+                                          })
+
+      def test_immediate_uploads_need_an_endpoint
+        findings = Check.lint(<<~ERB, catalog: UPLOAD_CATALOG)
+          <%= poetry_file_input(name: "a", upload: :immediate) %>
+          <%= poetry_file_input(name: "b", upload: :immediate, direct_upload: true) %>
+          <%= poetry_file_input(name: "c", upload: :immediate, direct_upload_url: "/uploads") %>
+          <%= poetry_file_input(name: "d", upload: :on_submit) %>
+        ERB
+
+        assert_equal([["upload-immediate-without-direct-upload", 1]], findings.map { |f| [f.rule, f.line] })
+        assert_equal :error, findings.first.severity
+        assert_includes findings.first.message, "direct_upload: true"
+      end
+
+      def test_direct_uploads_warn_when_the_importmap_lacks_the_pin
+        source = <<~ERB
+          <%= poetry_file_input(name: "a", direct_upload: true) %>
+          <%= poetry_file_input(name: "b", direct_upload_url: "/uploads", upload: :immediate) %>
+          <%= poetry_file_input(name: "c") %>
+        ERB
+        unpinned = Check.lint(source, catalog: UPLOAD_CATALOG, importmap_pins: %w[application @hotwired/turbo-rails])
+
+        assert_equal([["direct-upload-unpinned", 1], ["direct-upload-unpinned", 2]], unpinned.map do |f|
+          [f.rule, f.line]
+        end)
+        assert_equal :warning, unpinned.first.severity
+        assert_includes unpinned.first.message, %(pin "@rails/activestorage")
+        assert_empty Check.lint(source, catalog: UPLOAD_CATALOG, importmap_pins: %w[application @rails/activestorage])
+        assert_empty Check.lint(source, catalog: UPLOAD_CATALOG), "no importmap known: the pin rule stands down"
+      end
+
+      ISLAND_CATALOG = Check::Catalog.new({
+                                            "poetry/island/island" => {
+                                              "options" => [{ "name" => "import" }, { "name" => "mode" },
+                                                            { "name" => "props" }],
+                                              "slots" => []
+                                            }
+                                          })
+
+      def test_an_island_warns_when_the_importmap_does_not_pin_its_module
+        source = <<~ERB
+          <%= poetry_island(import: "islands/map") { "shell" } %>
+          <%= poetry_island(import: "community/islands/editor", mode: :flow) { "shell" } %>
+          <%= poetry_island(import: "@acme/scene", props: { tone: 1 }) { "shell" } %>
+          <%= poetry_island(import: island_module) { "shell" } %>
+        ERB
+        unpinned = Check.lint(source, catalog: ISLAND_CATALOG, importmap_pins: %w[application islands])
+
+        assert_equal([["island-import-unpinned", 2], ["island-import-unpinned", 3]],
+                     unpinned.map { |f| [f.rule, f.line] })
+        assert_equal :warning, unpinned.first.severity
+        assert_includes unpinned.first.message, %(pin "community/islands/editor")
+        assert_empty Check.lint(source, catalog: ISLAND_CATALOG, importmap_pins: %w[islands community @acme/scene])
+        assert_empty Check.lint(source, catalog: ISLAND_CATALOG), "no importmap known: the pin rule stands down"
+      end
+
+      def test_importmap_pins_read_pin_and_pin_all_from
+        Dir.mktmpdir do |root|
+          FileUtils.mkdir_p(File.join(root, "config"))
+          File.write(File.join(root, "config/importmap.rb"), <<~RUBY)
+            pin "application"
+            pin "@rails/activestorage", to: "activestorage.esm.js"
+            pin_all_from "app/javascript/controllers", under: "controllers"
+            pin_all_from Engine.root.join("app/javascript/islands"),
+                         under: "poetry_docs/islands", to: "poetry_docs/islands", preload: false
+            pin_all_from "app/javascript/kernels"
+            pin "@poetry/island"
+          RUBY
+
+          assert_equal %w[application @rails/activestorage @poetry/island controllers poetry_docs/islands],
+                       Check.importmap_pins(root)
+
+          # An engine's importmap joins the host's; an interpolated name is
+          # unknowable and dropped.
+          Dir.mktmpdir do |engine|
+            FileUtils.mkdir_p(File.join(engine, "config"))
+            File.write(File.join(engine, "config/importmap.rb"), <<~RUBY)
+              pin "@poetry/motion", to: "poetry/motion/index.js"
+              pin "@poetry/motion/\#{file.delete_suffix(".js")}", to: "x", preload: false
+              pin_all_from File.join(motion, "behaviors"), under: "@poetry/motion/behaviors", to: "y",
+                                                           preload: false
+            RUBY
+            pins = Check.importmap_pins(root, engine_roots: [engine, File.join(engine, "nowhere")])
+
+            assert_includes pins, "@poetry/motion"
+            assert_includes pins, "@poetry/motion/behaviors"
+            assert_includes pins, "controllers"
+            refute(pins.any? { |pin| pin.include?("delete_suffix") })
+          end
+        end
+
+        Dir.mktmpdir do |root|
+          assert_nil Check.importmap_pins(root)
+        end
       end
 
       # --- internal constants (the family's @api private namespaces) ---

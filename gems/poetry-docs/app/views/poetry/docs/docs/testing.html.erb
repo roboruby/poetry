@@ -12,6 +12,7 @@
     bundle exec rake "poetry:check[app/views/checkout/**/*.html.erb]" # scope with a glob
     POETRY_CHECK_JSON=1 bin/rails poetry:check                        # JSON for editors / CI
     POETRY_CHECK_DESIGN=1 bin/rails poetry:check                      # add the design-slop warnings
+    bin/rails poetry:audit                                            # the whole app: axes used, paint, partials, flows -> .poetry/audit/
   CODE
   wiring_source = <<~CODE
     class Settings::NotificationsViewTest < ActionView::TestCase
@@ -254,7 +255,7 @@
     <% end %>
     <%= poetry_code_block(code: system_source, language: "ruby", label: "System test") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Entry point</th><th>Drives</th><th>Key methods</th></tr>
         </thead>
@@ -284,8 +285,13 @@
             <td>Checkbox, Switch</td>
             <td><code>check(via:)</code>, <code>uncheck(via:)</code>, <code>toggle(via:)</code>, <code>checked?</code>, <code>mixed?</code>, <code>value</code> (what the form submits)</td>
           </tr>
+          <tr>
+            <td><code>poetry_composer(root)</code></td>
+            <td>Composer</td>
+            <td><code>write(text)</code>, <code>send_message(via:)</code>, <code>stop(via:)</code>, <code>status</code>, <code>running?(wait:)</code>, <code>idle?(wait:)</code>, <code>attach(*paths)</code>, <code>attachments</code>, <code>choose(typed, option, via:)</code>, <code>references</code></td>
+          </tr>
         </tbody>
-      </table>
+      </table></div>
       <p>
         Two controls need a word of their own. A Poetry checkbox is a
         <code>button[role=checkbox]</code> mirroring a native input that

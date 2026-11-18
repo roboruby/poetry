@@ -39,7 +39,9 @@ async function mountAgent() {
     window.pageAgent = undefined
   }
   if (window.pageAgent) return
-  const config = JSON.parse(sessionStorage.getItem(FLAG) || "null")
+  // A docs page framed as an MCP App in an opaque sandbox has no storage.
+  let config = null
+  try { config = JSON.parse(sessionStorage.getItem(FLAG) || "null") } catch { return }
   if (!config) return
 
   if (!window.PageAgent) {

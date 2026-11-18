@@ -17,6 +17,10 @@ module Dummy
   class Application < Rails::Application
     config.root = File.expand_path("..", __dir__)
     config.eager_load = false
+    # A suite never reloads its classes. Left on (Rails' default where no environment file says
+    # otherwise), reloading swaps every class out as soon as a watched file changes while the tests
+    # run, and a test class written inside a component's namespace can no longer find its component.
+    config.enable_reloading = false if Rails.env.test?
     config.logger = Logger.new(nil) # Suppress logs in tests
     config.active_support.test_order = :random
 

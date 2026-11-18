@@ -58,6 +58,21 @@ agent surface, the component page's API section, and the generated API
 reference - with the machine facts (type, default, variants)
 auto-appended, so the prose adds MEANING only:
 
+An option on its way out says so in its declaration, with the option
+that replaces it when there is one:
+
+```ruby
+option :kind, :symbol, deprecated: { use: :variant, since: "0.2.0" },
+                       doc: "The old name for variant:."
+option :glyph, :symbol, deprecated: "Pass the icon in the icon slot."
+```
+
+`deprecated:` changes nothing at render: keep honouring the old option
+until you remove it. The marker reaches the registry, so `poetry:check`
+warns wherever the option is written, `poetry:rename` rewrites a call
+whose option names its replacement with `use:`, and the agent surfaces
+mark it DEPRECATED. Remove the option a release after you mark it.
+
 - One sentence, two at most: the caller-visible effect and its
   interactions ("Ignored unless `tag: :a`."), never the implementation
   ("sets @foo").
@@ -95,6 +110,9 @@ Part descriptions, agent rules, option and slot descriptions, and
 - No abbreviations that only make sense inside this codebase.
 - Agent rules are imperatives: what to do, what never to do, one rule
   per entry.
+- A behavior's `agent_rule` strings project verbatim too, into EVERY
+  component that uses the behavior, ahead of that component's own
+  `AGENT_RULES`: write the rule for the behavior, never for one consumer.
 
 ## What comments never contain
 

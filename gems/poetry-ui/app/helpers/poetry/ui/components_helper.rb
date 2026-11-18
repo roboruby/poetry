@@ -109,6 +109,42 @@ module Poetry
         render(Poetry::Ui::Typeset::Component.new(**), &)
       end
 
+      # Text written in Markdown, by a model or a person, rendered as
+      # prose: the text is parsed and rebuilt from known elements, so
+      # markup in it never reaches the page. streaming: closes what a
+      # reply still being written has left open.
+      #
+      # @example A reply in a transcript
+      #     poetry_markdown(text: message.content, heading_level: 3)
+      # @example A reply still being written
+      #     poetry_markdown(text: reply.text, streaming: true, heading_level: 3)
+      # @see Poetry::Ui::Markdown::Component
+      def poetry_markdown(**)
+        render(Poetry::Ui::Markdown::Component.new(**))
+      end
+
+      # A numbered mark set in a sentence, pointing a claim at its source.
+      #
+      # @example
+      #     Orders ship in two days <%= poetry_citation(number: 1, href: source.url, title: source.title) %>.
+      # @see Poetry::Ui::Citation::Component
+      def poetry_citation(**)
+        render(Poetry::Ui::Citation::Component.new(**))
+      end
+
+      # The sources a reply cites, in a disclosure under it.
+      #
+      # @example
+      #     poetry_sources do |sources|
+      #       sources.with_source("Fulfilment guide", href: "https://example.com/fulfilment")
+      #       sources.with_source("Refund policy", href: "https://example.com/refunds",
+      #                           description: "Refunds are issued within five working days.")
+      #     end
+      # @see Poetry::Ui::Sources::Component
+      def poetry_sources(**, &)
+        render(Poetry::Ui::Sources::Component.new(**), &)
+      end
+
       # A control for selecting, previewing, and removing files to upload.
       #
       # @example Drag-and-drop upload surface
@@ -304,6 +340,9 @@ module Poetry
         # gem the token is inert and the browser's own submission runs.
         options[:data] = (options[:data] || {}).dup
         options[:data][:controller] = [options[:data][:controller], Webmcp::FORM_CONTROLLER].compact.join(" ")
+        # What the controller says when the browser reports an agent's fill
+        # or its cancellation, in the app's language.
+        options[:data].merge!(Webmcp.form_messages)
         form_with(**options, &)
       end
 
@@ -1008,6 +1047,20 @@ module Poetry
           "yields" => "the form builder (Poetry::Ui::FormBuilder unless builder: says otherwise) - " \
                       "form.field and form.input author the tool's parameters; every standard field helper works"
         },
+        "poetry_composer_action" => {
+          "options" => [
+            { "name" => "id", "type" => "string", "required" => true,
+              "description" => "the composer's id - the slot renders dom id \"<id>-action\"" },
+            { "name" => "status", "type" => "symbol", "default" => "idle",
+              "variants" => %w[idle running stopping] },
+            { "name" => "version", "type" => "integer",
+              "description" => "rises with every status change - data-version for a versioned replace" },
+            { "name" => "disabled", "type" => "boolean", "default" => false,
+              "description" => "disables the Send button - pass what the composer was rendered with" },
+            { "name" => "send_label", "type" => "string", "description" => "the Send button's accessible name" },
+            { "name" => "stop_label", "type" => "string", "description" => "the Stop button's accessible name" }
+          ]
+        },
         "poetry_input_group_addon" => {
           "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                           "variants" => INPUT_GROUP_ALIGNS.map(&:to_s) }]
@@ -1313,17 +1366,34 @@ module Poetry
       end
 
       # Server-rendered highlighted code panel (rouge, soft dependency):
-      # language:, CSS-counter line_numbers:, highlight_lines:, and a
-      # copy affordance reading the rendered code. Inline code stays
-      # plain <code> typography.
+      # language:, CSS-counter line_numbers:, highlight_lines:, diff:,
+      # wrap:, and a copy affordance; the block sets the title, actions
+      # and footer slots. Inline code stays plain <code> typography.
       #
       # @example
       #     poetry_code_block(
       #       code: "puts \"hello\"", language: "ruby"
       #     )
+      # @example A header
+      #     poetry_code_block(code: source, language: "ruby") do |block|
+      #       block.with_title { "app/models/user.rb" }
+      #     end
       # @see Poetry::Ui::CodeBlock::Component
-      def poetry_code_block(**)
-        render(Poetry::Ui::CodeBlock::Component.new(**))
+      def poetry_code_block(**, &)
+        render(Poetry::Ui::CodeBlock::Component.new(**), &)
+      end
+
+      # The steps an agent takes, one line each: icon, title, description,
+      # a status (:running shimmers, :error, :pending); a step's block is
+      # detail it discloses.
+      #
+      # @example
+      #     poetry_trace do |trace|
+      #       trace.with_step("Ran the tests", icon: :"flask-conical", description: "2.1s")
+      #     end
+      # @see Poetry::Ui::Trace::Component
+      def poetry_trace(**, &)
+        render(Poetry::Ui::Trace::Component.new(**), &)
       end
 
       # Secret shown-on-demand (API keys, tokens): masked container is the
@@ -1432,8 +1502,8 @@ module Poetry
       #
       # @example A text-alignment switcher
       #     poetry_toggle_group(value: "left", label: "Text alignment") do |group|
-      #       group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
-      #       group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #       group.with_item(value: "left", label: "Align left") { icon(:"text-align-start") }
+      #       group.with_item(value: "center", label: "Align center") { icon(:"text-align-center") }
       #     end
       # @see Poetry::Ui::ToggleGroup::Component
       def poetry_toggle_group(**, &)
@@ -1497,6 +1567,55 @@ module Poetry
         poetry_chat_group(Poetry::Ui::Attachment::Style, "attachment-group", **attrs, &)
       end
 
+      # One Active Storage attachment as a chip through its lifecycle:
+      # processing until the blob is analyzed and the variant processed,
+      # done with the representation as the media (or an icon by type),
+      # error when an image was analyzed without dimensions. Takes an
+      # Attached::One, an Attachment or a Blob; renders nothing when
+      # nothing is attached. The chip's id is the broadcasts' target.
+      #
+      # @example A thumbnail with a download link
+      #   <%= poetry_attachment_for @post.cover, variant: :thumb, download: true %>
+      # @example Extra actions
+      #   <%= poetry_attachment_for photo, variant: :thumb do |chip| %>
+      #     <% chip.with_action(label: "Remove", href: remove_path, tag: :a) { poetry_icon(name: :x) } %>
+      #   <% end %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachment_for(attachment, variant: nil, download: false, **options, &block)
+        lifecycle = Poetry::Ui::AttachmentLifecycle.new(attachment, variant: variant)
+        return "".html_safe unless lifecycle.present?
+
+        attrs = { state: lifecycle.state }
+        attrs[:id] = lifecycle.dom_id if lifecycle.dom_id && !options.key?(:id)
+        render(Poetry::Ui::Attachment::Component.new(**attrs, **options)) do |chip|
+          if lifecycle.image_ready?
+            chip.with_media(variant: :image) { image_tag(lifecycle.representation, alt: "") }
+          else
+            chip.with_media { poetry_icon(name: lifecycle.icon) }
+          end
+          chip.with_title { lifecycle.filename }
+          chip.with_description { lifecycle.description(self) }
+          if download && (href = lifecycle.download_path(self))
+            # The stretched trigger's text is for screen readers: the chip
+            # itself is what people see.
+            chip.with_trigger(tag: :a, href: href) do
+              tag.span(t("poetry.attachment.download_file", name: lifecycle.filename), class: "sr-only")
+            end
+          end
+          block&.call(chip, lifecycle)
+        end
+      end
+
+      # Every attachment of a has_many_attached as chips, each through
+      # poetry_attachment_for.
+      #
+      # @example
+      #   <%= poetry_attachments_for @post.photos, variant: :thumb %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachments_for(attachments, **, &)
+        safe_join(Array(attachments).map { |attachment| poetry_attachment_for(attachment, **, &) })
+      end
+
       # A streaming-aware transcript that keeps the latest message in view.
       #
       # @example A chat transcript
@@ -1530,6 +1649,71 @@ module Poetry
         data[:"scroll-anchor"] = "true" if anchor
         tag.div(**Poetry::Core::HTML::Attributes.merged({ class: classes, data: data }, attrs)
                   .symbolize_keys, &)
+      end
+
+      # A chat message composer: the form, its growing field, and the
+      # Send/Stop slot the server redraws.
+      #
+      # @example A chat's composer
+      #     poetry_composer(id: "composer", url: chat_messages_path(chat), name: "content",
+      #                     status: chat.composer_status, stop_url: stop_chat_path(chat))
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer(**, &)
+        render(Poetry::Ui::Composer::Component.new(**), &)
+      end
+
+      # The composer's action slot alone - Send while idle, Stop while a
+      # reply runs. Render it into a Turbo Stream that replaces
+      # "<id>-action" whenever the reply's status changes; the form and
+      # the draft in it stay where they are. version: stamps the slot for
+      # a versioned replace.
+      #
+      # @example The partial a stream renders (chats/_composer_action.html.erb)
+      #   <%= poetry_composer_action(id: "composer", status: chat.composer_status) %>
+      # @example Replacing the slot when the reply's status changes
+      #   Turbo::StreamsChannel.broadcast_replace_to(
+      #     chat, target: "composer-action", partial: "chats/composer_action", locals: { chat: chat }
+      #   )
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_action(**)
+        render(Poetry::Ui::Composer::Action.new(**))
+      end
+
+      # A suggested prompt for a composer elsewhere on the page: a chip
+      # under an empty conversation, a quick reply. Pressed, the composer
+      # named by composer: writes the text in place of the draft and sends
+      # it, through the same gate a typed message passes, so nothing goes
+      # while a reply is running. submit: false only writes the text and
+      # puts the caret after it. It is a Poetry Button: variant: and size:
+      # are the Button's, and a block gives a label other than the text.
+      #
+      # @example Prompts under an empty conversation
+      #   <%= poetry_composer_prompt(composer: "composer", text: "Summarize this thread") %>
+      #   <%= poetry_composer_prompt(composer: "composer", text: "Compare ", submit: false) { "Compare…" } %>
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_prompt(**, &)
+        render(Poetry::Ui::Composer::Prompt.new(**), &)
+      end
+
+      # A server-fed composer menu's answer: the options for the word
+      # being typed, in the Turbo frame that asked. A menu given src:
+      # requests that address with the word (?q=word); the view there
+      # renders this with one with_item per match, in the order the
+      # server ranks them. with_item takes what a menu's own with_item
+      # takes. The frame's id comes from the request, so one view answers
+      # every composer that points at it; id: names it by hand.
+      #
+      # @example The menu, on the page
+      #   composer.with_menu(trigger: "@", label: "People", src: mentions_path)
+      # @example The view at mentions_path
+      #   <%= poetry_composer_menu_options(icon: :user) do |menu| %>
+      #     <% @people.each do |person| %>
+      #       <% menu.with_item(value: person.handle, label: person.name, description: person.title) %>
+      #     <% end %>
+      #   <% end %>
+      # @see Poetry::Ui::Composer::Component
+      def poetry_composer_menu_options(**, &)
+        render(Poetry::Ui::Composer::MenuOptions.new(**), &)
       end
 
       # A brief, auto-dismissing notification message.

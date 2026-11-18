@@ -74,16 +74,17 @@ module Poetry
 
         # What the form submits for this control right now: the native
         # input's value when checked, the paired hidden input's value
-        # when unchecked, nil for a visual-only control.
+        # when unchecked, nil when it submits nothing (a visual-only
+        # control, a disabled one, or an unchecked one with no hidden
+        # input beside it).
         #
         # @return [String, nil]
         def value
           input = native_input
-          return nil unless input
+          return nil if input.nil? || input.disabled?
           return input["value"] if checked?
 
-          hidden = root.all("input[type='hidden'][name='#{input["name"]}']", visible: :all).first
-          hidden && hidden["value"]
+          unchecked_input(input)&.[]("value")
         end
 
         private
@@ -107,6 +108,17 @@ module Poetry
           node = control
           node.first(:xpath, "following-sibling::input[@type='checkbox'] | .//input[@type='checkbox']",
                      visible: :all, minimum: 0)
+        end
+
+        # The hidden input that submits while the control is off: the
+        # element just before the native input, when it is a hidden input
+        # of the same name. Both are siblings of the button, so the lookup
+        # starts from the input and holds whether the root is the control
+        # itself or an element around it.
+        def unchecked_input(input)
+          hidden = input.first(:xpath, "preceding-sibling::*[1][self::input][@type='hidden']",
+                               visible: :all, minimum: 0)
+          hidden if hidden && hidden["name"] == input["name"]
         end
       end
     end

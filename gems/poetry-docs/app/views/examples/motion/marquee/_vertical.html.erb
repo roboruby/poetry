@@ -1,0 +1,7 @@
+<div class="h-48 w-full max-w-sm">
+  <%= poetry_marquee(label: "Testimonials", direction: :up, duration: 20, class: "h-full") do %>
+    <% ["Shipped in a day.", "The docs answer before I ask.", "Our forms finally match."].each do |quote| %>
+      <p class="py-3 text-sm"><%= quote %></p>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,18 @@
+<%# A reply and what it rests on. The same list numbers the marks in
+    the text (poetry_markdown takes it as sources:) and the entries
+    under it, so a 2 in the sentence is the second entry. %>
+<% sources = [
+     { title: "Fulfilment guide", href: "https://example.com/fulfilment",
+       description: "Orders ship within two working days of payment." },
+     { title: "Refund policy", href: "https://example.com/refunds",
+       description: "Refunds are issued within five working days." }
+   ] %>
+<div class="mx-auto flex w-full max-w-xl flex-col gap-3">
+  <%= poetry_markdown(text: "Orders ship within **two working days** [1], and a refund is issued within five [2]. " \
+                            "ORD-1041 is past the first of those [1].", sources: sources) %>
+  <%= poetry_sources(open: true) do |list| %>
+    <% sources.each do |source| %>
+      <% list.with_source(source[:title], href: source[:href], description: source[:description]) %>
+    <% end %>
+  <% end %>
+</div>

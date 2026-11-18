@@ -40,7 +40,7 @@
     <h1 class="text-4xl font-semibold tracking-tight">Theming</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
       Poetry ships nine complete themes: the upstream shadcn styles at the
-      <code class="font-mono text-base">shadcn@4.21.0</code> release, translated onto the
+      <code class="font-mono text-base">shadcn@4.23.0</code> release, translated onto the
       <code class="font-mono text-base">cn-*</code> layer. An app installs
       one; this site renders all nine. Use the style picker in the header to
       view any page in any theme.
@@ -58,7 +58,7 @@
         (<code>tokens.css</code>) and are shared, so light/dark mode is
         orthogonal to the theme choice.
       </p>
-      <table>
+      <div class="overflow-x-auto"><table class="min-w-[36rem]">
         <thead>
           <tr><th>Theme</th><th>Character</th></tr>
         </thead>
@@ -73,7 +73,7 @@
           <tr><td><code>lyra</code></td><td>boxy and sharp: radius zero, type one step down, made for mono fonts</td></tr>
           <tr><td><code>sera</code></td><td>editorial: uppercase tracked type, underline-only fields, serif pairing</td></tr>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </section>
 

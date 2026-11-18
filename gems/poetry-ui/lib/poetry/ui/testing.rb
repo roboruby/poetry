@@ -6,6 +6,7 @@ require_relative "testing/combobox"
 require_relative "testing/menu"
 require_relative "testing/dialog"
 require_relative "testing/checkbox"
+require_relative "testing/composer"
 require_relative "testing/registration"
 
 module Poetry
@@ -92,6 +93,16 @@ module Poetry
       # @return [Checkbox]
       def poetry_checkbox(root, session: nil)
         Checkbox.new(root, session: session || testing_session)
+      end
+
+      # A Composer tester rooted at the component.
+      #
+      # @param root [String, Capybara::Node::Element] the component root
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Composer]
+      def poetry_composer(root, session: nil)
+        Composer.new(root, session: session || testing_session)
       end
 
       # Every poetry controller identifier on the current page that the

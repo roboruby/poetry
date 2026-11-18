@@ -34,19 +34,22 @@ poetry_components:
   reason: Poetry additions with no source file at the pin.
   list:
   - autocomplete
+  - citation
   - clipboard-text
-  - code-block
+  - composer
   - data-table
   - date-field
   - date-picker
   - date-time-field
   - file-input
   - link
+  - markdown
   - metadata-list
   - meter
   - number-field
   - search-field
   - sensitive-input
+  - sources
   - stat
   - tag-group
   - time-field
@@ -97,7 +100,9 @@ alert-dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -109,6 +114,7 @@ alert-dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
     alert-dialog-footer:
@@ -157,9 +163,12 @@ attachment:
     list:
     - attachment-group
   poetry_slots:
-    reason: attachment-status is poetry's upload-state readout.
+    reason: attachment-status is poetry's upload-state readout; attachment-progress
+      is the progress slot the FileInput uploader fills (a slim Progress under the
+      title).
     list:
     - attachment-status
+    - attachment-progress
   slots:
     attachment:
       reason: 'State vocabulary: poetry names the attribute differently (documented
@@ -174,11 +183,13 @@ attachment:
     attachment-description:
       reason: 'State vocabulary: poetry names the attribute differently (documented
         in the part contract). data-upload-state replaces the source''s data-state
-        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+        (poetry never uses data-state). AA hold: the source tints the error line at
+        80% of the destructive token, 4.11:1 on the card in light mode and 4.36:1 in
+        dark at text-xs, so the line takes the token whole (4.76:1 and 6.2:1).'
       dropped:
       - group-data-[state=error]/attachment:text-destructive/80
       added:
-      - group-data-[upload-state=error]/attachment:text-destructive/80
+      - group-data-[upload-state=error]/attachment:text-destructive
     attachment-media:
       reason: 'State vocabulary: poetry names the attribute differently (documented
         in the part contract). data-upload-state replaces the source''s data-state
@@ -349,6 +360,45 @@ checkbox:
         it only while checked).
       added:
       - data-unchecked:invisible
+code-block:
+  slots:
+    code-block-code:
+      reason: Poetry highlights on the server - rouge's token classes colored through
+        the theme's seven --syntax-* vars (the source colors tokens inline from its client
+        highlighter).
+      added:
+      - "[&_:is(.c,.ch,.cd,.cm,.cp,.cpf,.c1,.cs)]:text-(--syntax-comment)"
+      - "[&_:is(.k,.kd,.kn,.kp,.kr,.kt,.kv)]:text-(--syntax-keyword)"
+      - "[&_:is(.kc,.l,.ld,.m,.mb,.mf,.mh,.mi,.il,.mo,.mx)]:text-(--syntax-constant)"
+      - "[&_:is(.na,.nt,.sr)]:text-(--syntax-markup)"
+      - "[&_:is(.nb,.nc,.no,.nn)]:text-(--syntax-entity)"
+      - "[&_:is(.nd,.nf,.fm)]:text-(--syntax-function)"
+      - "[&_:is(.s,.sa,.sc,.dl,.sd,.s2,.se,.sh,.sx,.s1,.ss)]:text-(--syntax-string)"
+      - "[&_:is(.sb,.bp,.ne,.nl,.py,.nv,.vc,.vg,.vi,.vm,.o,.ow)]:text-(--syntax-constant)"
+    code-block-content:
+      reason: The source writes counter-reset inline on every block; poetry carries the
+        default in the class and writes the inline style only for start_line:, so a block
+        that starts at 1 needs no style attribute.
+      added:
+      - "[counter-reset:line]"
+    code-block-copy-button:
+      reason: The copy button is a composed poetry Button, so its root carries Button's
+        own structural classes (the source's Button carries the same; only the hook
+        is the copy button's).
+      added:
+      - "[&_svg]:pointer-events-none"
+      - items-center
+      - justify-center
+      - outline-none
+      - shrink-0
+      - transition-all
+    code-block-line:
+      reason: Under wrap the source's lone grid column sizes to a line's longest token, so
+        a token with no break point (a signed URL, minified JSON) widens the block past
+        its frame and it scrolls sideways anyway; min-w-0 lets the line shrink to the
+        column and the token break.
+      added:
+      - in-data-wrap:min-w-0
 combobox:
   missing_slots:
     reason: combobox-collection is Base UI's virtualization wrapper; the source clears
@@ -562,7 +612,9 @@ dialog:
       reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
         or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
         Button, and the popup is the dialog itself - m-auto/open:grid replace the
-        source''s fixed/translate centering.'
+        source''s fixed/translate centering; content-start keeps WebKit before its
+        April 2026 fix (bug 260461) from stretching the auto rows into the modal
+        max-height (#29).'
       dropped:
       - "-translate-x-1/2"
       - "-translate-y-1/2"
@@ -573,6 +625,7 @@ dialog:
       - w-full
       - z-50
       added:
+      - content-start
       - m-auto
       - open:grid
 drawer:
@@ -1177,6 +1230,12 @@ sidebar:
       - outline-hidden
       - shrink-0
       - transition-[margin,opacity]
+    sidebar-inset:
+      reason: 'A flex item''s minimum width is its content''s: without min-w-0 a wide
+        table, chart or pre in the page widens the inset past the window and clips
+        its right edge instead of scrolling.'
+      added:
+      - min-w-0
     sidebar-menu-action:
       reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
         not carry them (its element relies on a composed child or a primitive default),
@@ -1438,3 +1497,28 @@ radio-group:
     - radio-group-card-content
     - radio-group-card-description
     - radio-group-card-title
+trace:
+  slots:
+    trace-description:
+      reason: 'AA hold: the source fades the trailing note to 70% of the muted token, 2.77:1
+        on white and 4.17:1 in dark mode. The note takes the token whole (4.95:1 and
+        7.66:1), the lightest text that holds 4.5:1 on a white page.'
+      dropped:
+      - text-muted-foreground/70
+      added:
+      - text-muted-foreground
+    trace-icon:
+      reason: The disclosure's chevron is a trace icon too. The source passes its turn as
+        a className where TraceCollapsibleTrigger renders it; poetry carries the turn on
+        its own dictionary element, so the slot's classes include it.
+      added:
+      - group-aria-expanded/trace-collapsible-trigger:rotate-90
+      - transition-transform
+    trace-line:
+      reason: 'AA hold: the source dims a pending step''s whole line to 60%, which leaves
+        its words at 2.35:1 on white and 3.34:1 in dark mode. Poetry dims the step''s
+        icon (decorative, aria-hidden) and leaves the words at the muted token.'
+      dropped:
+      - data-[status=pending]:opacity-60
+      added:
+      - data-[status=pending]:*:data-[slot=trace-icon]:opacity-60

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "active_support/notifications"
 
 module Poetry
   module Core
@@ -25,11 +26,20 @@ module Poetry
     module Check
       SEVERITIES = %i[error warning].freeze
 
+      # One helper call the linter validated, as the audit reads it: the
+      # helper, where it sits, its keyword literals (nil for a value passed
+      # dynamically) and its first positional literal.
+      #
+      # @api private
+      Call = Struct.new(:helper, :line, :file, :keywords, :positional, keyword_init: true)
+
       # A single lint result. file is attached by the Runner; line is
       # 1-based into that file. suggestion is a did-you-mean fix or nil.
       #
       # @api private
-      Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, keyword_init: true) do
+      # subject is the name the finding is about, where a rename can act on
+      # it (the retired option, the renamed icon); it is not printed.
+      Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, :subject, keyword_init: true) do
         # The finding as a hash with its nil fields dropped.
         def to_h
           { rule: rule, severity: severity, message: message,
@@ -73,9 +83,9 @@ module Poetry
         # rgb(...)) - a url(#fragment) is not a color.
         STYLE_COLOR = /(?<!url\()#\h{3,8}\b|\b(?:#{COLOR_FUNCTIONS.join("|")})\([^)]*\)/i
 
-        # A catalog over one registry root.
-        def self.from_registry(root, helpers: nil, icon_names: nil, host_helpers: nil)
-          from_registries([root], helpers: helpers, icon_names: icon_names, host_helpers: host_helpers)
+        # A catalog over one registry root; the options are from_registries'.
+        def self.from_registry(root, **)
+          from_registries([root], **)
         end
 
         # A host catalog spans every installed poetry gem (ui + charts): a
@@ -85,7 +95,10 @@ module Poetry
         # host_registry: the app's own components (HostComponents.registry),
         # merged in beside the gem registries - their declared helpers join
         # the valid set and their contracts are checked like any other.
-        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil)
+        # rubocop:disable Metrics/ParameterLists
+        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil,
+                                 icon_libraries: nil, icon_aliases: nil, icon_library_aliases: nil, icon_finder: nil)
+          # rubocop:enable Metrics/ParameterLists
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           end
@@ -106,7 +119,11 @@ module Poetry
               icon_names: icon_names,
               helper_args: helper_args,
               host_helpers: host_helpers,
-              internals: internals.uniq.sort)
+              internals: internals.uniq.sort,
+              icon_libraries: icon_libraries,
+              icon_aliases: icon_aliases,
+              icon_library_aliases: icon_library_aliases,
+              icon_finder: icon_finder)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -119,16 +136,28 @@ module Poetry
         # also carries the value contracts runtime-enforced inside wrapper
         # helpers (poetry_input_group_addon align: et al). icon_names: the
         # active icon set's valid names - when given, icon-formatted option
-        # values are checked for membership, not just shape.
+        # values are checked for membership, not just shape. icon_libraries:
+        # every registered set's names by library key, so a call naming its
+        # set (`library: :tabler`) is checked against that set. icon_aliases:
+        # the active set's old names => current names (an old name renders,
+        # and check warns with the rename); icon_library_aliases: the same by
+        # library key.
         # rubocop:disable Metrics/ParameterLists
         def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
-                       host_helpers: nil, internals: [])
+                       host_helpers: nil, internals: [], icon_libraries: nil, icon_aliases: nil,
+                       icon_library_aliases: nil, icon_finder: nil)
           # rubocop:enable Metrics/ParameterLists
           @components = components
+          @icon_finder = icon_finder
           @internals = internals
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
+          @icon_libraries = icon_libraries&.to_h { |key, names| [key.to_s, names.to_set(&:to_s)] }
+          @icon_aliases = (icon_aliases || {}).to_h { |old, current| [old.to_s, current.to_s] }
+          @icon_library_aliases = (icon_library_aliases || {}).to_h do |key, map|
+            [key.to_s, map.to_h { |old, current| [old.to_s, current.to_s] }]
+          end
           # The app's own poetry_* helper METHODS (HostComponents.helper_methods:
           # a pagination adapter, a wrapper of the host's own) - valid by
           # name, contracts their own.
@@ -154,6 +183,23 @@ module Poetry
 
         # The active icon set's names, or nil when membership is not checked.
         attr_reader :icon_names
+
+        # Every registered set's names by library key, or nil when unknown.
+        attr_reader :icon_libraries
+
+        # What to add to an unknown icon name nothing is close to: the
+        # active set's advice for the word (the icons filed under it, what
+        # the set does not draw), or nothing without a finder.
+        #
+        # @param name [String] the unknown name
+        # @return [String] the advice, led by a dash, or an empty string
+        def icon_advice(name)
+          advice = @icon_finder ? @icon_finder.advice(name) : ""
+          advice.empty? ? "" : " - #{advice}"
+        end
+
+        # The renamed-icon map for a library (nil: the active set).
+        def icon_aliases_for(library = nil) = library ? @icon_library_aliases.fetch(library, {}) : @icon_aliases
 
         # The family's `@api private` namespaces (the registries' "internals"
         # sections), top-most only.
@@ -183,6 +229,8 @@ module Poetry
 
         # The registry path a helper renders, or nil.
         def path_for(helper) = @path_by_helper[helper]
+        # A component's registry entry by path (its styles, options, slots), or nil.
+        def component_entry(path) = @components[path]
         # The helper that renders a registry path (the declared name, or the
         # poetry_ convention).
         def helper_for(path) = @helper_by_path[path]
@@ -222,6 +270,12 @@ module Poetry
         # webmcp: instance registers).
         def tools_of(path)
           @components.dig(path, "tools") || []
+        end
+
+        # The names of the behaviors a component uses (the registry's
+        # behaviors section).
+        def behaviors_of(path)
+          (@components.dig(path, "behaviors") || []).map { |behavior| behavior["name"] }
         end
 
         # Every option and style name a component declares.
@@ -379,10 +433,18 @@ module Poetry
         #   and no tokens (mail clients drop var()), so a color literal is
         #   the only paint there is and the raw-color rule stays quiet;
         #   every other rule runs as on a page.
-        def lint(source, mail: false)
+        # @param importmap_pins [Array<String>, nil] the host's importmap pins
+        #   (Check.importmap_pins); nil skips the rules that read them
+        # @param calls [Array<Call>, nil] a sink the known helper calls are
+        #   appended to as they are validated (the audit's inventory)
+        def lint(source, mail: false, importmap_pins: nil, calls: nil)
           require "herb"
           require "prism"
           @mail = mail
+          @calls = calls
+          # The host's importmap pins, when the runner read them (nil: no
+          # importmap, so the pin rules stand down).
+          @importmap_pins = importmap_pins
           # Every block-param binding this lint opens, in document order -
           # each accumulates the setters actually called on it so the
           # required-slot accounting can run once the whole template has
@@ -412,6 +474,7 @@ module Poetry
             findings.concat(fake_button_findings(node)) if INERT_TAGS.include?(open_tag_name(node))
           end
           findings.concat(missing_slot_findings)
+          findings.concat(transform_overlay_findings(document.value))
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
         end
 
@@ -439,6 +502,7 @@ module Poetry
           parsed = Prism.parse(node.content.value)
           calls = []
           collect_calls(parsed.value, calls)
+          @calls&.concat(calls.filter_map { |call| call_record(call, base_line) })
           content_fed = content_fed_calls(parsed.value)
           findings = calls.flat_map { |call| call_findings(call, base_line, bindings, content_fed) }
           findings += slot_findings(parsed.value, bindings, base_line)
@@ -477,6 +541,23 @@ module Poetry
         # app component's declared helper).
         def helper_call?(name) = name.start_with?("poetry_") || @catalog.helper?(name)
 
+        # The audit's record of a known helper call, or nil for a helper the
+        # catalog does not know (that one is a finding, not inventory).
+        def call_record(call, base_line)
+          helper = call.name.to_s
+          return unless @catalog.helper?(helper)
+
+          # A literal nil is "not passed" to the inventory (the default
+          # applies), unlike a dynamic value, which it lists as such.
+          keywords = keyword_pairs(call).filter_map do |key, value, _line|
+            [key, value] unless value.equal?(NIL_LITERAL)
+          end
+          first = positional_arguments(call)&.first
+          first &&= literal_value(first)
+          Call.new(helper: helper, line: base_line + (call.location.start_line - 1), keywords: keywords.to_h,
+                   positional: first.equal?(NIL_LITERAL) ? nil : first)
+        end
+
         # The findings for one helper call: an unknown helper, or its arity, block, options, values and content.
         def call_findings(call, base_line, bindings, content_fed = Set.new)
           helper = call.name.to_s
@@ -510,10 +591,12 @@ module Poetry
 
           record_binding(call, path, bindings, line)
           pairs = keyword_pairs(call)
+          library = icon_library(pairs)
           findings = pairs.flat_map do |key, value, kw_line|
-            option_findings(path, key, value, base_line + kw_line - 1)
+            option_findings(path, key, value, base_line + kw_line - 1, library: library)
           end
-          findings + webmcp_findings(path, pairs, line) +
+          findings + webmcp_findings(path, pairs, line) + motion_findings(path, call, base_line) +
+            upload_findings(path, call, pairs, line) + island_findings(path, pairs, line) +
             missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
@@ -575,7 +658,7 @@ module Poetry
         end
 
         # The findings for one keyword on a helper call: reserved, unknown, or an off-contract value.
-        def option_findings(path, key, value, line)
+        def option_findings(path, key, value, line, library: nil)
           findings = []
           known = @catalog.option_names(path)
           entry = @catalog.option_entry(path, key)
@@ -596,13 +679,26 @@ module Poetry
             end
           end
 
-          findings + (entry ? value_findings(entry, helper_of(path), key, value, line) : [])
+          retired = entry && entry["deprecated"]
+          findings << deprecated_finding(helper_of(path), key, retired, line) if retired
+          findings + (entry ? value_findings(entry, helper_of(path), key, value, line, library: library) : [])
+        end
+
+        # An option its component has retired: it still works, and the
+        # warning carries the option to write instead when one replaces it.
+        def deprecated_finding(owner, key, notice, line)
+          since = notice["since"] ? " since #{notice["since"]}" : ""
+          advice = [notice["use"] && "use #{notice["use"]}:", notice["note"]].compact.join(" - ")
+          Finding.new(rule: "deprecated-option", severity: :warning,
+                      message: "#{key}: is deprecated on #{owner}#{since}#{" - #{advice}" unless advice.empty?}",
+                      line: line, suggestion: notice["use"], subject: key)
         end
 
         # The value-contract tier: the call shapes that raise or misrender
         # at render time - enumerated values on any declared attribute, literal nil
-        # against required options, and icon-name format/membership.
-        def value_findings(entry, owner, key, value, line)
+        # or an empty literal against required options, and icon-name
+        # format/membership.
+        def value_findings(entry, owner, key, value, line, library: nil)
           if value.equal?(NIL_LITERAL)
             return [] unless entry["required"]
 
@@ -610,6 +706,12 @@ module Poetry
                                 message: "#{key}: is required on #{owner} and cannot be nil", line: line)]
           end
           return [] unless value
+          # An empty literal is no value either: a required option written
+          # as "" (a link's address left for later) raises at render.
+          if value == "" && entry["required"]
+            return [Finding.new(rule: "missing-option", severity: :error,
+                                message: "#{key}: is required on #{owner} and cannot be empty", line: line)]
+          end
 
           variants = entry["variants"]
           if variants && !variants.include?(value)
@@ -619,30 +721,64 @@ module Poetry
                                 line: line, suggestion: suggest(value, variants))]
           end
 
-          entry["format"] == "icon-name" ? icon_findings(key, value, line) : []
+          entry["format"] == "icon-name" ? icon_findings(key, value, line, library) : []
         end
 
-        # Icon names are kebab-case names from the active icon set. Shape is
-        # always checkable (a snake_case `:folder_plus` never renders); membership only when
-        # the catalog carries the set's names.
-        def icon_findings(key, value, line)
+        # The literal `library:` a call names, or nil (the active set).
+        def icon_library(pairs)
+          value = pairs.find { |key, _value, _line| key == "library" }&.dig(1)
+          value.is_a?(String) ? value : nil
+        end
+
+        # Icon names are kebab-case names from the active icon set, or from the
+        # set a literal `library:` names. Shape is always checkable (a snake_case
+        # `:folder_plus` never renders); membership only when the catalog carries
+        # the set's names.
+        def icon_findings(key, value, line, library = nil)
+          return [unknown_library_finding(library, line)] if library && @catalog.icon_libraries &&
+                                                             !@catalog.icon_libraries.key?(library)
+
+          names = library && @catalog.icon_libraries ? @catalog.icon_libraries[library] : @catalog.icon_names
           unless value.match?(Icons::FileSet::NAME_FORMAT)
             kebab = value.tr("_", "-")
-            suggestion = kebab if kebab.match?(Icons::FileSet::NAME_FORMAT) &&
-                                  (@catalog.icon_names.nil? || @catalog.icon_names.include?(kebab))
+            suggestion = kebab if kebab.match?(Icons::FileSet::NAME_FORMAT) && (names.nil? || names.include?(kebab))
             return [Finding.new(rule: "unknown-icon", severity: :error,
                                 message: "#{key}: #{value.inspect} is not an icon name " \
                                          "(icon names are kebab-case, like :\"circle-alert\")",
                                 line: line, suggestion: suggestion)]
           end
-          return [] if @catalog.icon_names.nil? || @catalog.icon_names.include?(value)
+          return [] if names.nil? || names.include?(value)
+
+          current = @catalog.icon_aliases_for(library)[value]
+          return [renamed_icon_finding(key, value, current, line)] if current
 
           # Icons.suggest, not the generic checker: it catches the Lucide v1
           # reversed-compound renames (alert-circle -> circle-alert) that
           # edit distance misses every time.
+          set = library ? "the #{library} icon set" : "the icon set"
+          suggestion = Icons.suggest(value, names)
+          advice = suggestion || library ? "" : @catalog.icon_advice(value)
           [Finding.new(rule: "unknown-icon", severity: :error,
-                       message: "#{key}: #{value.inspect} is not in the icon set", line: line,
-                       suggestion: Icons.suggest(value, @catalog.icon_names))]
+                       message: "#{key}: #{value.inspect} is not in #{set}#{advice}", line: line,
+                       suggestion: suggestion, subject: value)]
+        end
+
+        # An old name the set still renders through an alias: a warning
+        # that carries the rename.
+        def renamed_icon_finding(key, value, current, line)
+          Finding.new(rule: "renamed-icon", severity: :warning,
+                      message: "#{key}: #{value.inspect} was renamed #{current.to_sym.inspect} upstream; " \
+                               "the old name still renders through an alias",
+                      line: line, suggestion: current, subject: value)
+        end
+
+        # A `library:` no registered set answers to: the render raises.
+        def unknown_library_finding(library, line)
+          known = @catalog.icon_libraries.keys.sort
+          Finding.new(rule: "unknown-icon-library", severity: :error,
+                      message: "library: #{library.to_sym.inspect} is not a registered icon set " \
+                               "(require the gem that provides it; registered: #{known.join(", ")})",
+                      line: line, suggestion: suggest(library, known))
         end
 
         # Required-with-no-default options that a literal call omits (a
@@ -650,8 +786,11 @@ module Poetry
         def missing_option_findings(path, owner, call, pairs, line)
           # A receiver'd call owns its contract (a form builder's
           # poetry_date_picker supplies name: itself) - same stand-down as
-          # helper arity.
+          # helper arity. A positional argument may feed a required option
+          # (poetry_typewriter("Hello") is text: "Hello"), as it may feed
+          # content - the same stand-down as the content rule.
           return [] if splatted?(call) || call.receiver
+          return [] if positional_arguments(call)&.any?
 
           (@catalog.required_options(path) - pairs.map(&:first)).map do |key|
             Finding.new(rule: "missing-option", severity: :error,
@@ -778,8 +917,9 @@ module Poetry
         # props at all), the content-block requirement and the any-of groups.
         def typed_slot_findings(call, component, slot_name, base_line, line)
           pairs = keyword_pairs(call)
+          library = icon_library(pairs)
           findings = pairs.flat_map do |key, value, kw_line|
-            option_findings(component, key, value, base_line + kw_line - 1)
+            option_findings(component, key, value, base_line + kw_line - 1, library: library)
           end
           unless splatted?(call)
             findings += (@catalog.required_options(component) - pairs.map(&:first)).map do |key|
@@ -1053,6 +1193,16 @@ module Poetry
           node.unescaped if node.is_a?(Prism::SymbolNode) || node.is_a?(Prism::StringNode)
         end
 
+        # The value node of one keyword on a call, for the rules that read
+        # a literal literal_value leaves out (true, false, a number).
+        def keyword_node(call, name)
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          pair = hash&.elements&.find do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) && element.key.unescaped == name
+          end
+          pair&.value
+        end
+
         # --- Markup rules (Stimulus wiring / the style exits) ---
 
         def attribute_findings(node)
@@ -1295,6 +1445,110 @@ module Poetry
           end
         end
 
+        # --- Upload rules (FileInput's direct uploads) ---
+
+        # upload: :immediate with nowhere to upload to, and a direct upload
+        # (either mode) in a host whose importmap does not pin
+        # @rails/activestorage: the dynamic import fails one upload with a
+        # message, never the module graph, but every upload.
+        def upload_findings(path, call, pairs, line)
+          return [] unless path == "poetry/ui/file_input"
+
+          options = pairs.to_h { |key, value, _kw_line| [key, value] }
+          immediate = options["upload"] == "immediate"
+          direct = keyword_node(call, "direct_upload").is_a?(Prism::TrueNode) || options.key?("direct_upload_url")
+          findings = []
+          if immediate && !direct
+            findings << Finding.new(rule: "upload-immediate-without-direct-upload", severity: :error,
+                                    message: "poetry_file_input with upload: :immediate has no endpoint - pass " \
+                                             "direct_upload: true (Rails' route) or direct_upload_url:",
+                                    line: line)
+          end
+          if (immediate || direct) && @importmap_pins && !@importmap_pins.include?("@rails/activestorage")
+            findings << Finding.new(rule: "direct-upload-unpinned", severity: :warning,
+                                    message: "direct uploads load @rails/activestorage through the importmap and " \
+                                             "config/importmap.rb does not pin it - add " \
+                                             "pin \"@rails/activestorage\", to: \"activestorage.esm.js\" " \
+                                             "(poetry:install adds it when Active Storage is in the app)",
+                                    line: line)
+          end
+          findings
+        end
+
+        # --- Island rules (poetry-island's mounts) ---
+
+        # An island whose module the host's importmap does not pin: the
+        # dynamic import fails that one island, with the shell left in
+        # place, but every time. A pin covers the specifier exactly, or as
+        # the `under:` prefix of a pin_all_from.
+        def island_findings(path, pairs, line)
+          return [] unless path == "poetry/island/island" && @importmap_pins
+
+          import = pairs.to_h { |key, value, _kw_line| [key, value] }["import"]
+          return [] unless import.is_a?(String) && !import.empty?
+          return [] if @importmap_pins.any? { |pin| import == pin || import.start_with?("#{pin}/") }
+
+          [Finding.new(rule: "island-import-unpinned", severity: :warning,
+                       message: "poetry_island loads #{import.inspect} through the importmap and " \
+                                "config/importmap.rb does not pin it - add pin \"#{import}\", to: ..., or " \
+                                "pin_all_from its directory under: its prefix (poetry:install pins " \
+                                "app/javascript/islands as islands)",
+                       line: line)]
+        end
+
+        # --- Motion rules (poetry-motion's effects) ---
+
+        # A looping effect rendered without its pause control: anything
+        # that moves on its own for more than five seconds needs one (WCAG
+        # 2.2.2).
+        def motion_findings(path, call, base_line)
+          return [] unless path == "poetry/motion/marquee"
+
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          pausable = hash&.elements&.find do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) &&
+              element.key.unescaped == "pausable" && element.value.is_a?(Prism::FalseNode)
+          end
+          return [] unless pausable
+
+          [Finding.new(rule: "motion-autoplay-pause", severity: :warning,
+                       message: "#{helper_of(path)} with pausable: false loops with no pause control - " \
+                                "WCAG 2.2.2 needs one for motion longer than five seconds",
+                       line: base_line + pausable.location.start_line - 1)]
+        end
+
+        # A component with the popper behavior (an anchored panel) inside a
+        # transforming effect's block.
+        def transform_overlay_findings(node, inside = nil, into = [])
+          return into unless node
+
+          if erb?(node)
+            paths = erb_call_paths(node)
+            if inside && (overlay = paths.find { |path| @catalog.behaviors_of(path).include?("popper") })
+              into << Finding.new(rule: "motion-overlay-in-transform", severity: :warning,
+                                  message: "#{helper_of(overlay)} sits inside #{helper_of(inside)}: the tilted " \
+                                           "layer becomes the containing block for its panel - move it outside",
+                                  line: line_of(node))
+            end
+            inside ||= paths.find { |path| motion_transform?(path) } if node.respond_to?(:body)
+          end
+          node.child_nodes.compact.each { |child| transform_overlay_findings(child, inside, into) }
+          into
+        end
+
+        # Whether the effect rotates or scales a layer around its content. A
+        # transformed element becomes the containing block for its
+        # fixed-position descendants, so a popper panel inside one is
+        # positioned against the layer, not the viewport.
+        def motion_transform?(path) = path == "poetry/motion/tilt_card"
+
+        # The component paths of the helper calls in one ERB tag.
+        def erb_call_paths(node)
+          calls = []
+          collect_calls(Prism.parse(node.content.value).value, calls)
+          calls.filter_map { |call| @catalog.path_for(call.name.to_s) }
+        end
+
         # --- WebMCP rules (the operate surface) ---
 
         # webmcp: on a component that declares no tools registers nothing;
@@ -1450,8 +1704,9 @@ module Poetry
           name_node = node.name
           return unless name_node
 
+          # An attribute named by ERB has no literal name; nothing to read.
           first = Array(name_node.child_nodes).compact.first
-          first.content if first.respond_to?(:content)
+          first.content if first.is_a?(Herb::AST::LiteralNode)
         end
 
         # Whether the attribute's value carries ERB (its literal fragments
@@ -1589,11 +1844,18 @@ module Poetry
                                              "icon names are kebab-case (#{kebab.to_sym.inspect} " \
                                              "is what renders)",
                                     line: line, suggestion: kebab)
+          elsif (current = @catalog.icon_aliases_for[kebab])
+            findings << Finding.new(rule: "renamed-icon", severity: :warning,
+                                    message: "#{owner}: #{raw.inspect} was renamed #{current.to_sym.inspect} " \
+                                             "upstream; the old name still renders through an alias",
+                                    line: line, suggestion: current, subject: raw)
           else
+            suggestion = Icons.suggest(kebab, names)
+            advice = suggestion ? "" : @catalog.icon_advice(kebab)
             findings << Finding.new(rule: "icon-declaration", severity: :warning,
                                     message: "#{owner}: #{raw.inspect} looks like an icon name " \
-                                             "but is not in the icon set",
-                                    line: line, suggestion: Icons.suggest(kebab, names))
+                                             "but is not in the icon set#{advice}",
+                                    line: line, suggestion: suggestion, subject: raw)
           end
         end
       end
@@ -1679,21 +1941,97 @@ module Poetry
           @renderable = renderable
         end
 
-        # Every finding across the paths, each stamped with its file.
+        # The ActiveSupport::Notifications event a run is reported as, for
+        # a host that wants to know how often its templates are checked and
+        # what the check finds: the payload carries files, errors and
+        # warnings as counts.
+        EVENT = "check.poetry"
+
+        # Every finding across the paths, each stamped with its file. The
+        # run is one {EVENT}.
         # @param paths [Array<String>] the files to lint
         # @param root [String, Pathname, nil] the app root the paths sit
         #   under, so a template is read as a mailer's by its path inside
         #   the app, never by a folder above it
-        def run(paths, root: nil)
-          paths.flat_map do |path|
-            findings = run_one(path, root)
-            findings.each { |finding| finding.file = path }
+        # @param calls [Array<Call>, nil] a sink the helper calls of every
+        #   template are appended to, each stamped with its file
+        def run(paths, root: nil, calls: nil)
+          ActiveSupport::Notifications.instrument(EVENT, files: paths.size) do |payload|
+            findings = paths.flat_map do |path|
+              before = calls&.size || 0
+              found = run_one(path, root, calls)
+              calls&.drop(before)&.each { |call| call.file = path }
+              found.each { |finding| finding.file = path }
+            end
+            payload[:errors] = findings.count { |finding| finding.severity == :error }
+            payload[:warnings] = findings.size - payload[:errors]
+            findings
           end
+        end
+
+        # What a template's own Ruby says that no helper call does. The
+        # template is compiled to Ruby as Rails compiles it (so `<%= helper
+        # do %>` blocks parse), on the template's own lines, and read twice:
+        # for the icon names it declares in its data (`icon: :github` in a
+        # list a loop renders from), as a Ruby file's declarations are, and
+        # for Ruby that cannot compile inside a template's method (a
+        # constant assigned in a scriptlet), which fails every render. A
+        # name a helper call already answered for on that line is left to
+        # it, and a template the parser already refused is not read again.
+        def template_ruby(source, findings)
+          ruby = compiled(source)
+          return [] unless ruby
+
+          answered = findings.filter_map { |finding| [finding.line, finding.subject.to_s] if finding.subject }
+          declared = @declarations.lint(ruby).reject do |finding|
+            answered.include?([finding.line, finding.subject.to_s])
+          end
+          refused = findings.any? { |finding| finding.rule == "parse-error" }
+          declared + (refused ? [] : uncompilable(ruby))
+        rescue StandardError
+          []
+        end
+
+        # The template as the Ruby Rails compiles it to, or nil where Action
+        # View is not loaded (the boot-free tools).
+        def compiled(source)
+          return nil unless defined?(ActionView::Template::Handlers::ERB::Erubi)
+
+          ActionView::Template::Handlers::ERB::Erubi.new(source).src
+        end
+
+        # Ruby that parses on its own and not as the body of the method a
+        # template becomes.
+        def uncompilable(ruby)
+          require "prism"
+          Prism.parse("def __template\n#{ruby}\nend").errors.first(3).map do |error|
+            Finding.new(rule: "parse-error", severity: :error, line: error.location.start_line - 1,
+                        message: "#{error.message} - this Ruby cannot run inside a template, so the page never renders")
+          end
+        end
+
+        # The host's importmap pins plus the bundled gems' (their engines
+        # add their pins at boot), read once per root (nil without a root
+        # or an importmap, so the pin rules stand down).
+        def importmap_pins(root)
+          return nil unless root
+
+          @importmap_pins ||= {}
+          @importmap_pins.fetch(root.to_s) do
+            @importmap_pins[root.to_s] = Check.importmap_pins(root, engine_roots: engine_roots)
+          end
+        end
+
+        # The bundled gems' roots, or none outside a bundle.
+        def engine_roots
+          Registry.gem_roots(registry: false)
+        rescue StandardError
+          []
         end
 
         # One file's findings; a file that cannot be read or decoded is one
         # warning naming it, never the end of the sweep.
-        def run_one(path, root)
+        def run_one(path, root, calls = nil)
           source = File.read(path, encoding: "UTF-8")
           unless source.valid_encoding?
             return [Finding.new(rule: "unreadable", severity: :warning,
@@ -1703,11 +2041,13 @@ module Poetry
             return @declarations.lint(source) + @internals.lint(source) + @renderable.lint(source)
           end
 
-          findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
+          findings = @linter.lint(source, mail: Check.mail_template?(path, root: root),
+                                          importmap_pins: importmap_pins(root), calls: calls)
           # The StableId heuristics ride every ERB pass (warnings only -
           # they never flip the exit code); the element rule rides a
           # component's template, and so does the compile tier when the
           # runner was handed one.
+          findings += template_ruby(source, findings)
           findings += @stable_identity.lint(source)
           findings += @tag_helpers.lint(source) if Check.component_template?(path)
           findings += @compile.lint(source, filename: path) if @compile && Compile.html_template?(path)
@@ -1773,8 +2113,39 @@ module Poetry
       # @param catalog [Catalog] the component catalog to validate against
       # @param mail [Boolean] a mailer template (the raw-color rule stays quiet)
       # @return [Array<Finding>]
-      def lint(source, catalog:, mail: false)
-        Linter.new(catalog).lint(source, mail: mail)
+      # @param importmap_pins [Array<String>, nil] the host's importmap pins
+      #   (Check.importmap_pins); nil skips the rules that read them
+      def lint(source, catalog:, mail: false, importmap_pins: nil)
+        Linter.new(catalog).lint(source, mail: mail, importmap_pins: importmap_pins)
+      end
+
+      # The names a host's config/importmap.rb pins (`pin "name"` and the
+      # `under:` of a pin_all_from), plus those of the engines' importmaps
+      # handed in (a bundled poetry gem adds its own pins at boot), or nil
+      # when the host has none.
+      #
+      # @param root [String, Pathname] the app root
+      # @param engine_roots [Array<String, Pathname>] gem roots whose config/importmap.rb joins the host's
+      # @return [Array<String>, nil]
+      def importmap_pins(root, engine_roots: [])
+        path = Pathname.new(root).join("config/importmap.rb")
+        return nil unless path.file?
+
+        engines = engine_roots.map { |engine| Pathname.new(engine).join("config/importmap.rb") }.select(&:file?)
+        ([path] + engines).flat_map { |file| pins_in(file.read) }.uniq
+      end
+
+      # The pin names in one importmap's source: `pin "name"` and the
+      # `under:` of a pin_all_from, which often wraps onto the next line
+      # (the tempered scan reads on until it, never into the next pin). An
+      # interpolated name is unknowable here and dropped.
+      #
+      # @param source [String] the importmap's Ruby
+      # @return [Array<String>]
+      def pins_in(source)
+        names = source.scan(/^\s*pin\s+["']([^"']+)["']/).flatten +
+                source.scan(/^\s*pin_all_from\b(?:(?!\n\s*pin\b).)*?under:\s*["']([^"']+)["']/m).flatten
+        names.reject { |name| name.include?("\#{") }
       end
 
       # The findings as pretty JSON.

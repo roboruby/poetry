@@ -23,6 +23,21 @@ module Poetry
                        "every *-foreground token must appear in the ledger for every mode"
         end
 
+        def test_every_status_role_is_gated_as_text_through_its_companion
+          assert_empty @gate.ungated_status_text,
+                       "every status role's -strong companion must be gated on background, muted and its tint"
+        end
+
+        def test_a_status_role_itself_is_too_light_for_text_and_its_companion_is_not
+          success = @tokens.color("light", "success")
+          strong = @tokens.color("light", "success-strong")
+
+          assert_operator success.contrast_ratio(Color::WHITE), :<, 4.5
+          assert_operator strong.contrast_ratio(Color::WHITE), :>=, 4.5
+          assert_in_delta success.l * 0.85, strong.l, 0.0001
+          assert_equal @tokens.color("dark", "success").css, @tokens.color("dark", "success-strong").css
+        end
+
         def test_aaa_locked_pairs_actually_clear_seven_to_one
           aaa = @gate.results.select { |r| r.lock == :aaa }
 
@@ -37,6 +52,13 @@ module Poetry
             %w[light muted-foreground_on_muted],
             %w[light muted-foreground_on_background],
             %w[light white_on_destructive],
+            %w[light success-strong_on_background],
+            %w[light success-strong_on_muted],
+            %w[light success-strong_on_success/10%_over_background],
+            %w[light warning-strong_on_muted],
+            %w[light warning-strong_on_warning/10%_over_background],
+            %w[light info-strong_on_muted],
+            %w[light info-strong_on_info/10%_over_background],
             %w[dark muted-foreground_on_muted],
             %w[dark white_on_destructive/60%_over_background],
             %w[dark sidebar-primary-foreground_on_sidebar-primary]

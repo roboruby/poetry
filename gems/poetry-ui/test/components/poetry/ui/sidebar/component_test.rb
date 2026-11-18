@@ -88,6 +88,17 @@ module Poetry
           assert_equal "page", inset.text.strip
         end
 
+        # A flex item's minimum width is its content's: without min-w-0 a
+        # wide table, chart or pre in the page widens the inset past the
+        # window and its right edge is clipped instead of scrolling.
+        def test_the_inset_gives_up_its_content_width
+          inset = render_shell.css('main[data-slot="sidebar-inset"]').first
+          classes = inset["class"].split
+
+          assert_includes classes, "min-w-0", "the inset must not grow to its content's width"
+          assert_includes classes, "flex-1"
+        end
+
         def test_the_trigger_toggles_the_controller
           html = render_inline(Component.new) do |shell|
             shell.with_nav { "nav" }

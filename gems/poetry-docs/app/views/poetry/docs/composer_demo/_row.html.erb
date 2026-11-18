@@ -1,0 +1,31 @@
+<%# One transcript row of the Composer page's live example. The reader's
+    row sits at the end and anchors the turn, with a chip for each file
+    the message carried and for each value a chip menu posted (a size
+    for a file, the param key for a value); the reply's row is replaced whole as its text
+    grows (data-version is the versioned replace's clock), and shows a
+    spinner until the first words arrive. %>
+<%= poetry_message_scroller_item(id: id, dom_id: id, anchor: align == :end, class: "px-4 py-2",
+                                 data: { version: version }) do %>
+  <%= poetry_message(align: align) do %>
+    <% if align == :end %>
+      <% if text.present? %><%= poetry_bubble { text } %><% end %>
+      <% files.each do |name, size| %>
+        <%= poetry_attachment(size: :sm, class: "max-w-60") do |chip| %>
+          <% chip.with_media { poetry_icon(name: :file) } %>
+          <% chip.with_title { name } %>
+          <% chip.with_description { size ? number_to_human_size(size) : "context[]" } %>
+        <% end %>
+      <% end %>
+    <% elsif text.blank? %>
+      <%= poetry_bubble(variant: :muted) { poetry_spinner(label: "Writing a reply") } %>
+    <% elsif local_assigns[:markdown] %>
+      <%# The reply written in Markdown: streaming: closes what the text
+          so far has left open, and the last frame renders without it. %>
+      <%= poetry_bubble(variant: :ghost) do %>
+        <%= poetry_markdown(text: text, streaming: local_assigns[:streaming], heading_level: 3) %>
+      <% end %>
+    <% else %>
+      <%= poetry_bubble(variant: :muted) { text } %>
+    <% end %>
+  <% end %>
+<% end %>

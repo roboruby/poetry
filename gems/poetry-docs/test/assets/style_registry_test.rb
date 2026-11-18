@@ -1,11 +1,12 @@
 require "test_helper"
 
 # The nine-theme style registry (tailwind/styles/) is GENERATED
-# from the sibling gems by script/build_style_registry.rb and can silently
-# go stale when a gem's theme layer grows (that's how the syntax
+# from the sibling gems by script/build_style_registry.rb and went stale
+# when a gem's theme layer grew (that's how the syntax
 # palette went missing and code samples rendered unhighlighted). These
 # assertions pin the palette's presence per theme; on failure, re-run
-# script/build_style_registry.rb.
+# script/build_style_registry.rb. The default chain's
+# poetry_docs:vendored:verify holds every copy byte-equal to the gems.
 class StyleRegistryTest < ActiveSupport::TestCase
   THEMES = %w[default vega nova mira rhea maia luma lyra sera].freeze
   SYNTAX_VARS = %w[keyword constant string entity markup function comment].freeze

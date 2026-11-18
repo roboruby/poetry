@@ -1,0 +1,10 @@
+<%# status: :running renders Stop in place of Send, bound to the hidden
+    Stop form. Enter sends nothing while Stop is on the page, and the
+    draft stays in the field. Press Stop: the server answers by drawing
+    Send in the slot, and the draft is still there to send. %>
+<div class="mx-auto w-full max-w-md">
+  <%= poetry_composer(id: "composer-running", status: :running,
+                      value: "A draft typed while the reply streams.",
+                      url: composer_demo_messages_path(composer: "composer-running"),
+                      stop_url: composer_demo_stop_path(composer: "composer-running")) %>
+</div>

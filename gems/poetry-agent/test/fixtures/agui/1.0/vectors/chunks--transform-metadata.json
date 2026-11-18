@@ -1,0 +1,1131 @@
+{
+  "source": "chunks/__tests__/transform-metadata.test.ts",
+  "vectors": [
+    {
+      "name": "chunk metadata propagation > stamps a text chunk's metadata onto both synthesized events",
+      "line": 29,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "Hello",
+          "metadata": {
+            "source": "openai"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "metadata": {
+              "source": "openai"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "Hello",
+            "metadata": {
+              "source": "openai"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a chunk's metadata applies to every event synthesized from it (START and CONTENT), not to the synthesized END",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "chunk metadata propagation > leaves metadata absent on synthesized events when the chunk carries none",
+      "line": 47,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "Hi"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "Hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: no metadata on the chunk means no metadata key on the synthesized events",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "chunk metadata propagation > stamps a tool call chunk's metadata onto the start and args events",
+      "line": 55,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "delta": "{\"q\":",
+          "metadata": {
+            "provider": "anthropic"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "search",
+            "metadata": {
+              "provider": "anthropic"
+            }
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{\"q\":",
+            "metadata": {
+              "provider": "anthropic"
+            }
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: tool chunk metadata lands on TOOL_CALL_START and TOOL_CALL_ARGS",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "chunk metadata propagation > stamps a reasoning chunk's metadata onto the start and content events",
+      "line": 71,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "thinking",
+          "metadata": {
+            "effort": "high"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r1",
+            "role": "reasoning",
+            "metadata": {
+              "effort": "high"
+            }
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "thinking",
+            "metadata": {
+              "effort": "high"
+            }
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: reasoning chunk metadata lands on REASONING_MESSAGE_START and REASONING_MESSAGE_CONTENT; the synthesized START carries role reasoning",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "chunk metadata does not leak across a message boundary > does not put the new chunk's metadata on the END that closes the previous message",
+      "line": 91,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "first",
+          "metadata": {
+            "belongsTo": "m1"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "delta": "second",
+          "metadata": {
+            "belongsTo": "m2"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "metadata": {
+              "belongsTo": "m1"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "first",
+            "metadata": {
+              "belongsTo": "m1"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "metadata": {
+              "belongsTo": "m2"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "second",
+            "metadata": {
+              "belongsTo": "m2"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: the synthesized END closing the previous item carries none of the new chunk's metadata",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "chunk metadata does not leak across a message boundary > does not leak across a switch from a text chunk to a tool call chunk",
+      "line": 124,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "text",
+          "metadata": {
+            "belongsTo": "m1"
+          }
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "delta": "{}",
+          "metadata": {
+            "belongsTo": "tc1"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "metadata": {
+              "belongsTo": "m1"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "text",
+            "metadata": {
+              "belongsTo": "m1"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "search",
+            "metadata": {
+              "belongsTo": "tc1"
+            }
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{}",
+            "metadata": {
+              "belongsTo": "tc1"
+            }
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a kind switch closes the text item with a metadata-free END; the tool chunk's metadata lands on its own START",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > preserves metadata from a text chunk that carries no delta",
+      "line": 175,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "usage": {
+              "output": 340
+            },
+            "finishReason": "stop"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "Hello"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "usage": {
+                "output": 340
+              },
+              "finishReason": "stop"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a metadata-only continuation is legal and becomes a zero-delta (\"\") TEXT_MESSAGE_CONTENT carrying the metadata",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > preserves metadata from a tool call chunk that carries no delta",
+      "line": 196,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "metadata": {
+            "latencyMs": 12
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "search"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{}"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "",
+            "metadata": {
+              "latencyMs": 12
+            }
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a metadata-only tool continuation becomes a zero-delta TOOL_CALL_ARGS carrying the metadata",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > preserves metadata from a reasoning chunk that carries no delta",
+      "line": 217,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "thinking"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "metadata": {
+            "tokens": 7
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r1",
+            "role": "reasoning"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "thinking"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "",
+            "metadata": {
+              "tokens": 7
+            }
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a metadata-only reasoning continuation becomes a zero-delta REASONING_MESSAGE_CONTENT",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > keeps the opener's subagent attribution on a metadata-only text chunk",
+      "line": 241,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "Hello",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "usage": {
+              "output": 340
+            }
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "Hello",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "usage": {
+                "output": 340
+              }
+            },
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents: an untagged continuation inherits its opener's owner, so the zero-delta event (and the synthesized END) carry subagentRunId s1",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED). No SUBAGENT_STARTED: attribution-only streams are legal, so RUN_FINISHED is accepted with s1 never announced."
+    },
+    {
+      "name": "metadata-only continuation chunks > prefers the metadata-only chunk's own tag over the opener's",
+      "line": 263,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "Hello",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "finishReason": "stop"
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "Hello",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "finishReason": "stop"
+            },
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents: a tagged continuation keeps its own (agreeing) tag on the synthesized event",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED). The tags agree, so the observable result equals the opener-inherited case; the test asserts only the last event's subagentRunId."
+    },
+    {
+      "name": "metadata-only continuation chunks > keeps subagent attribution on a metadata-only tool call chunk",
+      "line": 283,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "search",
+          "delta": "{}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "metadata": {
+            "latencyMs": 12
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "search",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{}",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "",
+            "metadata": {
+              "latencyMs": 12
+            },
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents: the metadata-only TOOL_CALL_ARGS inherits the opener's subagentRunId",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > keeps subagent attribution on a metadata-only reasoning chunk",
+      "line": 304,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "thinking",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "metadata": {
+            "tokens": 7
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r1",
+            "role": "reasoning",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "thinking",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "",
+            "metadata": {
+              "tokens": 7
+            },
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents: the metadata-only REASONING_MESSAGE_CONTENT inherits the opener's subagentRunId",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > leaves a parent lane's metadata-only event untagged",
+      "line": 324,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "x"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "finishReason": "stop"
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "x"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "finishReason": "stop"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents: a parent-lane item's synthesized events carry no subagentRunId key",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "metadata-only continuation chunks > emits nothing extra for a continuation chunk with neither delta nor metadata",
+      "line": 338,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "x"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "x"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a continuation carrying neither delta, metadata nor rawEvent synthesizes nothing",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED). The test asserts the types are exactly [START, CONTENT] before the (appended) terminal."
+    },
+    {
+      "name": "metadata-only continuation chunks > does not carry a metadata-only chunk's metadata onto the next message",
+      "line": 350,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "one"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "metadata": {
+            "belongsTo": "m1"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "delta": "two"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "one"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "belongsTo": "m1"
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "two"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: metadata from a metadata-only continuation stays on its own zero-delta event; neither the closing END nor the next item's events carry it",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    }
+  ]
+}

@@ -104,6 +104,46 @@ describe("poetry--agent--agui-client-tool", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
+  it("waits for approval when the tool asks first, then runs it", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("", { status: 200 }))
+
+    const element = bridge({ toolCallId: "c3", name: "poetry.sections.set_value", args: { value: "pricing" } })
+    element.setAttribute("data-poetry--agent--agui-client-tool-confirm-value", "true")
+    element.innerHTML = '<button data-action="poetry--agent--agui-client-tool#approve">Approve</button>'
+    await flush()
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(document.getElementById("tabs").getAttribute("data-poetry--core--fake-tabs-value-value")).toBeNull()
+
+    expect(element.hidden).toBe(false)
+
+    element.querySelector("button").click()
+    await flush()
+    await flush()
+    expect(element.hidden).toBe(true)
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ toolCallId: "c3", name: "poetry.sections.set_value", content: '{"value":"pricing","changed":true}' })
+    element.querySelector("button").click()
+    await flush()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("answers a denied call as declined without running it", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("", { status: 200 }))
+    const declined = vi.fn()
+    document.addEventListener("poetry:agui:client-tool-declined", (event) => declined(event.detail))
+
+    const element = bridge({ toolCallId: "c4", name: "poetry.sections.set_value", args: { value: "pricing" } })
+    element.setAttribute("data-poetry--agent--agui-client-tool-confirm-value", "true")
+    element.innerHTML = '<button data-action="poetry--agent--agui-client-tool#deny">Deny</button>'
+    await flush()
+    element.querySelector("button").click()
+    await flush()
+    await flush()
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ toolCallId: "c4", name: "poetry.sections.set_value", declined: true })
+    expect(declined).toHaveBeenCalledWith(expect.objectContaining({ toolCallId: "c4", declined: true }))
+    expect(document.getElementById("tabs").getAttribute("data-poetry--core--fake-tabs-value-value")).toBeNull()
+  })
+
   it("installs the versioned replace stream action once when Turbo is present", () => {
     const turbo = { StreamActions: {} }
     expect(installVersionedReplace(turbo)).toBe(true)

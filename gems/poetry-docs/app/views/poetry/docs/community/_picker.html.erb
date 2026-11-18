@@ -1,0 +1,56 @@
+<%# The list a filter is picked from, inside the dialog the sidebar opens
+    (and, where no script runs, as a page of its own): every choice with
+    a box to tick, the chosen ones first with a rule under them, a search
+    that narrows the list as it is typed, and the button that shows the
+    result. The form sends the
+    ticked values as one field where a script runs, and as a field per
+    box where none does; the browser's state reads either.
+    Locals: browse, param (the filter), options (every choice), path
+    (the list's address), row (optional: a callable that draws a
+    choice's line in place of its label and count), header (optional:
+    what stands over the list, a line naming a host's columns). %>
+<%# locals: (browse:, param:, options:, path:, row: nil, header: nil, result: "components") %>
+<% noun = (browse.facets.find { |facet| facet.param == param }&.label || param).downcase %>
+<%= turbo_frame_tag "community-picker-#{param}" do %>
+  <%= form_with url: path, method: :get,
+                html: { class: "flex min-h-0 flex-col gap-3",
+                        data: { controller: "community-picker", action: "submit->community-picker#join", turbo_frame: "_top",
+                                community_picker: param } } do %>
+    <% browse.params_for(param => nil).each do |name, value| %>
+      <%= hidden_field_tag name, value, id: nil %>
+    <% end %>
+    <%= hidden_field_tag param, "", id: nil, disabled: true, data: { community_picker_target: "joined" } %>
+    <%= poetry_input(type: "search", placeholder: "Search #{options.size} #{noun.pluralize(options.size)}", autocomplete: "off",
+                     aria: { label: "Search #{noun.pluralize}" },
+                     data: { community_picker_target: "search", action: "input->community-picker#narrow" }) %>
+    <%= header %>
+    <ul class="-mx-2 flex max-h-[50vh] min-h-24 flex-col gap-0.5 overflow-y-auto px-2" data-community-picker-target="list">
+      <% pinned = options.count(&:selected) %>
+      <% options.each_with_index do |option, index| %>
+        <% if index == pinned && pinned.positive? %>
+          <li aria-hidden="true" class="my-1 border-t" data-community-picker-target="rule"></li>
+        <% end %>
+        <%= tag.li data: { community_picker_target: "row", text: option.label.downcase, pinned: (true if option.selected) } do %>
+          <label class="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-accent has-checked:bg-accent">
+            <%= check_box_tag "#{param}[]", option.value, option.selected, id: nil, class: "size-4 shrink-0 accent-primary",
+                              data: { community_picker_target: "box", action: "change->community-picker#count" } %>
+            <% if row %>
+              <%= row.call(option) %>
+            <% else %>
+              <span class="min-w-0 flex-1 truncate"><%= option.label %></span>
+              <span class="shrink-0 text-xs tabular-nums text-muted-foreground"><%= option.count %></span>
+            <% end %>
+          </label>
+        <% end %>
+      <% end %>
+    </ul>
+    <p hidden class="py-4 text-center text-sm text-muted-foreground" data-community-picker-target="empty">Nothing matches.</p>
+    <div class="flex items-center gap-3 border-t pt-3">
+      <span class="text-sm text-muted-foreground" data-community-picker-target="summary" aria-live="polite">
+        <%= options.count(&:selected) %> chosen
+      </span>
+      <%= poetry_button(type: "button", variant: :ghost, size: :sm, data: { action: "community-picker#clear" }) { "Clear" } %>
+      <%= poetry_button(type: "submit", size: :sm, class: "ml-auto") { "Show #{result}" } %>
+    </div>
+  <% end %>
+<% end %>

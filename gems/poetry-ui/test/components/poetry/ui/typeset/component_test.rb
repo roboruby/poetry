@@ -72,6 +72,15 @@ module Poetry
           assert_includes CSS, ".not-typeset"
           assert_includes CSS, "[data-not-typeset]"
         end
+
+        # shadcn@4.23.0: components keep their own styles inside prose. Every
+        # poetry root wears data-slot, so the element rules skip them and a
+        # component placed directly in the flow takes a paragraph's space.
+        def test_components_keep_their_own_styles
+          assert_includes RULES, ".typeset [data-slot],"
+          assert_includes RULES, ".typeset [data-slot] *"
+          assert_match(/> :where\(\[data-slot\]\):not\(.*?\{\s*margin-block-start: var\(--typeset-flow\);/m, RULES)
+        end
       end
     end
   end

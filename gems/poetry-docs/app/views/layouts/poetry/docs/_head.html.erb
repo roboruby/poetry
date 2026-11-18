@@ -1,0 +1,45 @@
+<%# The head every page of the site carries: the docs layout's and the
+    Community layout's. %>
+<title><%= page_meta[:title] %></title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<%= render "layouts/poetry/docs/meta" %>
+<%# poetry_optimistic_form's prerequisite: failure
+    reconciliation is a Turbo refresh that must MORPH to be seamless. %>
+<meta name="turbo-refresh-method" content="morph">
+<meta name="turbo-refresh-scroll" content="preserve">
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+
+<%# Advertise the page's markdown twin to crawlers (paired with the
+    HTTP Link header the MarkdownMirror concern sets). %>
+<% if respond_to?(:markdown_alternate_path) && (md_path = markdown_alternate_path) %>
+  <link rel="alternate" type="text/markdown" href="<%= md_path %>">
+<% end %>
+
+<%# Apply the stored dark mode AND component style BEFORE first paint.
+    The style axis swaps the server-rendered style-default for
+    the stored choice; style_controller.js switches it live. %>
+<script>
+  try {
+    const stored = localStorage.getItem("poetry-docs-theme")
+    if (stored === "dark" || (!stored && matchMedia("(prefers-color-scheme: dark)").matches)) {
+      document.documentElement.classList.add("dark")
+    }
+    const style = localStorage.getItem("poetry-docs-style")
+    if (style && style !== "default" && /^[a-z]{4,7}$/.test(style)) {
+      document.documentElement.classList.replace("style-default", "style-" + style)
+    }
+  } catch {}
+</script>
+
+<%= yield :head %>
+
+<link rel="icon" href="<%= image_path("poetry_docs/icon.png") %>" type="image/png">
+
+<link rel="icon" href="<%= image_path("poetry_docs/icon.svg") %>" type="image/svg+xml">
+
+<link rel="apple-touch-icon" href="<%= image_path("poetry_docs/icon.png") %>">
+
+<%# The engine's built stylesheet (rake poetry_docs:css) and its own JavaScript graph. %>
+<%= stylesheet_link_tag Poetry::Docs.config.stylesheet, "data-turbo-track": "reload" %>
+<%= javascript_importmap_tags "poetry_docs/application" %>

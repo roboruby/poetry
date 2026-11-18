@@ -1,0 +1,10 @@
+{
+  "name": "poetry-minifier",
+  "private": true,
+  "description": "Minifies each gem's importmap JavaScript into dist/javascript at release time. One file in, one file out: imports untouched, a source map beside each.",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
