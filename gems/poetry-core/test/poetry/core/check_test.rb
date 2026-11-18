@@ -732,6 +732,16 @@ module Poetry
         end
       end
 
+      def test_a_required_option_written_empty_is_missing
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash])
+        empty = Check.lint(%(<%= poetry_icon(name: "") %>), catalog: catalog).sole
+
+        assert_equal %w[missing-option error], [empty.rule, empty.severity.to_s]
+        assert_equal "name: is required on poetry_icon and cannot be empty", empty.message
+        assert_empty Check.lint(%(<%= poetry_icon(name: :trash, label: "") %>), catalog: catalog),
+                     "an option that is not required may be empty"
+      end
+
       def test_a_renamed_icon_warns_with_its_current_name
         catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash],
                                                                          icon_aliases: { "trash-2" => "trash" })

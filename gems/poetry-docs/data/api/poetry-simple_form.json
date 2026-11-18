@@ -35,14 +35,14 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form.rb",
-          "line": 69
+          "line": 72
         }
       ],
       "constants": [
         {
           "name": "BRIDGE_EXEMPT",
-          "value": "{}.freeze",
-          "docstring": "Form-facing poetry components deliberately not reachable through a\nsimple_form type, with the reason (empty today; the gate reads it)."
+          "value": "{\n  composer: \"a chat message form of its own, with its field, its tools and its Send: never a field inside \" \\\n            \"a simple_form form\"\n}.freeze",
+          "docstring": "Form-facing poetry components deliberately not reachable through a\nsimple_form type, with the reason (the gate reads it)."
         },
         {
           "name": "COVERAGE",

@@ -185,7 +185,7 @@
       "path": "Poetry::EditorGenerator",
       "type": "class",
       "superclass": "Rails::Generators::Base",
-      "docstring": "`rails g poetry:editor` - wire the poetry agent surface into the editors a\nRails team actually uses. poetry has no bespoke extension (a possible\nfuture direction); what it DOES have is a standard MCP stdio server and a\nsource-generated component registry, so this generator emits:\n\n  .mcp.json            Claude Code   (mcpServers)\n  .cursor/mcp.json     Cursor        (mcpServers)\n  .vscode/mcp.json     VS Code       (servers + type: stdio)\n  .vscode/poetry.code-snippets   one snippet per poetry_* helper, with the\n                                  real variant/size enums as tab-stop choices\n  .herb.yml            Herb (linter / formatter / language server), unless\n                       the app already has one\n  .stimulus-lsp/config.json   poetry's controller identifiers for Stimulus LSP\n                              (upsert: an existing ignore list keeps its entries)\n\nThe MCP writes are upserts: an existing config keeps its other servers and\ngains a `poetry` entry; a config that already has one is left untouched; a\nJSONC file poetry can't parse is reported, never clobbered. Editors whose\nMCP config is global / IDE-managed (Zed, Windsurf, RubyMine) get a\ncopy-paste block printed instead.",
+      "docstring": "`rails g poetry:editor` - wire the poetry agent surface into the editors a\nRails team actually uses. poetry has no bespoke extension (a possible\nfuture direction); what it DOES have is a standard MCP stdio server and a\nsource-generated component registry, so this generator emits:\n\n  .mcp.json            Claude Code   (mcpServers)\n  .cursor/mcp.json     Cursor        (mcpServers)\n  .vscode/mcp.json     VS Code       (servers + type: stdio)\n  .vscode/poetry.code-snippets   one snippet per poetry_* helper, with the\n                                  real variant/size enums as tab-stop choices\n  .herb.yml            Herb (linter / formatter / language server), unless\n                       the app already has one\n  .stimulus-lsp/config.json   poetry's controller identifiers for Stimulus LSP\n                              (upsert: an existing ignore list keeps its entries)\n\nOnly the editors in use are wired: `--editor claude cursor` names them,\nand without it the ones wired before, then the ones found (the agent\nrunning the generator, an editor's own files in the repository) are; see\nGenerators::EditorChoice. Run on purpose with nothing to go by, it wires\nall three, as it always has.\n\nThe MCP writes are upserts: an existing config keeps its other servers and\ngains a `poetry` entry; a config that already has one is left untouched; a\nJSONC file poetry can't parse is reported, never clobbered. Editors whose\nMCP config is global / IDE-managed (Zed, Windsurf, RubyMine) get a\ncopy-paste block printed instead.",
       "examples": [
         {
           "title": "",
@@ -206,6 +206,11 @@
           "docstring": "Cursor's Write is its file-edit tool type; the payload is read\nleniently and the hook stays silent when it finds no path."
         },
         {
+          "name": "EDITORS",
+          "value": "%w[claude cursor vscode].freeze",
+          "docstring": "The editors Poetry has files for."
+        },
+        {
           "name": "HERB_CONFIG",
           "value": "<<~YML\n  # Herb toolchain configuration (linter / formatter / language server).\n  # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.\n  version: 0.11.2\n\n  framework: actionvie",
           "docstring": "The Herb toolchain (HTML+ERB parser, linter, formatter, language server)\nreads one file. Poetry templates are gated to parse AND compile under\nHerb (Rails core's ERB engine since 8.2), so a Poetry app can run the\nwhole toolchain with every rule on. The version pin keeps a linter\nupgrade from enabling rules silently: bump it and re-lint in one change."
@@ -216,9 +221,9 @@
           "docstring": "Where the Herb language server comes from, per editor."
         },
         {
-          "name": "HOOK_NOTE",
-          "value": "<<~TEXT\n  bin/poetry-check-hook runs poetry check on every app template an agent edits and feeds the\n  findings back: registered in .claude/settings.json (Claude Code, PostToolUse on Edit/Write) and\n ",
-          "docstring": "What the generator says about the hook once it is written."
+          "name": "HOOK_HOMES",
+          "value": "{\n  \"claude\" => \".claude/settings.json (Claude Code, PostToolUse on Edit/Write)\",\n  \"cursor\" => \".cursor/hooks.json (Cursor, postToolUse on Write)\"\n}.freeze",
+          "docstring": "Where the hook is registered, by editor."
         },
         {
           "name": "HOOK_SCRIPT",
@@ -226,9 +231,19 @@
           "docstring": "The check hook: stdlib Ruby that runs `poetry check` on the one app\ntemplate an agent just edited and feeds the findings back (errors as a\nblocking report, warnings as context). Registered for Claude Code and\nCursor; the script filters to app templates itself, since neither\nhook's matcher can see a file path."
         },
         {
+          "name": "MANIFEST",
+          "value": "\"config/poetry_components.yml\"",
+          "docstring": "Where the choice is remembered."
+        },
+        {
           "name": "MANUAL_EDITORS",
           "value": "<<~TEXT\n  Zed        settings.json ->\n             \"context_servers\": { \"poetry\": { \"command\": { \"path\": \"bundle\", \"args\": [\"exec\", \"poetry-agent\"] } } }\n  Windsurf   ~/.codeium/windsurf/mcp_config.js",
           "docstring": "Editors whose MCP config is global or IDE-managed, so poetry prints a\npaste-block instead of writing a project file."
+        },
+        {
+          "name": "SIGNS",
+          "value": "{\n  \"claude\" => { env: %w[CLAUDECODE],\n                paths: %w[CLAUDE.md .claude/settings.json .claude/settings.local.json .claude/commands\n                          .claude/agents] },\n  \"cursor\" =>",
+          "docstring": "How each editor shows itself: variables its shell sets, and files\nof its own in the repository. Poetry's own files (the skills under\n.claude/skills) are not on the list, or an install would find the\neditor it wired the last time."
         },
         {
           "name": "STIMULUS_LSP_VERSION",
@@ -246,6 +261,87 @@
       "file": "lib/generators/poetry/agents_section.rb",
       "methods": [],
       "constants": []
+    },
+    {
+      "path": "Poetry::Generators::EditorChoice",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Which editors a generator wires. Poetry never assumes one: the list\ncomes from the first of these that has an answer.\n\n1. `--editor claude cursor` (or `--editor none`): what was asked for.\n2. The `editors:` list in config/poetry_components.yml: what an\n   earlier run wired, so an upgrade keeps exactly those.\n3. What can be seen: the agent running the generator names itself in\n   its shell (Claude Code sets CLAUDECODE, Cursor's agent\n   CURSOR_AGENT), and an editor in use leaves files of its own in the\n   repository.\n4. A question, when a person is at the terminal.\n5. The generator's own fallback: everything for `poetry:editor`,\n   which was run on purpose, and nothing for `poetry:install`.\n\nWhatever is chosen is written back to the manifest.",
+      "examples": [],
+      "file": "lib/generators/poetry/editor_choice.rb",
+      "methods": [
+        {
+          "name": "environment",
+          "scope": "class",
+          "group": null,
+          "signature": "environment",
+          "docstring": "The environment that is read: ENV, unless a test named another.",
+          "params": [],
+          "return": {
+            "types": [
+              "#[]"
+            ],
+            "text": "the environment in use"
+          },
+          "examples": [],
+          "file": "lib/generators/poetry/editor_choice.rb",
+          "line": 48
+        },
+        {
+          "name": "environment=",
+          "scope": "class",
+          "group": null,
+          "signature": "environment=(value)",
+          "docstring": "The environment that is read for an agent's own variables: ENV,\nunless a test names another.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/generators/poetry/editor_choice.rb",
+          "line": 43
+        },
+        {
+          "name": "editor_choice",
+          "scope": "instance",
+          "group": null,
+          "signature": "editor_choice(otherwise:)",
+          "docstring": "The editors to wire, chosen once per run and remembered.",
+          "params": [
+            {
+              "name": "otherwise",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the generator's fallback when nothing\nis asked for, remembered or seen, and nobody can be asked"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/generators/poetry/editor_choice.rb",
+          "line": 58
+        }
+      ],
+      "constants": [
+        {
+          "name": "EDITORS",
+          "value": "%w[claude cursor vscode].freeze",
+          "docstring": "The editors Poetry has files for."
+        },
+        {
+          "name": "MANIFEST",
+          "value": "\"config/poetry_components.yml\"",
+          "docstring": "Where the choice is remembered."
+        },
+        {
+          "name": "SIGNS",
+          "value": "{\n  \"claude\" => { env: %w[CLAUDECODE],\n                paths: %w[CLAUDE.md .claude/settings.json .claude/settings.local.json .claude/commands\n                          .claude/agents] },\n  \"cursor\" =>",
+          "docstring": "How each editor shows itself: variables its shell sets, and files\nof its own in the repository. Poetry's own files (the skills under\n.claude/skills) are not on the list, or an install would find the\neditor it wired the last time."
+        }
+      ]
     },
     {
       "path": "Poetry::Generators::PaginationGenerator",
@@ -293,6 +389,26 @@
           "docstring": "The base layer (upstream's init writes the same defaults into the\nhost stylesheet):\nwithout it body/border/outline don't ride the tokens and dark mode\nonly flips the components. Seeded once,\nuser-owned - re-install never overwrites."
         },
         {
+          "name": "CHECK_SPEC",
+          "value": "<<~RUBY\n  require \"rails_helper\"\n\n  # Written by poetry:install - this file is yours. It holds the suite to\n  # `bin/rails poetry:check`: a component call that cannot render fails\n  # here, whoever or",
+          "docstring": "The same test for an RSpec app."
+        },
+        {
+          "name": "CHECK_TEST",
+          "value": "<<~RUBY\n  require \"test_helper\"\n\n  # Written by poetry:install - this file is yours. It holds the suite to\n  # `bin/rails poetry:check`: a component call that cannot render (an\n  # unknown option, a m",
+          "docstring": "The test a Minitest app gains. It skips, and says why, in an app\nwhose test group has no herb (an install from before this test)."
+        },
+        {
+          "name": "CI_STEP",
+          "value": "%(step \"Poetry: check\", \"bin/rails poetry:check\")",
+          "docstring": "The step config/ci.rb gains."
+        },
+        {
+          "name": "EDITORS",
+          "value": "%w[claude cursor vscode].freeze",
+          "docstring": "The editors Poetry has files for."
+        },
+        {
           "name": "ENTRY_LINES",
           "value": "[\n  # layer(theme): any unlayered token the host declares beats poetry's,\n  # whatever the order in the entry (the appended import used to land\n  # after the host's own :root and take its brand colors",
           "docstring": "Injected line by line (not as one block) so a re-run after an upgrade\nappends any line a previous poetry version didn't know about."
@@ -303,6 +419,11 @@
           "docstring": "A Gemfile line declaring herb, in any quoting, at any indentation\n(a `group :development do` block included)."
         },
         {
+          "name": "MANIFEST",
+          "value": "\"config/poetry_components.yml\"",
+          "docstring": "Where the choice is remembered."
+        },
+        {
           "name": "RESET_FILE",
           "value": "\"app/assets/tailwind/poetry/reset.css\"",
           "docstring": "The reset floor, vendored only for hosts that opted out of preflight."
@@ -311,6 +432,11 @@
           "name": "RESET_LINE",
           "value": "%(@import \"./poetry/reset.css\" layer(base);)",
           "docstring": "The entry line that imports the floor, beside the theme in layer(base)."
+        },
+        {
+          "name": "SIGNS",
+          "value": "{\n  \"claude\" => { env: %w[CLAUDECODE],\n                paths: %w[CLAUDE.md .claude/settings.json .claude/settings.local.json .claude/commands\n                          .claude/agents] },\n  \"cursor\" =>",
+          "docstring": "How each editor shows itself: variables its shell sets, and files\nof its own in the repository. Poetry's own files (the skills under\n.claude/skills) are not on the list, or an install would find the\neditor it wired the last time."
         },
         {
           "name": "STYLE_SLOT",
@@ -5456,10 +5582,47 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/check_catalog.rb",
-          "line": 17
+          "line": 38
+        },
+        {
+          "name": "errors",
+          "scope": "class",
+          "group": null,
+          "signature": "errors(root:)",
+          "docstring": "The errors `bin/rails poetry:check` stops on, for the app's own\nfiles: what the test `poetry:install` writes holds the suite to, so\na template that cannot render is seen by whoever, or whatever, ran\nthe tests. Warnings are left to the task's own report.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the app root"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Poetry::Core::Check::Finding>"
+            ],
+            "text": "the error findings, each with its file and line"
+          },
+          "examples": [
+            {
+              "title": "In a test",
+              "text": "assert_empty Poetry::Ui::CheckCatalog.errors(root: Rails.root).map(&:to_s)"
+            }
+          ],
+          "file": "lib/poetry/ui/check_catalog.rb",
+          "line": 26
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "PATTERNS",
+          "value": "[\"app/{views,components}/**/*.html.erb\", \"app/**/*.rb\"].freeze",
+          "docstring": "What `poetry:check` sweeps in an app when no glob is given: its\ntemplates, and its Ruby for the icons it declares."
+        }
+      ]
     },
     {
       "path": "Poetry::Ui::Checkbox",

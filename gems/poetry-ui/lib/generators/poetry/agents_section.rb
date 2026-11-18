@@ -101,7 +101,8 @@ module Poetry
             `list_recipes`, `find_icon` (which icon means this), `get_skill`, `guidance`, and
             `report_gap` (a link that reports something the library lacked; nothing is sent).
             Prefer `compose` (or `build_page` for a
-            whole screen) to start, and its `check` tool when iterating. Wire it
+            whole screen) to start, and its `check` tool when iterating (pass `path:`
+            for a file you wrote: one short call however long the page). Wire it
             into every editor at once with `bin/rails g poetry:editor` (MCP
             configs for VS Code / Cursor / Claude Code / Zed / RubyMine plus
             registry-driven snippets).

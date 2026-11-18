@@ -113,11 +113,19 @@ module Poetry
                            "required content blocks, required slots a call never set, and any-of " \
                            "contracts (Button's visible content, Command's accessible name). Returns a " \
                            "verdict and findings. Run this as the LAST action after the final edit - " \
-                           "an edit after your last check is unverified.",
+                           "an edit after your last check is unverified. Pass path: (or paths:) for a " \
+                           "file you have written - one short call however long the page - or source: " \
+                           "for markup that is not in a file yet.",
           "inputSchema" => {
             "type" => "object",
-            "properties" => { "source" => { "type" => "string", "description" => "the ERB template source" } },
-            "required" => ["source"]
+            "properties" => {
+              "path" => { "type" => "string",
+                          "description" => "a template in the app, from its root " \
+                                           "(app/views/orders/index.html.erb)" },
+              "paths" => { "type" => "array", "items" => { "type" => "string" },
+                           "description" => "several templates, each from the app's root" },
+              "source" => { "type" => "string", "description" => "ERB template source, when there is no file" }
+            }
           },
           "annotations" => { "readOnlyHint" => true }
         },
@@ -359,6 +367,9 @@ module Poetry
           @documents = []
         end
 
+        # The three things check can be handed; it needs one.
+        CHECK_INPUTS = %w[source path paths].freeze
+
         # What find_icon answers in a bundle with no icon set.
         NO_ICON_SET = "find_icon: this bundle has no icon set to search. Add one (gem \"poetry-lucide\" is " \
                       "the default set) and restart the server."
@@ -513,6 +524,12 @@ module Poetry
             return tool_content("#{name}: missing required argument#{"s" if missing.size > 1} " \
                                 "#{missing.join(", ")} (see tools/list for the schema)", error: true)
           end
+          # check reads one of three things, so its schema can require none
+          # of them: nothing at all is refused here, as a missing argument is.
+          if name == "check" && CHECK_INPUTS.all? { |key| Array(arguments[key]).join.strip.empty? }
+            return tool_content("check: missing required argument source, path or paths (see tools/list for " \
+                                "the schema)", error: true)
+          end
           text =
             case name
             when "compose" then compose(arguments)
@@ -571,14 +588,40 @@ module Poetry
 
         # The check tool: the lint findings for an ERB source with a PASS or FAIL verdict.
         def check(arguments)
-          findings = Poetry::Core::Check.lint(arguments["source"].to_s, catalog: @catalog)
+          paths = [arguments["path"], *Array(arguments["paths"])].map(&:to_s).reject(&:empty?)
+          return check_files(paths) if paths.any?
+
+          verdict(Poetry::Core::Check.lint(arguments["source"].to_s, catalog: @catalog)) { |finding| "line #{finding.line}" }
+        end
+
+        # The check over files of the app: the same run `bin/rails
+        # poetry:check` makes, each finding under its file and line. A path
+        # is read from the app's root and nowhere else.
+        def check_files(paths)
+          return "check: this server has no app to read files from - send the template as source:" unless @app_root
+
+          root = Pathname(@app_root).expand_path
+          files = paths.map { |path| root.join(path).expand_path }
+          named = ->(list) { list.map { |file| file.relative_path_from(root) }.join(", ") }
+          outside = files.reject { |file| file.to_s.start_with?("#{root}/") }
+          return "check: #{named.call(outside)} is outside the app" if outside.any?
+
+          missing = files.reject(&:file?)
+          return "check: no such file in the app: #{named.call(missing)}" if missing.any?
+
+          findings = Poetry::Core::Check::Runner.new(@catalog).run(files.map(&:to_s), root: root.to_s)
+          verdict(findings) { |finding| "#{Pathname(finding.file).relative_path_from(root)}:#{finding.line}" }
+        end
+
+        # PASS or FAIL with the counts, then each finding at the place the block names.
+        def verdict(findings)
           errors = findings.count { |finding| finding.severity == :error }
-          verdict = errors.zero? ? "PASS" : "FAIL"
           report = findings.map do |finding|
             hint = finding.suggestion ? " (did you mean #{finding.suggestion}?)" : ""
-            "- [#{finding.severity}] line #{finding.line}: #{finding.message}#{hint}"
+            "- [#{finding.severity}] #{yield(finding)}: #{finding.message}#{hint}"
           end
-          (["#{verdict} - #{errors} error(s), #{findings.length - errors} warning(s)"] + report).join("\n")
+          headline = "#{errors.zero? ? "PASS" : "FAIL"} - #{errors} error(s), #{findings.length - errors} warning(s)"
+          ([headline] + report).join("\n")
         end
 
         # The compose router: the unconditional first move. Measured runs

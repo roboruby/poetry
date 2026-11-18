@@ -14,7 +14,7 @@ namespace :poetry do
             "`bin/rails g poetry:install` adds it to your development group"
     end
 
-    patterns = args[:glob] ? [args[:glob]] : ["app/{views,components}/**/*.html.erb", "app/**/*.rb"]
+    patterns = args[:glob] ? [args[:glob]] : Poetry::Ui::CheckCatalog::PATTERNS
     paths = patterns.flat_map { |pattern| Dir.glob(Rails.root.join(pattern).to_s) }.uniq
     findings = Poetry::Core::Check::Runner.new(Poetry::Ui::CheckCatalog.build(root: Rails.root))
                                           .run(paths, root: Rails.root)

@@ -8,7 +8,8 @@
 <%
   # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
   generate_source = <<~CODE
-    bin/rails g poetry:editor
+    bin/rails g poetry:editor                          # the editors wired before, or the ones it can find
+    bin/rails g poetry:editor --editor claude cursor   # or name them: claude, cursor, vscode, all, none
   CODE
   mcp_source = <<~CODE
     // .mcp.json (Claude Code) / .cursor/mcp.json (Cursor)
@@ -66,6 +67,19 @@ CODE
         upserts: a file keeps its other servers and hooks, one that already has
         Poetry is left alone, and a JSONC file Poetry cannot parse is reported,
         never clobbered.
+      </p>
+      <p>
+        Only the editors in use are wired. Name them with
+        <code>--editor claude cursor</code> (<code>vscode</code>,
+        <code>all</code> and <code>none</code> are the other words). With no
+        flag the generator wires what it wired before, then what it can see:
+        the agent running it names itself in its shell (Claude Code,
+        Cursor), and an editor in use leaves files of its own in the
+        repository. At a terminal with nothing to go by it asks. The choice
+        is kept in <code>config/poetry_components.yml</code> under
+        <code>editors:</code>, so an upgrade wires the same ones.
+        <code>poetry:install</code> takes the same flag and follows the same
+        order, except that with nothing to go by it wires none and says how.
       </p>
     <% end %>
     <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>

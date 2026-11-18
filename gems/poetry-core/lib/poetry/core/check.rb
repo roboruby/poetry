@@ -696,7 +696,8 @@ module Poetry
 
         # The value-contract tier: the call shapes that raise or misrender
         # at render time - enumerated values on any declared attribute, literal nil
-        # against required options, and icon-name format/membership.
+        # or an empty literal against required options, and icon-name
+        # format/membership.
         def value_findings(entry, owner, key, value, line, library: nil)
           if value.equal?(NIL_LITERAL)
             return [] unless entry["required"]
@@ -705,6 +706,12 @@ module Poetry
                                 message: "#{key}: is required on #{owner} and cannot be nil", line: line)]
           end
           return [] unless value
+          # An empty literal is no value either: a required option written
+          # as "" (a link's address left for later) raises at render.
+          if value == "" && entry["required"]
+            return [Finding.new(rule: "missing-option", severity: :error,
+                                message: "#{key}: is required on #{owner} and cannot be empty", line: line)]
+          end
 
           variants = entry["variants"]
           if variants && !variants.include?(value)

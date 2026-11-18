@@ -14,6 +14,106 @@ module Poetry
     destination File.expand_path("../tmp/install-dest", __dir__)
     setup :prepare_destination
 
+    # The install reads the shell for the agent that runs it; a test run
+    # has to see the same nothing wherever it is run from.
+    setup { Poetry::Generators::EditorChoice.environment = {} }
+    teardown { Poetry::Generators::EditorChoice.environment = nil }
+
+    def manifest
+      YAML.safe_load_file(File.join(destination_root, "config/poetry_components.yml"))
+    end
+
+    CI_FILE = <<~RUBY
+      CI.run do
+        step "Setup", "bin/setup --skip-server"
+        step "Tests: Rails", "bin/rails test"
+      end
+    RUBY
+
+    def test_install_writes_a_test_that_holds_the_suite_to_poetry_check_and_a_ci_step
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/ci.rb"), CI_FILE)
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_file "test/poetry_check_test.rb" do |test|
+        assert_includes test, "errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)"
+        assert_includes test, "class PoetryCheckTest < ActiveSupport::TestCase"
+      end
+      assert_file "config/ci.rb" do |ci|
+        assert_equal 1, ci.scan("poetry:check").size, "the step is added once"
+        assert_operator ci.index(%(  step "Poetry: check", "bin/rails poetry:check"\n)), :<,
+                        ci.index(%(step "Tests: Rails"))
+      end
+    end
+
+    def test_the_check_test_is_the_apps_once_written_and_an_rspec_app_gets_a_spec
+      run_generator %w[--skip-bundle]
+      File.write(File.join(destination_root, "test/poetry_check_test.rb"), "# mine now\n")
+      run_generator %w[--skip-bundle]
+
+      assert_file "test/poetry_check_test.rb", "# mine now\n"
+
+      prepare_destination
+      FileUtils.mkdir_p(File.join(destination_root, "spec"))
+      run_generator %w[--skip-bundle]
+
+      assert_file "spec/poetry_check_spec.rb", /RSpec\.describe "poetry check"/
+      assert_no_file "test/poetry_check_test.rb"
+    end
+
+    def test_skip_ci_leaves_tests_ci_and_the_test_group_alone_and_is_remembered
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/ci.rb"), CI_FILE)
+      File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
+      with_action_view(herb: false) { run_generator %w[--skip-bundle --skip-ci] }
+
+      assert_no_file "test/poetry_check_test.rb"
+      assert_file "config/ci.rb", CI_FILE
+      assert_file "Gemfile", /^gem "herb", group: :development$/
+      refute manifest.fetch("ci")
+
+      with_action_view(herb: false) { run_generator %w[--skip-bundle] }
+
+      assert_no_file "test/poetry_check_test.rb" # a later run keeps what was said
+
+      with_action_view(herb: false) { run_generator %w[--skip-bundle --no-skip-ci] }
+
+      assert_file "test/poetry_check_test.rb"
+      assert manifest.fetch("ci")
+    end
+
+    def test_install_wires_no_editor_unless_one_is_named_remembered_or_found
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "none (nothing said which, so none)"
+      assert_includes output, "no editor wired - `bin/rails g poetry:editor --editor claude`"
+      assert_no_file ".mcp.json"
+      assert_no_file ".cursor/mcp.json"
+      assert_no_file "bin/poetry-check-hook"
+      assert_equal [], manifest["editors"]
+      assert_equal({}, manifest["components"])
+    end
+
+    def test_install_wires_the_editor_it_is_told_and_the_agent_that_runs_it
+      run_generator %w[--skip-bundle --editor cursor]
+
+      assert_file ".cursor/mcp.json"
+      assert_file ".cursor/hooks.json"
+      assert_file "bin/poetry-check-hook"
+      assert_no_file ".mcp.json"
+      assert_equal %w[cursor], manifest["editors"]
+
+      prepare_destination
+      Poetry::Generators::EditorChoice.environment = { "CLAUDECODE" => "1" }
+      output = run_generator %w[--skip-bundle]
+
+      assert_includes output, "claude (found: claude by CLAUDECODE)"
+      assert_file ".mcp.json"
+      assert_file ".claude/settings.json", /poetry-check-hook/
+      assert_no_file ".cursor/mcp.json"
+    end
+
     def test_the_install_ends_on_the_cold_start_prompt_offer
       output = run_generator %w[--skip-bundle]
 
@@ -61,7 +161,7 @@ module Poetry
       end
 
       assert_file "Gemfile" do |content|
-        assert_equal 1, content.scan(/^gem "herb", group: :development$/).size
+        assert_equal 1, content.scan(/^gem "herb", group: \[:development, :test\]$/).size
         assert_match(/^# poetry:check parses ERB with herb/, content)
       end
     end
@@ -114,7 +214,7 @@ module Poetry
       output = with_action_view(herb: false) { run_generator %w[--skip-bundle] }
 
       refute_match(/herb comes with Action View/, output)
-      assert_file "Gemfile", /^gem "herb", group: :development$/
+      assert_file "Gemfile", /^gem "herb", group: \[:development, :test\]$/
     end
 
     # An app that pins herb itself keeps its line on either generation.

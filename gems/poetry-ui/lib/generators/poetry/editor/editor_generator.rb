@@ -4,6 +4,7 @@ require "rails/generators"
 require "json"
 require "yaml"
 require "time"
+require_relative "../editor_choice"
 
 module Poetry
   # `rails g poetry:editor` - wire the poetry agent surface into the editors a
@@ -21,6 +22,12 @@ module Poetry
   #   .stimulus-lsp/config.json   poetry's controller identifiers for Stimulus LSP
   #                               (upsert: an existing ignore list keeps its entries)
   #
+  # Only the editors in use are wired: `--editor claude cursor` names them,
+  # and without it the ones wired before, then the ones found (the agent
+  # running the generator, an editor's own files in the repository) are; see
+  # Generators::EditorChoice. Run on purpose with nothing to go by, it wires
+  # all three, as it always has.
+  #
   # The MCP writes are upserts: an existing config keeps its other servers and
   # gains a `poetry` entry; a config that already has one is left untouched; a
   # JSONC file poetry can't parse is reported, never clobbered. Editors whose
@@ -31,6 +38,12 @@ module Poetry
   #   bin/rails g poetry:editor
   class EditorGenerator < Rails::Generators::Base
     source_root File.expand_path("templates", __dir__)
+
+    include Generators::EditorChoice
+
+    class_option :editor, type: :array, default: nil,
+                          desc: "The editors to wire: claude, cursor, vscode, all or none. Without it: the ones " \
+                                "wired before, else the ones found, else all"
 
     # Editors whose MCP config is global or IDE-managed, so poetry prints a
     # paste-block instead of writing a project file.
@@ -94,13 +107,11 @@ module Poetry
     # Cursor's Write is its file-edit tool type; the payload is read
     # leniently and the hook stays silent when it finds no path.
     CURSOR_HOOK = { "command" => HOOK_SCRIPT, "matcher" => "Write", "timeout" => 120 }.freeze
-    # What the generator says about the hook once it is written.
-    HOOK_NOTE = <<~TEXT
-      bin/poetry-check-hook runs poetry check on every app template an agent edits and feeds the
-      findings back: registered in .claude/settings.json (Claude Code, PostToolUse on Edit/Write) and
-      .cursor/hooks.json (Cursor, postToolUse on Write). Claude Code reads hooks at session start -
-      start a new session (or check /hooks) before expecting feedback.
-    TEXT
+    # Where the hook is registered, by editor.
+    HOOK_HOMES = {
+      "claude" => ".claude/settings.json (Claude Code, PostToolUse on Edit/Write)",
+      "cursor" => ".cursor/hooks.json (Cursor, postToolUse on Write)"
+    }.freeze
 
     desc "Wire poetry's MCP server + component snippets + Herb and Stimulus LSP config + the check hook into " \
          "your editors (.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + " \
@@ -110,24 +121,32 @@ module Poetry
     # Step: upserts the poetry server into .mcp.json.
     # @api private
     def write_claude_code_config
+      return unless wire?("claude")
+
       upsert_mcp ".mcp.json", "mcpServers", stdio: false
     end
 
     # Step: upserts the poetry server into .cursor/mcp.json.
     # @api private
     def write_cursor_config
+      return unless wire?("cursor")
+
       upsert_mcp ".cursor/mcp.json", "mcpServers", stdio: false
     end
 
     # Step: upserts the poetry server into .vscode/mcp.json.
     # @api private
     def write_vscode_config
+      return unless wire?("vscode")
+
       upsert_mcp ".vscode/mcp.json", "servers", stdio: true
     end
 
     # Step: writes one VS Code snippet per poetry_* helper.
     # @api private
     def write_snippets
+      return unless wire?("vscode")
+
       create_file ".vscode/poetry.code-snippets", "#{JSON.pretty_generate(snippets)}\n", force: true
     end
 
@@ -151,6 +170,8 @@ module Poetry
     # Step: writes the check hook script.
     # @api private
     def write_check_hook
+      return unless wire?("claude") || wire?("cursor")
+
       copy_file "poetry-check-hook", HOOK_SCRIPT
       chmod HOOK_SCRIPT, 0o755
     end
@@ -158,20 +179,32 @@ module Poetry
     # Step: registers the hook for Claude Code (upsert into .claude/settings.json).
     # @api private
     def write_claude_code_hook
+      return unless wire?("claude")
+
       upsert_hook ".claude/settings.json", "PostToolUse", CLAUDE_HOOK
     end
 
     # Step: registers the hook for Cursor (upsert into .cursor/hooks.json).
     # @api private
     def write_cursor_hook
+      return unless wire?("cursor")
+
       upsert_hook ".cursor/hooks.json", "postToolUse", CURSOR_HOOK, seed: { "version" => 1 }
     end
 
     # Step: explains the check hook and when each editor picks it up.
     # @api private
     def announce_check_hook
+      homes = HOOK_HOMES.select { |editor, _home| wire?(editor) }.values
+      return if homes.empty?
+
       say "\npoetry:editor - the check hook:", :green
-      say HOOK_NOTE
+      say "bin/poetry-check-hook runs poetry check on every app template an agent edits and feeds the " \
+          "findings back: registered in #{homes.join(" and ")}."
+      return unless wire?("claude")
+
+      say "Claude Code reads hooks at session start - start a new session (or check /hooks) before " \
+          "expecting feedback."
     end
 
     # Step: prints the paste-blocks for IDE-managed MCP configs.
@@ -185,6 +218,11 @@ module Poetry
     end
 
     private
+
+    # Whether an editor is among the ones this run wires.
+    def wire?(editor)
+      editor_choice(otherwise: Generators::EditorChoice::EDITORS).include?(editor)
+    end
 
     # The stdio server every host launches the same way. Zero config beyond the
     # bundle exec line; the agent auto-locates the gem and reads the committed

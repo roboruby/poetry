@@ -66,6 +66,7 @@
 - Every request to the MCP server is an `ActiveSupport::Notifications` event, `request.poetry_agent`: the payload names the method, the tool, the client as it introduced itself and the error when there was one. A tool's arguments are left out.
 - `describe_component` marks a deprecated option with what replaces it.
 - `find_icon` and the `check` tool say where brand marks are when one is asked of Lucide, and `check` names the icons to try for an unknown name.
+- The `check` tool reads files: `path:` or `paths:` name templates in the app, from its root, and the answer is the run `bin/rails poetry:check` makes over them, each finding under its file and line. Checking a whole page is one short call. `source:` still takes markup that is not in a file. A path outside the app is refused, and a server with no app says to send the source.
 
 
 ### Changed

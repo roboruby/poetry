@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require "rails/generators"
+require "yaml"
+require "date"
 require_relative "../agents_section"
 require_relative "../skills_section"
+require_relative "../editor_choice"
 
 module Poetry
   # `rails g poetry:install` - wires poetry into a host app:
@@ -43,6 +46,7 @@ module Poetry
   class InstallGenerator < Rails::Generators::Base
     include Generators::AgentsSection
     include Generators::SkillsSection
+    include Generators::EditorChoice
 
     # The host's Tailwind entry stylesheet (import/@source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
@@ -62,6 +66,17 @@ module Poetry
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
     class_option :motion, type: :boolean, default: false,
                           desc: %(Also wire poetry-motion (requires gem "poetry-motion" in the bundle))
+    # --skip-ci: leave the app's tests and its CI as they are. Without it
+    # the install writes one test that holds the suite to `poetry:check`
+    # and, where the app has config/ci.rb, one step that runs it. Said
+    # once and remembered (`ci:` in the manifest), like the theme.
+    class_option :skip_ci, type: :boolean, default: nil,
+                           desc: "Skip the test that holds the suite to poetry:check, and its config/ci.rb step"
+    # --editor: the editors to wire the MCP server and the check-on-edit
+    # hook into. Never assumed: see Generators::EditorChoice.
+    class_option :editor, type: :array, default: nil,
+                          desc: "Editors to wire (claude, cursor, vscode, all, none). Without it: the ones wired " \
+                                "before, else the ones found, else none"
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
     # --no-preflight: the host imports Tailwind without preflight (its own
@@ -75,6 +90,44 @@ module Poetry
                              desc: "Pass --no-preflight when your Tailwind entry omits preflight: vendors poetry's " \
                                    "reset floor (poetry/reset.css) so the components keep their normalizations"
 
+    # The step config/ci.rb gains.
+    CI_STEP = %(step "Poetry: check", "bin/rails poetry:check")
+    # The test a Minitest app gains. It skips, and says why, in an app
+    # whose test group has no herb (an install from before this test).
+    CHECK_TEST = <<~RUBY
+      require "test_helper"
+
+      # Written by poetry:install - this file is yours. It holds the suite to
+      # `bin/rails poetry:check`: a component call that cannot render (an
+      # unknown option, a missing slot, an icon the set does not have) fails
+      # here, whoever or whatever made the change. Delete it to opt out.
+      class PoetryCheckTest < ActiveSupport::TestCase
+        test "the app's templates pass poetry check" do
+          skip "add herb to the Gemfile's test group to check templates here" unless Poetry::Core::CSS::TemplateClasses.available?
+
+          errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)
+
+          assert_empty errors.map(&:to_s), "bin/rails poetry:check lists these with their fixes"
+        end
+      end
+    RUBY
+    # The same test for an RSpec app.
+    CHECK_SPEC = <<~RUBY
+      require "rails_helper"
+
+      # Written by poetry:install - this file is yours. It holds the suite to
+      # `bin/rails poetry:check`: a component call that cannot render fails
+      # here, whoever or whatever made the change. Delete it to opt out.
+      RSpec.describe "poetry check" do
+        it "passes for the app's templates" do
+          skip "add herb to the Gemfile's test group to check templates here" unless Poetry::Core::CSS::TemplateClasses.available?
+
+          errors = Poetry::Ui::CheckCatalog.errors(root: Rails.root)
+
+          expect(errors.map(&:to_s)).to be_empty, "bin/rails poetry:check lists these with their fixes"
+        end
+      end
+    RUBY
     # A Gemfile line declaring herb, in any quoting, at any indentation
     # (a `group :development do` block included).
     HERB_GEM_LINE = /^\s*gem\s+["']herb["']/
@@ -481,7 +534,12 @@ module Poetry
         return
       end
 
-      gem "herb", group: :development, comment: "poetry:check parses ERB with herb (development only)"
+      if check_in_ci?
+        gem "herb", group: %i[development test],
+                    comment: "poetry:check parses ERB with herb; the test group holds the suite to it"
+      else
+        gem "herb", group: :development, comment: "poetry:check parses ERB with herb (development only)"
+      end
       if options[:skip_bundle]
         say_status :note, "run `bundle install` to fetch herb before `bin/rails poetry:check`", :cyan
       else
@@ -513,6 +571,56 @@ module Poetry
     # @api private
     def write_skills
       apply_poetry_skills
+    end
+
+    # The editors in use get the MCP server and the hook that runs check
+    # on every template an agent edits. Which editors is never assumed
+    # (Generators::EditorChoice): with none named, remembered or found,
+    # nothing is written and one line says how.
+    # @api private
+    def wire_editors
+      chosen = editor_choice(otherwise: [])
+      if chosen.empty?
+        say_status :note, "no editor wired - `bin/rails g poetry:editor --editor claude` (or cursor, vscode) adds " \
+                          "the MCP server and the check-on-edit hook", :cyan
+      else
+        Rails::Generators.invoke("poetry:editor", ["--editor", *chosen], behavior: behavior,
+                                                                         destination_root: destination_root)
+      end
+    end
+
+    # One test that holds the app's suite to `poetry:check`: whoever, or
+    # whatever, runs the tests is told about a template that cannot
+    # render, in any editor and in CI. The file is the app's from then on
+    # (never rewritten; delete it and pass --skip-ci to keep it gone).
+    # @api private
+    def write_check_test
+      return unless check_in_ci?
+
+      if File.directory?(File.join(destination_root, "spec")) && !File.directory?(File.join(destination_root, "test"))
+        seed_file "spec/poetry_check_spec.rb", CHECK_SPEC
+      else
+        seed_file "test/poetry_check_test.rb", CHECK_TEST
+      end
+    end
+
+    # Rails 8.1's config/ci.rb gets the check as a step of its own, ahead
+    # of the tests, when the app has the file and the step is not there.
+    # @api private
+    def add_ci_step
+      path = File.join(destination_root, "config/ci.rb")
+      return unless check_in_ci? && File.exist?(path)
+      if File.read(path).include?("poetry:check")
+        return say_status(:skip, "config/ci.rb already runs poetry:check",
+                          :cyan)
+      end
+
+      anchor = File.read(path)[/^[ \t]*step "Tests: Rails".*\n/]
+      if anchor
+        inject_into_file "config/ci.rb", "#{anchor[/\A[ \t]*/]}#{CI_STEP}\n", before: anchor
+      else
+        say_status :note, %(add `#{CI_STEP}` to config/ci.rb (no "Tests: Rails" step to place it by)), :cyan
+      end
     end
 
     # `poetry:audit` writes its files under .poetry/audit/, regenerated on
@@ -688,6 +796,23 @@ module Poetry
       return if File.exist?(path) && File.read(path).include?(line)
 
       append_to_file relative, "#{line}\n"
+    end
+
+    # Whether the install writes the check's test and CI step: what
+    # --skip-ci (or --no-skip-ci) says now, else what a run before it said,
+    # else yes. What is said is written to the manifest.
+    def check_in_ci?
+      return @check_in_ci unless @check_in_ci.nil?
+
+      path = File.join(destination_root, Generators::EditorChoice::MANIFEST)
+      data = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
+      data = {} unless data.is_a?(Hash)
+      said = options[:skip_ci]
+      if !said.nil? && data["ci"] != !said
+        create_file Generators::EditorChoice::MANIFEST, YAML.dump(data.merge("ci" => !said)), force: true,
+                                                                                              verbose: false
+      end
+      @check_in_ci = said.nil? ? data["ci"] != false : !said
     end
 
     # A host-owned file, seeded once: the file is the host's to edit from

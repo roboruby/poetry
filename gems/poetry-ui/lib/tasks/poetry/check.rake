@@ -19,7 +19,7 @@ namespace :poetry do
 
     # Default sweep: ERB through the template tier, app Ruby through the
     # icon-declaration tier (the FLASH_ICONS pattern lives in .rb).
-    patterns = args[:glob] ? [args[:glob]] : ["app/{views,components}/**/*.html.erb", "app/**/*.rb"]
+    patterns = args[:glob] ? [args[:glob]] : Poetry::Ui::CheckCatalog::PATTERNS
     paths = patterns.flat_map { |pattern| Dir.glob(Rails.root.join(pattern).to_s) }.uniq
     if paths.empty?
       warn "poetry check: no files matched #{patterns.join(", ").inspect}"

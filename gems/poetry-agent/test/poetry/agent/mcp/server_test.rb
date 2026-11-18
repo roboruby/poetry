@@ -249,6 +249,45 @@ module Poetry
                         "library: :simple_icons"
       end
 
+      def app_server(root)
+        catalog = Poetry::Core::Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES,
+                                                            icon_names: %w[circle-alert triangle-alert])
+        MCP::Server.new(entries: ENTRIES, catalog: catalog, app_root: root)
+      end
+
+      def test_check_reads_a_template_by_its_path_and_reports_under_file_and_line
+        Dir.mktmpdir do |root|
+          FileUtils.mkdir_p(File.join(root, "app/views/orders"))
+          File.write(File.join(root, "app/views/orders/index.html.erb"),
+                     %(<h1>Orders</h1>\n<%= poetry_buton { "Save" } %>\n))
+          File.write(File.join(root, "app/views/orders/show.html.erb"), %(<%= poetry_button { "Save" } %>\n))
+          target = app_server(root)
+
+          one = call_on(target, "check", "path" => "app/views/orders/index.html.erb")
+          both = call_on(target, "check", "paths" => %w[app/views/orders/index.html.erb app/views/orders/show.html.erb])
+
+          assert_match(%r{\AFAIL - 1 error\(s\), 0 warning\(s\)\n- \[error\] app/views/orders/index\.html\.erb:2: },
+                       one)
+          assert_equal one, both, "a clean file adds nothing"
+          assert_equal "PASS - 0 error(s), 0 warning(s)",
+                       call_on(target, "check", "path" => "app/views/orders/show.html.erb")
+        end
+      end
+
+      def test_check_reads_nothing_outside_the_app_and_says_what_it_needs
+        Dir.mktmpdir do |root|
+          target = app_server(root)
+
+          assert_includes call_on(target, "check", "path" => "../../etc/passwd"), "is outside the app"
+          assert_includes call_on(target, "check", "path" => "/etc/passwd"), "is outside the app"
+          assert_includes call_on(target, "check", "path" => "app/views/none.html.erb"), "no such file in the app"
+          assert_includes call_on(target, "check"), "missing required argument source, path or paths"
+          assert tool_result(target, "check", "path" => " ")["isError"]
+          assert_includes call("check", "path" => "app/views/x.html.erb"), "this server has no app to read files from"
+          assert_match(/\AFAIL - 1 error/, call_on(target, "check", "source" => %(<%= poetry_buton { "x" } %>)))
+        end
+      end
+
       def test_find_icon_requires_a_query
         result = tool_result(icon_server, "find_icon", "query" => " ")
 

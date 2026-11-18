@@ -10,6 +10,27 @@ module Poetry
     module CheckCatalog
       module_function
 
+      # What `poetry:check` sweeps in an app when no glob is given: its
+      # templates, and its Ruby for the icons it declares.
+      PATTERNS = ["app/{views,components}/**/*.html.erb", "app/**/*.rb"].freeze
+
+      # The errors `bin/rails poetry:check` stops on, for the app's own
+      # files: what the test `poetry:install` writes holds the suite to, so
+      # a template that cannot render is seen by whoever, or whatever, ran
+      # the tests. Warnings are left to the task's own report.
+      #
+      # @param root [Pathname, String] the app root
+      # @return [Array<Poetry::Core::Check::Finding>] the error findings, each with its file and line
+      # @example In a test
+      #   assert_empty Poetry::Ui::CheckCatalog.errors(root: Rails.root).map(&:to_s)
+      def errors(root:)
+        paths = PATTERNS.flat_map { |pattern| Dir.glob(Pathname(root).join(pattern).to_s) }.uniq
+        tier = Poetry::Core::Check::Compile
+        compile = tier.unavailable ? nil : tier.new(rendering: tier.rendering?)
+        Poetry::Core::Check::Runner.new(build(root: root), compile: compile).run(paths, root: root)
+                                   .select { |finding| finding.severity == :error }
+      end
+
       # The catalog for an app.
       #
       # @param root [Pathname, String] the app root

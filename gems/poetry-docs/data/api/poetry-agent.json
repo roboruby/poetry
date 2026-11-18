@@ -18440,7 +18440,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 290
+          "line": 298
         },
         {
           "name": "from_registry",
@@ -18523,7 +18523,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 262
+          "line": 270
         },
         {
           "name": "mapped_helpers",
@@ -18543,7 +18543,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 328
+          "line": 336
         },
         {
           "name": "apps",
@@ -18568,7 +18568,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 452
+          "line": 463
         },
         {
           "name": "configuration",
@@ -18580,7 +18580,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 391
+          "line": 402
         },
         {
           "name": "handle",
@@ -18606,7 +18606,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 464
+          "line": 475
         },
         {
           "name": "initialize",
@@ -18683,7 +18683,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 349
+          "line": 357
         },
         {
           "name": "inspect",
@@ -18700,7 +18700,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 425
+          "line": 436
         },
         {
           "name": "mcp",
@@ -18717,7 +18717,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 435
+          "line": 446
         },
         {
           "name": "notify",
@@ -18747,7 +18747,7 @@
             }
           ],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 412
+          "line": 423
         },
         {
           "name": "serve",
@@ -18774,7 +18774,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 474
+          "line": 485
         }
       ],
       "constants": [
@@ -18782,6 +18782,11 @@
           "name": "ARCHETYPE_MATCH",
           "value": "2",
           "docstring": "The brief-word -> page-architecture routing table."
+        },
+        {
+          "name": "CHECK_INPUTS",
+          "value": "%w[source path paths].freeze",
+          "docstring": "The three things check can be handed; it needs one."
         },
         {
           "name": "EVENT",

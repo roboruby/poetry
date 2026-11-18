@@ -249,6 +249,19 @@
         <code>typeset.css</code>, the initializer, the component manifest,
         and everything copied in) are never rewritten.
       </p>
+      <p>
+        The install also holds your own suite to the check. It writes one
+        test, <code>test/poetry_check_test.rb</code> (a spec in an RSpec
+        app), that fails when a template has a check error, and where the
+        app has Rails 8.1's <code>config/ci.rb</code> it adds a
+        <code>Poetry: check</code> step ahead of the tests. A template that
+        cannot render is then seen by whoever, or whatever, ran the tests,
+        in any editor and in CI. The test is yours once written.
+        <code>--skip-ci</code> leaves tests and CI alone, and is remembered;
+        <code>--no-skip-ci</code> turns it back on. Editors are wired only
+        when named, remembered or found (the
+        <%= link_to "editors guide", editors_path %>).
+      </p>
     <% end %>
   </section>
 
